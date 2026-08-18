@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Medicine Tracker - FinFlow</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f8fafc;
+      color: #0f172a;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    a, button { color: inherit; text-decoration: none; font-family: inherit; }
+
+    .app-shell { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
+    @media (max-width: 860px) { .app-shell { grid-template-columns: 1fr; } .sidebar { display: none; } }
+
+    .sidebar { background: #ffffff; border-right: 1px solid #e2e8f0; display: flex; flex-direction: column; padding: 1.5rem 1.25rem; }
+    .sidebar-logo { display: flex; align-items: center; gap: 0.65rem; font-size: 1.1rem; font-weight: 800; margin-bottom: 2rem; padding: 0 0.25rem; }
+    .sidebar-logo-icon { width: 30px; height: 30px; background: linear-gradient(135deg, #0ea5e9, #10b981); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; flex-shrink: 0; }
+    .sidebar-nav { display: flex; flex-direction: column; gap: 0.25rem; }
+    .sidebar-nav a, .sidebar-nav .nav-group-head { display: flex; align-items: center; gap: 0.75rem; padding: 0.7rem 0.75rem; border-radius: 0.6rem; font-size: 0.9rem; font-weight: 500; color: #364752; }
+    .sidebar-nav a:hover, .sidebar-nav .nav-group-head:hover { background: #f1f5f9; }
+    .sidebar-nav a.active { background: #0f172a; color: #ffffff; font-weight: 600; }
+    .sidebar-nav .nav-group-head.open { background: #f1f5f9; font-weight: 700; }
+    .sidebar-nav .nav-group-head.active { background: #0f172a; color: #ffffff; font-weight: 600; }
+    .sidebar-nav .nav-group-head.active .nav-chevron { color: rgba(255,255,255,0.6); }
+    .sidebar-nav .nav-icon { font-size: 1rem; width: 20px; text-align: center; flex-shrink: 0; }
+    .sidebar-nav .nav-label { flex: 1; }
+    .sidebar-nav .nav-chevron { color: #94a3b8; font-size: 0.85rem; }
+    .sidebar-subnav { display: flex; flex-direction: column; gap: 0.2rem; padding-left: 1.6rem; margin: 0.15rem 0 0.3rem; }
+    .sidebar-subnav a { display: flex; align-items: center; gap: 0.6rem; padding: 0.55rem 0.6rem; border-radius: 0.5rem; font-size: 0.85rem; font-weight: 500; color: #364752; }
+    .sidebar-subnav a:hover { background: #f1f5f9; }
+    .sidebar-subnav a.active { background: #0f172a; color: #fff; font-weight: 600; }
+    .sidebar-spacer { flex: 1; }
+    .feedback-card { background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 0.9rem; padding: 1.1rem; margin-top: 1.5rem; }
+    .feedback-card .fc-icon { width: 32px; height: 32px; border-radius: 0.6rem; background: #eef2f7; display: flex; align-items: center; justify-content: center; font-size: 0.95rem; margin-bottom: 0.6rem; }
+    .feedback-card strong { display: block; font-size: 0.85rem; margin-bottom: 0.3rem; }
+    .feedback-card p { font-size: 0.78rem; color: #64748b; line-height: 1.5; margin-bottom: 0.85rem; }
+    .feedback-card a { display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; width: 100%; padding: 0.55rem; border: 1px solid #cbd5e1; border-radius: 0.5rem; font-size: 0.8rem; font-weight: 600; color: #364752; }
+    .feedback-card a:hover { border-color: #10b981; color: #10b981; }
+
+    .main { padding: 1.5rem 2.5rem 3rem; min-width: 0; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; padding-bottom: 1.25rem; border-bottom: 1px solid #e2e8f0; margin-bottom: 1.5rem; }
+    .topbar h1 { font-size: 1.4rem; font-weight: 700; }
+    .topbar-right { display: flex; align-items: center; gap: 0.85rem; }
+    .language-selector { display: flex; align-items: center; gap: 0.5rem; background: #ffffff; padding: 0.5rem 0.9rem; border-radius: 0.5rem; color: #51636f; border: 1px solid #e2e8f0; cursor: pointer; font-size: 0.85rem; }
+    .user-menu { position: relative; list-style: none; }
+    .user-menu > summary { cursor: pointer; list-style: none; width: 34px; height: 34px; border-radius: 50%; background: #eef2f7; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; font-size: 1rem; }
+    .user-menu > summary::-webkit-details-marker { display: none; }
+    .user-menu-panel { position: absolute; top: calc(100% + 0.6rem); right: 0; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 0.75rem; box-shadow: 0 10px 30px rgba(15,23,42,0.12); padding: 0.4rem; min-width: 150px; z-index: 20; }
+    .user-menu-panel a { display: block; padding: 0.55rem 0.7rem; border-radius: 0.5rem; font-size: 0.85rem; color: #364752; font-weight: 500; }
+    .user-menu-panel a:hover { background: #f1f5f9; color: #10b981; }
+
+    .page-head { margin-bottom: 1.5rem; max-width: 62ch; }
+    .page-head h2 { font-size: 1.6rem; font-weight: 800; margin-bottom: 0.3rem; }
+    .page-head p { color: #64748b; font-size: 0.9rem; line-height: 1.55; }
+
+    .btn-primary { padding: 0.6rem 1.1rem; border: none; border-radius: 0.6rem; background: linear-gradient(135deg, #0ea5e9, #10b981); color: #fff; font-size: 0.85rem; font-weight: 700; cursor: pointer; white-space: nowrap; }
+    .btn-primary:hover { opacity: 0.92; }
+    .btn-secondary { padding: 0.55rem 1rem; border: 1px solid #cbd5e1; border-radius: 0.6rem; background: #fff; color: #364752; font-size: 0.83rem; font-weight: 600; cursor: pointer; white-space: nowrap; }
+    .btn-secondary:hover { border-color: #94a3b8; }
+    .btn-danger-text { color: #dc2626; font-size: 0.78rem; font-weight: 700; cursor: pointer; background: none; border: none; }
+    .btn-edit-text { color: #0284c7; font-size: 0.78rem; font-weight: 700; cursor: pointer; background: none; border: none; }
+
+    /* Member selector — sits above the tabs, applies to every tab */
+    .controls-row { display: flex; gap: 1rem; align-items: flex-end; margin-bottom: 1.5rem; flex-wrap: wrap; }
+    .member-select-wrap { min-width: 200px; }
+    .control-label { font-size: 0.76rem; font-weight: 700; color: #64748b; margin-bottom: 0.4rem; display: block; text-transform: uppercase; letter-spacing: 0.04em; }
+    .field-select, .num-input {
+      width: 100%; padding: 0.65rem 0.8rem; border: 1px solid #cbd5e1; border-radius: 0.55rem;
+      font-size: 0.9rem; font-family: inherit; color: #0f172a; background: #fff;
+    }
+    .field-select:focus, .num-input:focus { outline: none; border-color: #10b981; box-shadow: 0 0 0 2px rgba(16,185,129,0.15); }
+    .controls-spacer { flex: 1; }
+
+    .empty-state { background: #ffffff; border: 1px dashed #cbd5e1; border-radius: 1rem; padding: 2.5rem 1.5rem; text-align: center; color: #94a3b8; font-size: 0.9rem; }
+
+    /* Tabs */
+    .tab-bar { display: flex; gap: 0.25rem; margin-bottom: 1.5rem; border-bottom: 1px solid #e2e8f0; overflow-x: auto; }
+    .tab-btn { padding: 0.75rem 1.1rem; font-size: 0.85rem; font-weight: 700; color: #64748b; background: none; border: none; border-bottom: 2px solid transparent; cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 0.4rem; }
+    .tab-btn:hover { color: #0f172a; }
+    .tab-btn.active { color: #0f172a; border-bottom-color: #10b981; }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+    .tab-intro { font-size: 0.85rem; color: #64748b; margin-bottom: 1.25rem; }
+
+    /* Time-of-day toggle buttons (Morning / Noon / Evening / Night) */
+    .checkbox-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 0.6rem; }
+    .checkbox-btn {
+      display: flex; align-items: center; gap: 0.5rem; text-align: left;
+      padding: 0.65rem 0.8rem; border: 1.5px solid #e2e8f0; border-radius: 0.65rem;
+      cursor: pointer; background: #fff; font-size: 0.85rem; font-weight: 600; color: #364752;
+    }
+    .checkbox-btn:hover { border-color: #94a3b8; }
+    .checkbox-btn.selected { border-color: #10b981; background: #ecfdf5; color: #047857; }
+    .checkbox-btn .cb-mark { width: 16px; height: 16px; border-radius: 0.3rem; border: 1.5px solid #cbd5e1; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; background: #fff; }
+    .checkbox-btn.selected .cb-mark { border-color: #10b981; background: #10b981; color: #fff; }
+    .checkbox-btn.selected .cb-mark::after { content: '✓'; }
+
+    /* Today's Plan (Medicine / Reminder / Supplement tabs), grouped by time of day */
+    .today-plan-card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 1.1rem; padding: 1.3rem 1.5rem; margin-bottom: 1.5rem; box-shadow: 0 4px 16px rgba(15,23,42,0.03); }
+    .today-plan-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.4rem; }
+    .today-plan-head h3 { font-size: 1rem; font-weight: 800; }
+    .today-plan-date { font-size: 0.78rem; color: #94a3b8; font-weight: 600; }
+    .today-plan-group { margin-bottom: 1.1rem; }
+    .today-plan-group:last-child { margin-bottom: 0; }
+    .today-plan-group-head { font-size: 0.75rem; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; }
+    .today-plan-row { display: flex; align-items: baseline; gap: 0.9rem; padding: 0.5rem 0; border-bottom: 1px dashed #e2e8f0; }
+    .today-plan-row:last-child { border-bottom: none; }
+    .today-plan-name { font-size: 0.88rem; font-weight: 700; color: #364752; }
+    .today-plan-dosage { font-size: 0.78rem; color: #94a3b8; margin-left: 0.4rem; }
+
+    /* Full schedule reference table, same single-line shape as My Policies */
+    .sched-table-card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 1.1rem; box-shadow: 0 4px 16px rgba(15,23,42,0.03); overflow: hidden; }
+    .sched-table-scroll { overflow-x: auto; }
+    table.sched-table { border-collapse: collapse; width: 100%; min-width: 680px; }
+    table.sched-table th, table.sched-table td { padding: 0.75rem 1rem; font-size: 0.85rem; white-space: nowrap; border-bottom: 1px solid #f1f5f9; text-align: left; vertical-align: middle; }
+    table.sched-table thead th { font-size: 0.68rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.04em; background: #f8fafc; border-bottom: 1px solid #e2e8f0; }
+    table.sched-table tbody tr:last-child td { border-bottom: none; }
+    table.sched-table tbody tr:hover td { background: #f8fafc; }
+    td.sc-name { font-weight: 700; }
+    td.sc-dosage, td.sc-range { color: #94a3b8; font-weight: 400; }
+    td.sc-actions { text-align: right; }
+
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.55); align-items: center; justify-content: center; z-index: 50; padding: 1rem; }
+    .modal-overlay.show { display: flex; }
+    .modal-box { background: #fff; border-radius: 1.1rem; padding: 1.6rem 1.75rem; width: 100%; max-width: 560px; max-height: 90vh; overflow-y: auto; }
+    .modal-box h3 { font-size: 1.1rem; font-weight: 800; margin-bottom: 1.1rem; }
+    .modal-actions { display: flex; align-items: center; justify-content: space-between; gap: 0.7rem; margin-top: 1rem; }
+    .modal-actions-right { display: flex; gap: 0.7rem; flex: 1; }
+    .modal-actions-right button { flex: 1; }
+    .form-error { font-size: 0.8rem; color: #dc2626; font-weight: 600; margin-bottom: 0.7rem; }
+    .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.1rem; }
+    @media (max-width: 620px) { .field-grid { grid-template-columns: 1fr; } }
+    .field-item { margin-bottom: 1.1rem; }
+    .field-label { font-size: 0.83rem; font-weight: 600; color: #0f172a; margin-bottom: 0.5rem; display: block; }
+    .field-sub-label { font-size: 0.83rem; font-weight: 600; color: #0f172a; margin: 1.2rem 0 0.6rem; display: block; }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a href="dashboard.html" class="sidebar-logo">
+        <div class="sidebar-logo-icon">💰</div>
+        <span>FinFlow</span>
+      </a>
+
+      <nav class="sidebar-nav">
+        <a href="dashboard.html">
+          <span class="nav-icon">▦</span>
+          <span class="nav-label">Dashboard</span>
+        </a>
+        <a href="fire-plan.html">
+          <span class="nav-icon">🧭</span>
+          <span class="nav-label">FIRE Plan</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="net-worth.html">
+          <span class="nav-icon">📈</span>
+          <span class="nav-label">Networth</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="money-required.html">
+          <span class="nav-icon">🪴</span>
+          <span class="nav-label">Expenses</span>
+          <span class="nav-chevron">›</span>
+        </a>
+
+        <a href="expense-quick-add.html">
+          <span class="nav-icon">⚡</span>
+          <span class="nav-label">Daily Expenses Tracker</span>
+        </a>
+        <a href="tax-planning.html">
+          <span class="nav-icon">🧾</span>
+          <span class="nav-label">Tax Planning</span>
+        </a>
+        <a href="insurance-tracker.html">
+          <span class="nav-icon">🛡️</span>
+          <span class="nav-label">Insurance Tracker</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="reminders.html">
+          <span class="nav-icon">🔔</span>
+          <span class="nav-label">Reminders</span>
+        </a>
+        <a href="vault-overview.html">
+          <span class="nav-icon">🔒</span>
+          <span class="nav-label">Document Vault</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="split/dashboard.html">
+          <span class="nav-icon">💸</span>
+          <span class="nav-label">SplitExpenses(SplitWise)</span>
+        </a>
+
+        <a href="life-expectancy.html" class="nav-group-head open active">
+          <span class="nav-icon">❤️</span>
+          <span class="nav-label">Health</span>
+          <span class="nav-chevron">⌄</span>
+        </a>
+        <div class="sidebar-subnav">
+          <a href="life-expectancy.html">
+            <span class="nav-icon">📉</span>
+            <span class="nav-label">Life Expectancy</span>
+          </a>
+          <a href="health-medicine-tracker.html" class="active">
+            <span class="nav-icon">💊</span>
+            <span class="nav-label">Medicine Tracker</span>
+          </a>
+          <a href="health-checkup-reports.html">
+            <span class="nav-icon">🩺</span>
+            <span class="nav-label">Checkup Reports</span>
+          </a>
+        </div>
+
+        <a href="astrology.html">
+          <span class="nav-icon">🔮</span>
+          <span class="nav-label">Spiritual</span>
+        </a>
+        <a href="#">
+          <span class="nav-icon">⚙️</span>
+          <span class="nav-label">Settings</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-spacer"></div>
+
+      <div class="feedback-card">
+        <div class="fc-icon">💬</div>
+        <strong>Got feedback?</strong>
+        <p>Have an idea or found a bug? We read every message.</p>
+        <a href="mailto:hello@finflow.app">✉ Contact Us</a>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <h1>Health</h1>
+        <div class="topbar-right">
+          <div class="language-selector">🌐 English ▾</div>
+          <details class="user-menu">
+            <summary>👤</summary>
+            <div class="user-menu-panel">
+              <a href="#">Settings</a>
+              <a href="#" onclick="signOutAndRedirect('index.html'); return false;">Log Out</a>
+            </div>
+          </details>
+        </div>
+      </div>
+
+      <div class="page-head">
+        <h2>Medicine Tracker</h2>
+        <p>Everything about medicine for your family — you, your kids, your spouse, your parents — in one place: what's due today, and vaccination records.</p>
+      </div>
+
+      <div id="noMembersState" class="empty-state" style="display:none;">
+        No family members added yet. <a href="#" id="addFirstMemberLink" style="color:#0ea5e9; font-weight:600;">Add one</a> to get started.
+      </div>
+
+      <div id="pageBody" style="display:none;">
+        <div class="controls-row">
+          <div class="member-select-wrap">
+            <label class="control-label">Family Member</label>
+            <select class="field-select" id="memberSelect"></select>
+          </div>
+          <div class="controls-spacer"></div>
+          <button type="button" class="btn-secondary" id="addMemberBtn">+ Family Member</button>
+        </div>
+
+        <div class="tab-bar">
+          <button type="button" class="tab-btn active" data-tab="medication">💊 Medicine Tracker (Tablets &amp; Tonics)</button>
+          <button type="button" class="tab-btn" data-tab="supplement">🌿 Supplement Tracker</button>
+          <button type="button" class="tab-btn" data-tab="vaccination">💉 Vaccination Tracker for Kids</button>
+          <button type="button" class="tab-btn" data-tab="pill">⏰ Medicine Reminder</button>
+        </div>
+
+        <!-- Medicine Tracker (Tablets & Tonics) -->
+        <div class="tab-panel active" data-panel="medication">
+          <p class="tab-intro">Clear daily plan — easily see which tablets and tonics you're due to take each day, and when.</p>
+          <div class="today-plan-card">
+            <div class="today-plan-head"><h3>Today's Plan</h3><span class="today-plan-date" id="medicationTodayDate"></span></div>
+            <div id="medicationTodayList"></div>
+          </div>
+          <div class="controls-row" style="justify-content:flex-end;">
+            <button type="button" class="btn-primary" data-add-schedule="medication">+ Add Medicine</button>
+          </div>
+          <div class="empty-state" id="medicationEmptyState" style="display:none;">No medicines scheduled yet for this family member.</div>
+          <div class="sched-table-card" id="medicationTableCard">
+            <div class="sched-table-scroll">
+              <table class="sched-table">
+                <thead><tr><th>Name</th><th>Dosage</th><th>Time of Day</th><th>Schedule</th><th></th></tr></thead>
+                <tbody id="medicationList"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Supplement Tracker -->
+        <div class="tab-panel" data-panel="supplement">
+          <p class="tab-intro">Clear daily plan — easily see which supplements you're due to take each day, and when.</p>
+          <div class="today-plan-card">
+            <div class="today-plan-head"><h3>Today's Plan</h3><span class="today-plan-date" id="supplementTodayDate"></span></div>
+            <div id="supplementTodayList"></div>
+          </div>
+          <div class="controls-row" style="justify-content:flex-end;">
+            <button type="button" class="btn-primary" data-add-schedule="supplement">+ Add Supplement</button>
+          </div>
+          <div class="empty-state" id="supplementEmptyState" style="display:none;">No supplements scheduled yet for this family member.</div>
+          <div class="sched-table-card" id="supplementTableCard">
+            <div class="sched-table-scroll">
+              <table class="sched-table">
+                <thead><tr><th>Name</th><th>Dosage</th><th>Time of Day</th><th>Schedule</th><th></th></tr></thead>
+                <tbody id="supplementList"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Vaccination Tracker for Kids -->
+        <div class="tab-panel" data-panel="vaccination">
+          <p class="tab-intro">A simple chronological record of vaccines given for your kids.</p>
+          <div class="controls-row" style="justify-content:flex-end;">
+            <button type="button" class="btn-primary" id="addVaxBtn">+ Add Vaccination Record</button>
+          </div>
+          <div class="empty-state" id="vaxEmptyState" style="display:none;">No vaccination records yet for this family member.</div>
+          <div class="sched-table-card" id="vaxTableCard">
+            <div class="sched-table-scroll">
+              <table class="sched-table">
+                <thead><tr><th>Vaccine</th><th>Date Given</th><th>Next Due</th><th>Notes</th><th></th></tr></thead>
+                <tbody id="vaxList"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Medicine Reminder -->
+        <div class="tab-panel" data-panel="pill">
+          <p class="tab-intro">Clear daily plan — a simple reminder of what's due each part of the day.</p>
+          <div class="today-plan-card">
+            <div class="today-plan-head"><h3>Today's Plan</h3><span class="today-plan-date" id="pillTodayDate"></span></div>
+            <div id="pillTodayList"></div>
+          </div>
+          <div class="controls-row" style="justify-content:flex-end;">
+            <button type="button" class="btn-primary" data-add-schedule="pill">+ Add Reminder</button>
+          </div>
+          <div class="empty-state" id="pillEmptyState" style="display:none;">No reminders scheduled yet for this family member.</div>
+          <div class="sched-table-card" id="pillTableCard">
+            <div class="sched-table-scroll">
+              <table class="sched-table">
+                <thead><tr><th>Name</th><th>Dosage</th><th>Time of Day</th><th>Schedule</th><th></th></tr></thead>
+                <tbody id="pillList"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Add/Edit Schedule Item (Medicine Tracker / Supplement / Medicine Reminder, shared) -->
+  <div class="modal-overlay" id="scheduleModal">
+    <div class="modal-box">
+      <h3 id="scheduleModalTitle">Add Medicine</h3>
+      <div class="form-error" id="scheduleFormError"></div>
+      <div class="field-grid">
+        <div class="field-item">
+          <label class="field-label">Family member</label>
+          <select class="field-select" id="scheduleMemberInput"></select>
+        </div>
+        <div class="field-item">
+          <label class="field-label">Name</label>
+          <input type="text" class="num-input" id="scheduleNameInput" placeholder="e.g. Paracetamol">
+        </div>
+        <div class="field-item">
+          <label class="field-label">Dosage</label>
+          <input type="text" class="num-input" id="scheduleDosageInput" placeholder="Optional, e.g. 500mg">
+        </div>
+        <div class="field-item">
+          <label class="field-label">Start date</label>
+          <input type="date" class="num-input" id="scheduleStartInput">
+        </div>
+        <div class="field-item">
+          <label class="field-label">End date</label>
+          <input type="date" class="num-input" id="scheduleEndInput" placeholder="Optional — leave blank for ongoing">
+        </div>
+        <div class="field-item" style="grid-column: 1 / -1;">
+          <label class="field-label">Notes</label>
+          <input type="text" class="num-input" id="scheduleNotesInput" placeholder="Optional">
+        </div>
+      </div>
+
+      <label class="field-sub-label">Time of Day</label>
+      <div class="checkbox-grid" id="timeOfDayGrid">
+        <button type="button" class="checkbox-btn" data-time="morning"><span class="cb-mark"></span>🌅 Morning</button>
+        <button type="button" class="checkbox-btn" data-time="noon"><span class="cb-mark"></span>☀️ Noon</button>
+        <button type="button" class="checkbox-btn" data-time="evening"><span class="cb-mark"></span>🌇 Evening</button>
+        <button type="button" class="checkbox-btn" data-time="night"><span class="cb-mark"></span>🌙 Night</button>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn-danger-text" id="deleteScheduleBtn" style="display:none;">Delete</button>
+        <div class="modal-actions-right">
+          <button type="button" class="btn-secondary" id="cancelScheduleBtn">Cancel</button>
+          <button type="button" class="btn-primary" id="saveScheduleBtn">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add/Edit Vaccination Record -->
+  <div class="modal-overlay" id="vaxModal">
+    <div class="modal-box">
+      <h3 id="vaxModalTitle">Add Vaccination Record</h3>
+      <div class="form-error" id="vaxFormError"></div>
+      <div class="field-item">
+        <label class="field-label">Family member</label>
+        <select class="field-select" id="vaxMemberInput"></select>
+      </div>
+      <div class="field-item">
+        <label class="field-label">Vaccine name</label>
+        <input type="text" class="num-input" id="vaxNameInput" placeholder="e.g. MMR, DTaP, Flu shot">
+      </div>
+      <div class="field-item">
+        <label class="field-label">Date given</label>
+        <input type="date" class="num-input" id="vaxDateGivenInput">
+      </div>
+      <div class="field-item">
+        <label class="field-label">Next due date</label>
+        <input type="date" class="num-input" id="vaxNextDueInput">
+      </div>
+      <div class="field-item">
+        <label class="field-label">Notes</label>
+        <input type="text" class="num-input" id="vaxNotesInput" placeholder="Optional">
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn-danger-text" id="deleteVaxBtn" style="display:none;">Delete Record</button>
+        <div class="modal-actions-right">
+          <button type="button" class="btn-secondary" id="cancelVaxBtn">Cancel</button>
+          <button type="button" class="btn-primary" id="saveVaxBtn">Save Record</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Family Member -->
+  <div class="modal-overlay" id="memberModal">
+    <div class="modal-box" style="max-width: 420px;">
+      <h3>Add Family Member</h3>
+      <div class="form-error" id="memberFormError"></div>
+      <div class="field-item">
+        <label class="field-label">Name</label>
+        <input type="text" class="num-input" id="memberNameInput" placeholder="e.g. child's name">
+      </div>
+      <div class="field-item">
+        <label class="field-label">Relation</label>
+        <select class="field-select" id="memberRelationInput">
+          <option value="self">Self</option>
+          <option value="spouse">Spouse</option>
+          <option value="child" selected>Child</option>
+          <option value="other">Other (e.g. parent)</option>
+        </select>
+      </div>
+      <div class="modal-actions">
+        <div class="modal-actions-right">
+          <button type="button" class="btn-secondary" id="cancelMemberBtn">Cancel</button>
+          <button type="button" class="btn-primary" id="saveMemberBtn">Add Member</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-client.js"></script>
+  <script src="js/health-log/health-log-api.js"></script>
+  <script>
+    var members = [];
+    var currentMemberId = null;
+    var vaccinations = [];
+    var editingVaxId = null;
+    var schedules = [];
+    var editingScheduleId = null;
+    var scheduleCategory = 'medication';
+
+    var CATEGORY_LABELS = { medication: 'Medicine', pill: 'Reminder', supplement: 'Supplement' };
+    var TIME_OF_DAY_ORDER = ['morning', 'noon', 'evening', 'night'];
+    var TIME_OF_DAY_META = {
+      morning: { label: 'Morning', icon: '🌅' },
+      noon: { label: 'Noon', icon: '☀️' },
+      evening: { label: 'Evening', icon: '🌇' },
+      night: { label: 'Night', icon: '🌙' }
+    };
+
+    function escapeHtml(s) {
+      return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function todayStr() {
+      return new Date().toISOString().slice(0, 10);
+    }
+
+    function formatDate(dateStr) {
+      if (!dateStr) return '';
+      var d = new Date(dateStr + 'T00:00:00');
+      return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+    }
+
+    function daysUntil(dateStr) {
+      if (!dateStr) return null;
+      var today = new Date(); today.setHours(0, 0, 0, 0);
+      var target = new Date(dateStr + 'T00:00:00');
+      return Math.round((target - today) / (1000 * 60 * 60 * 24));
+    }
+
+    function timeOfDayLabel(t) {
+      return TIME_OF_DAY_META[t] ? TIME_OF_DAY_META[t].label : t;
+    }
+
+    /* ---- Tabs ---- */
+
+    function switchTab(tab) {
+      Array.prototype.forEach.call(document.querySelectorAll('.tab-btn'), function (btn) {
+        btn.classList.toggle('active', btn.dataset.tab === tab);
+      });
+      Array.prototype.forEach.call(document.querySelectorAll('.tab-panel'), function (panel) {
+        panel.classList.toggle('active', panel.dataset.panel === tab);
+      });
+    }
+
+    /* ---- Members ---- */
+
+    async function loadMembers(selectId) {
+      members = await HealthLog.listMembers();
+      var noMembers = document.getElementById('noMembersState');
+      var body = document.getElementById('pageBody');
+
+      if (!members.length) {
+        noMembers.style.display = 'block';
+        body.style.display = 'none';
+        currentMemberId = null;
+        return;
+      }
+      noMembers.style.display = 'none';
+      body.style.display = 'block';
+
+      if (selectId && members.some(function (m) { return m.id === selectId; })) {
+        currentMemberId = selectId;
+      } else if (!currentMemberId || !members.some(function (m) { return m.id === currentMemberId; })) {
+        currentMemberId = members[0].id;
+      }
+
+      renderMemberOptions();
+      await Promise.all([loadSchedules(), loadVaccinations()]);
+    }
+
+    function renderMemberOptions() {
+      var options = members.map(function (m) {
+        return '<option value="' + m.id + '">' + escapeHtml(m.name) + '</option>';
+      }).join('');
+      document.getElementById('memberSelect').innerHTML = options;
+      document.getElementById('memberSelect').value = currentMemberId;
+      document.getElementById('scheduleMemberInput').innerHTML = options;
+      document.getElementById('vaxMemberInput').innerHTML = options;
+    }
+
+    function openMemberModal() {
+      document.getElementById('memberFormError').textContent = '';
+      document.getElementById('memberNameInput').value = '';
+      document.getElementById('memberRelationInput').value = 'child';
+      document.getElementById('memberModal').classList.add('show');
+    }
+
+    function closeMemberModal() {
+      document.getElementById('memberModal').classList.remove('show');
+    }
+
+    async function saveMember() {
+      var errEl = document.getElementById('memberFormError');
+      var name = document.getElementById('memberNameInput').value.trim();
+      if (!name) { errEl.textContent = 'Please enter a name.'; return; }
+
+      var member = await HealthLog.addMember({
+        name: name,
+        relation: document.getElementById('memberRelationInput').value
+      });
+
+      closeMemberModal();
+      await loadMembers(member.id);
+    }
+
+    /* ---- Medicine Tracker / Supplement Tracker / Medicine Reminder schedules ---- */
+
+    async function loadSchedules() {
+      if (!currentMemberId) { schedules = []; renderAllScheduleTabs(); return; }
+      schedules = await HealthLog.listSchedules(currentMemberId);
+      renderAllScheduleTabs();
+    }
+
+    function renderAllScheduleTabs() {
+      ['medication', 'pill', 'supplement'].forEach(renderScheduleTab);
+    }
+
+    function renderScheduleTab(category) {
+      var items = schedules.filter(function (s) { return s.category === category; });
+      var today = todayStr();
+
+      document.getElementById(category + 'TodayDate').textContent = formatDate(today);
+
+      // Today's Plan: group each active item under the times of day it's due.
+      var groups = {};
+      TIME_OF_DAY_ORDER.forEach(function (t) { groups[t] = []; });
+      items.forEach(function (s) {
+        var active = s.start_date <= today && (!s.end_date || s.end_date >= today);
+        if (!active) return;
+        (s.times || []).forEach(function (t) {
+          if (groups[t]) groups[t].push(s);
+        });
+      });
+
+      var todayList = document.getElementById(category + 'TodayList');
+      var hasAny = TIME_OF_DAY_ORDER.some(function (t) { return groups[t].length; });
+      if (!hasAny) {
+        todayList.innerHTML = '<div class="empty-state">Nothing scheduled for today.</div>';
+      } else {
+        todayList.innerHTML = TIME_OF_DAY_ORDER.filter(function (t) { return groups[t].length; }).map(function (t) {
+          var meta = TIME_OF_DAY_META[t];
+          return '<div class="today-plan-group">' +
+            '<div class="today-plan-group-head">' + meta.icon + ' ' + meta.label + '</div>' +
+            groups[t].map(function (s) {
+              return '<div class="today-plan-row">' +
+                '<span class="today-plan-name">' + escapeHtml(s.name) + (s.dosage ? '<span class="today-plan-dosage">' + escapeHtml(s.dosage) + '</span>' : '') + '</span>' +
+              '</div>';
+            }).join('') +
+          '</div>';
+        }).join('');
+      }
+
+      // Full reference list, for editing anything (not just today's).
+      var empty = document.getElementById(category + 'EmptyState');
+      var card = document.getElementById(category + 'TableCard');
+      var list = document.getElementById(category + 'List');
+
+      if (!items.length) {
+        list.innerHTML = '';
+        empty.style.display = 'block';
+        card.style.display = 'none';
+        return;
+      }
+      empty.style.display = 'none';
+      card.style.display = 'block';
+
+      list.innerHTML = items.map(function (s) {
+        var timesLabel = (s.times || []).map(timeOfDayLabel).join(', ') || '—';
+        var rangeLabel = formatDate(s.start_date) + (s.end_date ? ' – ' + formatDate(s.end_date) : ' – Ongoing');
+        return '<tr data-id="' + s.id + '">' +
+          '<td class="sc-name">' + escapeHtml(s.name) + '</td>' +
+          '<td class="sc-dosage">' + (s.dosage ? escapeHtml(s.dosage) : '—') + '</td>' +
+          '<td>' + timesLabel + '</td>' +
+          '<td class="sc-range">' + rangeLabel + '</td>' +
+          '<td class="sc-actions"><button type="button" class="btn-edit-text" data-edit-schedule="' + s.id + '">Edit</button></td>' +
+        '</tr>';
+      }).join('');
+
+      Array.prototype.forEach.call(list.querySelectorAll('[data-edit-schedule]'), function (btn) {
+        btn.addEventListener('click', function () {
+          var item = schedules.find(function (s) { return s.id === btn.dataset.editSchedule; });
+          if (item) openEditScheduleModal(item);
+        });
+      });
+    }
+
+    function setSelectedTimesOfDay(times) {
+      var selected = times || [];
+      Array.prototype.forEach.call(document.querySelectorAll('#timeOfDayGrid .checkbox-btn'), function (btn) {
+        btn.classList.toggle('selected', selected.indexOf(btn.dataset.time) !== -1);
+      });
+    }
+
+    function collectSelectedTimesOfDay() {
+      return Array.prototype.slice.call(document.querySelectorAll('#timeOfDayGrid .checkbox-btn.selected')).map(function (btn) { return btn.dataset.time; });
+    }
+
+    function openAddScheduleModal(category) {
+      scheduleCategory = category;
+      editingScheduleId = null;
+      document.getElementById('scheduleModalTitle').textContent = 'Add ' + CATEGORY_LABELS[category];
+      document.getElementById('scheduleFormError').textContent = '';
+      document.getElementById('scheduleMemberInput').value = currentMemberId;
+      document.getElementById('scheduleNameInput').value = '';
+      document.getElementById('scheduleDosageInput').value = '';
+      document.getElementById('scheduleStartInput').value = todayStr();
+      document.getElementById('scheduleEndInput').value = '';
+      document.getElementById('scheduleNotesInput').value = '';
+      setSelectedTimesOfDay([]);
+      document.getElementById('deleteScheduleBtn').style.display = 'none';
+      document.getElementById('scheduleModal').classList.add('show');
+    }
+
+    function openEditScheduleModal(s) {
+      scheduleCategory = s.category;
+      editingScheduleId = s.id;
+      document.getElementById('scheduleModalTitle').textContent = 'Edit ' + CATEGORY_LABELS[s.category];
+      document.getElementById('scheduleFormError').textContent = '';
+      document.getElementById('scheduleMemberInput').value = s.member_id;
+      document.getElementById('scheduleNameInput').value = s.name || '';
+      document.getElementById('scheduleDosageInput').value = s.dosage || '';
+      document.getElementById('scheduleStartInput').value = s.start_date;
+      document.getElementById('scheduleEndInput').value = s.end_date || '';
+      document.getElementById('scheduleNotesInput').value = s.notes || '';
+      setSelectedTimesOfDay(s.times || []);
+      document.getElementById('deleteScheduleBtn').style.display = 'block';
+      document.getElementById('scheduleModal').classList.add('show');
+    }
+
+    function closeScheduleModal() {
+      document.getElementById('scheduleModal').classList.remove('show');
+    }
+
+    async function saveSchedule() {
+      var errEl = document.getElementById('scheduleFormError');
+      var name = document.getElementById('scheduleNameInput').value.trim();
+      var startDate = document.getElementById('scheduleStartInput').value;
+      var times = collectSelectedTimesOfDay();
+      if (!name) { errEl.textContent = 'Please enter a name.'; return; }
+      if (!startDate) { errEl.textContent = 'Please enter a start date.'; return; }
+      if (!times.length) { errEl.textContent = 'Please select at least one time of day.'; return; }
+
+      var payload = {
+        member_id: document.getElementById('scheduleMemberInput').value,
+        category: scheduleCategory,
+        name: name,
+        dosage: document.getElementById('scheduleDosageInput').value.trim() || null,
+        times: times,
+        start_date: startDate,
+        end_date: document.getElementById('scheduleEndInput').value || null,
+        notes: document.getElementById('scheduleNotesInput').value.trim() || null
+      };
+
+      if (editingScheduleId) {
+        await HealthLog.updateSchedule(editingScheduleId, payload);
+      } else {
+        await HealthLog.addSchedule(payload);
+      }
+
+      closeScheduleModal();
+      await loadMembers(payload.member_id);
+    }
+
+    async function deleteSchedule(id) {
+      if (!confirm('Delete this schedule? This can\'t be undone.')) return;
+      await HealthLog.deleteSchedule(id);
+      closeScheduleModal();
+      await loadSchedules();
+    }
+
+    /* ---- Vaccination Tracker for Kids ---- */
+
+    function dueHtml(dateStr) {
+      if (!dateStr) return '—';
+      var days = daysUntil(dateStr);
+      if (days < 0) return '<span style="font-size:0.72rem;font-weight:700;padding:0.25rem 0.6rem;border-radius:999px;background:rgba(220,38,38,0.12);color:#b91c1c;">Overdue ' + Math.abs(days) + 'd</span>';
+      if (days <= 30) return '<span style="font-size:0.72rem;font-weight:700;padding:0.25rem 0.6rem;border-radius:999px;background:rgba(245,158,11,0.12);color:#b45309;">Due in ' + days + 'd</span>';
+      return '<span style="font-size:0.72rem;font-weight:700;padding:0.25rem 0.6rem;border-radius:999px;background:rgba(16,185,129,0.12);color:#047857;">Due ' + formatDate(dateStr) + '</span>';
+    }
+
+    async function loadVaccinations() {
+      if (!currentMemberId) { vaccinations = []; renderVaccinations(); return; }
+      vaccinations = await HealthLog.listVaccinations(currentMemberId);
+      renderVaccinations();
+    }
+
+    function renderVaccinations() {
+      var list = document.getElementById('vaxList');
+      var empty = document.getElementById('vaxEmptyState');
+      var card = document.getElementById('vaxTableCard');
+
+      if (!vaccinations.length) {
+        list.innerHTML = '';
+        empty.style.display = 'block';
+        card.style.display = 'none';
+        return;
+      }
+      empty.style.display = 'none';
+      card.style.display = 'block';
+
+      list.innerHTML = vaccinations.map(function (v) {
+        return '<tr data-id="' + v.id + '">' +
+          '<td class="sc-name">' + escapeHtml(v.vaccine_name) + '</td>' +
+          '<td>' + formatDate(v.date_given) + '</td>' +
+          '<td>' + dueHtml(v.next_due_date) + '</td>' +
+          '<td class="sc-dosage">' + (v.notes ? escapeHtml(v.notes) : '—') + '</td>' +
+          '<td class="sc-actions"><button type="button" class="btn-edit-text" data-edit-vax="' + v.id + '">Edit</button></td>' +
+        '</tr>';
+      }).join('');
+
+      Array.prototype.forEach.call(list.querySelectorAll('[data-edit-vax]'), function (btn) {
+        btn.addEventListener('click', function () {
+          var record = vaccinations.find(function (v) { return v.id === btn.dataset.editVax; });
+          if (record) openEditVaxModal(record);
+        });
+      });
+    }
+
+    function openAddVaxModal() {
+      editingVaxId = null;
+      document.getElementById('vaxModalTitle').textContent = 'Add Vaccination Record';
+      document.getElementById('vaxFormError').textContent = '';
+      document.getElementById('vaxMemberInput').value = currentMemberId;
+      document.getElementById('vaxNameInput').value = '';
+      document.getElementById('vaxDateGivenInput').value = todayStr();
+      document.getElementById('vaxNextDueInput').value = '';
+      document.getElementById('vaxNotesInput').value = '';
+      document.getElementById('deleteVaxBtn').style.display = 'none';
+      document.getElementById('vaxModal').classList.add('show');
+    }
+
+    function openEditVaxModal(v) {
+      editingVaxId = v.id;
+      document.getElementById('vaxModalTitle').textContent = 'Edit Vaccination Record';
+      document.getElementById('vaxFormError').textContent = '';
+      document.getElementById('vaxMemberInput').value = v.member_id;
+      document.getElementById('vaxNameInput').value = v.vaccine_name || '';
+      document.getElementById('vaxDateGivenInput').value = v.date_given;
+      document.getElementById('vaxNextDueInput').value = v.next_due_date || '';
+      document.getElementById('vaxNotesInput').value = v.notes || '';
+      document.getElementById('deleteVaxBtn').style.display = 'block';
+      document.getElementById('vaxModal').classList.add('show');
+    }
+
+    function closeVaxModal() {
+      document.getElementById('vaxModal').classList.remove('show');
+    }
+
+    async function saveVax() {
+      var errEl = document.getElementById('vaxFormError');
+      var name = document.getElementById('vaxNameInput').value.trim();
+      var dateGiven = document.getElementById('vaxDateGivenInput').value;
+      if (!name) { errEl.textContent = 'Please enter a vaccine name.'; return; }
+      if (!dateGiven) { errEl.textContent = 'Please enter the date given.'; return; }
+
+      var payload = {
+        member_id: document.getElementById('vaxMemberInput').value,
+        vaccine_name: name,
+        date_given: dateGiven,
+        next_due_date: document.getElementById('vaxNextDueInput').value || null,
+        notes: document.getElementById('vaxNotesInput').value.trim() || null
+      };
+
+      if (editingVaxId) {
+        await HealthLog.updateVaccination(editingVaxId, payload);
+      } else {
+        await HealthLog.addVaccination(payload);
+      }
+
+      closeVaxModal();
+      await loadMembers(payload.member_id);
+    }
+
+    async function deleteVax(id) {
+      if (!confirm('Delete this vaccination record? This can\'t be undone.')) return;
+      await HealthLog.deleteVaccination(id);
+      closeVaxModal();
+      await loadVaccinations();
+    }
+
+    (async function init() {
+      var user = await requireAuth('index.html#login');
+      if (!user) return;
+
+      Array.prototype.forEach.call(document.querySelectorAll('.tab-btn'), function (btn) {
+        btn.addEventListener('click', function () { switchTab(btn.dataset.tab); });
+      });
+
+      document.getElementById('memberSelect').addEventListener('change', function () {
+        currentMemberId = this.value;
+        loadSchedules();
+        loadVaccinations();
+      });
+
+      document.getElementById('addMemberBtn').addEventListener('click', openMemberModal);
+      document.getElementById('addFirstMemberLink').addEventListener('click', function (e) { e.preventDefault(); openMemberModal(); });
+      document.getElementById('cancelMemberBtn').addEventListener('click', closeMemberModal);
+      document.getElementById('saveMemberBtn').addEventListener('click', saveMember);
+      document.getElementById('memberModal').addEventListener('click', function (e) { if (e.target === this) closeMemberModal(); });
+
+      Array.prototype.forEach.call(document.querySelectorAll('[data-add-schedule]'), function (btn) {
+        btn.addEventListener('click', function () { openAddScheduleModal(btn.dataset.addSchedule); });
+      });
+      Array.prototype.forEach.call(document.querySelectorAll('#timeOfDayGrid .checkbox-btn'), function (btn) {
+        btn.addEventListener('click', function () { btn.classList.toggle('selected'); });
+      });
+      document.getElementById('cancelScheduleBtn').addEventListener('click', closeScheduleModal);
+      document.getElementById('saveScheduleBtn').addEventListener('click', saveSchedule);
+      document.getElementById('deleteScheduleBtn').addEventListener('click', function () { if (editingScheduleId) deleteSchedule(editingScheduleId); });
+      document.getElementById('scheduleModal').addEventListener('click', function (e) { if (e.target === this) closeScheduleModal(); });
+
+      document.getElementById('addVaxBtn').addEventListener('click', openAddVaxModal);
+      document.getElementById('cancelVaxBtn').addEventListener('click', closeVaxModal);
+      document.getElementById('saveVaxBtn').addEventListener('click', saveVax);
+      document.getElementById('deleteVaxBtn').addEventListener('click', function () { if (editingVaxId) deleteVax(editingVaxId); });
+      document.getElementById('vaxModal').addEventListener('click', function (e) { if (e.target === this) closeVaxModal(); });
+
+      await loadMembers();
+    })();
+  </script>
+</body>
+</html>

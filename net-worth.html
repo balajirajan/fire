@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Net Worth - FinFlow</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f8fafc;
+      color: #0f172a;
+      min-height: 100vh;
+    }
+
+    a, button { color: inherit; text-decoration: none; font-family: inherit; }
+
+    .app-shell { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
+    @media (max-width: 860px) { .app-shell { grid-template-columns: 1fr; } .sidebar { display: none; } }
+
+    /* Sidebar */
+    .sidebar { background: #ffffff; border-right: 1px solid #e2e8f0; display: flex; flex-direction: column; padding: 1.5rem 1.25rem; }
+    .sidebar-logo { display: flex; align-items: center; gap: 0.65rem; font-size: 1.1rem; font-weight: 800; margin-bottom: 2rem; padding: 0 0.25rem; }
+    .sidebar-logo-icon { width: 30px; height: 30px; background: linear-gradient(135deg, #0ea5e9, #10b981); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; flex-shrink: 0; }
+    .sidebar-nav { display: flex; flex-direction: column; gap: 0.25rem; }
+    .sidebar-nav a { display: flex; align-items: center; gap: 0.75rem; padding: 0.7rem 0.75rem; border-radius: 0.6rem; font-size: 0.9rem; font-weight: 500; color: #364752; }
+    .sidebar-nav a:hover { background: #f1f5f9; }
+    .sidebar-nav a.active { background: #0f172a; color: #ffffff; font-weight: 600; }
+    .sidebar-nav .nav-icon { font-size: 1rem; width: 20px; text-align: center; flex-shrink: 0; }
+    .sidebar-nav .nav-label { flex: 1; }
+    .sidebar-nav .nav-chevron { color: #94a3b8; font-size: 0.85rem; }
+    .sidebar-nav a.active .nav-chevron { color: rgba(255,255,255,0.6); }
+    .sidebar-nav .nav-group-head { display: flex; align-items: center; gap: 0.75rem; padding: 0.7rem 0.75rem; border-radius: 0.6rem; font-size: 0.9rem; font-weight: 500; color: #364752; }
+    .sidebar-nav .nav-group-head:hover { background: #f1f5f9; }
+    .sidebar-nav .nav-group-head.open { background: #f1f5f9; font-weight: 700; }
+    .sidebar-nav .nav-group-head.active { background: #0f172a; color: #ffffff; font-weight: 600; }
+    .sidebar-nav .nav-group-head.active .nav-chevron { color: rgba(255,255,255,0.6); }
+    .sidebar-subnav { display: flex; flex-direction: column; gap: 0.2rem; padding-left: 1.6rem; margin: 0.15rem 0 0.3rem; }
+    .sidebar-subnav a { display: flex; align-items: center; gap: 0.6rem; padding: 0.55rem 0.6rem; border-radius: 0.5rem; font-size: 0.85rem; font-weight: 500; color: #364752; }
+    .sidebar-subnav a:hover { background: #f1f5f9; }
+    .sidebar-subnav a.active { background: #0f172a; color: #fff; font-weight: 600; }
+    .sidebar-spacer { flex: 1; }
+    .feedback-card { background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 0.9rem; padding: 1.1rem; margin-top: 1.5rem; }
+    .feedback-card .fc-icon { width: 32px; height: 32px; border-radius: 0.6rem; background: #eef2f7; display: flex; align-items: center; justify-content: center; font-size: 0.95rem; margin-bottom: 0.6rem; }
+    .feedback-card strong { display: block; font-size: 0.85rem; margin-bottom: 0.3rem; }
+    .feedback-card p { font-size: 0.78rem; color: #64748b; line-height: 1.5; margin-bottom: 0.85rem; }
+    .feedback-card a { display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; width: 100%; padding: 0.55rem; border: 1px solid #cbd5e1; border-radius: 0.5rem; font-size: 0.8rem; font-weight: 600; color: #364752; }
+    .feedback-card a:hover { border-color: #10b981; color: #10b981; }
+
+    /* Main */
+    .main { padding: 1.5rem 2.5rem 3rem; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; padding-bottom: 1.25rem; border-bottom: 1px solid #e2e8f0; margin-bottom: 1.5rem; }
+    .topbar h1 { font-size: 1.4rem; font-weight: 700; }
+    .topbar-right { display: flex; align-items: center; gap: 0.85rem; }
+    .language-selector { display: flex; align-items: center; gap: 0.5rem; background: #ffffff; padding: 0.5rem 0.9rem; border-radius: 0.5rem; color: #51636f; border: 1px solid #e2e8f0; cursor: pointer; font-size: 0.85rem; }
+    .user-menu { position: relative; list-style: none; }
+    .user-menu > summary { cursor: pointer; list-style: none; width: 34px; height: 34px; border-radius: 50%; background: #eef2f7; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; font-size: 1rem; }
+    .user-menu > summary::-webkit-details-marker { display: none; }
+    .user-menu-panel { position: absolute; top: calc(100% + 0.6rem); right: 0; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 0.75rem; box-shadow: 0 10px 30px rgba(15,23,42,0.12); padding: 0.4rem; min-width: 150px; z-index: 20; }
+    .user-menu-panel a { display: block; padding: 0.55rem 0.7rem; border-radius: 0.5rem; font-size: 0.85rem; color: #364752; font-weight: 500; }
+    .user-menu-panel a:hover { background: #f1f5f9; color: #10b981; }
+
+    .page-head { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem; }
+    .page-head h2 { font-size: 1.6rem; font-weight: 800; margin-bottom: 0.3rem; }
+    .page-head p { color: #64748b; font-size: 0.9rem; }
+    .pbtn { display: inline-flex; align-items: center; gap: 0.45rem; padding: 0.7rem 1.2rem; border-radius: 0.6rem; font-size: 0.85rem; font-weight: 600; cursor: pointer; border: none; background: linear-gradient(to right, #0ea5e9, #10b981); color: #fff; white-space: nowrap; }
+    .pbtn:hover { opacity: 0.92; }
+    .pbtn.outline { background: #fff; border: 1px solid #cbd5e1; color: #364752; }
+    .pbtn.outline:hover { border-color: #10b981; color: #10b981; opacity: 1; }
+
+    /* Overview hero — same dark-gradient theme as every other Networth page */
+    .net-hero {
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      border-radius: 1.25rem;
+      padding: 1.75rem 2rem;
+      color: #fff;
+      margin-bottom: 1.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.75rem;
+    }
+    .net-hero-stats { display: flex; flex-wrap: wrap; gap: 2.25rem; flex: 1; min-width: 280px; }
+    .net-hero-stat { min-width: 150px; }
+    .net-hero-icon { font-size: 1.1rem; margin-bottom: 0.4rem; opacity: 0.9; }
+    .net-hero-label { font-size: 0.78rem; color: #94a3b8; font-weight: 600; margin-bottom: 0.3rem; }
+    .net-hero-value { font-size: 1.75rem; font-weight: 800; }
+    .net-hero-value.negative { color: #f87171; }
+    .net-hero-sub { font-size: 0.72rem; color: #94a3b8; margin-top: 0.3rem; }
+    .net-hero-progress { display: flex; flex-direction: column; align-items: center; }
+    .net-hero-donut-wrap { position: relative; width: 110px; height: 110px; flex-shrink: 0; }
+    .net-hero-donut-wrap svg { width: 110px; height: 110px; display: block; }
+    .net-hero-progress-label { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    .net-hero-progress-pct { font-size: 1.3rem; font-weight: 800; }
+    .net-hero-progress-sub { font-size: 0.6rem; color: #94a3b8; text-align: center; line-height: 1.3; margin-top: 0.15rem; }
+
+    /* Chart card */
+    .chart-card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 1.1rem; padding: 1.5rem 1.4rem 1.1rem; margin-bottom: 1.5rem; box-shadow: 0 4px 16px rgba(15,23,42,0.03); }
+    .chart-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.2rem; }
+    .chart-card .chart-sub { font-size: 0.78rem; color: #94a3b8; margin-bottom: 0.75rem; }
+    .chart-empty { text-align: center; padding: 2rem 1rem; color: #94a3b8; font-size: 0.85rem; }
+
+    .charts-row { display: grid; grid-template-columns: 1.3fr 1fr; gap: 1.5rem; align-items: stretch; }
+    @media (max-width: 900px) { .charts-row { grid-template-columns: 1fr; } }
+
+    .donut-row { display: flex; align-items: center; gap: 1.75rem; flex-wrap: wrap; }
+    .donut-svg { width: 150px; height: 150px; flex-shrink: 0; }
+    .donut-legend { flex: 1; min-width: 180px; display: flex; flex-direction: column; gap: 0.55rem; }
+    .donut-legend-row { display: flex; align-items: center; justify-content: space-between; font-size: 0.82rem; gap: 0.75rem; }
+    .donut-legend-name { display: flex; align-items: center; gap: 0.5rem; color: #364752; font-weight: 600; }
+    .donut-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+    .donut-legend-val { color: #64748b; font-weight: 700; white-space: nowrap; }
+
+    .liability-list { display: flex; flex-direction: column; gap: 0.6rem; }
+    .liability-row { display: flex; align-items: center; justify-content: space-between; padding: 0.7rem 0.85rem; background: #fef2f2; border: 1px solid #fecaca; border-radius: 0.65rem; font-size: 0.85rem; }
+    .liability-row .lr-name { font-weight: 600; color: #364752; }
+    .liability-row .lr-val { font-weight: 800; color: #dc2626; }
+    .liability-total-row { display: flex; align-items: center; justify-content: space-between; padding: 0.7rem 0.85rem; margin-top: 0.3rem; border-top: 2px solid #f1f5f9; font-size: 0.88rem; }
+    .liability-total-row .lr-name { font-weight: 700; }
+    .liability-total-row .lr-val { font-weight: 800; color: #dc2626; }
+
+    /* Account groups */
+    .accounts-section { margin-bottom: 1.5rem; }
+    .accounts-section-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem; }
+    .accounts-section-head h3 { font-size: 0.95rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem; }
+    .accounts-section-total { font-size: 0.85rem; font-weight: 700; color: #10b981; }
+    .accounts-section-total.negative { color: #dc2626; }
+
+    .account-list { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 1rem; overflow: hidden; box-shadow: 0 4px 16px rgba(15,23,42,0.03); }
+    .account-row { display: flex; align-items: center; gap: 0.85rem; padding: 0.9rem 1.1rem; border-bottom: 1px solid #f1f5f9; }
+    .account-row:last-child { border-bottom: none; }
+    .account-row:hover { background: #f8fafc; }
+    .account-icon { width: 38px; height: 38px; border-radius: 0.65rem; background: #f1f5f9; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; }
+    .account-name { flex: 1; font-size: 0.9rem; font-weight: 600; }
+    .account-balance { font-size: 0.95rem; font-weight: 700; }
+    .account-balance.negative { color: #dc2626; }
+    .account-balance.positive { color: #0f172a; }
+    .account-actions { display: flex; gap: 0.3rem; }
+    .account-actions button { background: none; border: none; color: #94a3b8; cursor: pointer; font-size: 0.9rem; padding: 0.3rem; }
+    .account-actions button:hover { color: #10b981; }
+    .account-actions button.del:hover { color: #dc2626; }
+
+    .empty-state { text-align: center; padding: 3.5rem 2rem 3rem; background: #fff; border: 1px solid #e5e7eb; border-radius: 1.1rem; box-shadow: 0 4px 16px rgba(15,23,42,0.03); }
+    .empty-icon { width: 64px; height: 64px; border-radius: 50%; background: #f1f5f9; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; margin: 0 auto 1.25rem; }
+    .empty-state h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .empty-state p { color: #64748b; font-size: 0.88rem; max-width: 460px; margin: 0 auto 1.5rem; line-height: 1.6; }
+    .empty-links { display: flex; flex-wrap: wrap; gap: 0.6rem; justify-content: center; margin-bottom: 1.25rem; }
+    .empty-links a { padding: 0.55rem 0.9rem; border-radius: 0.5rem; border: 1px solid #cbd5e1; font-size: 0.82rem; font-weight: 600; color: #364752; }
+    .empty-links a:hover { border-color: #10b981; color: #10b981; }
+    .empty-privacy { font-size: 0.8rem; color: #94a3b8; margin-top: 1.25rem; }
+    #emptyState.hidden { display: none; }
+    #liveWrap.hidden { display: none; }
+
+    .fab { position: fixed; bottom: 2rem; right: 2rem; width: 52px; height: 52px; border-radius: 50%; background: #0f172a; color: #ffffff; border: none; font-size: 1.5rem; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 10px 24px rgba(15,23,42,0.25); transition: transform 0.15s; }
+    .fab:hover { transform: scale(1.06); }
+
+    .toast { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(20px); background: #0f172a; color: #fff; padding: 0.75rem 1.25rem; border-radius: 0.6rem; font-size: 0.85rem; opacity: 0; pointer-events: none; transition: opacity 0.2s, transform 0.2s; z-index: 200; }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* Modal */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.5); display: none; align-items: center; justify-content: center; z-index: 100; padding: 1.5rem; }
+    .modal-overlay.open { display: flex; }
+    .modal-card { background: #fff; border-radius: 1.1rem; padding: 1.75rem; width: 100%; max-width: 420px; box-shadow: 0 24px 60px rgba(0,0,0,0.25); }
+    .modal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; }
+    .modal-head h3 { font-size: 1.15rem; font-weight: 700; }
+    .modal-close { background: none; border: none; font-size: 1.1rem; color: #94a3b8; cursor: pointer; }
+    .modal-close:hover { color: #0f172a; }
+    .mfield { margin-bottom: 1rem; }
+    .mfield label { display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 0.4rem; color: #364752; }
+    .mfield input, .mfield select { width: 100%; padding: 0.65rem 0.85rem; border: 1px solid #e2e8f0; border-radius: 0.55rem; font-size: 0.88rem; font-family: inherit; color: #0f172a; }
+    .mfield input:focus, .mfield select:focus { outline: none; border-color: #10b981; box-shadow: 0 0 0 3px rgba(16,185,129,0.12); }
+    .type-pick { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem; }
+    .type-pick button { padding: 0.6rem 0.4rem; border-radius: 0.55rem; border: 1.5px solid #e2e8f0; background: #fff; font-size: 0.78rem; font-weight: 600; color: #364752; cursor: pointer; text-align: center; }
+    .type-pick button.active { border-color: #10b981; background: #f0fdf7; color: #059669; }
+    .modal-submit { width: 100%; padding: 0.8rem; border: none; border-radius: 0.6rem; background: linear-gradient(to right, #0ea5e9, #10b981); color: #fff; font-weight: 700; font-size: 0.9rem; cursor: pointer; margin-top: 0.5rem; }
+    .modal-submit:hover { opacity: 0.92; }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a href="dashboard.html" class="sidebar-logo">
+        <div class="sidebar-logo-icon">💰</div>
+        <span>FinFlow</span>
+      </a>
+
+      <nav class="sidebar-nav">
+        <a href="dashboard.html">
+          <span class="nav-icon">▦</span>
+          <span class="nav-label">Dashboard</span>
+        </a>
+        <a href="fire-plan.html">
+          <span class="nav-icon">🧭</span>
+          <span class="nav-label">FIRE Plan</span>
+          <span class="nav-chevron">›</span>
+        </a>
+
+        <a href="net-worth.html" class="nav-group-head open active">
+          <span class="nav-icon">📈</span>
+          <span class="nav-label">Networth</span>
+          <span class="nav-chevron">⌄</span>
+        </a>
+        <div class="sidebar-subnav">
+          <a href="portfolio.html">
+            <span class="nav-icon">📊</span>
+            <span class="nav-label">Stocks/MF</span>
+          </a>
+          <a href="gold.html">
+            <span class="nav-icon">🥇</span>
+            <span class="nav-label">Gold + Commodities</span>
+          </a>
+          <a href="bonds.html">
+            <span class="nav-icon">🏛️</span>
+            <span class="nav-label">Government Scheme</span>
+          </a>
+          <a href="properties.html">
+            <span class="nav-icon">🏠</span>
+            <span class="nav-label">Properties</span>
+          </a>
+          <a href="personal-debt.html">
+            <span class="nav-icon">🔄</span>
+            <span class="nav-label">Personal Debt & Receivable</span>
+          </a>
+        </div>
+
+        <a href="money-required.html">
+          <span class="nav-icon">🪴</span>
+          <span class="nav-label">Expenses</span>
+          <span class="nav-chevron">›</span>
+        </a>
+
+        <a href="expense-quick-add.html">
+          <span class="nav-icon">⚡</span>
+          <span class="nav-label">Daily Expenses Tracker</span>
+        </a>
+        <a href="tax-planning.html">
+          <span class="nav-icon">🧾</span>
+          <span class="nav-label">Tax Planning</span>
+        </a>
+        <a href="insurance-tracker.html">
+          <span class="nav-icon">🛡️</span>
+          <span class="nav-label">Insurance Tracker</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="reminders.html">
+          <span class="nav-icon">🔔</span>
+          <span class="nav-label">Reminders</span>
+        </a>
+        <a href="vault-overview.html">
+          <span class="nav-icon">🔒</span>
+          <span class="nav-label">Document Vault</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="split/dashboard.html">
+          <span class="nav-icon">💸</span>
+          <span class="nav-label">SplitExpenses(SplitWise)</span>
+        </a>
+        <a href="life-expectancy.html">
+          <span class="nav-icon">❤️</span>
+          <span class="nav-label">Health</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="astrology.html">
+          <span class="nav-icon">🔮</span>
+          <span class="nav-label">Spiritual</span>
+        </a>
+        <a href="#">
+          <span class="nav-icon">⚙️</span>
+          <span class="nav-label">Settings</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-spacer"></div>
+
+      <div class="feedback-card">
+        <div class="fc-icon">💬</div>
+        <strong>Got feedback?</strong>
+        <p>Have an idea or found a bug? We read every message.</p>
+        <a href="mailto:hello@finflow.app">✉ Contact Us</a>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <h1>Net Worth</h1>
+        <div class="topbar-right">
+          <div class="language-selector">🌐 English ▾</div>
+          <details class="user-menu">
+            <summary>👤</summary>
+            <div class="user-menu-panel">
+              <a href="#">Settings</a>
+              <a href="#" onclick="signOutAndRedirect('index.html'); return false;">Log Out</a>
+            </div>
+          </details>
+        </div>
+      </div>
+
+      <div class="page-head">
+        <div>
+          <h2>Net Worth</h2>
+          <p>Calculated automatically from every Networth section — Stocks/MF, Gold + Commodities, Government Scheme, Properties and Personal Debt & Receivable — plus anything else you add below.</p>
+        </div>
+        <button type="button" class="pbtn" onclick="openAccountModal()">+ Add Other Account</button>
+      </div>
+
+      <div class="net-hero" id="netHero">
+        <div class="net-hero-stats">
+          <div class="net-hero-stat">
+            <div class="net-hero-icon">💰</div>
+            <div class="net-hero-label">Total Net Worth</div>
+            <div class="net-hero-value" id="heroNetWorth">₹0</div>
+            <div class="net-hero-sub">Assets − Liabilities, across every section</div>
+          </div>
+          <div class="net-hero-stat">
+            <div class="net-hero-icon">📈</div>
+            <div class="net-hero-label">Total Assets</div>
+            <div class="net-hero-value" id="heroAssets">₹0</div>
+          </div>
+          <div class="net-hero-stat">
+            <div class="net-hero-icon">💳</div>
+            <div class="net-hero-label">Total Liabilities</div>
+            <div class="net-hero-value" id="heroLiabilities">₹0</div>
+          </div>
+        </div>
+        <div class="net-hero-progress">
+          <div class="net-hero-donut-wrap">
+            <div id="heroDonutSvgHolder"></div>
+            <div class="net-hero-progress-label">
+              <div class="net-hero-progress-pct" id="heroInvestedPct">0%</div>
+              <div class="net-hero-progress-sub">of Assets<br>Invested</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="liveWrap" class="hidden">
+        <div class="charts-row">
+          <div class="chart-card">
+            <h3>Asset Allocation</h3>
+            <p class="chart-sub">Where your net worth comes from, across every section.</p>
+            <div id="allocChartWrap"></div>
+          </div>
+          <div class="chart-card">
+            <h3>Liabilities</h3>
+            <p class="chart-sub">What's working against your net worth.</p>
+            <div id="liabilitiesWrap"></div>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <h3>Net worth over time</h3>
+          <p class="chart-sub" id="chartSub">Tracked automatically each time you visit this page.</p>
+          <div id="netWorthChart"></div>
+        </div>
+
+        <div class="accounts-section">
+          <div class="accounts-section-head">
+            <h3>➕ Other Assets</h3>
+            <span class="accounts-section-total" id="assetGroupTotal">₹0</span>
+          </div>
+          <div class="account-list" id="assetList"></div>
+        </div>
+
+        <div class="accounts-section">
+          <div class="accounts-section-head">
+            <h3>➕ Other Liabilities</h3>
+            <span class="accounts-section-total negative" id="liabilityGroupTotal">₹0</span>
+          </div>
+          <div class="account-list" id="liabilityList"></div>
+        </div>
+      </div>
+
+      <div class="empty-state" id="emptyState">
+        <div class="empty-icon">📈</div>
+        <h3>Nothing to show yet</h3>
+        <p>Net worth here is calculated automatically from what you've added across the Networth sections. Add a holding in any of these to see it appear:</p>
+        <div class="empty-links">
+          <a href="portfolio.html">📊 Stocks/MF</a>
+          <a href="gold.html">🥇 Gold + Commodities</a>
+          <a href="bonds.html">🏛️ Government Scheme</a>
+          <a href="properties.html">🏠 Properties</a>
+          <a href="personal-debt.html">🔄 Personal Debt & Receivable</a>
+        </div>
+        <button type="button" class="pbtn outline" onclick="openAccountModal()">+ Or add another account here</button>
+        <p class="empty-privacy">🔒 Your data stays private to you. We only read what you add.</p>
+      </div>
+    </main>
+  </div>
+
+  <button type="button" class="fab" onclick="openAccountModal()" title="Add another account">+</button>
+
+  <div class="toast" id="toast"></div>
+
+  <div class="modal-overlay" id="accountModal">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h3 id="modalTitle">Add other account</h3>
+        <button type="button" class="modal-close" onclick="closeAccountModal()">✕</button>
+      </div>
+      <form onsubmit="submitAccount(event)">
+        <input type="hidden" id="fEditId" value="">
+        <div class="mfield">
+          <label>Account type</label>
+          <div class="type-pick" id="typePick">
+            <button type="button" class="active" data-type="asset" onclick="pickType('asset')">📈 Asset</button>
+            <button type="button" data-type="liability" onclick="pickType('liability')">💳 Liability</button>
+          </div>
+        </div>
+        <div class="mfield">
+          <label>Account name</label>
+          <input type="text" id="fName" placeholder="e.g. Cash in Hand, Vehicle, Personal Loan (Bank)" required>
+        </div>
+        <div class="mfield">
+          <label id="fBalanceLabel">Current balance (₹)</label>
+          <input type="number" id="fBalance" min="0" step="1" placeholder="0" required>
+        </div>
+        <button type="submit" class="modal-submit">Save account</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-client.js"></script>
+  <script>
+    var accounts = [];
+    var history = {};
+    var selectedType = 'asset';
+    var editingId = null;
+
+    var ALLOC_COLORS = { portfolio: '#0ea5e9', gold: '#f59e0b', gov: '#8b5cf6', properties: '#10b981', receivable: '#06b6d4', other: '#64748b' };
+
+    function fmtRupee(n, compact) {
+      var amount = Math.round(Number(n) || 0);
+      if (compact) {
+        var abs = Math.abs(amount);
+        var sign = amount < 0 ? '-' : '';
+        if (abs >= 10000000) return sign + '₹' + Number((abs / 10000000).toFixed(2)).toString() + ' Cr';
+        if (abs >= 100000) return sign + '₹' + Number((abs / 100000).toFixed(2)).toString() + ' L';
+      }
+      var digits = String(Math.abs(amount));
+      var last3 = digits.slice(-3);
+      var rest = digits.slice(0, -3);
+      var restFormatted = rest.replace(/\B(?=(\d{2})+(?!\d))/g, ',');
+      var out = rest ? restFormatted + ',' + last3 : last3;
+      return (amount < 0 ? '-' : '') + '₹' + out;
+    }
+
+    /* ---- Live data pulled from every Networth section ---- */
+
+    async function loadPortfolioValue() {
+      var { data: groups } = await supabaseClient.from('expense_groups').select('id').eq('section', 'portfolio');
+      var groupIds = (groups || []).map(function (g) { return g.id; });
+      if (!groupIds.length) return 0;
+      var { data: items } = await supabaseClient.from('expense_items').select('id').in('group_id', groupIds);
+      var itemIds = (items || []).map(function (i) { return i.id; });
+      if (!itemIds.length) return 0;
+      var { data: grid } = await supabaseClient.from('expense_grid').select('month, current_value').in('item_id', itemIds);
+      if (!grid || !grid.length) return 0;
+      var maxMonth = grid.reduce(function (m, r) { return r.month > m ? r.month : m; }, grid[0].month);
+      return grid.filter(function (r) { return r.month === maxMonth; }).reduce(function (s, r) { return s + (Number(r.current_value) || 0); }, 0);
+    }
+
+    async function loadGoldValue() {
+      var { data, error } = await supabaseClient.from('gold_holdings').select('grams, current_rate_per_gram');
+      if (error || !data) return 0;
+      return data.reduce(function (s, r) {
+        return s + (r.current_rate_per_gram !== null ? Number(r.grams) * Number(r.current_rate_per_gram) : 0);
+      }, 0);
+    }
+
+    async function loadGovSchemeValue() {
+      var { data, error } = await supabaseClient.from('other_investments').select('current_value').eq('category', 'Government Scheme');
+      if (error || !data) return 0;
+      return data.reduce(function (s, r) { return s + Number(r.current_value || 0); }, 0);
+    }
+
+    async function loadPropertiesBreakdown() {
+      var { data, error } = await supabaseClient.from('properties').select('current_value, has_mortgage, mortgage_balance');
+      if (error || !data) return { gross: 0, mortgage: 0 };
+      var gross = 0, mortgage = 0;
+      data.forEach(function (p) {
+        gross += Number(p.current_value || 0);
+        if (p.has_mortgage) mortgage += Number(p.mortgage_balance || 0);
+      });
+      return { gross: gross, mortgage: mortgage };
+    }
+
+    async function loadPersonalIouBreakdown() {
+      var { data, error } = await supabaseClient.from('personal_ious').select('direction, balance');
+      if (error || !data) return { owedToMe: 0, iOwe: 0 };
+      var owedToMe = 0, iOwe = 0;
+      data.forEach(function (r) {
+        if (r.direction === 'owed_to_me') owedToMe += Number(r.balance || 0); else iOwe += Number(r.balance || 0);
+      });
+      return { owedToMe: owedToMe, iOwe: iOwe };
+    }
+
+    /* ---- "Other" accounts — manual catch-all for anything not covered   ----
+       by a dedicated section (cash in hand, vehicles, personal loans...). ---- */
+
+    async function loadAccounts() {
+      var { data, error } = await supabaseClient.from('accounts').select('*').order('created_at', { ascending: true });
+      if (error) { showToast('Could not load accounts: ' + error.message); return; }
+      accounts = data || [];
+    }
+
+    async function loadHistory() {
+      var { data, error } = await supabaseClient.from('networth_snapshots').select('month, total').order('month', { ascending: true });
+      if (error) { showToast('Could not load history: ' + error.message); return; }
+      history = {};
+      (data || []).forEach(function (row) { history[row.month] = Number(row.total); });
+    }
+
+    async function saveSnapshot(total) {
+      var now = new Date();
+      var key = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
+      history[key] = total;
+      var { error } = await supabaseClient.from('networth_snapshots').upsert({ month: key, total: total }, { onConflict: 'user_id,month' });
+      if (error) showToast('Could not save snapshot: ' + error.message);
+    }
+
+    function groupTotal(type) {
+      return accounts.filter(function (a) { return a.type === type; }).reduce(function (s, a) { return s + Number(a.balance || 0); }, 0);
+    }
+
+    function pickType(type) {
+      selectedType = type;
+      document.querySelectorAll('#typePick button').forEach(function (b) {
+        b.classList.toggle('active', b.dataset.type === type);
+      });
+      var label = document.getElementById('fBalanceLabel');
+      var nameInput = document.getElementById('fName');
+      if (type === 'liability') {
+        label.textContent = 'Outstanding amount (₹)';
+        nameInput.placeholder = 'e.g. Personal Loan (Bank), Credit Card';
+      } else {
+        label.textContent = 'Current balance (₹)';
+        nameInput.placeholder = 'e.g. Cash in Hand, Vehicle';
+      }
+    }
+
+    function openAccountModal(editId) {
+      var form = document.querySelector('#accountModal form');
+      form.reset();
+      if (editId) {
+        var acct = accounts.filter(function (a) { return a.id === editId; })[0];
+        if (!acct) return;
+        editingId = editId;
+        document.getElementById('modalTitle').textContent = 'Edit account';
+        document.getElementById('fEditId').value = editId;
+        document.getElementById('fName').value = acct.name;
+        document.getElementById('fBalance').value = acct.balance;
+        pickType(acct.type === 'liability' ? 'liability' : 'asset');
+      } else {
+        editingId = null;
+        document.getElementById('modalTitle').textContent = 'Add other account';
+        document.getElementById('fEditId').value = '';
+        pickType('asset');
+      }
+      document.getElementById('accountModal').classList.add('open');
+    }
+    function closeAccountModal() {
+      document.getElementById('accountModal').classList.remove('open');
+    }
+    document.getElementById('accountModal').addEventListener('click', function (e) {
+      if (e.target === this) closeAccountModal();
+    });
+
+    async function submitAccount(e) {
+      e.preventDefault();
+      var name = document.getElementById('fName').value.trim();
+      var balance = Number(document.getElementById('fBalance').value) || 0;
+      var submitBtn = e.target.querySelector('.modal-submit');
+      submitBtn.disabled = true;
+
+      if (editingId) {
+        var { error } = await supabaseClient.from('accounts').update({ name: name, balance: balance, type: selectedType, updated_at: new Date().toISOString() }).eq('id', editingId);
+        submitBtn.disabled = false;
+        if (error) { showToast('Could not update account: ' + error.message); return; }
+        showToast('Account updated.');
+      } else {
+        var { error: insertError } = await supabaseClient.from('accounts').insert({ name: name, type: selectedType, balance: balance });
+        submitBtn.disabled = false;
+        if (insertError) { showToast('Could not add account: ' + insertError.message); return; }
+        showToast('Account added.');
+      }
+      closeAccountModal();
+      await refresh();
+    }
+
+    async function removeAccount(id) {
+      var { error } = await supabaseClient.from('accounts').delete().eq('id', id);
+      if (error) { showToast('Could not delete account: ' + error.message); return; }
+      await refresh();
+    }
+
+    function renderGroup(type, listId) {
+      var el = document.getElementById(listId);
+      var rows = accounts.filter(function (a) { return a.type === type; });
+      if (rows.length === 0) { el.innerHTML = '<div class="account-row"><span class="account-name" style="color:#94a3b8;font-weight:500;">Nothing added here yet.</span></div>'; return; }
+      el.innerHTML = rows.map(function (a) {
+        var balClass = type === 'liability' ? 'negative' : 'positive';
+        var balPrefix = type === 'liability' ? '-' : '';
+        return '<div class="account-row">' +
+          '<span class="account-icon">' + (type === 'liability' ? '💳' : '📈') + '</span>' +
+          '<span class="account-name">' + escapeHtml(a.name) + '</span>' +
+          '<span class="account-balance ' + balClass + '">' + balPrefix + fmtRupee(a.balance) + '</span>' +
+          '<span class="account-actions">' +
+            '<button type="button" onclick="openAccountModal(\'' + a.id + '\')" title="Edit">✎</button>' +
+            '<button type="button" class="del" onclick="removeAccount(\'' + a.id + '\')" title="Delete">✕</button>' +
+          '</span>' +
+        '</div>';
+      }).join('');
+    }
+
+    function escapeHtml(s) {
+      return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function buildProgressDonutSvg(pct, size, strokeW, color) {
+      var r = (size - strokeW) / 2;
+      var cx = size / 2, cy = size / 2;
+      var circumference = 2 * Math.PI * r;
+      var len = circumference * Math.max(0, Math.min(1, pct / 100));
+      return '<svg viewBox="0 0 ' + size + ' ' + size + '">' +
+        '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="' + strokeW + '"/>' +
+        '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="' + color + '" stroke-width="' + strokeW + '" ' +
+        'stroke-dasharray="' + len + ' ' + circumference + '" stroke-linecap="round" transform="rotate(-90 ' + cx + ' ' + cy + ')"/>' +
+        '</svg>';
+    }
+
+    function buildDonutSvg(segments, size, strokeW) {
+      var total = segments.reduce(function (s, d) { return s + d.value; }, 0);
+      var r = (size - strokeW) / 2;
+      var cx = size / 2, cy = size / 2;
+      var circumference = 2 * Math.PI * r;
+      var offset = 0;
+
+      var svg = '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="#f1f5f9" stroke-width="' + strokeW + '"/>';
+      segments.forEach(function (d) {
+        if (!d.value) return;
+        var frac = total ? d.value / total : 0;
+        var len = circumference * frac;
+        svg += '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="' + d.color + '" stroke-width="' + strokeW + '" ' +
+          'stroke-dasharray="' + len + ' ' + circumference + '" stroke-dashoffset="' + (-offset) + '" transform="rotate(-90 ' + cx + ' ' + cy + ')"/>';
+        offset += len;
+      });
+      return '<svg viewBox="0 0 ' + size + ' ' + size + '" class="donut-svg">' + svg + '</svg>';
+    }
+
+    function renderAllocationChart(segments) {
+      var wrap = document.getElementById('allocChartWrap');
+      var withValue = segments.filter(function (s) { return s.value > 0; });
+      if (withValue.length === 0) {
+        wrap.innerHTML = '<div class="chart-empty">No assets yet — add a holding in any Networth section.</div>';
+        return;
+      }
+      var total = withValue.reduce(function (s, d) { return s + d.value; }, 0);
+      var legend = withValue.map(function (d) {
+        var pct = total ? Math.round(d.value / total * 100) : 0;
+        return '<div class="donut-legend-row">' +
+          '<span class="donut-legend-name"><span class="donut-dot" style="background:' + d.color + ';"></span>' + escapeHtml(d.label) + '</span>' +
+          '<span class="donut-legend-val">' + fmtRupee(d.value, true) + ' (' + pct + '%)</span>' +
+          '</div>';
+      }).join('');
+      wrap.innerHTML = '<div class="donut-row">' + buildDonutSvg(withValue, 150, 24) + '<div class="donut-legend">' + legend + '</div></div>';
+    }
+
+    function renderLiabilities(items) {
+      var wrap = document.getElementById('liabilitiesWrap');
+      var withValue = items.filter(function (d) { return d.value > 0; });
+      if (withValue.length === 0) {
+        wrap.innerHTML = '<div class="chart-empty">No liabilities — nothing dragging your net worth down. 🎉</div>';
+        return;
+      }
+      var total = withValue.reduce(function (s, d) { return s + d.value; }, 0);
+      wrap.innerHTML = '<div class="liability-list">' +
+        withValue.map(function (d) {
+          return '<div class="liability-row"><span class="lr-name">' + escapeHtml(d.label) + '</span><span class="lr-val">' + fmtRupee(d.value) + '</span></div>';
+        }).join('') +
+        '<div class="liability-total-row"><span class="lr-name">Total Liabilities</span><span class="lr-val">' + fmtRupee(total) + '</span></div>' +
+        '</div>';
+    }
+
+    async function refresh() {
+      await loadAccounts();
+      await render();
+    }
+
+    async function render() {
+      var results = await Promise.all([
+        loadPortfolioValue(), loadGoldValue(), loadGovSchemeValue(), loadPropertiesBreakdown(), loadPersonalIouBreakdown()
+      ]);
+      var portfolioValue = results[0], goldValue = results[1], govValue = results[2], propBreak = results[3], iouBreak = results[4];
+
+      var otherAssets = groupTotal('asset');
+      var otherLiabilities = groupTotal('liability');
+
+      var totalAssets = portfolioValue + goldValue + govValue + propBreak.gross + iouBreak.owedToMe + otherAssets;
+      var totalLiabilities = propBreak.mortgage + iouBreak.iOwe + otherLiabilities;
+      var netWorth = totalAssets - totalLiabilities;
+      var investedPct = totalAssets ? Math.round((portfolioValue + goldValue + govValue) / totalAssets * 100) : 0;
+
+      document.getElementById('heroNetWorth').textContent = fmtRupee(netWorth, true);
+      document.getElementById('heroNetWorth').className = 'net-hero-value' + (netWorth < 0 ? ' negative' : '');
+      document.getElementById('heroAssets').textContent = fmtRupee(totalAssets, true);
+      document.getElementById('heroLiabilities').textContent = fmtRupee(totalLiabilities, true);
+      document.getElementById('heroInvestedPct').textContent = investedPct + '%';
+      document.getElementById('heroDonutSvgHolder').innerHTML = buildProgressDonutSvg(investedPct, 110, 14, '#0ea5e9');
+
+      renderAllocationChart([
+        { label: 'Stocks/MF', value: portfolioValue, color: ALLOC_COLORS.portfolio },
+        { label: 'Gold + Commodities', value: goldValue, color: ALLOC_COLORS.gold },
+        { label: 'Government Scheme', value: govValue, color: ALLOC_COLORS.gov },
+        { label: 'Properties', value: propBreak.gross, color: ALLOC_COLORS.properties },
+        { label: 'Receivable (Owed to Me)', value: iouBreak.owedToMe, color: ALLOC_COLORS.receivable },
+        { label: 'Other Assets', value: otherAssets, color: ALLOC_COLORS.other }
+      ]);
+
+      renderLiabilities([
+        { label: 'Property Mortgages', value: propBreak.mortgage },
+        { label: 'Personal Debt (I Owe)', value: iouBreak.iOwe },
+        { label: 'Other Liabilities', value: otherLiabilities }
+      ]);
+
+      document.getElementById('assetGroupTotal').textContent = fmtRupee(otherAssets);
+      document.getElementById('liabilityGroupTotal').textContent = '-' + fmtRupee(otherLiabilities);
+      renderGroup('asset', 'assetList');
+      renderGroup('liability', 'liabilityList');
+
+      var hasAnyData = totalAssets !== 0 || totalLiabilities !== 0;
+      document.getElementById('liveWrap').classList.toggle('hidden', !hasAnyData);
+      document.getElementById('emptyState').classList.toggle('hidden', hasAnyData);
+
+      if (hasAnyData) await saveSnapshot(netWorth);
+      renderChart();
+    }
+
+    function renderChart() {
+      var container = document.getElementById('netWorthChart');
+      var entries = Object.keys(history).sort().map(function (k) { return { month: k, value: history[k] }; });
+
+      if (entries.length === 0) {
+        container.innerHTML = '<div class="chart-empty">Come back next month to start seeing your trend.</div>';
+        return;
+      }
+      if (entries.length === 1) {
+        container.innerHTML = '<div class="chart-empty">Come back next month to start seeing your trend — today\'s net worth is ' + fmtRupee(entries[0].value, true) + '.</div>';
+        return;
+      }
+
+      var W = 680, H = 220, padL = 60, padR = 20, padT = 20, padB = 30;
+      var plotW = W - padL - padR, plotH = H - padT - padB;
+      var values = entries.map(function (e) { return e.value; });
+      var maxV = Math.max.apply(null, values.concat([0])) * 1.15 || 1;
+      var minV = Math.min(0, Math.min.apply(null, values));
+      var range = maxV - minV || 1;
+
+      function xAt(i) { return padL + (i / (entries.length - 1)) * plotW; }
+      function yAt(v) { return padT + plotH - ((v - minV) / range) * plotH; }
+
+      var linePts = entries.map(function (e, i) { return xAt(i) + ',' + yAt(e.value); }).join(' L');
+      var areaPts = 'M' + xAt(0) + ',' + yAt(0) + ' L' + linePts + ' L' + xAt(entries.length - 1) + ',' + yAt(0) + ' Z';
+
+      var dots = entries.map(function (e, i) {
+        return '<circle cx="' + xAt(i) + '" cy="' + yAt(e.value) + '" r="4" fill="#10b981" stroke="#fff" stroke-width="2"/>';
+      }).join('');
+
+      var labels = entries.map(function (e, i) {
+        var parts = e.month.split('-');
+        var lbl = new Date(Number(parts[0]), Number(parts[1]) - 1, 1).toLocaleDateString('en-IN', { month: 'short', year: '2-digit' });
+        return '<text x="' + xAt(i) + '" y="' + (H - 8) + '" text-anchor="middle" font-size="10" fill="#94a3b8">' + lbl + '</text>';
+      }).join('');
+
+      var gridLines = '';
+      for (var g = 0; g <= 3; g++) {
+        var gy = padT + (g / 3) * plotH;
+        var val = maxV - (g / 3) * range;
+        gridLines += '<line x1="' + padL + '" y1="' + gy + '" x2="' + (W - padR) + '" y2="' + gy + '" stroke="#eef2f6" stroke-width="1"/>';
+        gridLines += '<text x="' + (padL - 8) + '" y="' + (gy + 4) + '" text-anchor="end" font-size="10" fill="#94a3b8">' + fmtRupee(val, true) + '</text>';
+      }
+
+      container.innerHTML = '<svg viewBox="0 0 ' + W + ' ' + H + '" style="width:100%;height:auto;font-family:inherit;">' +
+        gridLines +
+        '<path d="' + areaPts + '" fill="rgba(16,185,129,0.12)" stroke="none"/>' +
+        '<path d="M' + linePts + '" fill="none" stroke="#10b981" stroke-width="2.5"/>' +
+        dots + labels +
+        '</svg>';
+    }
+
+    var toastTimer = null;
+    function showToast(msg) {
+      var toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(function () { toast.classList.remove('show'); }, 2600);
+    }
+
+    (async function init() {
+      var user = await requireAuth('index.html#login');
+      if (!user) return;
+      await loadHistory();
+      await refresh();
+    })();
+  </script>
+</body>
+</html>

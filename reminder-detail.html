@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reminder Detail - FinFlow</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f8fafc;
+      color: #0f172a;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    a, button { color: inherit; text-decoration: none; font-family: inherit; }
+
+    .app-shell { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
+    @media (max-width: 860px) { .app-shell { grid-template-columns: 1fr; } .sidebar { display: none; } }
+
+    .sidebar { background: #ffffff; border-right: 1px solid #e2e8f0; display: flex; flex-direction: column; padding: 1.5rem 1.25rem; }
+    .sidebar-logo { display: flex; align-items: center; gap: 0.65rem; font-size: 1.1rem; font-weight: 800; margin-bottom: 2rem; padding: 0 0.25rem; }
+    .sidebar-logo-icon { width: 30px; height: 30px; background: linear-gradient(135deg, #0ea5e9, #10b981); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; flex-shrink: 0; }
+    .sidebar-nav { display: flex; flex-direction: column; gap: 0.25rem; }
+    .sidebar-nav a, .sidebar-nav .nav-group-head { display: flex; align-items: center; gap: 0.75rem; padding: 0.7rem 0.75rem; border-radius: 0.6rem; font-size: 0.9rem; font-weight: 500; color: #364752; }
+    .sidebar-nav a:hover, .sidebar-nav .nav-group-head:hover { background: #f1f5f9; }
+    .sidebar-nav a.active { background: #0f172a; color: #ffffff; font-weight: 600; }
+    .sidebar-nav .nav-group-head.open { background: #f1f5f9; font-weight: 700; }
+    .sidebar-nav .nav-group-head.active { background: #0f172a; color: #ffffff; font-weight: 600; }
+    .sidebar-nav .nav-group-head.active .nav-chevron { color: rgba(255,255,255,0.6); }
+    .sidebar-nav .nav-icon { font-size: 1rem; width: 20px; text-align: center; flex-shrink: 0; }
+    .sidebar-nav .nav-label { flex: 1; }
+    .sidebar-nav .nav-chevron { color: #94a3b8; font-size: 0.85rem; }
+    .sidebar-subnav { display: flex; flex-direction: column; gap: 0.2rem; padding-left: 1.6rem; margin: 0.15rem 0 0.3rem; }
+    .sidebar-subnav a { display: flex; align-items: center; gap: 0.6rem; padding: 0.55rem 0.6rem; border-radius: 0.5rem; font-size: 0.85rem; font-weight: 500; color: #364752; }
+    .sidebar-subnav a:hover { background: #f1f5f9; }
+    .sidebar-subnav a.active { background: #0f172a; color: #fff; font-weight: 600; }
+    .sidebar-spacer { flex: 1; }
+    .feedback-card { background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 0.9rem; padding: 1.1rem; margin-top: 1.5rem; }
+    .feedback-card .fc-icon { width: 32px; height: 32px; border-radius: 0.6rem; background: #eef2f7; display: flex; align-items: center; justify-content: center; font-size: 0.95rem; margin-bottom: 0.6rem; }
+    .feedback-card strong { display: block; font-size: 0.85rem; margin-bottom: 0.3rem; }
+    .feedback-card p { font-size: 0.78rem; color: #64748b; line-height: 1.5; margin-bottom: 0.85rem; }
+    .feedback-card a { display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; width: 100%; padding: 0.55rem; border: 1px solid #cbd5e1; border-radius: 0.5rem; font-size: 0.8rem; font-weight: 600; color: #364752; }
+    .feedback-card a:hover { border-color: #10b981; color: #10b981; }
+
+    .main { padding: 1.5rem 2.5rem 3rem; min-width: 0; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; padding-bottom: 1.25rem; border-bottom: 1px solid #e2e8f0; margin-bottom: 1.5rem; }
+    .topbar h1 { font-size: 1.4rem; font-weight: 700; }
+    .topbar-right { display: flex; align-items: center; gap: 0.85rem; }
+    .language-selector { display: flex; align-items: center; gap: 0.5rem; background: #ffffff; padding: 0.5rem 0.9rem; border-radius: 0.5rem; color: #51636f; border: 1px solid #e2e8f0; cursor: pointer; font-size: 0.85rem; }
+    .user-menu { position: relative; list-style: none; }
+    .user-menu > summary { cursor: pointer; list-style: none; width: 34px; height: 34px; border-radius: 50%; background: #eef2f7; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; font-size: 1rem; }
+    .user-menu > summary::-webkit-details-marker { display: none; }
+    .user-menu-panel { position: absolute; top: calc(100% + 0.6rem); right: 0; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 0.75rem; box-shadow: 0 10px 30px rgba(15,23,42,0.12); padding: 0.4rem; min-width: 150px; z-index: 20; }
+    .user-menu-panel a { display: block; padding: 0.55rem 0.7rem; border-radius: 0.5rem; font-size: 0.85rem; color: #364752; font-weight: 500; }
+    .user-menu-panel a:hover { background: #f1f5f9; color: #10b981; }
+
+    .back-link { font-size: 0.85rem; font-weight: 600; color: #0ea5e9; margin-bottom: 0.75rem; display: inline-block; }
+
+    .ob-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+    .ob-head-left { display: flex; align-items: center; gap: 0.9rem; }
+    .ob-head-icon { width: 48px; height: 48px; border-radius: 0.8rem; background: #fff; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; flex-shrink: 0; }
+    .ob-head h2 { font-size: 1.4rem; font-weight: 800; margin-bottom: 0.35rem; }
+    .ob-tags { display: flex; gap: 0.4rem; flex-wrap: wrap; align-items: center; }
+    .ob-tag { font-size: 0.7rem; font-weight: 700; padding: 0.22rem 0.55rem; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.03em; background: #eef2ff; color: #4338ca; }
+    .status-badge { font-size: 0.7rem; font-weight: 700; padding: 0.22rem 0.6rem; border-radius: 999px; white-space: nowrap; }
+    .status-badge.overdue { background: #fef2f2; color: #dc2626; }
+    .status-badge.due_soon { background: #fffbeb; color: #b45309; }
+    .status-badge.upcoming { background: #f1f5f9; color: #64748b; }
+    .ob-head-actions { display: flex; gap: 0.6rem; }
+
+    .btn-primary { padding: 0.6rem 1.1rem; border: none; border-radius: 0.6rem; background: linear-gradient(135deg, #0ea5e9, #10b981); color: #fff; font-size: 0.85rem; font-weight: 700; cursor: pointer; }
+    .btn-primary:hover { opacity: 0.92; }
+    .btn-secondary { padding: 0.55rem 1rem; border: 1px solid #cbd5e1; border-radius: 0.6rem; background: #fff; color: #364752; font-size: 0.83rem; font-weight: 600; cursor: pointer; }
+    .btn-secondary:hover { border-color: #94a3b8; }
+    .btn-danger { padding: 0.55rem 1rem; border: 1px solid #fecaca; border-radius: 0.6rem; background: #fff; color: #dc2626; font-size: 0.83rem; font-weight: 600; cursor: pointer; }
+    .btn-danger:hover { border-color: #dc2626; }
+    .btn-danger-text { color: #dc2626; font-size: 0.78rem; font-weight: 700; cursor: pointer; background: none; border: none; }
+    .btn-complete { padding: 0.6rem 1.1rem; border: none; border-radius: 0.6rem; background: linear-gradient(135deg, #10b981, #059669); color: #fff; font-size: 0.85rem; font-weight: 700; cursor: pointer; }
+    .btn-complete:hover { opacity: 0.92; }
+
+    .stat-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.1rem; margin-bottom: 1.5rem; }
+    @media (max-width: 780px) { .stat-cards { grid-template-columns: 1fr; } }
+    .stat-card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 1.1rem; padding: 1.3rem 1.4rem; box-shadow: 0 4px 16px rgba(15,23,42,0.03); }
+    .stat-card-label { font-size: 0.78rem; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 0.5rem; }
+    .stat-card-value { font-size: 1.3rem; font-weight: 800; margin-bottom: 0.35rem; }
+    .stat-card-sub { font-size: 0.78rem; color: #94a3b8; }
+
+    .card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 1.1rem; padding: 1.4rem 1.5rem; box-shadow: 0 4px 16px rgba(15,23,42,0.03); margin-bottom: 1.5rem; }
+    .card-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+    .card-head h3 { font-size: 1.02rem; font-weight: 800; }
+    .card-note { font-size: 0.82rem; color: #64748b; line-height: 1.6; }
+    .card-note a { color: #0ea5e9; font-weight: 600; }
+
+    .reminder-view-list { display: flex; flex-direction: column; gap: 0.5rem; }
+    .reminder-view-row { display: flex; align-items: center; justify-content: space-between; padding: 0.5rem 0; border-top: 1px solid #f1f5f9; font-size: 0.85rem; }
+    .reminder-view-row:first-of-type { border-top: none; }
+    .reminder-view-row .rvr-status { font-size: 0.72rem; font-weight: 700; color: #94a3b8; }
+    .reminder-view-row .rvr-status.fired { color: #059669; }
+
+    .placeholder-note { background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 0.8rem; padding: 1rem 1.1rem; font-size: 0.82rem; color: #64748b; line-height: 1.6; }
+
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.55); align-items: center; justify-content: center; z-index: 50; padding: 1rem; }
+    .modal-overlay.show { display: flex; }
+    .modal-box { background: #fff; border-radius: 1.1rem; padding: 1.6rem 1.75rem; width: 100%; max-width: 520px; max-height: 90vh; overflow-y: auto; }
+    .modal-box h3 { font-size: 1.1rem; font-weight: 800; margin-bottom: 1.1rem; }
+    .modal-box p.modal-sub { font-size: 0.85rem; color: #64748b; margin-bottom: 1.1rem; line-height: 1.5; }
+    .field-label { font-size: 0.83rem; font-weight: 600; color: #0f172a; margin-bottom: 0.4rem; display: block; }
+    .field-hint { font-size: 0.74rem; color: #94a3b8; margin: -0.6rem 0 0.9rem; }
+    .field-input, .field-select {
+      width: 100%; padding: 0.6rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 0.55rem;
+      font-size: 0.88rem; font-family: inherit; color: #0f172a; margin-bottom: 0.9rem; background: #fff;
+    }
+    .field-input:focus, .field-select:focus { outline: none; border-color: #10b981; box-shadow: 0 0 0 2px rgba(16,185,129,0.15); }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+    .modal-actions { display: flex; gap: 0.7rem; margin-top: 0.5rem; }
+    .modal-actions button { flex: 1; }
+    .form-error { font-size: 0.8rem; color: #dc2626; font-weight: 600; margin-bottom: 0.7rem; }
+
+    .reminder-list { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 0.6rem; }
+    .reminder-row { display: flex; align-items: center; gap: 0.6rem; }
+    .reminder-row input { flex: 1; padding: 0.5rem 0.65rem; border: 1px solid #cbd5e1; border-radius: 0.5rem; font-size: 0.85rem; font-family: inherit; }
+    .reminder-row span { font-size: 0.8rem; color: #64748b; white-space: nowrap; }
+    .reminder-row .remove-reminder { color: #dc2626; background: none; border: none; cursor: pointer; font-size: 0.9rem; }
+    .add-reminder-btn { font-size: 0.8rem; font-weight: 600; color: #0ea5e9; background: none; border: none; cursor: pointer; margin-bottom: 0.9rem; }
+
+    .loading-note { color: #94a3b8; font-size: 0.9rem; padding: 2rem 0; text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a href="dashboard.html" class="sidebar-logo">
+        <div class="sidebar-logo-icon">💰</div>
+        <span>FinFlow</span>
+      </a>
+
+      <nav class="sidebar-nav">
+        <a href="dashboard.html">
+          <span class="nav-icon">▦</span>
+          <span class="nav-label">Dashboard</span>
+        </a>
+        <a href="fire-plan.html">
+          <span class="nav-icon">🧭</span>
+          <span class="nav-label">FIRE Plan</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="net-worth.html">
+          <span class="nav-icon">📈</span>
+          <span class="nav-label">Networth</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="money-required.html">
+          <span class="nav-icon">🪴</span>
+          <span class="nav-label">Expenses</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="expense-quick-add.html">
+          <span class="nav-icon">⚡</span>
+          <span class="nav-label">Daily Expenses Tracker</span>
+        </a>
+        <a href="tax-planning.html">
+          <span class="nav-icon">🧾</span>
+          <span class="nav-label">Tax Planning</span>
+        </a>
+        <a href="insurance-tracker.html">
+          <span class="nav-icon">🛡️</span>
+          <span class="nav-label">Insurance Tracker</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="reminders.html" class="active">
+          <span class="nav-icon">🔔</span>
+          <span class="nav-label">Reminders</span>
+        </a>
+        <a href="vault-overview.html">
+          <span class="nav-icon">🔒</span>
+          <span class="nav-label">Document Vault</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="split/dashboard.html">
+          <span class="nav-icon">💸</span>
+          <span class="nav-label">SplitExpenses(SplitWise)</span>
+        </a>
+        <a href="life-expectancy.html">
+          <span class="nav-icon">❤️</span>
+          <span class="nav-label">Health</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="astrology.html">
+          <span class="nav-icon">🔮</span>
+          <span class="nav-label">Spiritual</span>
+        </a>
+        <a href="calculator/free-calculators.html" target="_blank" rel="noopener noreferrer">
+          <span class="nav-icon">🧮</span>
+          <span class="nav-label">Financial Calculators</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="#">
+          <span class="nav-icon">⚙️</span>
+          <span class="nav-label">Settings</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-spacer"></div>
+
+      <div class="feedback-card">
+        <div class="fc-icon">💬</div>
+        <strong>Got feedback?</strong>
+        <p>Have an idea or found a bug? We read every message.</p>
+        <a href="mailto:hello@finflow.app">✉ Contact Us</a>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <h1>Reminders</h1>
+        <div class="topbar-right">
+          <div class="language-selector">🌐 English ▾</div>
+          <details class="user-menu">
+            <summary>👤</summary>
+            <div class="user-menu-panel">
+              <a href="#">Settings</a>
+              <a href="#" onclick="signOutAndRedirect('index.html'); return false;">Log Out</a>
+            </div>
+          </details>
+        </div>
+      </div>
+
+      <a href="reminders.html" class="back-link">← Reminders</a>
+
+      <div id="loadingNote" class="loading-note">Loading…</div>
+
+      <div id="detailContent" style="display:none;">
+        <div class="ob-head">
+          <div class="ob-head-left">
+            <div class="ob-head-icon" id="obIcon">🔔</div>
+            <div>
+              <h2 id="obName">—</h2>
+              <div class="ob-tags" id="obTags"></div>
+            </div>
+          </div>
+          <div class="ob-head-actions">
+            <button type="button" class="btn-complete" id="completeBtn">✓ Complete</button>
+            <button type="button" class="btn-secondary" id="editObBtn">Edit</button>
+            <button type="button" class="btn-danger" id="deleteObBtn">Delete</button>
+          </div>
+        </div>
+
+        <div class="stat-cards">
+          <div class="stat-card">
+            <div class="stat-card-label">Due Date</div>
+            <div class="stat-card-value" id="statDueDate">—</div>
+            <div class="stat-card-sub" id="statDueDateSub">—</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-label">Recurrence</div>
+            <div class="stat-card-value" id="statRecurrence">—</div>
+            <div class="stat-card-sub" id="statRecurrenceSub">—</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-label">Last Completed</div>
+            <div class="stat-card-value" id="statLastCompleted">—</div>
+            <div class="stat-card-sub">Amount: <span id="statAmount">—</span></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><h3>Linked Asset</h3></div>
+          <p class="card-note" id="linkedAssetNote">Not linked to anything else in the app.</p>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><h3>Reminder Windows</h3></div>
+          <div class="reminder-view-list" id="reminderViewList"></div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div class="modal-overlay" id="obModal">
+    <div class="modal-box">
+      <h3>Edit Reminder</h3>
+      <div class="form-error" id="obFormError"></div>
+
+      <label class="field-label">Name</label>
+      <input type="text" class="field-input" id="obNameInput">
+
+      <div class="field-row">
+        <div>
+          <label class="field-label">Category</label>
+          <select class="field-select" id="obCategoryInput">
+            <option value="insurance">🛡️ Insurance</option>
+            <option value="tax">🧾 Tax</option>
+            <option value="maintenance">🔧 Maintenance</option>
+            <option value="medical">🩺 Medical</option>
+            <option value="warranty">📄 Warranty</option>
+            <option value="document_renewal">📋 Document Renewal</option>
+            <option value="subscription">🔁 Subscription</option>
+            <option value="other">🔔 Other</option>
+          </select>
+        </div>
+        <div>
+          <label class="field-label">Owner</label>
+          <select class="field-select" id="obOwnerInput">
+            <option value="self">Self</option>
+            <option value="spouse">Spouse</option>
+            <option value="joint">Joint</option>
+            <option value="child">Child</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div>
+          <label class="field-label">Due date</label>
+          <input type="date" class="field-input" id="obDueDateInput">
+        </div>
+        <div>
+          <label class="field-label">Amount (₹, optional)</label>
+          <input type="number" class="field-input" id="obAmountInput" min="0" step="100">
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div>
+          <label class="field-label">Recurrence</label>
+          <select class="field-select" id="obRecurrenceInput">
+            <option value="none">None (one-off)</option>
+            <option value="annual">Annual (same date each year)</option>
+            <option value="custom_interval_days">Custom interval</option>
+          </select>
+        </div>
+        <div id="obIntervalWrap" style="display:none;">
+          <label class="field-label">Interval (days)</label>
+          <input type="number" class="field-input" id="obIntervalInput" min="1" step="1">
+        </div>
+      </div>
+
+      <label class="field-label">Linked asset (optional)</label>
+      <select class="field-select" id="obLinkedAssetInput">
+        <option value="">None</option>
+      </select>
+
+      <label class="field-label">Reminder windows</label>
+      <div class="field-hint">How many days before the due date should this show as "due soon"?</div>
+      <div class="reminder-list" id="reminderList"></div>
+      <button type="button" class="add-reminder-btn" id="addReminderBtn">+ Add reminder window</button>
+
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" id="cancelObBtn">Cancel</button>
+        <button type="button" class="btn-primary" id="saveObBtn">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="txModal">
+    <div class="modal-box">
+      <h3>Log this as an expense?</h3>
+      <p class="modal-sub">This reminder has an amount set. Confirm to add it to your Expense Ledger — nothing is written unless you confirm.</p>
+      <div class="form-error" id="txFormError"></div>
+
+      <div class="field-row">
+        <div>
+          <label class="field-label">Amount (₹)</label>
+          <input type="number" class="field-input" id="txAmountInput" min="0" step="100">
+        </div>
+        <div>
+          <label class="field-label">Category</label>
+          <select class="field-select" id="txCategoryInput">
+            <option value="food">Food &amp; Dining</option>
+            <option value="groceries">Groceries</option>
+            <option value="transport">Transport</option>
+            <option value="utilities">Utilities</option>
+            <option value="rent">Rent</option>
+            <option value="shopping">Shopping</option>
+            <option value="entertainment">Entertainment</option>
+            <option value="health">Health</option>
+            <option value="bills">Bills &amp; Recharges</option>
+            <option value="travel">Travel</option>
+            <option value="education">Education</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div>
+          <label class="field-label">Owner</label>
+          <select class="field-select" id="txOwnerInput">
+            <option value="self">Self</option>
+            <option value="spouse">Spouse</option>
+            <option value="joint">Joint</option>
+            <option value="child">Child</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div>
+          <label class="field-label">Payment method</label>
+          <input type="text" class="field-input" id="txAccountInput" placeholder="e.g. Cash, HDFC Card">
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" id="skipTxBtn">Skip — don't log it</button>
+        <button type="button" class="btn-primary" id="confirmTxBtn">Add to Expense Ledger</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-client.js"></script>
+  <script src="js/obligations-calc.js"></script>
+  <script src="js/goal-links.js"></script>
+  <script src="js/obligations-links.js"></script>
+  <script>
+    var obligationId = new URLSearchParams(window.location.search).get('id');
+    var obligation = null;
+    var reminderWindows = [];
+    var linkableAssets = [];
+
+    var CATEGORY_BY_KEY = {
+      insurance: { label: 'Insurance', icon: '🛡️' },
+      tax: { label: 'Tax', icon: '🧾' },
+      maintenance: { label: 'Maintenance', icon: '🔧' },
+      medical: { label: 'Medical', icon: '🩺' },
+      warranty: { label: 'Warranty', icon: '📄' },
+      document_renewal: { label: 'Document Renewal', icon: '📋' },
+      subscription: { label: 'Subscription', icon: '🔁' },
+      other: { label: 'Other', icon: '🔔' }
+    };
+    var OWNER_LABEL = { self: 'Self', spouse: 'Spouse', joint: 'Joint', child: 'Child', other: 'Other' };
+    var STATUS_LABEL = { overdue: 'Overdue', due_soon: 'Due Soon', upcoming: 'Upcoming' };
+    var RECURRENCE_LABEL = { none: 'None (one-off)', annual: 'Annual', custom_interval_days: 'Custom interval' };
+
+    // Where to send someone to see the linked asset itself — this app has no
+    // per-item detail pages outside Goals, so these are section list pages,
+    // not deep links to the specific row.
+    var SOURCE_TYPE_PAGE = {
+      account: 'net-worth.html',
+      gold_holding: 'gold.html',
+      property: 'properties.html',
+      portfolio_item: 'portfolio.html',
+      bank_item: 'bank-balances.html',
+      insurance_policy: 'insurance-tracker.html'
+    };
+    var OTHER_INVESTMENT_CATEGORY_PAGE = {
+      'Commodities': 'gold.html',
+      'Properties': 'properties.html',
+      'Government Scheme': 'bonds.html'
+    };
+
+    function escapeHtml(s) {
+      return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function formatRupees(amount) {
+      var n = Math.round(Number(amount) || 0);
+      return '₹' + n.toLocaleString('en-IN');
+    }
+
+    function toDateStr(dt) {
+      return dt.getFullYear() + '-' + String(dt.getMonth() + 1).padStart(2, '0') + '-' + String(dt.getDate()).padStart(2, '0');
+    }
+
+    /* ---- Reminder window sub-editor (edit modal) ---- */
+
+    function renderReminderEditList(days) {
+      var list = document.getElementById('reminderList');
+      list.innerHTML = days.map(function (d, i) {
+        return '<div class="reminder-row">' +
+          '<input type="number" min="1" step="1" value="' + d + '" data-idx="' + i + '">' +
+          '<span>days before</span>' +
+          '<button type="button" class="remove-reminder" data-remove="' + i + '">✕</button>' +
+        '</div>';
+      }).join('');
+
+      Array.prototype.forEach.call(list.querySelectorAll('[data-remove]'), function (btn) {
+        btn.addEventListener('click', function () {
+          var current = getReminderEditValues();
+          current.splice(Number(btn.dataset.remove), 1);
+          renderReminderEditList(current);
+        });
+      });
+    }
+
+    function getReminderEditValues() {
+      return Array.prototype.map.call(document.querySelectorAll('#reminderList input'), function (input) {
+        return Number(input.value) || 0;
+      }).filter(function (v) { return v > 0; });
+    }
+
+    /* ---- Rendering ---- */
+
+    function currentStatus() {
+      var dueDate = new Date(obligation.due_date + 'T00:00:00');
+      return ObligationsCalc.computeObligationStatus(dueDate, reminderWindows, new Date());
+    }
+
+    function renderHead() {
+      var cat = CATEGORY_BY_KEY[obligation.category] || CATEGORY_BY_KEY.other;
+      document.getElementById('obIcon').textContent = cat.icon;
+      document.getElementById('obName').textContent = obligation.name;
+
+      var status = currentStatus();
+      document.getElementById('obTags').innerHTML =
+        '<span class="ob-tag">' + OWNER_LABEL[obligation.owner] + '</span>' +
+        '<span class="ob-tag">' + escapeHtml(cat.label) + '</span>' +
+        '<span class="status-badge ' + status + '">' + STATUS_LABEL[status] + '</span>';
+    }
+
+    function renderStats() {
+      document.getElementById('statDueDate').textContent = obligation.due_date;
+      document.getElementById('statDueDateSub').textContent = currentStatus() === 'overdue' ? 'This is overdue' : 'Upcoming due date';
+
+      document.getElementById('statRecurrence').textContent = RECURRENCE_LABEL[obligation.recurrence];
+      document.getElementById('statRecurrenceSub').textContent = obligation.recurrence === 'custom_interval_days'
+        ? ('Every ' + obligation.recurrence_interval_days + ' days from completion')
+        : (obligation.recurrence === 'annual' ? 'Same date, one year forward' : 'Only changes if you edit it');
+
+      document.getElementById('statLastCompleted').textContent = obligation.last_completed_date || 'Never';
+      document.getElementById('statAmount').textContent = obligation.amount ? formatRupees(obligation.amount) : 'Not set';
+    }
+
+    function renderLinkedAsset() {
+      var noteEl = document.getElementById('linkedAssetNote');
+      if (!obligation.linked_source_type || !obligation.linked_source_id) {
+        noteEl.innerHTML = 'Not linked to anything else in the app.';
+        return;
+      }
+      var asset = ObligationsLinks.findAsset(linkableAssets, obligation.linked_source_type, obligation.linked_source_id);
+      var page = SOURCE_TYPE_PAGE[obligation.linked_source_type] || 'net-worth.html';
+      if (obligation.linked_source_type === 'other_investment' && asset && OTHER_INVESTMENT_CATEGORY_PAGE[asset.category_label]) {
+        page = OTHER_INVESTMENT_CATEGORY_PAGE[asset.category_label];
+      }
+      var name = asset ? asset.name : '(no longer available)';
+      noteEl.innerHTML = 'Linked to <strong>' + escapeHtml(name) + '</strong> — <a href="' + page + '">view in ' + escapeHtml(page.replace('.html', '').replace(/-/g, ' ')) + '</a>';
+    }
+
+    function renderReminderView() {
+      var listEl = document.getElementById('reminderViewList');
+      if (!reminderWindows.length) {
+        listEl.innerHTML = '<p class="card-note">No reminder windows set — status will only ever show as "upcoming" until overdue.</p>';
+        return;
+      }
+      var sorted = reminderWindows.slice().sort(function (a, b) { return a.days_before_due - b.days_before_due; });
+      listEl.innerHTML = sorted.map(function (w) {
+        return '<div class="reminder-view-row">' +
+          '<span>' + w.days_before_due + ' days before due</span>' +
+          '<span class="rvr-status' + (w.notified ? ' fired' : '') + '">' + (w.notified ? 'Notified' : 'Not yet') + '</span>' +
+        '</div>';
+      }).join('');
+    }
+
+    /* ---- Data ---- */
+
+    async function loadObligation() {
+      var { data, error } = await supabaseClient.from('obligations').select('*').eq('id', obligationId).maybeSingle();
+      if (error || !data) {
+        document.getElementById('loadingNote').textContent = 'Reminder not found.';
+        console.error(error);
+        return false;
+      }
+      obligation = data;
+      return true;
+    }
+
+    async function loadReminderWindows() {
+      var { data, error } = await supabaseClient.from('reminder_windows').select('*').eq('obligation_id', obligationId);
+      if (error) { console.error('Could not load reminder windows', error); reminderWindows = []; return; }
+      reminderWindows = data || [];
+    }
+
+    async function refresh() {
+      await Promise.all([loadObligation(), loadReminderWindows()]);
+      if (!obligation) return;
+      if (!linkableAssets.length) linkableAssets = await ObligationsLinks.fetchAllLinkableAssets();
+      renderHead();
+      renderStats();
+      renderLinkedAsset();
+      renderReminderView();
+    }
+
+    /* ---- Complete flow ---- */
+
+    async function completeObligation() {
+      var dueDate = new Date(obligation.due_date + 'T00:00:00');
+      var completionDate = new Date();
+      var result = ObligationsCalc.completeObligation(dueDate, obligation.recurrence, obligation.recurrence_interval_days, completionDate);
+
+      var payload = {
+        last_completed_date: toDateStr(result.lastCompletedDate),
+        due_date: toDateStr(result.dueDate),
+        updated_at: new Date().toISOString()
+      };
+
+      var { error } = await supabaseClient.from('obligations').update(payload).eq('id', obligationId);
+      if (error) { console.error('Could not complete reminder', error); return; }
+
+      if (obligation.amount) {
+        openTxModal();
+      } else {
+        await refresh();
+      }
+    }
+
+    function openTxModal() {
+      document.getElementById('txFormError').textContent = '';
+      document.getElementById('txAmountInput').value = obligation.amount;
+      document.getElementById('txCategoryInput').value = ObligationsCalc.mapObligationCategoryToTransactionCategory(obligation.category);
+      document.getElementById('txOwnerInput').value = obligation.owner;
+      document.getElementById('txAccountInput').value = '';
+      document.getElementById('txModal').classList.add('show');
+    }
+
+    function closeTxModal() {
+      document.getElementById('txModal').classList.remove('show');
+    }
+
+    async function confirmTransaction() {
+      var errEl = document.getElementById('txFormError');
+      var amount = Number(document.getElementById('txAmountInput').value);
+      if (!amount || amount <= 0) { errEl.textContent = 'Enter a valid amount.'; return; }
+
+      var payload = {
+        date: toDateStr(new Date()),
+        description: obligation.name,
+        category: document.getElementById('txCategoryInput').value,
+        account: document.getElementById('txAccountInput').value.trim() || 'Cash',
+        owner: document.getElementById('txOwnerInput').value,
+        type: 'expense',
+        amount: amount
+      };
+
+      var { error } = await supabaseClient.from('transactions').insert(payload);
+      if (error) { errEl.textContent = 'Could not log the expense. Please try again.'; console.error(error); return; }
+
+      closeTxModal();
+      await refresh();
+    }
+
+    /* ---- Edit modal ---- */
+
+    async function populateLinkedAssetOptions(selectedValue) {
+      if (!linkableAssets.length) linkableAssets = await ObligationsLinks.fetchAllLinkableAssets();
+      var select = document.getElementById('obLinkedAssetInput');
+      select.innerHTML = '<option value="">None</option>' + linkableAssets.map(function (a) {
+        return '<option value="' + a.source_type + '::' + a.source_id + '">' + escapeHtml(a.category_label) + ' — ' + escapeHtml(a.name) + '</option>';
+      }).join('');
+      if (selectedValue) select.value = selectedValue;
+    }
+
+    async function openEditModal() {
+      document.getElementById('obFormError').textContent = '';
+      document.getElementById('obNameInput').value = obligation.name;
+      document.getElementById('obCategoryInput').value = obligation.category;
+      document.getElementById('obOwnerInput').value = obligation.owner;
+      document.getElementById('obDueDateInput').value = obligation.due_date;
+      document.getElementById('obAmountInput').value = obligation.amount || '';
+      document.getElementById('obRecurrenceInput').value = obligation.recurrence;
+      document.getElementById('obIntervalWrap').style.display = obligation.recurrence === 'custom_interval_days' ? 'block' : 'none';
+      document.getElementById('obIntervalInput').value = obligation.recurrence_interval_days || '';
+
+      var selectedValue = obligation.linked_source_type ? (obligation.linked_source_type + '::' + obligation.linked_source_id) : '';
+      await populateLinkedAssetOptions(selectedValue);
+
+      renderReminderEditList(reminderWindows.map(function (w) { return w.days_before_due; }));
+
+      document.getElementById('obModal').classList.add('show');
+    }
+
+    function closeEditModal() {
+      document.getElementById('obModal').classList.remove('show');
+    }
+
+    async function saveObligationEdits() {
+      var errEl = document.getElementById('obFormError');
+      var name = document.getElementById('obNameInput').value.trim();
+      var dueDate = document.getElementById('obDueDateInput').value;
+      var recurrence = document.getElementById('obRecurrenceInput').value;
+      var intervalRaw = document.getElementById('obIntervalInput').value;
+      var linkedRaw = document.getElementById('obLinkedAssetInput').value;
+
+      if (!name) { errEl.textContent = 'Please enter a name.'; return; }
+      if (!dueDate) { errEl.textContent = 'Please choose a due date.'; return; }
+      if (recurrence === 'custom_interval_days' && (!intervalRaw || Number(intervalRaw) <= 0)) {
+        errEl.textContent = 'Please enter an interval in days.'; return;
+      }
+
+      var payload = {
+        name: name,
+        category: document.getElementById('obCategoryInput').value,
+        owner: document.getElementById('obOwnerInput').value,
+        due_date: dueDate,
+        amount: document.getElementById('obAmountInput').value ? Number(document.getElementById('obAmountInput').value) : null,
+        recurrence: recurrence,
+        recurrence_interval_days: recurrence === 'custom_interval_days' ? Number(intervalRaw) : null,
+        linked_source_type: linkedRaw ? linkedRaw.split('::')[0] : null,
+        linked_source_id: linkedRaw ? linkedRaw.split('::')[1] : null,
+        updated_at: new Date().toISOString()
+      };
+
+      var { error } = await supabaseClient.from('obligations').update(payload).eq('id', obligationId);
+      if (error) { errEl.textContent = 'Could not save changes.'; console.error(error); return; }
+
+      var newDays = getReminderEditValues();
+      var { error: deleteError } = await supabaseClient.from('reminder_windows').delete().eq('obligation_id', obligationId);
+      if (deleteError) console.error('Could not clear old reminder windows', deleteError);
+      if (newDays.length) {
+        var rows = newDays.map(function (days) { return { obligation_id: obligationId, days_before_due: days }; });
+        var { error: insertError } = await supabaseClient.from('reminder_windows').insert(rows);
+        if (insertError) console.error('Could not save reminder windows', insertError);
+      }
+
+      closeEditModal();
+      await refresh();
+    }
+
+    async function deleteObligation() {
+      if (!confirm('Delete this reminder? This also removes its reminder windows.')) return;
+      var { error } = await supabaseClient.from('obligations').delete().eq('id', obligationId);
+      if (error) { console.error('Could not delete reminder', error); return; }
+      window.location.href = 'reminders.html';
+    }
+
+    (async function init() {
+      var user = await requireAuth('index.html#login');
+      if (!user) return;
+
+      if (!obligationId) {
+        document.getElementById('loadingNote').textContent = 'No reminder specified.';
+        return;
+      }
+
+      document.getElementById('completeBtn').addEventListener('click', completeObligation);
+      document.getElementById('editObBtn').addEventListener('click', openEditModal);
+      document.getElementById('deleteObBtn').addEventListener('click', deleteObligation);
+      document.getElementById('cancelObBtn').addEventListener('click', closeEditModal);
+      document.getElementById('saveObBtn').addEventListener('click', saveObligationEdits);
+      document.getElementById('obModal').addEventListener('click', function (e) { if (e.target === this) closeEditModal(); });
+      document.getElementById('addReminderBtn').addEventListener('click', function () {
+        var current = getReminderEditValues();
+        current.push(7);
+        renderReminderEditList(current);
+      });
+      document.getElementById('obRecurrenceInput').addEventListener('change', function () {
+        document.getElementById('obIntervalWrap').style.display = this.value === 'custom_interval_days' ? 'block' : 'none';
+      });
+
+      document.getElementById('skipTxBtn').addEventListener('click', closeTxModal);
+      document.getElementById('confirmTxBtn').addEventListener('click', confirmTransaction);
+      document.getElementById('txModal').addEventListener('click', function (e) { if (e.target === this) closeTxModal(); });
+
+      await refresh();
+      if (obligation) {
+        document.getElementById('loadingNote').style.display = 'none';
+        document.getElementById('detailContent').style.display = 'block';
+      }
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Personal Debt & Receivable - FinFlow</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f8fafc;
+      color: #0f172a;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    a, button { color: inherit; text-decoration: none; font-family: inherit; }
+
+    .app-shell { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
+    @media (max-width: 860px) { .app-shell { grid-template-columns: 1fr; } .sidebar { display: none; } }
+
+    /* Sidebar */
+    .sidebar { background: #ffffff; border-right: 1px solid #e2e8f0; display: flex; flex-direction: column; padding: 1.5rem 1.25rem; }
+    .sidebar-logo { display: flex; align-items: center; gap: 0.65rem; font-size: 1.1rem; font-weight: 800; margin-bottom: 2rem; padding: 0 0.25rem; }
+    .sidebar-logo-icon { width: 30px; height: 30px; background: linear-gradient(135deg, #0ea5e9, #10b981); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; flex-shrink: 0; }
+    .sidebar-nav { display: flex; flex-direction: column; gap: 0.25rem; }
+    .sidebar-nav a, .sidebar-nav .nav-group-head { display: flex; align-items: center; gap: 0.75rem; padding: 0.7rem 0.75rem; border-radius: 0.6rem; font-size: 0.9rem; font-weight: 500; color: #364752; }
+    .sidebar-nav a:hover, .sidebar-nav .nav-group-head:hover { background: #f1f5f9; }
+    .sidebar-nav a.active { background: #0f172a; color: #ffffff; font-weight: 600; }
+    .sidebar-nav .nav-group-head.open { background: #f1f5f9; font-weight: 700; }
+    .sidebar-nav .nav-icon { font-size: 1rem; width: 20px; text-align: center; flex-shrink: 0; }
+    .sidebar-nav .nav-label { flex: 1; }
+    .sidebar-nav .nav-chevron { color: #94a3b8; font-size: 0.85rem; }
+    .sidebar-subnav { display: flex; flex-direction: column; gap: 0.2rem; padding-left: 1.6rem; margin: 0.15rem 0 0.3rem; }
+    .sidebar-subnav a { display: flex; align-items: center; gap: 0.6rem; padding: 0.55rem 0.6rem; border-radius: 0.5rem; font-size: 0.85rem; font-weight: 500; color: #364752; }
+    .sidebar-subnav a:hover { background: #f1f5f9; }
+    .sidebar-subnav a.active { background: #0f172a; color: #fff; font-weight: 600; }
+    .sidebar-subnav a.disabled { color: #cbd5e1; cursor: default; pointer-events: none; display: flex; justify-content: space-between; }
+    .soon-pill { font-size: 0.62rem; font-weight: 700; color: #8b5cf6; background: rgba(139,92,246,0.12); padding: 0.15rem 0.5rem; border-radius: 999px; }
+    .sidebar-spacer { flex: 1; }
+    .feedback-card { background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 0.9rem; padding: 1.1rem; margin-top: 1.5rem; }
+    .feedback-card .fc-icon { width: 32px; height: 32px; border-radius: 0.6rem; background: #eef2f7; display: flex; align-items: center; justify-content: center; font-size: 0.95rem; margin-bottom: 0.6rem; }
+    .feedback-card strong { display: block; font-size: 0.85rem; margin-bottom: 0.3rem; }
+    .feedback-card p { font-size: 0.78rem; color: #64748b; line-height: 1.5; margin-bottom: 0.85rem; }
+    .feedback-card a { display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; width: 100%; padding: 0.55rem; border: 1px solid #cbd5e1; border-radius: 0.5rem; font-size: 0.8rem; font-weight: 600; color: #364752; }
+    .feedback-card a:hover { border-color: #10b981; color: #10b981; }
+
+    /* Main */
+    .main { padding: 1.5rem 2.5rem 3rem; min-width: 0; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; padding-bottom: 1.25rem; border-bottom: 1px solid #e2e8f0; margin-bottom: 1.5rem; }
+    .topbar h1 { font-size: 1.4rem; font-weight: 700; }
+    .topbar-right { display: flex; align-items: center; gap: 0.85rem; }
+    .language-selector { display: flex; align-items: center; gap: 0.5rem; background: #ffffff; padding: 0.5rem 0.9rem; border-radius: 0.5rem; color: #51636f; border: 1px solid #e2e8f0; cursor: pointer; font-size: 0.85rem; }
+    .user-menu { position: relative; list-style: none; }
+    .user-menu > summary { cursor: pointer; list-style: none; width: 34px; height: 34px; border-radius: 50%; background: #eef2f7; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; font-size: 1rem; }
+    .user-menu > summary::-webkit-details-marker { display: none; }
+    .user-menu-panel { position: absolute; top: calc(100% + 0.6rem); right: 0; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 0.75rem; box-shadow: 0 10px 30px rgba(15,23,42,0.12); padding: 0.4rem; min-width: 150px; z-index: 20; }
+    .user-menu-panel a { display: block; padding: 0.55rem 0.7rem; border-radius: 0.5rem; font-size: 0.85rem; color: #364752; font-weight: 500; }
+    .user-menu-panel a:hover { background: #f1f5f9; color: #10b981; }
+
+    .page-head { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem; }
+    .page-head h2 { font-size: 1.6rem; font-weight: 800; margin-bottom: 0.3rem; }
+    .page-head p { color: #64748b; font-size: 0.9rem; }
+    .head-actions { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+
+    .pbtn { display: inline-flex; align-items: center; gap: 0.45rem; padding: 0.65rem 1.1rem; border-radius: 0.6rem; font-size: 0.85rem; font-weight: 600; cursor: pointer; border: none; background: linear-gradient(to right, #0ea5e9, #10b981); color: #fff; white-space: nowrap; }
+    .pbtn:hover { opacity: 0.92; }
+    .pbtn.outline { background: #fff; border: 1px solid #cbd5e1; color: #364752; }
+    .pbtn.outline:hover { opacity: 1; border-color: #94a3b8; }
+    .pbtn.dark { background: #0f172a; }
+
+    /* Overview hero — same dark-gradient theme as Properties, Loan/EMI, etc. */
+    .iou-hero {
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      border-radius: 1.25rem;
+      padding: 1.75rem 2rem;
+      color: #fff;
+      margin-bottom: 1.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 2.25rem;
+    }
+    .iou-hero-stat { min-width: 160px; }
+    .iou-hero-icon { font-size: 1.1rem; margin-bottom: 0.4rem; opacity: 0.9; }
+    .iou-hero-label { font-size: 0.78rem; color: #94a3b8; font-weight: 600; margin-bottom: 0.3rem; }
+    .iou-hero-value { font-size: 1.75rem; font-weight: 800; }
+    .iou-hero-value.pos { color: #4ade80; }
+    .iou-hero-value.neg { color: #f87171; }
+    .iou-hero-sub { font-size: 0.72rem; color: #94a3b8; margin-top: 0.3rem; }
+
+    .load-error { display: none; padding: 0.85rem 1.3rem; font-size: 0.8rem; color: #991b1b; background: #fef2f2; border: 1px solid #fecaca; border-radius: 0.75rem; margin-bottom: 1rem; }
+    .load-error.show { display: block; }
+
+    .empty-state { text-align: center; padding: 3rem 2rem; color: #64748b; font-size: 0.9rem; background: #ffffff; border: 1px dashed #e2e8f0; border-radius: 1.1rem; }
+    .empty-state .pbtn { margin-top: 1rem; }
+
+    /* Entries table */
+    .grid-card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 1.1rem; box-shadow: 0 4px 16px rgba(15,23,42,0.03); overflow: hidden; }
+    .grid-scroll { overflow-x: auto; }
+    .grid-hint { padding: 0.85rem 1.3rem; font-size: 0.78rem; color: #64748b; border-bottom: 1px solid #f1f5f9; }
+
+    table.iou-table { border-collapse: collapse; width: 100%; min-width: 820px; }
+    table.iou-table th, table.iou-table td {
+      padding: 0.6rem 0.75rem; font-size: 0.82rem; border-bottom: 1px solid #f1f5f9; white-space: nowrap; text-align: right;
+    }
+    table.iou-table th {
+      font-size: 0.68rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.02em;
+      background: #f8fafc; border-bottom: 1px solid #e2e8f0;
+    }
+    table.iou-table th:first-child, table.iou-table td.name-col,
+    table.iou-table th:nth-child(2), table.iou-table td.type-col { text-align: left; }
+    table.iou-table td.name-col { font-weight: 600; color: #364752; }
+    table.iou-table tbody tr:hover td { background: #f8fafc; }
+
+    .type-pill, .direction-pill { display: inline-block; padding: 0.2rem 0.6rem; border-radius: 999px; font-size: 0.72rem; font-weight: 700; white-space: nowrap; }
+    .type-pill { background: #f1f5f9; color: #364752; }
+    .direction-i_owe { background: rgba(220,38,38,0.12); color: #b91c1c; }
+    .direction-owed_to_me { background: rgba(16,185,129,0.12); color: #047857; }
+
+    .row-edit, .row-delete {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 24px; height: 24px; font-size: 0.72rem; cursor: pointer;
+      border-radius: 0.4rem; flex-shrink: 0; border: 1px solid;
+    }
+    .row-edit { background: #ecfdf5; border-color: #a7f3d0; color: #059669; margin-right: 0.3rem; }
+    .row-edit:hover { background: #d1fae5; border-color: #10b981; color: #047857; }
+    .row-delete { background: #fef2f2; border-color: #fecaca; color: #dc2626; }
+    .row-delete:hover { background: #fee2e2; border-color: #dc2626; color: #b91c1c; }
+
+    .toast { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(20px); background: #0f172a; color: #fff; padding: 0.75rem 1.25rem; border-radius: 0.6rem; font-size: 0.85rem; opacity: 0; pointer-events: none; transition: opacity 0.2s, transform 0.2s; z-index: 200; }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* Add/edit modal */
+    .fm-modal-overlay {
+      display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.55);
+      align-items: center; justify-content: center; z-index: 300; padding: 1rem;
+    }
+    .fm-modal-overlay.show { display: flex; }
+    .fm-modal { background: #ffffff; border-radius: 1rem; width: 100%; max-width: 440px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(15,23,42,0.25); }
+    .fm-modal-head { display: flex; align-items: flex-start; justify-content: space-between; padding: 1.3rem 1.3rem 0.2rem; }
+    .fm-modal-head-text h3 { font-size: 1.15rem; font-weight: 800; margin-bottom: 0.2rem; }
+    .fm-modal-head-text p { font-size: 0.8rem; color: #94a3b8; }
+    .fm-modal-close { width: 28px; height: 28px; border-radius: 50%; border: none; background: #f1f5f9; color: #64748b; cursor: pointer; font-size: 0.85rem; flex-shrink: 0; }
+    .fm-modal-close:hover { background: #e2e8f0; color: #0f172a; }
+    .fm-modal-body { padding: 1.1rem 1.3rem 1.3rem; display: flex; flex-direction: column; gap: 1.1rem; }
+    .fm-field { display: flex; flex-direction: column; gap: 0.4rem; font-size: 0.8rem; font-weight: 600; color: #364752; }
+    .fm-field input, .fm-field select {
+      padding: 0.6rem 0.7rem; border: 1px solid #cbd5e1; border-radius: 0.5rem;
+      font-size: 0.9rem; font-family: inherit; color: #0f172a; background: #fff;
+    }
+    .fm-field input:focus, .fm-field select:focus { outline: none; border-color: #10b981; box-shadow: 0 0 0 2px rgba(16,185,129,0.15); }
+    .fm-field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .fm-modal-foot { padding: 0.3rem 1.3rem 1.3rem; display: flex; gap: 0.75rem; justify-content: flex-end; }
+    .fm-modal-foot .pbtn { justify-content: center; }
+
+    .direction-toggle { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+    .direction-toggle-btn {
+      display: flex; align-items: center; justify-content: center; gap: 0.4rem;
+      padding: 0.65rem 0.5rem; border: 1.5px solid #e2e8f0; border-radius: 0.6rem;
+      cursor: pointer; background: #fff; font-size: 0.83rem; font-weight: 700; color: #364752;
+    }
+    .direction-toggle-btn:hover { border-color: #94a3b8; }
+    .direction-toggle-btn.selected.i_owe { border-color: #dc2626; background: rgba(220,38,38,0.08); color: #b91c1c; }
+    .direction-toggle-btn.selected.owed_to_me { border-color: #10b981; background: rgba(16,185,129,0.08); color: #047857; }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a href="dashboard.html" class="sidebar-logo">
+        <div class="sidebar-logo-icon">💰</div>
+        <span>FinFlow</span>
+      </a>
+
+      <nav class="sidebar-nav">
+        <a href="dashboard.html">
+          <span class="nav-icon">▦</span>
+          <span class="nav-label">Dashboard</span>
+        </a>
+        <a href="fire-plan.html">
+          <span class="nav-icon">🧭</span>
+          <span class="nav-label">FIRE Plan</span>
+          <span class="nav-chevron">›</span>
+        </a>
+
+        <a href="net-worth.html" class="nav-group-head open">
+          <span class="nav-icon">📈</span>
+          <span class="nav-label">Networth</span>
+          <span class="nav-chevron">⌄</span>
+        </a>
+        <div class="sidebar-subnav">
+          <a href="portfolio.html">
+            <span class="nav-icon">📊</span>
+            <span class="nav-label">Stocks/MF</span>
+          </a>
+          <a href="gold.html">
+            <span class="nav-icon">🥇</span>
+            <span class="nav-label">Gold + Commodities</span>
+          </a>
+          <a href="bonds.html">
+            <span class="nav-icon">🏛️</span>
+            <span class="nav-label">Government Scheme</span>
+          </a>
+          <a href="properties.html">
+            <span class="nav-icon">🏠</span>
+            <span class="nav-label">Properties</span>
+          </a>
+          <a href="personal-debt.html" class="active">
+            <span class="nav-icon">🔄</span>
+            <span class="nav-label">Personal Debt & Receivable</span>
+          </a>
+        </div>
+
+        <a href="money-required.html">
+          <span class="nav-icon">🪴</span>
+          <span class="nav-label">Expenses</span>
+          <span class="nav-chevron">›</span>
+        </a>
+
+        <a href="expense-quick-add.html">
+          <span class="nav-icon">⚡</span>
+          <span class="nav-label">Daily Expenses Tracker</span>
+        </a>
+        <a href="tax-planning.html">
+          <span class="nav-icon">🧾</span>
+          <span class="nav-label">Tax Planning</span>
+        </a>
+        <a href="insurance-tracker.html">
+          <span class="nav-icon">🛡️</span>
+          <span class="nav-label">Insurance Tracker</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="reminders.html">
+          <span class="nav-icon">🔔</span>
+          <span class="nav-label">Reminders</span>
+        </a>
+        <a href="vault-overview.html">
+          <span class="nav-icon">🔒</span>
+          <span class="nav-label">Document Vault</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="split/dashboard.html">
+          <span class="nav-icon">💸</span>
+          <span class="nav-label">SplitExpenses(SplitWise)</span>
+        </a>
+        <a href="life-expectancy.html">
+          <span class="nav-icon">❤️</span>
+          <span class="nav-label">Health</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="astrology.html">
+          <span class="nav-icon">🔮</span>
+          <span class="nav-label">Spiritual</span>
+        </a>
+        <a href="#">
+          <span class="nav-icon">⚙️</span>
+          <span class="nav-label">Settings</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-spacer"></div>
+
+      <div class="feedback-card">
+        <div class="fc-icon">💬</div>
+        <strong>Got feedback?</strong>
+        <p>Have an idea or found a bug? We read every message.</p>
+        <a href="mailto:hello@finflow.app">✉ Contact Us</a>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <h1>Personal Debt & Receivable</h1>
+        <div class="topbar-right">
+          <div class="language-selector">🌐 English ▾</div>
+          <details class="user-menu">
+            <summary>👤</summary>
+            <div class="user-menu-panel">
+              <a href="#">Settings</a>
+              <a href="#" onclick="signOutAndRedirect('index.html'); return false;">Log Out</a>
+            </div>
+          </details>
+        </div>
+      </div>
+
+      <div class="page-head">
+        <div>
+          <h2>Personal Debt & Receivable</h2>
+          <p>Everything you owe, and everything owed to you.</p>
+        </div>
+        <div class="head-actions">
+          <button type="button" class="pbtn dark" onclick="openAddModal()">➕ Add Entry</button>
+        </div>
+      </div>
+
+      <p class="load-error" id="loadError"></p>
+
+      <div class="iou-hero" id="iouHero" style="display:none;">
+        <div class="iou-hero-stat">
+          <div class="iou-hero-icon">💳</div>
+          <div class="iou-hero-label">You Owe</div>
+          <div class="iou-hero-value" id="heroIOwe">₹0</div>
+        </div>
+        <div class="iou-hero-stat">
+          <div class="iou-hero-icon">📥</div>
+          <div class="iou-hero-label">Owed to You</div>
+          <div class="iou-hero-value" id="heroOwedToMe">₹0</div>
+        </div>
+        <div class="iou-hero-stat">
+          <div class="iou-hero-icon">⚖️</div>
+          <div class="iou-hero-label">Net Position</div>
+          <div class="iou-hero-value" id="heroNet">₹0</div>
+        </div>
+      </div>
+
+      <div class="grid-card" id="entriesCard">
+        <p class="grid-hint">🔄 Use ✎ to edit an entry, ✕ to remove it.</p>
+        <div class="grid-scroll">
+          <table class="iou-table">
+            <thead>
+              <tr>
+                <th>Entry</th>
+                <th>Direction</th>
+                <th>Type</th>
+                <th>Date</th>
+                <th>Balance</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="entriesBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="empty-state" id="emptyState" style="display:none;">
+        <p>Nothing here yet — and that's a good place to be.</p>
+        <button type="button" class="pbtn dark" onclick="openAddModal()">➕ Add Entry</button>
+      </div>
+    </main>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <div class="fm-modal-overlay" id="fmModalOverlay" onclick="if (event.target === this) closeModal();">
+    <div class="fm-modal">
+      <div class="fm-modal-head">
+        <div class="fm-modal-head-text">
+          <h3 id="fmModalTitle">Add Entry</h3>
+          <p>A name and a balance are enough to start.</p>
+        </div>
+        <button type="button" class="fm-modal-close" onclick="closeModal()">✕</button>
+      </div>
+
+      <div class="fm-modal-body">
+        <div class="fm-field">
+          <span>Direction</span>
+          <div class="direction-toggle" id="directionToggle">
+            <div class="direction-toggle-btn i_owe" data-dir="i_owe" onclick="selectDirection('i_owe')">😬 I Owe</div>
+            <div class="direction-toggle-btn owed_to_me" data-dir="owed_to_me" onclick="selectDirection('owed_to_me')">🙌 Owed to Me</div>
+          </div>
+        </div>
+
+        <label class="fm-field">
+          <span>What is it?</span>
+          <input type="text" id="fmName" placeholder="Visa Gold, loan to a friend, …">
+        </label>
+
+        <div class="fm-field-row">
+          <label class="fm-field">
+            <span>Type</span>
+            <select id="fmType"></select>
+          </label>
+          <label class="fm-field">
+            <span id="fmDateLabel">Date Borrowed</span>
+            <input type="date" id="fmDate">
+          </label>
+        </div>
+
+        <label class="fm-field">
+          <span id="fmBalanceLabel">Balance Owed (₹)</span>
+          <input type="number" min="0" id="fmBalance" placeholder="e.g. 45000">
+        </label>
+      </div>
+
+      <div class="fm-modal-foot">
+        <button type="button" class="pbtn outline" onclick="closeModal()">Cancel</button>
+        <button type="button" class="pbtn dark" id="fmSubmitBtn" onclick="saveEntry()">Add Entry</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-client.js"></script>
+  <script>
+    var DEBT_TYPES = [
+      { key: 'credit_card', label: 'Credit card' },
+      { key: 'personal_loan', label: 'Personal loan' },
+      { key: 'car_loan', label: 'Car loan' },
+      { key: 'student_loan', label: 'Student loan' },
+      { key: 'overdraft', label: 'Overdraft' },
+      { key: 'leasing', label: 'Leasing' },
+      { key: 'bnpl', label: 'Buy now, pay later' },
+      { key: 'family_friends', label: 'Family or friends' },
+      { key: 'other', label: 'Other' }
+    ];
+
+    var RECEIVABLE_TYPES = [
+      { key: 'family_friends', label: 'Family or friends' },
+      { key: 'colleague', label: 'Colleague' },
+      { key: 'business_client', label: 'Business / Client' },
+      { key: 'security_deposit', label: 'Security deposit' },
+      { key: 'loan_given', label: 'Loan given' },
+      { key: 'other', label: 'Other' }
+    ];
+
+    var entries = []; // [{ id, name, direction, category, entry_date, balance }]
+    var editingId = null;
+    var selectedDirection = 'i_owe';
+
+    function fmtRupee(n, compact) {
+      var amount = Math.round(Number(n) || 0);
+      var sign = amount < 0 ? '-' : '';
+      var abs = Math.abs(amount);
+      if (compact) {
+        if (abs >= 10000000) return sign + '₹' + Number((abs / 10000000).toFixed(2)).toString() + ' Cr';
+        if (abs >= 100000) return sign + '₹' + Number((abs / 100000).toFixed(2)).toString() + ' L';
+      }
+      var digits = String(abs);
+      var last3 = digits.slice(-3);
+      var rest = digits.slice(0, -3);
+      var restFormatted = rest.replace(/\B(?=(\d{2})+(?!\d))/g, ',');
+      var out = rest ? restFormatted + ',' + last3 : last3;
+      return sign + '₹' + out;
+    }
+
+    function escapeHtml(s) {
+      return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function typeListFor(direction) { return direction === 'i_owe' ? DEBT_TYPES : RECEIVABLE_TYPES; }
+
+    function typeLabel(direction, key) {
+      var t = typeListFor(direction).find(function (x) { return x.key === key; });
+      return t ? t.label : 'Other';
+    }
+
+    function fmtDate(d) {
+      if (!d) return '—';
+      var parts = d.split('-');
+      var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      return parts[2] + ' ' + months[Number(parts[1]) - 1] + ' ' + parts[0];
+    }
+
+    function showLoadError(prefix, error) {
+      console.error(prefix, error);
+      var el = document.getElementById('loadError');
+      if (!el) return;
+      el.textContent = '⚠️ ' + prefix + ': ' + (error && error.message ? error.message : String(error)) +
+        (error && error.code ? ' (code ' + error.code + ')' : '');
+      el.classList.add('show');
+    }
+
+    var toastTimer = null;
+    function showToast(msg) {
+      var toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(function () { toast.classList.remove('show'); }, 2600);
+    }
+
+    function populateTypeSelect() {
+      var sel = document.getElementById('fmType');
+      sel.innerHTML = typeListFor(selectedDirection).map(function (t) {
+        return '<option value="' + t.key + '">' + t.label + '</option>';
+      }).join('');
+    }
+
+    function selectDirection(dir) {
+      selectedDirection = dir;
+      document.querySelectorAll('.direction-toggle-btn').forEach(function (btn) {
+        btn.classList.toggle('selected', btn.dataset.dir === dir);
+      });
+      document.getElementById('fmDateLabel').textContent = dir === 'i_owe' ? 'Date Borrowed' : 'Date Lent';
+      document.getElementById('fmBalanceLabel').textContent = dir === 'i_owe' ? 'Balance Owed (₹)' : 'Balance Owed to You (₹)';
+      populateTypeSelect();
+    }
+
+    /* ---- One-time migration: moves rows out of the old separate debts/    ----
+       receivables tables into the merged personal_ious table.             ---- */
+    var IOU_MIGRATE_KEY = 'finflow_personal_ious_v1_setup';
+
+    async function ensureIouMigration() {
+      if (localStorage.getItem(IOU_MIGRATE_KEY)) return false;
+      var touched = false;
+
+      var { data: legacyDebts, error: dErr } = await supabaseClient.from('debts').select('*');
+      if (!dErr && legacyDebts && legacyDebts.length) {
+        for (var i = 0; i < legacyDebts.length; i++) {
+          var d = legacyDebts[i];
+          var { error: insErr } = await supabaseClient.from('personal_ious').insert({
+            name: d.name, direction: 'i_owe', category: d.debt_type, entry_date: d.borrowed_on, balance: d.balance
+          });
+          if (!insErr) touched = true;
+        }
+      }
+
+      var { data: legacyReceivables, error: rErr } = await supabaseClient.from('receivables').select('*');
+      if (!rErr && legacyReceivables && legacyReceivables.length) {
+        for (var j = 0; j < legacyReceivables.length; j++) {
+          var r = legacyReceivables[j];
+          var { error: insErr2 } = await supabaseClient.from('personal_ious').insert({
+            name: r.name, direction: 'owed_to_me', category: r.receivable_type, entry_date: r.lent_on, balance: r.balance
+          });
+          if (!insErr2) touched = true;
+        }
+      }
+
+      localStorage.setItem(IOU_MIGRATE_KEY, '1');
+      return touched;
+    }
+
+    async function loadEntries() {
+      var { data, error } = await supabaseClient.from('personal_ious').select('*').order('created_at');
+      if (error) { showLoadError('Could not load entries', error); return; }
+      entries = (data || []).map(function (row) {
+        return {
+          id: row.id, name: row.name, direction: row.direction, category: row.category,
+          entry_date: row.entry_date || null, balance: Number(row.balance) || 0
+        };
+      });
+    }
+
+    function render() {
+      var card = document.getElementById('entriesCard');
+      var body = document.getElementById('entriesBody');
+      var emptyEl = document.getElementById('emptyState');
+      var hero = document.getElementById('iouHero');
+
+      if (entries.length === 0) {
+        body.innerHTML = '';
+        card.style.display = 'none';
+        hero.style.display = 'none';
+        emptyEl.style.display = 'block';
+        return;
+      }
+
+      card.style.display = '';
+      hero.style.display = 'flex';
+      emptyEl.style.display = 'none';
+
+      body.innerHTML = entries.map(function (e) {
+        return '<tr>' +
+          '<td class="name-col">' + escapeHtml(e.name) + '</td>' +
+          '<td class="type-col"><span class="direction-pill direction-' + e.direction + '">' + (e.direction === 'i_owe' ? 'I Owe' : 'Owed to Me') + '</span></td>' +
+          '<td class="type-col"><span class="type-pill">' + typeLabel(e.direction, e.category) + '</span></td>' +
+          '<td>' + fmtDate(e.entry_date) + '</td>' +
+          '<td><b>' + fmtRupee(e.balance) + '</b></td>' +
+          '<td>' +
+            '<button type="button" class="row-edit" data-id="' + e.id + '" onclick="openEditModal(this.dataset.id)" title="Edit">✎</button>' +
+            '<button type="button" class="row-delete" data-id="' + e.id + '" data-name="' + escapeHtml(e.name) + '" onclick="deleteEntry(this.dataset.id, this.dataset.name)" title="Delete">✕</button>' +
+          '</td>' +
+        '</tr>';
+      }).join('');
+
+      var totalIOwe = 0, totalOwedToMe = 0;
+      entries.forEach(function (e) {
+        if (e.direction === 'i_owe') totalIOwe += e.balance; else totalOwedToMe += e.balance;
+      });
+      var net = totalOwedToMe - totalIOwe;
+
+      document.getElementById('heroIOwe').textContent = fmtRupee(totalIOwe, true);
+      document.getElementById('heroOwedToMe').textContent = fmtRupee(totalOwedToMe, true);
+      var netEl = document.getElementById('heroNet');
+      netEl.textContent = fmtRupee(net, true);
+      netEl.className = 'iou-hero-value ' + (net >= 0 ? 'pos' : 'neg');
+    }
+
+    function openAddModal() {
+      editingId = null;
+      document.getElementById('fmModalTitle').textContent = 'Add Entry';
+      document.getElementById('fmSubmitBtn').textContent = 'Add Entry';
+      document.getElementById('fmName').value = '';
+      document.getElementById('fmDate').value = '';
+      document.getElementById('fmBalance').value = '';
+      selectDirection('i_owe');
+      document.getElementById('fmModalOverlay').classList.add('show');
+      document.getElementById('fmName').focus();
+    }
+
+    function openEditModal(id) {
+      var e = entries.find(function (x) { return x.id === id; });
+      if (!e) return;
+      editingId = id;
+      document.getElementById('fmModalTitle').textContent = 'Edit Entry';
+      document.getElementById('fmSubmitBtn').textContent = 'Save Changes';
+      document.getElementById('fmName').value = e.name;
+      document.getElementById('fmDate').value = e.entry_date || '';
+      document.getElementById('fmBalance').value = e.balance;
+      selectDirection(e.direction);
+      document.getElementById('fmType').value = e.category;
+      document.getElementById('fmModalOverlay').classList.add('show');
+      document.getElementById('fmName').focus();
+    }
+
+    function closeModal() {
+      document.getElementById('fmModalOverlay').classList.remove('show');
+      editingId = null;
+    }
+
+    async function saveEntry() {
+      var name = document.getElementById('fmName').value.trim();
+      if (!name) { showToast('Enter a name for this entry.'); return; }
+      var category = document.getElementById('fmType').value;
+      var entryDate = document.getElementById('fmDate').value || null;
+      var balance = Number(document.getElementById('fmBalance').value) || 0;
+
+      var payload = { name: name, direction: selectedDirection, category: category, entry_date: entryDate, balance: balance };
+
+      if (editingId) {
+        payload.updated_at = new Date().toISOString();
+        var { error } = await supabaseClient.from('personal_ious').update(payload).eq('id', editingId);
+        if (error) { showToast('Could not save changes: ' + error.message); return; }
+        showToast('Updated.');
+      } else {
+        var { error: insErr } = await supabaseClient.from('personal_ious').insert(payload);
+        if (insErr) { showToast('Could not add entry: ' + insErr.message); return; }
+        showToast('Entry added.');
+      }
+
+      closeModal();
+      await loadEntries();
+      render();
+    }
+
+    async function deleteEntry(id, name) {
+      if (!confirm('Delete "' + name + '"? This can\'t be undone.')) return;
+      var { error } = await supabaseClient.from('personal_ious').delete().eq('id', id);
+      if (error) { showToast('Could not delete: ' + error.message); return; }
+      await loadEntries();
+      render();
+      showToast('Deleted.');
+    }
+
+    (async function init() {
+      var user = await requireAuth('index.html#login');
+      if (!user) return;
+      await ensureIouMigration();
+      await loadEntries();
+      render();
+    })();
+  </script>
+</body>
+</html>

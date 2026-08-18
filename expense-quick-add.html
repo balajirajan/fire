@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quick Add - FinFlow</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f8fafc;
+      color: #0f172a;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    a, button { color: inherit; text-decoration: none; font-family: inherit; }
+
+    .app-shell { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
+    @media (max-width: 860px) { .app-shell { grid-template-columns: 1fr; } .sidebar { display: none; } }
+
+    .sidebar { background: #ffffff; border-right: 1px solid #e2e8f0; display: flex; flex-direction: column; padding: 1.5rem 1.25rem; }
+    .sidebar-logo { display: flex; align-items: center; gap: 0.65rem; font-size: 1.1rem; font-weight: 800; margin-bottom: 2rem; padding: 0 0.25rem; }
+    .sidebar-logo-icon { width: 30px; height: 30px; background: linear-gradient(135deg, #0ea5e9, #10b981); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; flex-shrink: 0; }
+    .sidebar-nav { display: flex; flex-direction: column; gap: 0.25rem; }
+    .sidebar-nav a, .sidebar-nav .nav-group-head { display: flex; align-items: center; gap: 0.75rem; padding: 0.7rem 0.75rem; border-radius: 0.6rem; font-size: 0.9rem; font-weight: 500; color: #364752; }
+    .sidebar-nav a:hover, .sidebar-nav .nav-group-head:hover { background: #f1f5f9; }
+    .sidebar-nav a.active { background: #0f172a; color: #ffffff; font-weight: 600; }
+    .sidebar-nav .nav-group-head.open { background: #f1f5f9; font-weight: 700; }
+    .sidebar-nav .nav-group-head.active { background: #0f172a; color: #ffffff; font-weight: 600; }
+    .sidebar-nav .nav-group-head.active .nav-chevron { color: rgba(255,255,255,0.6); }
+    .sidebar-nav .nav-icon { font-size: 1rem; width: 20px; text-align: center; flex-shrink: 0; }
+    .sidebar-nav .nav-label { flex: 1; }
+    .sidebar-nav .nav-chevron { color: #94a3b8; font-size: 0.85rem; }
+    .sidebar-subnav { display: flex; flex-direction: column; gap: 0.2rem; padding-left: 1.6rem; margin: 0.15rem 0 0.3rem; }
+    .sidebar-subnav a { display: flex; align-items: center; gap: 0.6rem; padding: 0.55rem 0.6rem; border-radius: 0.5rem; font-size: 0.85rem; font-weight: 500; color: #364752; }
+    .sidebar-subnav a:hover { background: #f1f5f9; }
+    .sidebar-subnav a.active { background: #0f172a; color: #fff; font-weight: 600; }
+    .sidebar-spacer { flex: 1; }
+    .feedback-card { background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 0.9rem; padding: 1.1rem; margin-top: 1.5rem; }
+    .feedback-card .fc-icon { width: 32px; height: 32px; border-radius: 0.6rem; background: #eef2f7; display: flex; align-items: center; justify-content: center; font-size: 0.95rem; margin-bottom: 0.6rem; }
+    .feedback-card strong { display: block; font-size: 0.85rem; margin-bottom: 0.3rem; }
+    .feedback-card p { font-size: 0.78rem; color: #64748b; line-height: 1.5; margin-bottom: 0.85rem; }
+    .feedback-card a { display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; width: 100%; padding: 0.55rem; border: 1px solid #cbd5e1; border-radius: 0.5rem; font-size: 0.8rem; font-weight: 600; color: #364752; }
+    .feedback-card a:hover { border-color: #10b981; color: #10b981; }
+
+    .main { padding: 1.5rem 2.5rem 3rem; min-width: 0; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; padding-bottom: 1.25rem; border-bottom: 1px solid #e2e8f0; margin-bottom: 1.5rem; }
+    .topbar h1 { font-size: 1.4rem; font-weight: 700; }
+    .topbar-right { display: flex; align-items: center; gap: 0.85rem; }
+    .language-selector { display: flex; align-items: center; gap: 0.5rem; background: #ffffff; padding: 0.5rem 0.9rem; border-radius: 0.5rem; color: #51636f; border: 1px solid #e2e8f0; cursor: pointer; font-size: 0.85rem; }
+    .user-menu { position: relative; list-style: none; }
+    .user-menu > summary { cursor: pointer; list-style: none; width: 34px; height: 34px; border-radius: 50%; background: #eef2f7; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; font-size: 1rem; }
+    .user-menu > summary::-webkit-details-marker { display: none; }
+    .user-menu-panel { position: absolute; top: calc(100% + 0.6rem); right: 0; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 0.75rem; box-shadow: 0 10px 30px rgba(15,23,42,0.12); padding: 0.4rem; min-width: 150px; z-index: 20; }
+    .user-menu-panel a { display: block; padding: 0.55rem 0.7rem; border-radius: 0.5rem; font-size: 0.85rem; color: #364752; font-weight: 500; }
+    .user-menu-panel a:hover { background: #f1f5f9; color: #10b981; }
+
+    .page-head { margin-bottom: 1.5rem; }
+    .page-head h2 { font-size: 1.6rem; font-weight: 800; margin-bottom: 0.3rem; }
+    .page-head p { color: #64748b; font-size: 0.9rem; }
+
+    .quick-add-card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 1.25rem; padding: 2rem; max-width: 560px; box-shadow: 0 4px 16px rgba(15,23,42,0.03); }
+
+    .amount-row { display: flex; align-items: center; justify-content: center; gap: 0.4rem; margin-bottom: 1.5rem; }
+    .amount-currency { font-size: 2rem; font-weight: 800; color: #94a3b8; }
+    .amount-input { border: none; outline: none; font-size: 3rem; font-weight: 800; text-align: center; width: 100%; max-width: 280px; font-family: inherit; color: #0f172a; }
+    .amount-input::placeholder { color: #cbd5e1; }
+    .amount-underline { height: 3px; background: #f1f5f9; border-radius: 999px; margin: -0.5rem auto 1.5rem; max-width: 280px; }
+    .amount-underline.filled { background: linear-gradient(90deg, #0ea5e9, #10b981); }
+
+    .field-block { margin-bottom: 1.4rem; }
+    .field-block-label { font-size: 0.78rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 0.6rem; display: block; }
+
+    .chip-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.55rem; }
+    @media (max-width: 480px) { .chip-grid { grid-template-columns: repeat(3, 1fr); } }
+    .chip { display: flex; flex-direction: column; align-items: center; gap: 0.3rem; padding: 0.7rem 0.3rem; border: 1.5px solid #e2e8f0; border-radius: 0.75rem; background: #fff; cursor: pointer; font-size: 0.72rem; font-weight: 600; color: #51636f; text-align: center; }
+    .chip .chip-icon { font-size: 1.3rem; }
+    .chip:hover { border-color: #94a3b8; }
+    .chip.selected { border-color: #10b981; background: #ecfdf5; color: #059669; }
+
+    .pill-row { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .pill { padding: 0.5rem 0.9rem; border: 1.5px solid #e2e8f0; border-radius: 999px; background: #fff; cursor: pointer; font-size: 0.82rem; font-weight: 600; color: #51636f; }
+    .pill:hover { border-color: #94a3b8; }
+    .pill.selected { border-color: #0ea5e9; background: #eff6ff; color: #2563eb; }
+
+    .secondary-row { display: flex; gap: 0.8rem; align-items: flex-end; }
+    .secondary-row .field-block { flex: 1; margin-bottom: 0; }
+    .field-input { width: 100%; padding: 0.6rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 0.55rem; font-size: 0.88rem; font-family: inherit; color: #0f172a; }
+    .field-input:focus { outline: none; border-color: #10b981; box-shadow: 0 0 0 2px rgba(16,185,129,0.15); }
+    .camera-btn { width: 42px; height: 42px; border-radius: 0.55rem; border: 1px solid #e2e8f0; background: #f8fafc; color: #94a3b8; font-size: 1.1rem; cursor: not-allowed; flex-shrink: 0; }
+
+    .form-error { font-size: 0.8rem; color: #dc2626; font-weight: 600; margin-bottom: 0.9rem; min-height: 1.1rem; }
+
+    .btn-save { width: 100%; padding: 0.9rem; border: none; border-radius: 0.75rem; background: linear-gradient(135deg, #0ea5e9, #10b981); color: #fff; font-size: 1rem; font-weight: 700; cursor: pointer; margin-top: 0.5rem; }
+    .btn-save:hover { opacity: 0.92; }
+    .btn-save:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .toast { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%) translateY(20px); background: #0f172a; color: #fff; padding: 0.75rem 1.4rem; border-radius: 0.7rem; font-size: 0.88rem; font-weight: 600; opacity: 0; pointer-events: none; transition: all 0.25s ease; z-index: 60; }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    .today-card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 1.25rem; padding: 1.4rem 1.6rem; max-width: 560px; margin-top: 1.25rem; box-shadow: 0 4px 16px rgba(15,23,42,0.03); }
+    .today-card h3 { font-size: 0.95rem; font-weight: 800; margin-bottom: 0.9rem; }
+    .today-row { display: flex; align-items: center; gap: 0.7rem; padding: 0.55rem 0; border-top: 1px solid #f1f5f9; }
+    .today-row:first-of-type { border-top: none; }
+    .today-row .t-icon { font-size: 1.1rem; width: 26px; text-align: center; }
+    .today-row .t-cat { flex: 1; font-size: 0.85rem; font-weight: 600; }
+    .today-row .t-time { font-size: 0.74rem; color: #94a3b8; }
+    .today-row .t-amount { font-size: 0.88rem; font-weight: 800; color: #dc2626; }
+    .today-row .t-delete { color: #cbd5e1; background: none; border: none; cursor: pointer; font-size: 0.9rem; padding: 0 0.2rem; }
+    .today-row .t-delete:hover { color: #dc2626; }
+    .today-empty { color: #94a3b8; font-size: 0.85rem; text-align: center; padding: 0.5rem 0; }
+    .today-total { display: flex; justify-content: space-between; margin-top: 0.9rem; padding-top: 0.9rem; border-top: 1px solid #e2e8f0; font-size: 0.85rem; font-weight: 700; }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a href="dashboard.html" class="sidebar-logo">
+        <div class="sidebar-logo-icon">💰</div>
+        <span>FinFlow</span>
+      </a>
+
+      <nav class="sidebar-nav">
+        <a href="dashboard.html">
+          <span class="nav-icon">▦</span>
+          <span class="nav-label">Dashboard</span>
+        </a>
+        <a href="fire-plan.html">
+          <span class="nav-icon">🧭</span>
+          <span class="nav-label">FIRE Plan</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="net-worth.html">
+          <span class="nav-icon">📈</span>
+          <span class="nav-label">Networth</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="money-required.html">
+          <span class="nav-icon">🪴</span>
+          <span class="nav-label">Expenses</span>
+          <span class="nav-chevron">›</span>
+        </a>
+
+        <a href="expense-quick-add.html" class="active">
+          <span class="nav-icon">⚡</span>
+          <span class="nav-label">Daily Expenses Tracker</span>
+        </a>
+
+        <a href="tax-planning.html">
+          <span class="nav-icon">🧾</span>
+          <span class="nav-label">Tax Planning</span>
+        </a>
+        <a href="insurance-tracker.html">
+          <span class="nav-icon">🛡️</span>
+          <span class="nav-label">Insurance Tracker</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="reminders.html">
+          <span class="nav-icon">🔔</span>
+          <span class="nav-label">Reminders</span>
+        </a>
+        <a href="vault-overview.html">
+          <span class="nav-icon">🔒</span>
+          <span class="nav-label">Document Vault</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="split/dashboard.html">
+          <span class="nav-icon">💸</span>
+          <span class="nav-label">SplitExpenses(SplitWise)</span>
+        </a>
+        <a href="life-expectancy.html">
+          <span class="nav-icon">❤️</span>
+          <span class="nav-label">Health</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="astrology.html">
+          <span class="nav-icon">🔮</span>
+          <span class="nav-label">Spiritual</span>
+        </a>
+        <a href="#">
+          <span class="nav-icon">⚙️</span>
+          <span class="nav-label">Settings</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-spacer"></div>
+
+      <div class="feedback-card">
+        <div class="fc-icon">💬</div>
+        <strong>Got feedback?</strong>
+        <p>Have an idea or found a bug? We read every message.</p>
+        <a href="mailto:hello@finflow.app">✉ Contact Us</a>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <h1>Daily Expenses</h1>
+        <div class="topbar-right">
+          <div class="language-selector">🌐 English ▾</div>
+          <details class="user-menu">
+            <summary>👤</summary>
+            <div class="user-menu-panel">
+              <a href="#">Settings</a>
+              <a href="#" onclick="signOutAndRedirect('index.html'); return false;">Log Out</a>
+            </div>
+          </details>
+        </div>
+      </div>
+
+      <div class="page-head">
+        <h2>Quick Add</h2>
+        <p>Log a spend in a few taps. Category, payment method and who paid pre-fill from your recent habits.</p>
+      </div>
+
+      <div class="quick-add-card">
+        <div class="amount-row">
+          <span class="amount-currency">₹</span>
+          <input type="number" class="amount-input" id="amountInput" placeholder="0" min="0" step="1" inputmode="decimal">
+        </div>
+        <div class="amount-underline" id="amountUnderline"></div>
+
+        <div class="field-block">
+          <span class="field-block-label">Category</span>
+          <div class="chip-grid" id="categoryChips"></div>
+        </div>
+
+        <div class="field-block">
+          <span class="field-block-label">Who paid</span>
+          <div class="pill-row" id="ownerPills"></div>
+        </div>
+
+        <div class="secondary-row">
+          <div class="field-block">
+            <span class="field-block-label">Payment method</span>
+            <input type="text" class="field-input" id="accountInput" list="accountSuggestions" placeholder="e.g. Cash, HDFC Card">
+            <datalist id="accountSuggestions"></datalist>
+          </div>
+          <button type="button" class="camera-btn" id="cameraBtn" title="Receipt capture — coming soon" disabled>📷</button>
+        </div>
+
+        <div class="field-block" style="margin-top: 1.1rem;">
+          <span class="field-block-label">Note (optional)</span>
+          <input type="text" class="field-input" id="noteInput" placeholder="e.g. Lunch with team">
+        </div>
+
+        <div class="form-error" id="formError"></div>
+        <button type="button" class="btn-save" id="saveBtn">Save Expense</button>
+      </div>
+
+      <div class="today-card">
+        <h3>Today</h3>
+        <div id="todayList"></div>
+      </div>
+    </main>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-client.js"></script>
+  <script>
+    var CATEGORIES = [
+      { key: 'food', label: 'Food & Dining', icon: '🍔' },
+      { key: 'groceries', label: 'Groceries', icon: '🛒' },
+      { key: 'transport', label: 'Transport', icon: '🚗' },
+      { key: 'utilities', label: 'Utilities', icon: '💡' },
+      { key: 'rent', label: 'Rent', icon: '🏠' },
+      { key: 'shopping', label: 'Shopping', icon: '🛍️' },
+      { key: 'entertainment', label: 'Entertainment', icon: '🎬' },
+      { key: 'health', label: 'Health', icon: '💊' },
+      { key: 'bills', label: 'Bills & Recharges', icon: '📱' },
+      { key: 'travel', label: 'Travel', icon: '✈️' },
+      { key: 'education', label: 'Education', icon: '🎓' },
+      { key: 'other', label: 'Other', icon: '📦' }
+    ];
+    var CATEGORY_BY_KEY = {};
+    CATEGORIES.forEach(function (c) { CATEGORY_BY_KEY[c.key] = c; });
+
+    var OWNERS = [
+      { key: 'self', label: 'Self' },
+      { key: 'spouse', label: 'Spouse' },
+      { key: 'joint', label: 'Joint' },
+      { key: 'child', label: 'Child' },
+      { key: 'other', label: 'Other' }
+    ];
+
+    var selectedCategory = 'other';
+    var selectedOwner = 'self';
+    var recentTransactions = [];
+    var todayTransactions = [];
+
+    function escapeHtml(s) {
+      return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function formatRupees(amount) {
+      var n = Math.round(Number(amount) || 0);
+      return '₹' + n.toLocaleString('en-IN');
+    }
+
+    function showToast(msg) {
+      var el = document.getElementById('toast');
+      el.textContent = msg;
+      el.classList.add('show');
+      setTimeout(function () { el.classList.remove('show'); }, 1800);
+    }
+
+    /* ---- Pre-fill: most frequent category/account/owner for this time of day ---- */
+
+    function timeBucket(date) {
+      var h = date.getHours();
+      if (h >= 5 && h < 11) return 'morning';
+      if (h >= 11 && h < 17) return 'afternoon';
+      if (h >= 17 && h < 21) return 'evening';
+      return 'night';
+    }
+
+    function mostFrequent(values) {
+      var present = values.filter(function (v) { return v; });
+      if (!present.length) return null;
+      var counts = {};
+      present.forEach(function (v) { counts[v] = (counts[v] || 0) + 1; });
+      var best = null, bestCount = 0;
+      Object.keys(counts).forEach(function (k) {
+        if (counts[k] > bestCount) { best = k; bestCount = counts[k]; }
+      });
+      return best;
+    }
+
+    function applyPrefill() {
+      if (!recentTransactions.length) return;
+      var now = new Date();
+      var bucket = timeBucket(now);
+      var inBucket = recentTransactions.filter(function (t) { return timeBucket(new Date(t.created_at)) === bucket; });
+      var pool = inBucket.length >= 3 ? inBucket : recentTransactions;
+
+      var cat = mostFrequent(pool.map(function (t) { return t.category; }));
+      var acc = mostFrequent(pool.map(function (t) { return t.account; }));
+      var own = mostFrequent(pool.map(function (t) { return t.owner; }));
+
+      if (cat && CATEGORY_BY_KEY[cat]) selectCategory(cat);
+      if (own) selectOwner(own);
+      if (acc) document.getElementById('accountInput').value = acc;
+    }
+
+    /* ---- Rendering ---- */
+
+    function renderCategoryChips() {
+      var grid = document.getElementById('categoryChips');
+      grid.innerHTML = CATEGORIES.map(function (c) {
+        return '<button type="button" class="chip" data-cat="' + c.key + '">' +
+          '<span class="chip-icon">' + c.icon + '</span>' + c.label +
+        '</button>';
+      }).join('');
+      Array.prototype.forEach.call(grid.querySelectorAll('[data-cat]'), function (btn) {
+        btn.addEventListener('click', function () { selectCategory(btn.dataset.cat); });
+      });
+      selectCategory(selectedCategory);
+    }
+
+    function selectCategory(key) {
+      selectedCategory = key;
+      Array.prototype.forEach.call(document.querySelectorAll('#categoryChips .chip'), function (btn) {
+        btn.classList.toggle('selected', btn.dataset.cat === key);
+      });
+    }
+
+    function renderOwnerPills() {
+      var row = document.getElementById('ownerPills');
+      row.innerHTML = OWNERS.map(function (o) {
+        return '<button type="button" class="pill" data-owner="' + o.key + '">' + o.label + '</button>';
+      }).join('');
+      Array.prototype.forEach.call(row.querySelectorAll('[data-owner]'), function (btn) {
+        btn.addEventListener('click', function () { selectOwner(btn.dataset.owner); });
+      });
+      selectOwner(selectedOwner);
+    }
+
+    function selectOwner(key) {
+      selectedOwner = key;
+      Array.prototype.forEach.call(document.querySelectorAll('#ownerPills .pill'), function (btn) {
+        btn.classList.toggle('selected', btn.dataset.owner === key);
+      });
+    }
+
+    function renderTodayList() {
+      var container = document.getElementById('todayList');
+      if (!todayTransactions.length) {
+        container.innerHTML = '<div class="today-empty">Nothing logged yet today.</div>';
+        return;
+      }
+      var sorted = todayTransactions.slice().sort(function (a, b) { return new Date(b.created_at) - new Date(a.created_at); });
+      var total = todayTransactions.reduce(function (s, t) { return s + Number(t.amount); }, 0);
+
+      container.innerHTML = sorted.map(function (t) {
+        var cat = CATEGORY_BY_KEY[t.category] || { icon: '📦', label: t.category };
+        var time = new Date(t.created_at).toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit' });
+        return '<div class="today-row">' +
+          '<span class="t-icon">' + cat.icon + '</span>' +
+          '<span class="t-cat">' + escapeHtml(cat.label) + (t.description && t.description !== cat.label ? ' <span class="t-time">· ' + escapeHtml(t.description) + '</span>' : '') + '<br><span class="t-time">' + time + '</span></span>' +
+          '<span class="t-amount">' + formatRupees(t.amount) + '</span>' +
+          '<button type="button" class="t-delete" data-del="' + t.id + '" title="Delete">✕</button>' +
+        '</div>';
+      }).join('') + '<div class="today-total"><span>Today’s total</span><span>' + formatRupees(total) + '</span></div>';
+
+      Array.prototype.forEach.call(container.querySelectorAll('[data-del]'), function (btn) {
+        btn.addEventListener('click', function () { deleteTransaction(btn.dataset.del); });
+      });
+    }
+
+    /* ---- Data ---- */
+
+    async function loadRecentTransactions() {
+      var { data, error } = await supabaseClient.from('transactions').select('*').eq('type', 'expense').order('created_at', { ascending: false }).limit(200);
+      if (error) { console.error('Could not load recent transactions', error); return; }
+      recentTransactions = data || [];
+
+      var accounts = Array.from(new Set(recentTransactions.map(function (t) { return t.account; }).filter(Boolean)));
+      document.getElementById('accountSuggestions').innerHTML = accounts.map(function (a) {
+        return '<option value="' + escapeHtml(a) + '"></option>';
+      }).join('');
+
+      applyPrefill();
+    }
+
+    async function loadTodayTransactions() {
+      var today = new Date().toISOString().slice(0, 10);
+      var { data, error } = await supabaseClient.from('transactions').select('*').eq('type', 'expense').eq('date', today).order('created_at', { ascending: false });
+      if (error) { console.error('Could not load today’s transactions', error); return; }
+      todayTransactions = data || [];
+      renderTodayList();
+    }
+
+    async function saveExpense() {
+      var errEl = document.getElementById('formError');
+      var amountInput = document.getElementById('amountInput');
+      var amount = Number(amountInput.value);
+
+      if (!amount || amount <= 0) { errEl.textContent = 'Enter a valid amount.'; return; }
+      errEl.textContent = '';
+
+      var account = document.getElementById('accountInput').value.trim() || 'Cash';
+      var note = document.getElementById('noteInput').value.trim();
+      var today = new Date().toISOString().slice(0, 10);
+      var categoryLabel = CATEGORY_BY_KEY[selectedCategory] ? CATEGORY_BY_KEY[selectedCategory].label : selectedCategory;
+
+      var payload = {
+        date: today,
+        description: note || categoryLabel,
+        category: selectedCategory,
+        account: account,
+        owner: selectedOwner,
+        type: 'expense',
+        amount: amount
+      };
+
+      var saveBtn = document.getElementById('saveBtn');
+      saveBtn.disabled = true;
+      var { error } = await supabaseClient.from('transactions').insert(payload);
+      saveBtn.disabled = false;
+
+      if (error) { errEl.textContent = 'Could not save. Please try again.'; console.error(error); return; }
+
+      showToast('Saved ' + formatRupees(amount));
+      amountInput.value = '';
+      document.getElementById('noteInput').value = '';
+      document.getElementById('amountUnderline').classList.remove('filled');
+      amountInput.focus();
+
+      await Promise.all([loadRecentTransactions(), loadTodayTransactions()]);
+    }
+
+    async function deleteTransaction(id) {
+      var { error } = await supabaseClient.from('transactions').delete().eq('id', id);
+      if (error) { console.error('Could not delete transaction', error); return; }
+      await loadTodayTransactions();
+    }
+
+    (async function init() {
+      var user = await requireAuth('index.html#login');
+      if (!user) return;
+
+      renderCategoryChips();
+      renderOwnerPills();
+
+      var amountInput = document.getElementById('amountInput');
+      amountInput.addEventListener('input', function () {
+        document.getElementById('amountUnderline').classList.toggle('filled', !!amountInput.value);
+      });
+      amountInput.addEventListener('keydown', function (e) { if (e.key === 'Enter') saveExpense(); });
+
+      document.getElementById('saveBtn').addEventListener('click', saveExpense);
+
+      await Promise.all([loadRecentTransactions(), loadTodayTransactions()]);
+      amountInput.focus();
+    })();
+  </script>
+</body>
+</html>

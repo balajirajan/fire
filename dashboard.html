@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - FinFlow</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f8fafc;
+      color: #0f172a;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    a, button { color: inherit; text-decoration: none; font-family: inherit; }
+
+    .app-shell { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
+    @media (max-width: 860px) { .app-shell { grid-template-columns: 1fr; } .sidebar { display: none; } }
+
+    /* Sidebar */
+    .sidebar { background: #ffffff; border-right: 1px solid #e2e8f0; display: flex; flex-direction: column; padding: 1.5rem 1.25rem; }
+    .sidebar-logo { display: flex; align-items: center; gap: 0.65rem; font-size: 1.1rem; font-weight: 800; margin-bottom: 2rem; padding: 0 0.25rem; }
+    .sidebar-logo-icon { width: 30px; height: 30px; background: linear-gradient(135deg, #0ea5e9, #10b981); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; flex-shrink: 0; }
+    .sidebar-nav { display: flex; flex-direction: column; gap: 0.25rem; }
+    .sidebar-nav a, .sidebar-nav .nav-group-head { display: flex; align-items: center; gap: 0.75rem; padding: 0.7rem 0.75rem; border-radius: 0.6rem; font-size: 0.9rem; font-weight: 500; color: #364752; }
+    .sidebar-nav a:hover, .sidebar-nav .nav-group-head:hover { background: #f1f5f9; }
+    .sidebar-nav a.active { background: #0f172a; color: #ffffff; font-weight: 600; }
+    .sidebar-nav .nav-group-head.open { background: #f1f5f9; font-weight: 700; }
+    .sidebar-nav .nav-icon { font-size: 1rem; width: 20px; text-align: center; flex-shrink: 0; }
+    .sidebar-nav .nav-label { flex: 1; }
+    .sidebar-nav .nav-chevron { color: #94a3b8; font-size: 0.85rem; }
+    .sidebar-nav a.active .nav-chevron { color: rgba(255,255,255,0.6); }
+    .sidebar-subnav { display: flex; flex-direction: column; gap: 0.2rem; padding-left: 1.6rem; margin: 0.15rem 0 0.3rem; }
+    .sidebar-subnav a { display: flex; align-items: center; gap: 0.6rem; padding: 0.55rem 0.6rem; border-radius: 0.5rem; font-size: 0.85rem; font-weight: 500; color: #364752; }
+    .sidebar-subnav a:hover { background: #f1f5f9; }
+    .sidebar-subnav a.active { background: #0f172a; color: #fff; font-weight: 600; }
+    .sidebar-spacer { flex: 1; }
+    .feedback-card { background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 0.9rem; padding: 1.1rem; margin-top: 1.5rem; }
+    .feedback-card .fc-icon { width: 32px; height: 32px; border-radius: 0.6rem; background: #eef2f7; display: flex; align-items: center; justify-content: center; font-size: 0.95rem; margin-bottom: 0.6rem; }
+    .feedback-card strong { display: block; font-size: 0.85rem; margin-bottom: 0.3rem; }
+    .feedback-card p { font-size: 0.78rem; color: #64748b; line-height: 1.5; margin-bottom: 0.85rem; }
+    .feedback-card a { display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; width: 100%; padding: 0.55rem; border: 1px solid #cbd5e1; border-radius: 0.5rem; font-size: 0.8rem; font-weight: 600; color: #364752; }
+    .feedback-card a:hover { border-color: #10b981; color: #10b981; }
+
+    /* Main */
+    .main { padding: 1.5rem 2.5rem 3rem; min-width: 0; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; padding-bottom: 1.25rem; border-bottom: 1px solid #e2e8f0; margin-bottom: 1.5rem; }
+    .topbar h1 { font-size: 1.4rem; font-weight: 700; }
+    .topbar-right { display: flex; align-items: center; gap: 0.85rem; }
+    .language-selector { display: flex; align-items: center; gap: 0.5rem; background: #ffffff; padding: 0.5rem 0.9rem; border-radius: 0.5rem; color: #51636f; border: 1px solid #e2e8f0; cursor: pointer; font-size: 0.85rem; }
+    .user-menu { position: relative; list-style: none; }
+    .user-menu > summary { cursor: pointer; list-style: none; width: 34px; height: 34px; border-radius: 50%; background: #eef2f7; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; font-size: 1rem; }
+    .user-menu > summary::-webkit-details-marker { display: none; }
+    .user-menu-panel { position: absolute; top: calc(100% + 0.6rem); right: 0; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 0.75rem; box-shadow: 0 10px 30px rgba(15,23,42,0.12); padding: 0.4rem; min-width: 150px; z-index: 20; }
+    .user-menu-panel a { display: block; padding: 0.55rem 0.7rem; border-radius: 0.5rem; font-size: 0.85rem; color: #364752; font-weight: 500; }
+    .user-menu-panel a:hover { background: #f1f5f9; color: #10b981; }
+
+    .welcome-text { color: #64748b; font-size: 0.9rem; margin-bottom: 1.5rem; }
+
+    /* Snapshot hero */
+    .snap-hero {
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      border-radius: 1.25rem;
+      padding: 1.75rem 2rem;
+      color: #fff;
+      margin-bottom: 1.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.75rem;
+    }
+    .snap-hero-stats { display: flex; flex-wrap: wrap; gap: 2.25rem; flex: 1; min-width: 280px; }
+    .snap-hero-stat { min-width: 150px; }
+    .snap-hero-stat.primary .snap-hero-value { font-size: 2.1rem; }
+    .snap-hero-icon { font-size: 1.1rem; margin-bottom: 0.4rem; opacity: 0.9; }
+    .snap-hero-label { font-size: 0.78rem; color: #94a3b8; font-weight: 600; margin-bottom: 0.3rem; }
+    .snap-hero-value { font-size: 1.6rem; font-weight: 800; }
+    .snap-hero-sub { font-size: 0.72rem; color: #94a3b8; margin-top: 0.3rem; }
+    .snap-hero-sub a { color: #7dd3fc; font-weight: 600; }
+    .snap-hero-progress { display: flex; flex-direction: column; align-items: center; }
+    .snap-hero-donut-wrap { position: relative; width: 112px; height: 112px; flex-shrink: 0; }
+    .snap-hero-donut-wrap svg { width: 112px; height: 112px; display: block; }
+    .snap-hero-progress-label { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    .snap-hero-progress-pct { font-size: 1.3rem; font-weight: 800; }
+    .snap-hero-progress-sub { font-size: 0.58rem; color: #94a3b8; text-align: center; line-height: 1.3; margin-top: 0.15rem; }
+
+    /* Cash flow strip */
+    .cashflow-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.85rem; margin-bottom: 1.5rem; }
+    @media (max-width: 760px) { .cashflow-grid { grid-template-columns: 1fr 1fr; } }
+    .cashflow-item { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 1rem; padding: 1rem 1.1rem; box-shadow: 0 4px 16px rgba(15,23,42,0.03); }
+    .cashflow-item span { display: block; font-size: 0.78rem; font-weight: 600; color: #64748b; margin-bottom: 0.35rem; }
+    .cashflow-item b { font-size: 1.2rem; font-weight: 800; color: #0f172a; }
+    .cashflow-item.neg b { color: #dc2626; }
+    .cashflow-item.pos b { color: #059669; }
+
+    /* Chart cards */
+    .chart-card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 1.1rem; padding: 1.5rem 1.4rem 1.1rem; margin-bottom: 1.5rem; box-shadow: 0 4px 16px rgba(15,23,42,0.03); }
+    .chart-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.2rem; }
+    .chart-card .chart-sub { font-size: 0.78rem; color: #94a3b8; margin-bottom: 0.75rem; }
+    .chart-empty { text-align: center; padding: 2rem 1rem; color: #94a3b8; font-size: 0.85rem; }
+    .charts-row { display: grid; grid-template-columns: 1.3fr 1fr; gap: 1.5rem; align-items: stretch; }
+    @media (max-width: 900px) { .charts-row { grid-template-columns: 1fr; } }
+
+    .donut-row { display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; }
+    .donut-svg { width: 130px; height: 130px; flex-shrink: 0; }
+    .donut-legend { flex: 1; min-width: 180px; display: flex; flex-direction: column; gap: 0.5rem; }
+    .donut-legend-row { display: flex; align-items: center; justify-content: space-between; font-size: 0.8rem; gap: 0.75rem; }
+    .donut-legend-name { display: flex; align-items: center; gap: 0.5rem; color: #364752; font-weight: 600; }
+    .donut-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+    .donut-legend-val { color: #64748b; font-weight: 700; white-space: nowrap; }
+
+    /* Explore grid */
+    .explore-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
+    @media (max-width: 900px) { .explore-grid { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 600px) { .explore-grid { grid-template-columns: 1fr; } }
+    .explore-tile {
+      background: #ffffff; border: 1px solid #e5e7eb; border-radius: 1rem; padding: 1.1rem 1.2rem;
+      box-shadow: 0 4px 16px rgba(15,23,42,0.03); display: flex; flex-direction: column; gap: 0.6rem;
+      transition: border-color 0.2s, transform 0.15s;
+    }
+    .explore-tile:hover { border-color: #10b981; transform: translateY(-1px); }
+    .explore-tile-head { display: flex; align-items: center; gap: 0.65rem; }
+    .explore-tile-icon { width: 36px; height: 36px; border-radius: 0.65rem; background: #f1f5f9; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; }
+    .explore-tile-title { font-size: 0.9rem; font-weight: 700; flex: 1; }
+    .explore-tile-arrow { color: #cbd5e1; font-size: 1rem; }
+    .explore-tile-value { font-size: 1.15rem; font-weight: 800; }
+    .explore-tile-note { font-size: 0.76rem; color: #64748b; }
+
+    .privacy-note { display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; color: #64748b; margin-top: 0.5rem; }
+
+    /* Get started card (only shown when steps remain) */
+    .dash-card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 1.1rem; padding: 1.75rem; margin-bottom: 1.5rem; box-shadow: 0 4px 16px rgba(15,23,42,0.03); }
+    .gs-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.9rem; }
+    .gs-head h2 { font-size: 1.05rem; font-weight: 700; }
+    .gs-head-right { display: flex; align-items: center; gap: 0.85rem; }
+    .gs-count { font-size: 0.82rem; color: #64748b; font-weight: 600; }
+    .gs-close { background: none; border: none; color: #94a3b8; font-size: 1.1rem; cursor: pointer; line-height: 1; padding: 0.2rem; }
+    .gs-close:hover { color: #364752; }
+    .gs-progress { height: 6px; border-radius: 999px; background: #e2e8f0; overflow: hidden; margin-bottom: 1rem; }
+    .gs-progress-fill { height: 100%; background: #10b981; border-radius: 999px; transition: width 0.3s; }
+    .gs-list { display: flex; flex-direction: column; }
+    .gs-item { display: flex; align-items: center; gap: 0.9rem; padding: 0.85rem 0.75rem; border-radius: 0.7rem; transition: background 0.15s; }
+    .gs-item:hover { background: #f8fafc; }
+    .gs-item-icon { font-size: 1.3rem; width: 32px; text-align: center; flex-shrink: 0; }
+    .gs-item-body { flex: 1; }
+    .gs-item-title { font-size: 0.9rem; font-weight: 700; margin-bottom: 0.1rem; }
+    .gs-item-sub { font-size: 0.78rem; color: #64748b; }
+    .gs-item-chevron { color: #cbd5e1; font-size: 1rem; }
+    #getStartedCard.hidden { display: none; }
+
+    .fab { position: fixed; bottom: 2rem; right: 2rem; width: 52px; height: 52px; border-radius: 50%; background: #0f172a; color: #ffffff; border: none; font-size: 1.5rem; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 10px 24px rgba(15,23,42,0.25); transition: transform 0.15s; }
+    .fab:hover { transform: scale(1.06); }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a href="dashboard.html" class="sidebar-logo">
+        <div class="sidebar-logo-icon">💰</div>
+        <span>FinFlow</span>
+      </a>
+
+      <nav class="sidebar-nav">
+        <a href="dashboard.html" class="active">
+          <span class="nav-icon">▦</span>
+          <span class="nav-label">Dashboard</span>
+        </a>
+        <a href="fire-plan.html">
+          <span class="nav-icon">🧭</span>
+          <span class="nav-label">FIRE Plan</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="net-worth.html">
+          <span class="nav-icon">📈</span>
+          <span class="nav-label">Networth</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="money-required.html">
+          <span class="nav-icon">🪴</span>
+          <span class="nav-label">Expenses</span>
+          <span class="nav-chevron">›</span>
+        </a>
+
+        <a href="expense-quick-add.html">
+          <span class="nav-icon">⚡</span>
+          <span class="nav-label">Daily Expenses Tracker</span>
+        </a>
+        <a href="tax-planning.html">
+          <span class="nav-icon">🧾</span>
+          <span class="nav-label">Tax Planning</span>
+        </a>
+        <a href="insurance-tracker.html">
+          <span class="nav-icon">🛡️</span>
+          <span class="nav-label">Insurance Tracker</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="reminders.html">
+          <span class="nav-icon">🔔</span>
+          <span class="nav-label">Reminders</span>
+        </a>
+        <a href="vault-overview.html">
+          <span class="nav-icon">🔒</span>
+          <span class="nav-label">Document Vault</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="split/dashboard.html">
+          <span class="nav-icon">💸</span>
+          <span class="nav-label">SplitExpenses(SplitWise)</span>
+        </a>
+        <a href="life-expectancy.html">
+          <span class="nav-icon">❤️</span>
+          <span class="nav-label">Health</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="astrology.html">
+          <span class="nav-icon">🔮</span>
+          <span class="nav-label">Spiritual</span>
+        </a>
+        <a href="#">
+          <span class="nav-icon">⚙️</span>
+          <span class="nav-label">Settings</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-spacer"></div>
+
+      <div class="feedback-card">
+        <div class="fc-icon">💬</div>
+        <strong>Got feedback?</strong>
+        <p>Have an idea or found a bug? We read every message.</p>
+        <a href="mailto:hello@finflow.app">✉ Contact Us</a>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <h1>Dashboard</h1>
+        <div class="topbar-right">
+          <div class="language-selector">🌐 English ▾</div>
+          <details class="user-menu">
+            <summary>👤</summary>
+            <div class="user-menu-panel">
+              <a href="#">Settings</a>
+              <a href="#" onclick="signOutAndRedirect('index.html'); return false;">Log Out</a>
+            </div>
+          </details>
+        </div>
+      </div>
+
+      <p class="welcome-text" id="welcomeText">Welcome back</p>
+
+      <div class="snap-hero" id="snapHero">
+        <div class="snap-hero-stats">
+          <div class="snap-hero-stat primary">
+            <div class="snap-hero-icon">💰</div>
+            <div class="snap-hero-label">Your Net Worth</div>
+            <div class="snap-hero-value" id="heroNetWorth">₹0</div>
+            <div class="snap-hero-sub" id="heroNetWorthSub">Across every account you've added</div>
+          </div>
+          <div class="snap-hero-stat">
+            <div class="snap-hero-icon">🧭</div>
+            <div class="snap-hero-label">Your FIRE Number</div>
+            <div class="snap-hero-value" id="heroFireNumber">₹0</div>
+            <div class="snap-hero-sub" id="heroFireNumberSub">—</div>
+          </div>
+          <div class="snap-hero-stat">
+            <div class="snap-hero-icon">🧾</div>
+            <div class="snap-hero-label">Monthly Expenses</div>
+            <div class="snap-hero-value" id="heroExpenses">₹0</div>
+            <div class="snap-hero-sub" id="heroExpensesSub">This month</div>
+          </div>
+        </div>
+        <div class="snap-hero-progress">
+          <div class="snap-hero-donut-wrap">
+            <div id="heroDonutSvgHolder"></div>
+            <div class="snap-hero-progress-label">
+              <div class="snap-hero-progress-pct" id="heroFirePct">0%</div>
+              <div class="snap-hero-progress-sub">of the way<br>to FIRE</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="cashflow-grid" id="cashflowGrid"></div>
+
+      <div class="charts-row">
+        <div class="chart-card">
+          <h3>Net Worth Over Time</h3>
+          <p class="chart-sub">Tracked automatically every time you visit Net Worth.</p>
+          <div id="netWorthChart"></div>
+        </div>
+        <div class="chart-card">
+          <h3>Where Your Money Is</h3>
+          <p class="chart-sub">Asset allocation across every Networth section.</p>
+          <div id="allocChartWrap"></div>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <h3 style="margin-bottom:0.9rem;">Explore Your Finances</h3>
+        <div class="explore-grid" id="exploreGrid"></div>
+        <div class="privacy-note">🔒 Your data stays private to you. We only read what you add.</div>
+      </div>
+
+      <section class="dash-card hidden" id="getStartedCard">
+        <div class="gs-head">
+          <h2>Get started</h2>
+          <div class="gs-head-right">
+            <span class="gs-count" id="gsCount">0 of 3</span>
+            <button type="button" class="gs-close" onclick="document.getElementById('getStartedCard').classList.add('hidden')" aria-label="Dismiss">✕</button>
+          </div>
+        </div>
+        <div class="gs-progress"><div class="gs-progress-fill" id="gsProgressFill" style="width:0%;"></div></div>
+        <div class="gs-list" id="gsList"></div>
+      </section>
+    </main>
+  </div>
+
+  <button type="button" class="fab" title="Quick add — coming soon">+</button>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-client.js"></script>
+  <script>
+    var ALLOC_COLORS = { portfolio: '#0ea5e9', gold: '#f59e0b', gov: '#8b5cf6', properties: '#10b981', receivable: '#06b6d4', other: '#64748b' };
+
+    function fmtRupee(n, compact) {
+      var amount = Math.round(Number(n) || 0);
+      var sign = amount < 0 ? '-' : '';
+      var abs = Math.abs(amount);
+      if (compact) {
+        if (abs >= 10000000) return sign + '₹' + Number((abs / 10000000).toFixed(2)).toString() + ' Cr';
+        if (abs >= 100000) return sign + '₹' + Number((abs / 100000).toFixed(2)).toString() + ' L';
+      }
+      var digits = String(abs);
+      var last3 = digits.slice(-3);
+      var rest = digits.slice(0, -3);
+      var restFormatted = rest.replace(/\B(?=(\d{2})+(?!\d))/g, ',');
+      var out = rest ? restFormatted + ',' + last3 : last3;
+      return sign + '₹' + out;
+    }
+
+    function escapeHtml(s) {
+      return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function todayMonthKey() {
+      var d = new Date();
+      return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+    }
+
+    async function loadCurrentMonthTotal(section) {
+      var { data: groups } = await supabaseClient.from('expense_groups').select('id').eq('section', section);
+      var groupIds = (groups || []).map(function (g) { return g.id; });
+      if (!groupIds.length) return 0;
+      var { data: items } = await supabaseClient.from('expense_items').select('id').in('group_id', groupIds);
+      var itemIds = (items || []).map(function (i) { return i.id; });
+      if (!itemIds.length) return 0;
+      var { data: grid } = await supabaseClient.from('expense_grid').select('amount').eq('month', todayMonthKey()).in('item_id', itemIds);
+      return (grid || []).reduce(function (s, r) { return s + (Number(r.amount) || 0); }, 0);
+    }
+
+    async function loadNetWorthBreakdown() {
+      var results = await Promise.all([
+        loadCurrentMonthTotal('portfolio'),
+        (async function () {
+          var { data } = await supabaseClient.from('gold_holdings').select('grams, current_rate_per_gram');
+          return (data || []).reduce(function (s, r) { return s + (r.current_rate_per_gram !== null ? Number(r.grams) * Number(r.current_rate_per_gram) : 0); }, 0);
+        })(),
+        (async function () {
+          var { data } = await supabaseClient.from('other_investments').select('current_value').eq('category', 'Government Scheme');
+          return (data || []).reduce(function (s, r) { return s + Number(r.current_value || 0); }, 0);
+        })(),
+        (async function () {
+          var { data } = await supabaseClient.from('properties').select('current_value, has_mortgage, mortgage_balance');
+          return (data || []).reduce(function (s, p) { return s + Number(p.current_value || 0) - (p.has_mortgage ? Number(p.mortgage_balance || 0) : 0); }, 0);
+        })(),
+        (async function () {
+          var { data } = await supabaseClient.from('personal_ious').select('direction, balance');
+          return (data || []).reduce(function (s, r) { return s + (r.direction === 'owed_to_me' ? Number(r.balance || 0) : -Number(r.balance || 0)); }, 0);
+        })(),
+        (async function () {
+          var { data } = await supabaseClient.from('accounts').select('type, balance');
+          return (data || []).reduce(function (s, a) { return s + (a.type === 'liability' ? -Number(a.balance || 0) : Number(a.balance || 0)); }, 0);
+        })()
+      ]);
+      var breakdown = { portfolio: results[0], gold: results[1], gov: results[2], properties: results[3], iouNet: results[4], other: results[5] };
+      breakdown.total = breakdown.portfolio + breakdown.gold + breakdown.gov + breakdown.properties + breakdown.iouNet + breakdown.other;
+      return breakdown;
+    }
+
+    async function loadFireNumber(realExpense) {
+      var { data: saved } = await supabaseClient.from('fire_plan_inputs').select('*').maybeSingle();
+      var monthlyExpenses = saved ? Number(saved.monthly_expenses) : realExpense;
+      if (!monthlyExpenses) return { fireNumber: 0, estimated: true, hasData: false };
+
+      var age = saved ? Number(saved.age) : 30;
+      var fireAge = saved ? Number(saved.fire_age) : 50;
+      var inflation = saved ? Number(saved.inflation_pct) / 100 : 0.07;
+      var yearsToFire = Math.max(1, fireAge - age);
+      var annualExpenseAtFire = monthlyExpenses * 12 * Math.pow(1 + inflation, yearsToFire);
+      return { fireNumber: annualExpenseAtFire * 25, estimated: !saved, hasData: true, fireAge: fireAge };
+    }
+
+    async function loadNetWorthHistory() {
+      var { data, error } = await supabaseClient.from('networth_snapshots').select('month, total').order('month', { ascending: true });
+      if (error) return [];
+      return data || [];
+    }
+
+    function buildProgressDonutSvg(pct, size, strokeW, color) {
+      var r = (size - strokeW) / 2;
+      var cx = size / 2, cy = size / 2;
+      var circumference = 2 * Math.PI * r;
+      var len = circumference * Math.max(0, Math.min(1, pct / 100));
+      return '<svg viewBox="0 0 ' + size + ' ' + size + '">' +
+        '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="' + strokeW + '"/>' +
+        '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="' + color + '" stroke-width="' + strokeW + '" ' +
+        'stroke-dasharray="' + len + ' ' + circumference + '" stroke-linecap="round" transform="rotate(-90 ' + cx + ' ' + cy + ')"/>' +
+        '</svg>';
+    }
+
+    function buildDonutSvg(segments, size, strokeW) {
+      var total = segments.reduce(function (s, d) { return s + d.value; }, 0);
+      var r = (size - strokeW) / 2;
+      var cx = size / 2, cy = size / 2;
+      var circumference = 2 * Math.PI * r;
+      var offset = 0;
+      var svg = '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="#f1f5f9" stroke-width="' + strokeW + '"/>';
+      segments.forEach(function (d) {
+        if (!d.value) return;
+        var frac = total ? d.value / total : 0;
+        var len = circumference * frac;
+        svg += '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="' + d.color + '" stroke-width="' + strokeW + '" ' +
+          'stroke-dasharray="' + len + ' ' + circumference + '" stroke-dashoffset="' + (-offset) + '" transform="rotate(-90 ' + cx + ' ' + cy + ')"/>';
+        offset += len;
+      });
+      return '<svg viewBox="0 0 ' + size + ' ' + size + '" class="donut-svg">' + svg + '</svg>';
+    }
+
+    function renderNetWorthChart(history) {
+      var container = document.getElementById('netWorthChart');
+      if (history.length === 0) {
+        container.innerHTML = '<div class="chart-empty">Visit <a href="net-worth.html" style="color:#10b981;font-weight:600;">Net Worth</a> to start tracking your trend.</div>';
+        return;
+      }
+      if (history.length === 1) {
+        container.innerHTML = '<div class="chart-empty">Come back next month to see your trend — today\'s net worth is ' + fmtRupee(history[0].total, true) + '.</div>';
+        return;
+      }
+
+      var W = 620, H = 200, padL = 56, padR = 16, padT = 18, padB = 28;
+      var plotW = W - padL - padR, plotH = H - padT - padB;
+      var values = history.map(function (e) { return Number(e.total); });
+      var maxV = Math.max.apply(null, values.concat([0])) * 1.15 || 1;
+      var minV = Math.min(0, Math.min.apply(null, values));
+      var range = maxV - minV || 1;
+
+      function xAt(i) { return padL + (i / (history.length - 1)) * plotW; }
+      function yAt(v) { return padT + plotH - ((v - minV) / range) * plotH; }
+
+      var linePts = history.map(function (e, i) { return xAt(i) + ',' + yAt(Number(e.total)); }).join(' L');
+      var areaPts = 'M' + xAt(0) + ',' + yAt(0) + ' L' + linePts + ' L' + xAt(history.length - 1) + ',' + yAt(0) + ' Z';
+      var dots = history.map(function (e, i) {
+        return '<circle cx="' + xAt(i) + '" cy="' + yAt(Number(e.total)) + '" r="4" fill="#10b981" stroke="#fff" stroke-width="2"/>';
+      }).join('');
+      var labels = history.map(function (e, i) {
+        var parts = e.month.split('-');
+        var lbl = new Date(Number(parts[0]), Number(parts[1]) - 1, 1).toLocaleDateString('en-IN', { month: 'short', year: '2-digit' });
+        return '<text x="' + xAt(i) + '" y="' + (H - 6) + '" text-anchor="middle" font-size="10" fill="#94a3b8">' + lbl + '</text>';
+      }).join('');
+
+      container.innerHTML = '<svg viewBox="0 0 ' + W + ' ' + H + '" style="width:100%;height:auto;font-family:inherit;">' +
+        '<path d="' + areaPts + '" fill="rgba(16,185,129,0.12)" stroke="none"/>' +
+        '<path d="M' + linePts + '" fill="none" stroke="#10b981" stroke-width="2.5"/>' +
+        dots + labels +
+        '</svg>';
+    }
+
+    function renderAllocationChart(breakdown) {
+      var wrap = document.getElementById('allocChartWrap');
+      var segments = [
+        { label: 'Stocks/MF', value: breakdown.portfolio, color: ALLOC_COLORS.portfolio },
+        { label: 'Gold + Commodities', value: breakdown.gold, color: ALLOC_COLORS.gold },
+        { label: 'Government Scheme', value: breakdown.gov, color: ALLOC_COLORS.gov },
+        { label: 'Properties', value: breakdown.properties, color: ALLOC_COLORS.properties },
+        { label: 'Receivable, net of debt', value: breakdown.iouNet, color: ALLOC_COLORS.receivable },
+        { label: 'Other', value: breakdown.other, color: ALLOC_COLORS.other }
+      ];
+      var withValue = segments.filter(function (s) { return s.value > 0; });
+      if (withValue.length === 0) {
+        wrap.innerHTML = '<div class="chart-empty">No holdings yet — add one in any Networth section.</div>';
+        return;
+      }
+      var total = withValue.reduce(function (s, d) { return s + d.value; }, 0);
+      var legend = withValue.map(function (d) {
+        var pct = total ? Math.round(d.value / total * 100) : 0;
+        return '<div class="donut-legend-row">' +
+          '<span class="donut-legend-name"><span class="donut-dot" style="background:' + d.color + ';"></span>' + escapeHtml(d.label) + '</span>' +
+          '<span class="donut-legend-val">' + fmtRupee(d.value, true) + ' (' + pct + '%)</span>' +
+          '</div>';
+      }).join('');
+      wrap.innerHTML = '<div class="donut-row">' + buildDonutSvg(withValue, 130, 22) + '<div class="donut-legend">' + legend + '</div></div>';
+    }
+
+    function renderCashFlow(income, expenses, loanEmi) {
+      var surplus = income - expenses - loanEmi;
+      var wrap = document.getElementById('cashflowGrid');
+      wrap.innerHTML =
+        '<div class="cashflow-item pos"><span>Income</span><b>' + fmtRupee(income, true) + '</b></div>' +
+        '<div class="cashflow-item neg"><span>Expenses</span><b>-' + fmtRupee(expenses, true) + '</b></div>' +
+        '<div class="cashflow-item neg"><span>Loan EMI</span><b>-' + fmtRupee(loanEmi, true) + '</b></div>' +
+        '<div class="cashflow-item ' + (surplus >= 0 ? 'pos' : 'neg') + '"><span>Surplus</span><b>' + fmtRupee(surplus, true) + '</b></div>';
+    }
+
+    function renderExploreGrid(data) {
+      var wrap = document.getElementById('exploreGrid');
+      var tiles = [
+        {
+          href: 'net-worth.html', icon: '📈', title: 'Net Worth',
+          value: fmtRupee(data.netWorth.total, true),
+          note: 'Full breakdown across every asset'
+        },
+        {
+          href: 'fire-plan.html', icon: '🧭', title: 'FIRE Plan',
+          value: data.fire.hasData ? fmtRupee(data.fire.fireNumber, true) : 'Not set up',
+          note: data.fire.hasData ? (data.fire.estimated ? 'Estimated — refine your assumptions' : 'Your FIRE number, by age ' + data.fire.fireAge) : 'Find your number →'
+        },
+        {
+          href: 'expenses.html', icon: '🧮', title: 'Expenses',
+          value: data.expenses ? fmtRupee(data.expenses, true) : '₹0',
+          note: data.expenses ? 'Spent this month' : 'Log your first expense →'
+        },
+        {
+          href: 'income.html', icon: '💵', title: 'Income',
+          value: data.income ? fmtRupee(data.income, true) : '₹0',
+          note: data.income ? 'Earned this month' : 'Add your income →'
+        },
+        {
+          href: 'properties.html', icon: '🏠', title: 'Properties',
+          value: data.propertiesCount ? (data.propertiesCount + ' propert' + (data.propertiesCount === 1 ? 'y' : 'ies')) : 'None yet',
+          note: data.propertiesCount ? fmtRupee(data.netWorth.properties, true) + ' in equity' : 'Track real estate →'
+        },
+        {
+          href: 'personal-debt.html', icon: '🔄', title: 'Personal Debt & Receivable',
+          value: fmtRupee(data.netWorth.iouNet, true) + ' net',
+          note: data.netWorth.iouNet >= 0 ? 'More owed to you than you owe' : 'You owe more than is owed to you'
+        }
+      ];
+
+      wrap.innerHTML = tiles.map(function (t) {
+        return '<a class="explore-tile" href="' + t.href + '">' +
+          '<div class="explore-tile-head">' +
+            '<span class="explore-tile-icon">' + t.icon + '</span>' +
+            '<span class="explore-tile-title">' + t.title + '</span>' +
+            '<span class="explore-tile-arrow">›</span>' +
+          '</div>' +
+          '<div class="explore-tile-value">' + t.value + '</div>' +
+          '<div class="explore-tile-note">' + escapeHtml(t.note) + '</div>' +
+        '</a>';
+      }).join('');
+    }
+
+    function renderGetStarted(data) {
+      var steps = [
+        { done: data.netWorth.total !== 0, href: 'net-worth.html', icon: '💰', title: 'Everything you own, one number', sub: 'Holdings, savings, and property' },
+        { done: !!data.expenses || !!data.income, href: 'expenses.html', icon: '📄', title: 'See where your money goes', sub: 'Log your income and expenses' },
+        { done: data.fire.hasData && !data.fire.estimated, href: 'fire-plan.html', icon: '🏃', title: 'When work becomes optional', sub: 'Set your real FIRE assumptions' }
+      ];
+      var doneCount = steps.filter(function (s) { return s.done; }).length;
+      var card = document.getElementById('getStartedCard');
+
+      if (doneCount === steps.length) { card.classList.add('hidden'); return; }
+      card.classList.remove('hidden');
+
+      document.getElementById('gsCount').textContent = doneCount + ' of ' + steps.length;
+      document.getElementById('gsProgressFill').style.width = Math.round(doneCount / steps.length * 100) + '%';
+      document.getElementById('gsList').innerHTML = steps.filter(function (s) { return !s.done; }).map(function (s) {
+        return '<a href="' + s.href + '" class="gs-item">' +
+          '<span class="gs-item-icon">' + s.icon + '</span>' +
+          '<div class="gs-item-body"><div class="gs-item-title">' + s.title + '</div><div class="gs-item-sub">' + s.sub + '</div></div>' +
+          '<span class="gs-item-chevron">›</span>' +
+        '</a>';
+      }).join('');
+    }
+
+    (async function init() {
+      var user = await requireAuth('index.html#login');
+      if (!user) return;
+      var name = (user.user_metadata && user.user_metadata.full_name) || user.email;
+      document.getElementById('welcomeText').textContent = 'Welcome back, ' + name;
+
+      var results = await Promise.all([
+        loadNetWorthBreakdown(),
+        loadCurrentMonthTotal('expenses'),
+        loadCurrentMonthTotal('income'),
+        loadCurrentMonthTotal('loans'),
+        loadNetWorthHistory(),
+        supabaseClient.from('properties').select('id', { count: 'exact', head: true })
+      ]);
+      var netWorth = results[0];
+      var expenses = results[1];
+      var income = results[2];
+      var loanEmi = results[3];
+      var history = results[4];
+      var propertiesCount = (results[5] && results[5].count) || 0;
+
+      var fire = await loadFireNumber(expenses);
+
+      document.getElementById('heroNetWorth').textContent = fmtRupee(netWorth.total, true);
+
+      var fireEl = document.getElementById('heroFireNumber');
+      var fireSubEl = document.getElementById('heroFireNumberSub');
+      if (fire.hasData) {
+        fireEl.textContent = fmtRupee(fire.fireNumber, true);
+        fireSubEl.innerHTML = fire.estimated
+          ? 'Estimate — <a href="fire-plan.html">set your real plan</a>'
+          : 'By age ' + fire.fireAge;
+      } else {
+        fireEl.textContent = '—';
+        fireSubEl.innerHTML = '<a href="fire-plan.html">Set up your FIRE Plan →</a>';
+      }
+
+      document.getElementById('heroExpenses').textContent = fmtRupee(expenses, true);
+
+      var pct = fire.fireNumber ? Math.round((netWorth.total / fire.fireNumber) * 100) : 0;
+      var pctColor = pct >= 100 ? '#4ade80' : '#7dd3fc';
+      document.getElementById('heroFirePct').textContent = Math.max(0, pct) + '%';
+      document.getElementById('heroDonutSvgHolder').innerHTML = buildProgressDonutSvg(pct, 112, 14, pctColor);
+
+      renderCashFlow(income, expenses, loanEmi);
+      renderNetWorthChart(history);
+      renderAllocationChart(netWorth);
+      renderExploreGrid({ netWorth: netWorth, fire: fire, expenses: expenses, income: income, propertiesCount: propertiesCount });
+      renderGetStarted({ netWorth: netWorth, fire: fire, expenses: expenses, income: income });
+    })();
+  </script>
+</body>
+</html>

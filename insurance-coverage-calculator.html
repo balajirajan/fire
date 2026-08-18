@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Coverage Calculator - FinFlow</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f8fafc;
+      color: #0f172a;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    a, button { color: inherit; text-decoration: none; font-family: inherit; }
+
+    .app-shell { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
+    @media (max-width: 860px) { .app-shell { grid-template-columns: 1fr; } .sidebar { display: none; } }
+
+    .sidebar { background: #ffffff; border-right: 1px solid #e2e8f0; display: flex; flex-direction: column; padding: 1.5rem 1.25rem; }
+    .sidebar-logo { display: flex; align-items: center; gap: 0.65rem; font-size: 1.1rem; font-weight: 800; margin-bottom: 2rem; padding: 0 0.25rem; }
+    .sidebar-logo-icon { width: 30px; height: 30px; background: linear-gradient(135deg, #0ea5e9, #10b981); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; flex-shrink: 0; }
+    .sidebar-nav { display: flex; flex-direction: column; gap: 0.25rem; }
+    .sidebar-nav a, .sidebar-nav .nav-group-head { display: flex; align-items: center; gap: 0.75rem; padding: 0.7rem 0.75rem; border-radius: 0.6rem; font-size: 0.9rem; font-weight: 500; color: #364752; }
+    .sidebar-nav a:hover, .sidebar-nav .nav-group-head:hover { background: #f1f5f9; }
+    .sidebar-nav a.active { background: #0f172a; color: #ffffff; font-weight: 600; }
+    .sidebar-nav .nav-group-head.open { background: #f1f5f9; font-weight: 700; }
+    .sidebar-nav .nav-group-head.active { background: #0f172a; color: #ffffff; font-weight: 600; }
+    .sidebar-nav .nav-group-head.active .nav-chevron { color: rgba(255,255,255,0.6); }
+    .sidebar-nav .nav-icon { font-size: 1rem; width: 20px; text-align: center; flex-shrink: 0; }
+    .sidebar-nav .nav-label { flex: 1; }
+    .sidebar-nav .nav-chevron { color: #94a3b8; font-size: 0.85rem; }
+    .sidebar-subnav { display: flex; flex-direction: column; gap: 0.2rem; padding-left: 1.6rem; margin: 0.15rem 0 0.3rem; }
+    .sidebar-subnav a { display: flex; align-items: center; gap: 0.6rem; padding: 0.55rem 0.6rem; border-radius: 0.5rem; font-size: 0.85rem; font-weight: 500; color: #364752; }
+    .sidebar-subnav a:hover { background: #f1f5f9; }
+    .sidebar-subnav a.active { background: #0f172a; color: #fff; font-weight: 600; }
+    .sidebar-spacer { flex: 1; }
+    .feedback-card { background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 0.9rem; padding: 1.1rem; margin-top: 1.5rem; }
+    .feedback-card .fc-icon { width: 32px; height: 32px; border-radius: 0.6rem; background: #eef2f7; display: flex; align-items: center; justify-content: center; font-size: 0.95rem; margin-bottom: 0.6rem; }
+    .feedback-card strong { display: block; font-size: 0.85rem; margin-bottom: 0.3rem; }
+    .feedback-card p { font-size: 0.78rem; color: #64748b; line-height: 1.5; margin-bottom: 0.85rem; }
+    .feedback-card a { display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; width: 100%; padding: 0.55rem; border: 1px solid #cbd5e1; border-radius: 0.5rem; font-size: 0.8rem; font-weight: 600; color: #364752; }
+    .feedback-card a:hover { border-color: #10b981; color: #10b981; }
+
+    .main { padding: 1.5rem 2.5rem 3rem; min-width: 0; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; padding-bottom: 1.25rem; border-bottom: 1px solid #e2e8f0; margin-bottom: 1.5rem; }
+    .topbar h1 { font-size: 1.4rem; font-weight: 700; }
+    .topbar-right { display: flex; align-items: center; gap: 0.85rem; }
+    .language-selector { display: flex; align-items: center; gap: 0.5rem; background: #ffffff; padding: 0.5rem 0.9rem; border-radius: 0.5rem; color: #51636f; border: 1px solid #e2e8f0; cursor: pointer; font-size: 0.85rem; }
+    .user-menu { position: relative; list-style: none; }
+    .user-menu > summary { cursor: pointer; list-style: none; width: 34px; height: 34px; border-radius: 50%; background: #eef2f7; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; font-size: 1rem; }
+    .user-menu > summary::-webkit-details-marker { display: none; }
+    .user-menu-panel { position: absolute; top: calc(100% + 0.6rem); right: 0; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 0.75rem; box-shadow: 0 10px 30px rgba(15,23,42,0.12); padding: 0.4rem; min-width: 150px; z-index: 20; }
+    .user-menu-panel a { display: block; padding: 0.55rem 0.7rem; border-radius: 0.5rem; font-size: 0.85rem; color: #364752; font-weight: 500; }
+    .user-menu-panel a:hover { background: #f1f5f9; color: #10b981; }
+
+    .page-head { margin-bottom: 1.5rem; max-width: 62ch; }
+    .page-head h2 { font-size: 1.6rem; font-weight: 800; margin-bottom: 0.3rem; }
+    .page-head p { color: #64748b; font-size: 0.9rem; line-height: 1.55; }
+
+    .two-col { display: grid; grid-template-columns: 1fr 1.15fr; gap: 1.5rem; align-items: start; }
+    @media (max-width: 900px) { .two-col { grid-template-columns: 1fr; } }
+
+    .card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 1.1rem; padding: 1.5rem 1.6rem; margin-bottom: 1.5rem; box-shadow: 0 4px 16px rgba(15,23,42,0.03); }
+    .card-eyebrow { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #10b981; margin-bottom: 1.1rem; padding-bottom: 0.75rem; border-bottom: 1px solid #e2e8f0; }
+
+    .field-item { margin-bottom: 1.1rem; }
+    .field-item:last-child { margin-bottom: 0; }
+    .field-label { font-size: 0.83rem; font-weight: 600; color: #0f172a; margin-bottom: 0.5rem; display: block; }
+    .field-hint { font-size: 0.74rem; color: #94a3b8; margin-top: 0.35rem; line-height: 1.5; }
+    .num-input {
+      width: 100%; padding: 0.65rem 0.8rem; border: 1px solid #cbd5e1; border-radius: 0.55rem;
+      font-size: 0.9rem; font-family: inherit; color: #0f172a; background: #fff;
+    }
+    .num-input:focus { outline: none; border-color: #10b981; box-shadow: 0 0 0 2px rgba(16,185,129,0.15); }
+
+    /* The whole point of this page: show the arithmetic, not just the
+       result. A "receipt" list of signed line items reads instantly —
+       everyone already knows how to read a bill. */
+    .breakdown-list { display: flex; flex-direction: column; }
+    .breakdown-row { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; padding: 0.6rem 0; border-bottom: 1px dashed #e2e8f0; font-size: 0.86rem; }
+    .breakdown-row .bd-label { color: #51636f; }
+    .breakdown-row .bd-label .bd-op { display: inline-block; width: 1.1rem; color: #94a3b8; font-weight: 700; }
+    .breakdown-row .bd-value { font-weight: 700; color: #0f172a; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .breakdown-row .bd-value.negative { color: #b91c1c; }
+    .breakdown-row.total { border-bottom: none; border-top: 2px solid #0f172a; padding-top: 0.8rem; margin-top: 0.3rem; }
+    .breakdown-row.total .bd-label { font-weight: 800; color: #0f172a; }
+    .breakdown-row.total .bd-value { font-size: 1.05rem; font-weight: 800; }
+
+    .policy-line { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0.55rem 0; border-bottom: 1px dashed #e2e8f0; font-size: 0.85rem; }
+    .policy-line .pl-name { color: #364752; font-weight: 600; }
+    .policy-line .pl-amount { font-weight: 700; color: #0f172a; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .no-policies-note { font-size: 0.83rem; color: #94a3b8; line-height: 1.6; padding: 0.5rem 0; }
+    .no-policies-note a { color: #0ea5e9; font-weight: 600; }
+
+    /* Result hero — same alert/calm pattern used on Reminders and the old
+       combined Insurance page, so the "is there a problem?" visual
+       language stays consistent across the app rather than reinventing it
+       per page. */
+    .hero-alert { background: linear-gradient(135deg, #7f1d1d, #b91c1c); border-radius: 1.25rem; padding: 1.4rem 1.9rem; color: #fff; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; flex-wrap: wrap; box-shadow: 0 10px 30px rgba(127,29,29,0.25); }
+    .hero-alert-left { display: flex; align-items: center; gap: 1rem; min-width: 0; }
+    .hero-alert-icon { width: 44px; height: 44px; border-radius: 0.85rem; background: rgba(255,255,255,0.14); display: flex; align-items: center; justify-content: center; font-size: 1.35rem; flex-shrink: 0; }
+    .hero-alert-title { font-size: 1.15rem; font-weight: 800; margin-bottom: 0.2rem; }
+    .hero-alert-sub { font-size: 0.82rem; color: rgba(255,255,255,0.72); }
+    .hero-alert-stats { display: flex; align-items: center; gap: 1.75rem; flex-shrink: 0; }
+    .hero-alert-stats::before { content: ''; align-self: stretch; width: 1px; background: rgba(255,255,255,0.18); margin-right: 0.15rem; }
+    .hero-alert-stat { text-align: center; min-width: 5.5rem; }
+    .hero-alert-stat-value { font-size: 1.15rem; font-weight: 800; font-variant-numeric: tabular-nums; }
+    .hero-alert-stat-label { font-size: 0.64rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: rgba(255,255,255,0.62); margin-top: 0.2rem; }
+
+    .hero-calm { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 1.25rem; padding: 1.2rem 1.75rem; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; flex-wrap: wrap; box-shadow: 0 4px 16px rgba(15,23,42,0.03); }
+    .hero-calm-left { display: flex; align-items: center; gap: 0.85rem; }
+    .hero-calm-icon { width: 44px; height: 44px; border-radius: 0.85rem; background: #ecfdf5; color: #059669; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; flex-shrink: 0; }
+    .hero-calm-title { font-size: 0.98rem; font-weight: 800; }
+    .hero-calm-sub { font-size: 0.8rem; color: #64748b; margin-top: 0.15rem; }
+    .hero-calm-stats { display: flex; align-items: center; gap: 1.75rem; }
+    .hero-calm-stats::before { content: ''; align-self: stretch; width: 1px; background: #e5e7eb; margin-right: 0.15rem; }
+    .hero-calm-stat { text-align: center; min-width: 5.5rem; }
+    .hero-calm-stat-value { font-size: 1.05rem; font-weight: 800; color: #0f172a; font-variant-numeric: tabular-nums; }
+    .hero-calm-stat-label { font-size: 0.64rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #94a3b8; margin-top: 0.2rem; }
+
+    .edu-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 0.9rem; padding: 1.1rem 1.25rem; font-size: 0.83rem; color: #51636f; line-height: 1.65; }
+    .edu-card strong { color: #0f172a; }
+    .edu-card a { color: #0ea5e9; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a href="dashboard.html" class="sidebar-logo">
+        <div class="sidebar-logo-icon">💰</div>
+        <span>FinFlow</span>
+      </a>
+
+      <nav class="sidebar-nav">
+        <a href="dashboard.html">
+          <span class="nav-icon">▦</span>
+          <span class="nav-label">Dashboard</span>
+        </a>
+        <a href="fire-plan.html">
+          <span class="nav-icon">🧭</span>
+          <span class="nav-label">FIRE Plan</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="net-worth.html">
+          <span class="nav-icon">📈</span>
+          <span class="nav-label">Networth</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="money-required.html">
+          <span class="nav-icon">🪴</span>
+          <span class="nav-label">Expenses</span>
+          <span class="nav-chevron">›</span>
+        </a>
+
+        <a href="expense-quick-add.html">
+          <span class="nav-icon">⚡</span>
+          <span class="nav-label">Daily Expenses Tracker</span>
+        </a>
+        <a href="tax-planning.html">
+          <span class="nav-icon">🧾</span>
+          <span class="nav-label">Tax Planning</span>
+        </a>
+
+        <a href="insurance-tracker.html" class="nav-group-head open active">
+          <span class="nav-icon">🛡️</span>
+          <span class="nav-label">Insurance Tracker</span>
+          <span class="nav-chevron">⌄</span>
+        </a>
+        <div class="sidebar-subnav">
+          <a href="insurance-tracker.html">
+            <span class="nav-icon">🛡️</span>
+            <span class="nav-label">My Policies</span>
+          </a>
+          <a href="insurance-coverage-calculator.html" class="active">
+            <span class="nav-icon">📊</span>
+            <span class="nav-label">Coverage Calculator</span>
+          </a>
+        </div>
+
+        <a href="reminders.html">
+          <span class="nav-icon">🔔</span>
+          <span class="nav-label">Reminders</span>
+        </a>
+        <a href="vault-overview.html">
+          <span class="nav-icon">🔒</span>
+          <span class="nav-label">Document Vault</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="split/dashboard.html">
+          <span class="nav-icon">💸</span>
+          <span class="nav-label">SplitExpenses(SplitWise)</span>
+        </a>
+        <a href="life-expectancy.html">
+          <span class="nav-icon">❤️</span>
+          <span class="nav-label">Health</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="astrology.html">
+          <span class="nav-icon">🔮</span>
+          <span class="nav-label">Spiritual</span>
+        </a>
+        <a href="#">
+          <span class="nav-icon">⚙️</span>
+          <span class="nav-label">Settings</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-spacer"></div>
+
+      <div class="feedback-card">
+        <div class="fc-icon">💬</div>
+        <strong>Got feedback?</strong>
+        <p>Have an idea or found a bug? We read every message.</p>
+        <a href="mailto:hello@finflow.app">✉ Contact Us</a>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <h1>Insurance Tracker</h1>
+        <div class="topbar-right">
+          <div class="language-selector">🌐 English ▾</div>
+          <details class="user-menu">
+            <summary>👤</summary>
+            <div class="user-menu-panel">
+              <a href="#">Settings</a>
+              <a href="#" onclick="signOutAndRedirect('index.html'); return false;">Log Out</a>
+            </div>
+          </details>
+        </div>
+      </div>
+
+      <div class="page-head">
+        <h2>Coverage Calculator</h2>
+        <p>Estimate how much term or life cover your family would need if you weren't there to earn — then see exactly how that number is built, and how your current policies compare.</p>
+      </div>
+
+      <div id="heroSection"></div>
+
+      <div class="two-col">
+        <div>
+          <div class="card">
+            <div class="card-eyebrow">Your Numbers</div>
+            <div class="field-item">
+              <label class="field-label">Annual income (₹)</label>
+              <input type="number" class="num-input" id="annualIncomeInput" min="0" step="10000" value="1000000">
+            </div>
+            <div class="field-item">
+              <label class="field-label">Outstanding liabilities (loans, ₹)</label>
+              <input type="number" class="num-input" id="liabilitiesInput" min="0" step="10000" value="0">
+              <div class="field-hint">Home loan, personal loan, or anything your family would need to pay off.</div>
+            </div>
+            <div class="field-item">
+              <label class="field-label">Liquid assets / savings to offset (₹)</label>
+              <input type="number" class="num-input" id="liquidAssetsInput" min="0" step="10000" value="0">
+              <div class="field-hint">Savings, FDs or investments already set aside — not counted twice.</div>
+            </div>
+          </div>
+
+          <div class="edu-card">
+            <strong>Why ×15?</strong> This is a simplified "income replacement" rule of thumb — your cover should be able to replace roughly 15 years of your income, so your family isn't left without the income you'd have provided. It's a starting point, not a full needs analysis. For that, talk to a licensed insurance advisor.
+          </div>
+        </div>
+
+        <div>
+          <div class="card">
+            <div class="card-eyebrow">How We Got This Number</div>
+            <div class="breakdown-list" id="formulaBreakdown"></div>
+          </div>
+
+          <div class="card">
+            <div class="card-eyebrow">Your Current Term/Life Cover</div>
+            <div id="policyBreakdown"></div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-client.js"></script>
+  <script>
+    var policies = [];
+
+    function formatRupees(amount) {
+      var n = Math.round(Number(amount) || 0);
+      return '₹' + n.toLocaleString('en-IN');
+    }
+
+    function escapeHtml(s) {
+      return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function renderFormulaBreakdown(income, incomeReplacement, liabilities, liquidAssets, recommended) {
+      var container = document.getElementById('formulaBreakdown');
+      container.innerHTML =
+        '<div class="breakdown-row">' +
+          '<span class="bd-label">15 × Annual Income (' + formatRupees(income) + ')</span>' +
+          '<span class="bd-value">' + formatRupees(incomeReplacement) + '</span>' +
+        '</div>' +
+        '<div class="breakdown-row">' +
+          '<span class="bd-label"><span class="bd-op">+</span>Outstanding Liabilities</span>' +
+          '<span class="bd-value">' + formatRupees(liabilities) + '</span>' +
+        '</div>' +
+        '<div class="breakdown-row">' +
+          '<span class="bd-label"><span class="bd-op">−</span>Liquid Assets / Savings</span>' +
+          '<span class="bd-value negative">−' + formatRupees(liquidAssets) + '</span>' +
+        '</div>' +
+        '<div class="breakdown-row total">' +
+          '<span class="bd-label">= Recommended Cover</span>' +
+          '<span class="bd-value">' + formatRupees(recommended) + '</span>' +
+        '</div>';
+    }
+
+    function renderPolicyBreakdown(termLifePolicies, currentCover) {
+      var container = document.getElementById('policyBreakdown');
+
+      if (!termLifePolicies.length) {
+        container.innerHTML = '<p class="no-policies-note">No term or life policies yet — <a href="insurance-tracker.html">add one in My Policies</a> to see it counted here.</p>';
+        return;
+      }
+
+      container.innerHTML = termLifePolicies.map(function (p) {
+        var name = (p.insurer || 'Policy') + ' — ' + (p.policy_type === 'term' ? 'Term Life' : 'Life (Endowment/ULIP)');
+        return '<div class="policy-line">' +
+          '<span class="pl-name">' + escapeHtml(name) + '</span>' +
+          '<span class="pl-amount">' + formatRupees(p.sum_assured) + '</span>' +
+        '</div>';
+      }).join('') +
+      '<div class="breakdown-row total"><span class="bd-label">= Total Current Cover</span><span class="bd-value">' + formatRupees(currentCover) + '</span></div>';
+    }
+
+    function renderHero(currentCover, recommended, gap) {
+      var container = document.getElementById('heroSection');
+
+      if (gap > 0) {
+        var pctCovered = recommended > 0 ? Math.round((currentCover / recommended) * 100) : 0;
+        container.innerHTML =
+          '<div class="hero-alert">' +
+            '<div class="hero-alert-left">' +
+              '<span class="hero-alert-icon">⚠️</span>' +
+              '<div>' +
+                '<div class="hero-alert-title">' + formatRupees(gap) + ' coverage gap</div>' +
+                '<div class="hero-alert-sub">Covered for ' + pctCovered + '% of the recommended amount</div>' +
+              '</div>' +
+            '</div>' +
+            '<div class="hero-alert-stats">' +
+              '<div class="hero-alert-stat"><div class="hero-alert-stat-value">' + formatRupees(currentCover) + '</div><div class="hero-alert-stat-label">Current</div></div>' +
+              '<div class="hero-alert-stat"><div class="hero-alert-stat-value">' + formatRupees(recommended) + '</div><div class="hero-alert-stat-label">Recommended</div></div>' +
+            '</div>' +
+          '</div>';
+        return;
+      }
+
+      container.innerHTML =
+        '<div class="hero-calm">' +
+          '<div class="hero-calm-left">' +
+            '<span class="hero-calm-icon">🛡️</span>' +
+            '<div>' +
+              '<div class="hero-calm-title">Fully covered</div>' +
+              '<div class="hero-calm-sub">Your term/life cover meets or exceeds the recommended amount</div>' +
+            '</div>' +
+          '</div>' +
+          '<div class="hero-calm-stats">' +
+            '<div class="hero-calm-stat"><div class="hero-calm-stat-value">' + formatRupees(currentCover) + '</div><div class="hero-calm-stat-label">Current</div></div>' +
+            '<div class="hero-calm-stat"><div class="hero-calm-stat-value">' + formatRupees(recommended) + '</div><div class="hero-calm-stat-label">Recommended</div></div>' +
+          '</div>' +
+        '</div>';
+    }
+
+    function recalculate() {
+      var income = Number(document.getElementById('annualIncomeInput').value) || 0;
+      var liabilities = Number(document.getElementById('liabilitiesInput').value) || 0;
+      var liquidAssets = Number(document.getElementById('liquidAssetsInput').value) || 0;
+
+      var incomeReplacement = income * 15;
+      var recommended = Math.max(0, incomeReplacement + liabilities - liquidAssets);
+
+      var termLifePolicies = policies.filter(function (p) { return p.policy_type === 'term' || p.policy_type === 'life'; });
+      var currentCover = termLifePolicies.reduce(function (sum, p) { return sum + Number(p.sum_assured || 0); }, 0);
+      var gap = Math.max(0, recommended - currentCover);
+
+      renderFormulaBreakdown(income, incomeReplacement, liabilities, liquidAssets, recommended);
+      renderPolicyBreakdown(termLifePolicies, currentCover);
+      renderHero(currentCover, recommended, gap);
+    }
+
+    async function loadPolicies() {
+      var { data, error } = await supabaseClient.from('insurance_policies').select('*');
+      if (error) { console.error('Could not load policies', error); return; }
+      policies = data || [];
+      recalculate();
+    }
+
+    /* ---- Persist the three inputs to Supabase, so they survive leaving  ----
+       the page instead of resetting to defaults every visit.             ---- */
+
+    async function loadSavedInputs() {
+      var { data, error } = await supabaseClient.from('insurance_calculator_inputs').select('*').maybeSingle();
+      if (error) { console.error('Could not load saved calculator inputs', error); return; }
+      if (!data) return;
+      document.getElementById('annualIncomeInput').value = data.annual_income;
+      document.getElementById('liabilitiesInput').value = data.liabilities;
+      document.getElementById('liquidAssetsInput').value = data.liquid_assets;
+    }
+
+    async function saveInputs() {
+      var payload = {
+        annual_income: Number(document.getElementById('annualIncomeInput').value) || 0,
+        liabilities: Number(document.getElementById('liabilitiesInput').value) || 0,
+        liquid_assets: Number(document.getElementById('liquidAssetsInput').value) || 0,
+        updated_at: new Date().toISOString()
+      };
+      var { error } = await supabaseClient.from('insurance_calculator_inputs').upsert(payload, { onConflict: 'user_id' });
+      if (error) console.error('Could not save calculator inputs', error);
+    }
+
+    var saveInputsTimer = null;
+    function scheduleSaveInputs() {
+      if (saveInputsTimer) clearTimeout(saveInputsTimer);
+      saveInputsTimer = setTimeout(saveInputs, 600);
+    }
+
+    (async function init() {
+      var user = await requireAuth('index.html#login');
+      if (!user) return;
+
+      await loadSavedInputs();
+
+      ['annualIncomeInput', 'liabilitiesInput', 'liquidAssetsInput'].forEach(function (id) {
+        document.getElementById(id).addEventListener('input', function () {
+          recalculate();
+          scheduleSaveInputs();
+        });
+      });
+
+      await loadPolicies();
+    })();
+  </script>
+</body>
+</html>

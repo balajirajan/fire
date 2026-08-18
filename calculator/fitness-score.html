@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Financial Fitness Score - FinFlow</title>
+  <meta name="description" content="Answer a quick 2-minute quiz on savings, debt, insurance and investing habits to get your free Financial Fitness Score out of 100.">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #ffffff;
+      color: #0f172a;
+      min-height: 100vh;
+    }
+
+    a { color: inherit; }
+
+    /* Nav (shared header) */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.25rem 2rem;
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 1.25rem;
+      font-weight: bold;
+      color: #0f172a;
+      text-decoration: none;
+    }
+
+    .logo-icon {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, #0ea5e9, #10b981);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+      font-size: 0.95rem;
+    }
+
+    .nav-links a {
+      color: #51636f;
+      text-decoration: none;
+      transition: color 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .nav-links a:hover {
+      color: #10b981;
+    }
+
+    .dropdown-arrow {
+      font-size: 0.8rem;
+    }
+
+    .language-selector {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: #f1f5f9;
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      color: #51636f;
+      border: 1px solid #e2e8f0;
+      cursor: pointer;
+    }
+
+    .nav-menu { position: relative; list-style: none; }
+    .nav-menu > summary {
+      cursor: pointer;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      color: #51636f;
+      font-size: 0.95rem;
+    }
+    .nav-menu > summary::-webkit-details-marker { display: none; }
+    .nav-menu > summary:hover,
+    .nav-menu[open] > summary { color: #10b981; }
+    .nav-menu-panel {
+      position: absolute;
+      top: calc(100% + 0.75rem);
+      right: 0;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 0.75rem;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.12);
+      padding: 0.5rem;
+      min-width: 170px;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      z-index: 60;
+    }
+    .nav-menu-panel a {
+      padding: 0.6rem 0.75rem;
+      border-radius: 0.5rem;
+      color: #364752;
+      font-size: 0.9rem;
+      font-weight: 500;
+      text-decoration: none;
+      transition: background 0.2s, color 0.2s;
+    }
+    .nav-menu-panel a:hover { background: #f1f5f9; color: #10b981; }
+    .nav-menu-panel a.menu-signup-btn {
+      background: linear-gradient(to right, #0ea5e9, #10b981);
+      color: #ffffff;
+      font-weight: 600;
+      text-align: center;
+    }
+    .nav-menu-panel a.menu-signup-btn:hover { opacity: 0.9; color: #ffffff; }
+
+    footer {
+      text-align: center;
+      padding: 2rem;
+      color: #64748b;
+      font-size: 0.8rem;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    /* ---- Quiz shell ---- */
+    .quiz-shell {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      min-height: calc(100vh - 74px - 65px);
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    @media (max-width: 900px) {
+      .quiz-shell { grid-template-columns: 1fr; }
+    }
+
+    .quiz-main {
+      padding: 2.5rem 3rem 3rem;
+    }
+
+    @media (max-width: 600px) {
+      .quiz-main { padding: 2rem 1.25rem 2.5rem; }
+    }
+
+    .quiz-steps {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin-bottom: 1.75rem;
+    }
+
+    .quiz-step-dot {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      font-weight: 700;
+      border: 2px solid #e2e8f0;
+      color: #94a3b8;
+      background: #fff;
+      transition: all 0.25s;
+    }
+
+    .quiz-step-dot.active {
+      background: #0f172a;
+      border-color: #0f172a;
+      color: #fff;
+    }
+
+    .quiz-step-dot.done {
+      background: #10b981;
+      border-color: #10b981;
+      color: #fff;
+    }
+
+    .quiz-step-line {
+      width: 28px;
+      height: 2px;
+      background: #e2e8f0;
+    }
+
+    .quiz-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 1.5rem;
+      padding-bottom: 1.5rem;
+      margin-bottom: 1.75rem;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .quiz-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.35rem; }
+    .quiz-subtitle { color: #64748b; font-size: 0.95rem; }
+
+    .quiz-nav-btns { display: flex; align-items: center; gap: 0.75rem; flex-shrink: 0; }
+
+    .quiz-back-btn {
+      background: none;
+      border: none;
+      color: #64748b;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .quiz-back-btn:hover { color: #0f172a; }
+
+    .quiz-next-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.65rem 1.4rem;
+      border-radius: 0.5rem;
+      border: none;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      background: linear-gradient(to right, #0ea5e9, #10b981);
+      color: #fff;
+      transition: all 0.25s;
+    }
+
+    .quiz-next-btn:disabled {
+      background: #e2e8f0;
+      color: #94a3b8;
+      cursor: not-allowed;
+    }
+
+    .quiz-next-btn:not(:disabled):hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 20px rgba(16, 185, 129, 0.25);
+    }
+
+    .quiz-panel { display: none; }
+    .quiz-panel.active { display: block; }
+
+    .quiz-field { margin-bottom: 1.75rem; }
+    .quiz-field label {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #0f172a;
+      margin-bottom: 0.6rem;
+    }
+
+    .quiz-field input[type="text"],
+    .quiz-field input[type="number"] {
+      width: 100%;
+      max-width: 360px;
+      padding: 0.7rem 1rem;
+      border: 1px solid #cbd5e1;
+      border-radius: 0.5rem;
+      font-size: 0.95rem;
+      color: #0f172a;
+      transition: border-color 0.2s;
+    }
+
+    .quiz-field input:focus {
+      outline: none;
+      border-color: #10b981;
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.12);
+    }
+
+    .quiz-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.65rem;
+    }
+
+    .quiz-pill {
+      padding: 0.6rem 1.25rem;
+      border-radius: 50px;
+      border: 1.5px solid #e2e8f0;
+      background: #f8fafc;
+      color: #364752;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .quiz-pill:hover { border-color: #10b981; color: #10b981; }
+
+    .quiz-pill.selected {
+      background: #0f172a;
+      border-color: #0f172a;
+      color: #fff;
+    }
+
+    .quiz-question { margin-bottom: 2rem; }
+    .quiz-question .q-label {
+      display: block;
+      font-size: 0.98rem;
+      font-weight: 600;
+      color: #0f172a;
+      margin-bottom: 0.75rem;
+      line-height: 1.5;
+    }
+
+    /* Results */
+    .score-wrap {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      flex-wrap: wrap;
+      margin-bottom: 2rem;
+    }
+
+    .score-ring {
+      width: 160px;
+      height: 160px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      background: conic-gradient(#10b981 calc(var(--pct) * 1%), #e2e8f0 0);
+      position: relative;
+    }
+    .score-ring::before {
+      content: '';
+      position: absolute;
+      inset: 12px;
+      border-radius: 50%;
+      background: #fff;
+    }
+    .score-ring-inner {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+    }
+    .score-ring-inner .num { font-size: 2.1rem; font-weight: 800; color: #0f172a; line-height: 1; }
+    .score-ring-inner .denom { font-size: 0.8rem; color: #64748b; margin-top: 0.2rem; }
+
+    .score-tier { font-size: 1.3rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .score-msg { color: #51636f; font-size: 0.95rem; line-height: 1.6; max-width: 420px; }
+
+    .score-compare {
+      background: #f8fafc;
+      border: 1px solid #e5e7eb;
+      border-radius: 0.75rem;
+      padding: 1rem 1.25rem;
+      font-size: 0.88rem;
+      color: #51636f;
+      margin-bottom: 2rem;
+    }
+    .score-compare strong { color: #0f172a; }
+
+    .score-breakdown { margin-bottom: 2rem; }
+    .score-breakdown h3 { font-size: 1rem; font-weight: 700; margin-bottom: 1rem; }
+    .breakdown-row {
+      display: grid;
+      grid-template-columns: 180px 1fr 60px;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+      font-size: 0.85rem;
+    }
+    .breakdown-row .cat-name { color: #364752; font-weight: 500; }
+    .breakdown-bar { height: 8px; background: #e2e8f0; border-radius: 50px; overflow: hidden; }
+    .breakdown-bar-fill { height: 100%; background: linear-gradient(to right, #0ea5e9, #10b981); border-radius: 50px; }
+    .breakdown-row .cat-pts { color: #64748b; text-align: right; }
+
+    .score-cta { display: flex; flex-wrap: wrap; gap: 0.85rem; }
+    .score-cta a, .score-cta button {
+      padding: 0.75rem 1.4rem;
+      border-radius: 0.5rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+    }
+    .score-cta .primary {
+      background: linear-gradient(to right, #0ea5e9, #10b981);
+      color: #fff;
+    }
+    .score-cta .secondary {
+      background: #fff;
+      border: 1px solid #cbd5e1;
+      color: #364752;
+    }
+    .score-cta .primary:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(16,185,129,0.25); }
+    .score-cta .secondary:hover { border-color: #10b981; color: #10b981; }
+
+    /* Side quote panel */
+    .quiz-side {
+      background: #eef2f7;
+      padding: 3rem 2.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    @media (max-width: 900px) {
+      .quiz-side { padding: 2rem 1.5rem; }
+    }
+
+    .quiz-quote-mark { font-size: 2.2rem; color: #0ea5e9; font-weight: 800; line-height: 1; margin-bottom: 0.75rem; }
+    .quiz-quote { font-size: 1.2rem; font-weight: 600; color: #1e293b; line-height: 1.5; }
+
+    .quiz-illustration {
+      align-self: center;
+      font-size: 7rem;
+      margin-top: 2.5rem;
+      filter: drop-shadow(0 12px 20px rgba(15,23,42,0.12));
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="../index.html" class="logo">
+      <div class="logo-icon">💰</div>
+      <span>FinFlow</span>
+    </a>
+    <div class="nav-links">
+      <a href="../index.html#features">Features</a>
+      <a href="free-calculators.html">Tools</a>
+      <a href="../index.html#learn">Learn</a>
+      <a href="../services.html">Services</a>
+      <details class="nav-menu">
+        <summary>Menu <span class="dropdown-arrow">▼</span></summary>
+        <div class="nav-menu-panel">
+          <a href="../index.html#login">Log In</a>
+          <a href="../index.html#login" class="menu-signup-btn">Sign Up</a>
+        </div>
+      </details>
+      <div class="language-selector">
+        🌐 English
+      </div>
+    </div>
+  </nav>
+
+  <div class="quiz-shell">
+    <div class="quiz-main">
+
+      <div class="quiz-steps" id="quizSteps">
+        <div class="quiz-step-dot" data-step="1">1</div>
+        <div class="quiz-step-line"></div>
+        <div class="quiz-step-dot" data-step="2">2</div>
+        <div class="quiz-step-line"></div>
+        <div class="quiz-step-dot" data-step="3">3</div>
+      </div>
+
+      <!-- Step 1 -->
+      <div class="quiz-panel active" data-panel="1">
+        <div class="quiz-header-row">
+          <div>
+            <h1 class="quiz-title">Know your Financial Fitness Score</h1>
+            <p class="quiz-subtitle">A quick 2-minute quiz on your money habits — get your free score out of 100.</p>
+          </div>
+          <div class="quiz-nav-btns">
+            <button class="quiz-next-btn" id="next1" disabled onclick="goToStep(2)">Next →</button>
+          </div>
+        </div>
+
+        <div class="quiz-field">
+          <label>Your full name</label>
+          <input type="text" id="fName" placeholder="Enter full name" oninput="validateStep1()">
+        </div>
+        <div class="quiz-field">
+          <label>Your Age</label>
+          <input type="number" id="fAge" placeholder="Enter your age" min="16" max="100" oninput="validateStep1()">
+        </div>
+        <div class="quiz-field">
+          <label>Your City</label>
+          <input type="text" id="fCity" placeholder="Enter city name" oninput="validateStep1()">
+        </div>
+        <div class="quiz-field">
+          <label>Profession</label>
+          <div class="quiz-pills" data-group="profession">
+            <button type="button" class="quiz-pill" data-value="Doctor" onclick="selectPill(this)">Doctor</button>
+            <button type="button" class="quiz-pill" data-value="IT Professional" onclick="selectPill(this)">IT Professional</button>
+            <button type="button" class="quiz-pill" data-value="Business" onclick="selectPill(this)">Business</button>
+            <button type="button" class="quiz-pill" data-value="Others" onclick="selectPill(this)">Others</button>
+          </div>
+        </div>
+        <div class="quiz-field">
+          <label>How would you rate your financial life out of 50?</label>
+          <div class="quiz-pills" data-group="selfRating">
+            <button type="button" class="quiz-pill" data-value="7" onclick="selectPill(this)">Less than 15</button>
+            <button type="button" class="quiz-pill" data-value="22" onclick="selectPill(this)">15-30</button>
+            <button type="button" class="quiz-pill" data-value="35" onclick="selectPill(this)">30-40</button>
+            <button type="button" class="quiz-pill" data-value="45" onclick="selectPill(this)">More than 40</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="quiz-panel" data-panel="2">
+        <div class="quiz-header-row">
+          <div>
+            <h1 class="quiz-title">A few questions about your money habits</h1>
+            <p class="quiz-subtitle">Answer honestly — this is what actually shapes your score.</p>
+          </div>
+          <div class="quiz-nav-btns">
+            <button class="quiz-back-btn" onclick="goToStep(1)">← Back</button>
+            <button class="quiz-next-btn" id="next2" disabled onclick="showResults()">See my score →</button>
+          </div>
+        </div>
+
+        <div class="quiz-question">
+          <span class="q-label">How many months of expenses do you have saved as an emergency fund?</span>
+          <div class="quiz-pills" data-group="q_emergency">
+            <button type="button" class="quiz-pill" data-value="0" onclick="selectPill(this)">None</button>
+            <button type="button" class="quiz-pill" data-value="5" onclick="selectPill(this)">Less than 3 months</button>
+            <button type="button" class="quiz-pill" data-value="12" onclick="selectPill(this)">3–6 months</button>
+            <button type="button" class="quiz-pill" data-value="18" onclick="selectPill(this)">6+ months</button>
+          </div>
+        </div>
+
+        <div class="quiz-question">
+          <span class="q-label">Roughly what % of your monthly income do you save or invest?</span>
+          <div class="quiz-pills" data-group="q_savings">
+            <button type="button" class="quiz-pill" data-value="4" onclick="selectPill(this)">Less than 10%</button>
+            <button type="button" class="quiz-pill" data-value="10" onclick="selectPill(this)">10–20%</button>
+            <button type="button" class="quiz-pill" data-value="15" onclick="selectPill(this)">20–35%</button>
+            <button type="button" class="quiz-pill" data-value="18" onclick="selectPill(this)">More than 35%</button>
+          </div>
+        </div>
+
+        <div class="quiz-question">
+          <span class="q-label">Which best describes your current debt situation?</span>
+          <div class="quiz-pills" data-group="q_debt">
+            <button type="button" class="quiz-pill" data-value="2" onclick="selectPill(this)">High-interest debt (credit cards, personal loans)</button>
+            <button type="button" class="quiz-pill" data-value="10" onclick="selectPill(this)">Only a home / education loan</button>
+            <button type="button" class="quiz-pill" data-value="13" onclick="selectPill(this)">Some debt, comfortably managed</button>
+            <button type="button" class="quiz-pill" data-value="16" onclick="selectPill(this)">Debt-free</button>
+          </div>
+        </div>
+
+        <div class="quiz-question">
+          <span class="q-label">Do you have term life and health insurance in place?</span>
+          <div class="quiz-pills" data-group="q_insurance">
+            <button type="button" class="quiz-pill" data-value="0" onclick="selectPill(this)">Neither</button>
+            <button type="button" class="quiz-pill" data-value="7" onclick="selectPill(this)">One of the two</button>
+            <button type="button" class="quiz-pill" data-value="12" onclick="selectPill(this)">Both, but coverage feels low</button>
+            <button type="button" class="quiz-pill" data-value="16" onclick="selectPill(this)">Both, adequately covered</button>
+          </div>
+        </div>
+
+        <div class="quiz-question">
+          <span class="q-label">How diversified are your investments?</span>
+          <div class="quiz-pills" data-group="q_invest">
+            <button type="button" class="quiz-pill" data-value="2" onclick="selectPill(this)">All in savings account / FD</button>
+            <button type="button" class="quiz-pill" data-value="8" onclick="selectPill(this)">Mostly one asset class</button>
+            <button type="button" class="quiz-pill" data-value="13" onclick="selectPill(this)">A mix of equity, debt &amp; gold</button>
+            <button type="button" class="quiz-pill" data-value="16" onclick="selectPill(this)">Well diversified across goals</button>
+          </div>
+        </div>
+
+        <div class="quiz-question">
+          <span class="q-label">Do you have a written financial plan or goals (retirement, home, education)?</span>
+          <div class="quiz-pills" data-group="q_goals">
+            <button type="button" class="quiz-pill" data-value="0" onclick="selectPill(this)">No plan at all</button>
+            <button type="button" class="quiz-pill" data-value="5" onclick="selectPill(this)">A rough idea, nothing written down</button>
+            <button type="button" class="quiz-pill" data-value="10" onclick="selectPill(this)">Goals set, but not tracked</button>
+            <button type="button" class="quiz-pill" data-value="16" onclick="selectPill(this)">Clear, tracked plan</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3: Results -->
+      <div class="quiz-panel" data-panel="3">
+        <div class="quiz-header-row">
+          <div>
+            <h1 class="quiz-title">Your Financial Fitness Score</h1>
+            <p class="quiz-subtitle" id="resultGreeting">Here's where you stand today.</p>
+          </div>
+          <div class="quiz-nav-btns">
+            <button class="quiz-back-btn" onclick="restartQuiz()">↺ Retake quiz</button>
+          </div>
+        </div>
+
+        <div class="score-wrap">
+          <div class="score-ring" id="scoreRing" style="--pct: 0;">
+            <div class="score-ring-inner">
+              <div class="num" id="scoreNum">0</div>
+              <div class="denom">out of 100</div>
+            </div>
+          </div>
+          <div>
+            <p class="score-tier" id="scoreTier">—</p>
+            <p class="score-msg" id="scoreMsg">—</p>
+          </div>
+        </div>
+
+        <div class="score-compare" id="scoreCompare"></div>
+
+        <div class="score-breakdown">
+          <h3>How your score breaks down</h3>
+          <div id="breakdownRows"></div>
+        </div>
+
+        <div class="score-cta">
+          <a href="../index.html#login" class="primary">Start tracking in FinFlow →</a>
+          <a href="free-calculators.html#section-goal" class="secondary">Explore goal calculators</a>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="quiz-side">
+      <div>
+        <div class="quiz-quote-mark">"</div>
+        <p class="quiz-quote" id="sideQuote">Financial fitness refers to being in control of one's finances and having a plan in place to achieve financial goals.</p>
+      </div>
+      <div class="quiz-illustration" id="sideIllustration">🌱</div>
+    </div>
+  </div>
+
+  <footer>
+    &copy; 2026 FinFlow. All rights reserved.
+  </footer>
+
+  <script>
+    var MAX_STEP1_FIELDS = ['fName', 'fAge', 'fCity'];
+    var STEP2_GROUPS = ['q_emergency', 'q_savings', 'q_debt', 'q_insurance', 'q_invest', 'q_goals'];
+    var CATEGORY_LABELS = {
+      q_emergency: 'Emergency Fund',
+      q_savings: 'Savings Rate',
+      q_debt: 'Debt Health',
+      q_insurance: 'Insurance Coverage',
+      q_invest: 'Investment Diversification',
+      q_goals: 'Goal Planning'
+    };
+    var CATEGORY_MAX = {
+      q_emergency: 18,
+      q_savings: 18,
+      q_debt: 16,
+      q_insurance: 16,
+      q_invest: 16,
+      q_goals: 16
+    };
+
+    var sideQuotes = {
+      1: { quote: "Financial fitness refers to being in control of one's finances and having a plan in place to achieve financial goals.", icon: '🌱' },
+      2: { quote: "There are no shortcuts — just honest answers today, and a clearer plan tomorrow.", icon: '🧭' },
+      3: { quote: "Awareness is the first step. Now let's build the plan.", icon: '🏆' }
+    };
+
+    function selectPill(btn) {
+      var group = btn.parentElement;
+      Array.prototype.forEach.call(group.querySelectorAll('.quiz-pill'), function (p) {
+        p.classList.remove('selected');
+      });
+      btn.classList.add('selected');
+      validateStep1();
+      validateStep2();
+    }
+
+    function getSelectedValue(groupName) {
+      var group = document.querySelector('.quiz-pills[data-group="' + groupName + '"]');
+      var selected = group && group.querySelector('.quiz-pill.selected');
+      return selected ? selected.dataset.value : null;
+    }
+
+    function validateStep1() {
+      var filled = MAX_STEP1_FIELDS.every(function (id) {
+        return document.getElementById(id).value.trim() !== '';
+      });
+      var profession = getSelectedValue('profession');
+      var selfRating = getSelectedValue('selfRating');
+      document.getElementById('next1').disabled = !(filled && profession && selfRating);
+    }
+
+    function validateStep2() {
+      var allAnswered = STEP2_GROUPS.every(function (g) { return getSelectedValue(g) !== null; });
+      document.getElementById('next2').disabled = !allAnswered;
+    }
+
+    function goToStep(step) {
+      document.querySelectorAll('.quiz-panel').forEach(function (p) {
+        p.classList.toggle('active', p.dataset.panel === String(step));
+      });
+      document.querySelectorAll('.quiz-step-dot').forEach(function (dot) {
+        var n = Number(dot.dataset.step);
+        dot.classList.remove('active', 'done');
+        if (n < step) dot.classList.add('done');
+        if (n === step) dot.classList.add('active');
+      });
+      var side = sideQuotes[step];
+      if (side) {
+        document.getElementById('sideQuote').textContent = side.quote;
+        document.getElementById('sideIllustration').textContent = side.icon;
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function showResults() {
+      var total = 0;
+      var breakdownHtml = '';
+      STEP2_GROUPS.forEach(function (g) {
+        var pts = Number(getSelectedValue(g) || 0);
+        total += pts;
+        var max = CATEGORY_MAX[g];
+        var pct = Math.round((pts / max) * 100);
+        breakdownHtml += '<div class="breakdown-row">' +
+          '<span class="cat-name">' + CATEGORY_LABELS[g] + '</span>' +
+          '<span class="breakdown-bar"><span class="breakdown-bar-fill" style="width:' + pct + '%"></span></span>' +
+          '<span class="cat-pts">' + pts + '/' + max + '</span>' +
+          '</div>';
+      });
+      document.getElementById('breakdownRows').innerHTML = breakdownHtml;
+
+      document.getElementById('scoreRing').style.setProperty('--pct', total);
+      document.getElementById('scoreNum').textContent = total;
+
+      var tier, msg;
+      if (total <= 40) {
+        tier = 'Just Getting Started';
+        msg = "You're at the beginning of your financial journey — and that's a fine place to start. Small, consistent steps from here compound fast.";
+      } else if (total <= 65) {
+        tier = 'Building Momentum';
+        msg = "You've got real fundamentals in place. Tightening a couple of gaps above will move you into a much stronger position.";
+      } else if (total <= 85) {
+        tier = 'Solid Foundation';
+        msg = "You're in good shape — disciplined saving and sensible risk management are paying off. A few refinements away from thriving.";
+      } else {
+        tier = 'Thriving & FIRE-Ready';
+        msg = "Excellent. Your habits put you well ahead of most — you're in a strong position to seriously plan for financial independence.";
+      }
+      document.getElementById('scoreTier').textContent = tier;
+      document.getElementById('scoreMsg').textContent = msg;
+
+      var name = document.getElementById('fName').value.trim();
+      document.getElementById('resultGreeting').textContent = name
+        ? "Here's where you stand today, " + name + "."
+        : "Here's where you stand today.";
+
+      var selfRating = Number(getSelectedValue('selfRating') || 0);
+      var selfOn100 = selfRating * 2;
+      var delta = total - selfOn100;
+      var deltaText = delta > 5
+        ? "You're actually doing better than you gave yourself credit for."
+        : delta < -5
+          ? "Your habits have more room to grow than your self-rating suggested."
+          : "Your self-rating and calculated score are closely aligned — good self-awareness.";
+      document.getElementById('scoreCompare').innerHTML =
+        'You rated yourself <strong>' + selfRating + '/50</strong> (~' + selfOn100 + '/100). ' +
+        'We calculated <strong>' + total + '/100</strong> from your answers. ' + deltaText;
+
+      goToStep(3);
+    }
+
+    function restartQuiz() {
+      document.querySelectorAll('.quiz-pill.selected').forEach(function (p) { p.classList.remove('selected'); });
+      MAX_STEP1_FIELDS.forEach(function (id) { document.getElementById(id).value = ''; });
+      validateStep1();
+      document.getElementById('next2').disabled = true;
+      goToStep(1);
+    }
+  </script>
+</body>
+</html>

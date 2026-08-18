@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(*)",
+      "Edit(/.claude/skills/finflow-locale/**)",
+      "Read(//Users/balajirajan/.claude/**)"
+    ],
+    "deny": [
+      "Bash(rm -rf *)",
+      "Bash(rm -fr *)",
+      "Bash(rm -r -f *)",
+      "Bash(rm -f -r *)",
+      "Bash(sudo rm -rf *)"
+    ],
+    "defaultMode": "auto",
+    "additionalDirectories": [
+      "/Users/balajirajan/Downloads/fire/.claude/skills"
+    ]
+  }
+}

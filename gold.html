@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gold + Commodities - FinFlow</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f8fafc;
+      color: #0f172a;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    a, button { color: inherit; text-decoration: none; font-family: inherit; }
+
+    .app-shell { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
+    @media (max-width: 860px) { .app-shell { grid-template-columns: 1fr; } .sidebar { display: none; } }
+
+    /* Sidebar */
+    .sidebar { background: #ffffff; border-right: 1px solid #e2e8f0; display: flex; flex-direction: column; padding: 1.5rem 1.25rem; }
+    .sidebar-logo { display: flex; align-items: center; gap: 0.65rem; font-size: 1.1rem; font-weight: 800; margin-bottom: 2rem; padding: 0 0.25rem; }
+    .sidebar-logo-icon { width: 30px; height: 30px; background: linear-gradient(135deg, #0ea5e9, #10b981); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; flex-shrink: 0; }
+    .sidebar-nav { display: flex; flex-direction: column; gap: 0.25rem; }
+    .sidebar-nav a, .sidebar-nav .nav-group-head { display: flex; align-items: center; gap: 0.75rem; padding: 0.7rem 0.75rem; border-radius: 0.6rem; font-size: 0.9rem; font-weight: 500; color: #364752; }
+    .sidebar-nav a:hover, .sidebar-nav .nav-group-head:hover { background: #f1f5f9; }
+    .sidebar-nav a.active { background: #0f172a; color: #ffffff; font-weight: 600; }
+    .sidebar-nav .nav-group-head.open { background: #f1f5f9; font-weight: 700; }
+    .sidebar-nav .nav-icon { font-size: 1rem; width: 20px; text-align: center; flex-shrink: 0; }
+    .sidebar-nav .nav-label { flex: 1; }
+    .sidebar-nav .nav-chevron { color: #94a3b8; font-size: 0.85rem; }
+    .sidebar-subnav { display: flex; flex-direction: column; gap: 0.2rem; padding-left: 1.6rem; margin: 0.15rem 0 0.3rem; }
+    .sidebar-subnav a { display: flex; align-items: center; gap: 0.6rem; padding: 0.55rem 0.6rem; border-radius: 0.5rem; font-size: 0.85rem; font-weight: 500; color: #364752; }
+    .sidebar-subnav a:hover { background: #f1f5f9; }
+    .sidebar-subnav a.active { background: #0f172a; color: #fff; font-weight: 600; }
+    .sidebar-subnav a.disabled { color: #cbd5e1; cursor: default; pointer-events: none; display: flex; justify-content: space-between; }
+    .soon-pill { font-size: 0.62rem; font-weight: 700; color: #8b5cf6; background: rgba(139,92,246,0.12); padding: 0.15rem 0.5rem; border-radius: 999px; }
+    .sidebar-spacer { flex: 1; }
+    .feedback-card { background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 0.9rem; padding: 1.1rem; margin-top: 1.5rem; }
+    .feedback-card .fc-icon { width: 32px; height: 32px; border-radius: 0.6rem; background: #eef2f7; display: flex; align-items: center; justify-content: center; font-size: 0.95rem; margin-bottom: 0.6rem; }
+    .feedback-card strong { display: block; font-size: 0.85rem; margin-bottom: 0.3rem; }
+    .feedback-card p { font-size: 0.78rem; color: #64748b; line-height: 1.5; margin-bottom: 0.85rem; }
+    .feedback-card a { display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; width: 100%; padding: 0.55rem; border: 1px solid #cbd5e1; border-radius: 0.5rem; font-size: 0.8rem; font-weight: 600; color: #364752; }
+    .feedback-card a:hover { border-color: #10b981; color: #10b981; }
+
+    /* Main */
+    .main { padding: 1.5rem 2.5rem 3rem; min-width: 0; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; padding-bottom: 1.25rem; border-bottom: 1px solid #e2e8f0; margin-bottom: 1.5rem; }
+    .topbar h1 { font-size: 1.4rem; font-weight: 700; }
+    .topbar-right { display: flex; align-items: center; gap: 0.85rem; }
+    .language-selector { display: flex; align-items: center; gap: 0.5rem; background: #ffffff; padding: 0.5rem 0.9rem; border-radius: 0.5rem; color: #51636f; border: 1px solid #e2e8f0; cursor: pointer; font-size: 0.85rem; }
+    .user-menu { position: relative; list-style: none; }
+    .user-menu > summary { cursor: pointer; list-style: none; width: 34px; height: 34px; border-radius: 50%; background: #eef2f7; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; font-size: 1rem; }
+    .user-menu > summary::-webkit-details-marker { display: none; }
+    .user-menu-panel { position: absolute; top: calc(100% + 0.6rem); right: 0; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 0.75rem; box-shadow: 0 10px 30px rgba(15,23,42,0.12); padding: 0.4rem; min-width: 150px; z-index: 20; }
+    .user-menu-panel a { display: block; padding: 0.55rem 0.7rem; border-radius: 0.5rem; font-size: 0.85rem; color: #364752; font-weight: 500; }
+    .user-menu-panel a:hover { background: #f1f5f9; color: #10b981; }
+
+    .page-head { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem; }
+    .page-head h2 { font-size: 1.6rem; font-weight: 800; margin-bottom: 0.3rem; }
+    .page-head p { color: #64748b; font-size: 0.9rem; }
+    .head-actions { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+
+    .pbtn { display: inline-flex; align-items: center; gap: 0.45rem; padding: 0.65rem 1.1rem; border-radius: 0.6rem; font-size: 0.85rem; font-weight: 600; cursor: pointer; border: none; background: linear-gradient(to right, #0ea5e9, #10b981); color: #fff; white-space: nowrap; }
+    .pbtn:hover { opacity: 0.92; }
+    .pbtn.outline { background: #fff; border: 1px solid #cbd5e1; color: #364752; }
+    .pbtn.outline:hover { opacity: 1; border-color: #94a3b8; }
+
+    /* Overview hero — same dark-gradient theme as Properties, Loan/EMI, etc. */
+    .gold-hero {
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      border-radius: 1.25rem;
+      padding: 1.75rem 2rem;
+      color: #fff;
+      margin-bottom: 1.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.75rem;
+    }
+    .gold-hero-stats { display: flex; flex-wrap: wrap; gap: 2.25rem; flex: 1; min-width: 280px; }
+    .gold-hero-stat { min-width: 140px; }
+    .gold-hero-icon { font-size: 1.1rem; margin-bottom: 0.4rem; opacity: 0.9; }
+    .gold-hero-label { font-size: 0.78rem; color: #94a3b8; font-weight: 600; margin-bottom: 0.3rem; }
+    .gold-hero-value { font-size: 1.75rem; font-weight: 800; }
+    .gold-hero-sub { font-size: 0.72rem; color: #94a3b8; margin-top: 0.3rem; }
+    .gold-hero-progress { display: flex; flex-direction: column; align-items: center; }
+    .gold-hero-donut-wrap { position: relative; width: 110px; height: 110px; flex-shrink: 0; }
+    .gold-hero-donut-wrap svg { width: 110px; height: 110px; display: block; }
+    .gold-hero-progress-label { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    .gold-hero-progress-pct { font-size: 1.35rem; font-weight: 800; }
+    .gold-hero-progress-sub { font-size: 0.6rem; color: #94a3b8; text-align: center; line-height: 1.3; margin-top: 0.15rem; }
+
+    .load-error { display: none; padding: 0.85rem 1.3rem; font-size: 0.8rem; color: #991b1b; background: #fef2f2; border: 1px solid #fecaca; border-radius: 0.75rem; margin-bottom: 1rem; }
+    .load-error.show { display: block; }
+
+    .empty-state { text-align: center; padding: 3rem 2rem; color: #64748b; font-size: 0.9rem; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 1.1rem; }
+    .empty-state .pbtn { margin-top: 1rem; }
+
+    /* Gold table */
+    .grid-card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 1.1rem; box-shadow: 0 4px 16px rgba(15,23,42,0.03); overflow: hidden; }
+    .grid-scroll { overflow-x: auto; }
+    .grid-hint { padding: 0.85rem 1.3rem; font-size: 0.78rem; color: #64748b; border-bottom: 1px solid #f1f5f9; }
+
+    table.gold-table { border-collapse: collapse; width: 100%; min-width: 980px; }
+    table.gold-table th, table.gold-table td {
+      padding: 0.6rem 0.75rem; font-size: 0.82rem; border-bottom: 1px solid #f1f5f9; white-space: nowrap; text-align: right;
+    }
+    table.gold-table th {
+      font-size: 0.68rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.02em;
+      background: #f8fafc; border-bottom: 1px solid #e2e8f0;
+    }
+    table.gold-table th:first-child, table.gold-table td.name-col,
+    table.gold-table th:nth-child(2), table.gold-table th:nth-child(3),
+    table.gold-table td.type-col { text-align: left; }
+    table.gold-table td.name-col { font-weight: 600; color: #364752; }
+    table.gold-table tbody tr:hover td { background: #f8fafc; }
+
+    .type-pill, .purity-pill { display: inline-block; padding: 0.2rem 0.6rem; border-radius: 999px; font-size: 0.72rem; font-weight: 700; white-space: nowrap; }
+    .type-pill { background: #f1f5f9; color: #364752; }
+    .purity-pill { background: rgba(217,119,6,0.12); color: #b45309; }
+    .pct-pill { display: inline-block; padding: 0.1rem 0.5rem; border-radius: 999px; font-size: 0.74rem; font-weight: 700; }
+    .pct-pill.pos { background: rgba(16,185,129,0.12); color: #059669; }
+    .pct-pill.neg { background: rgba(220,38,38,0.12); color: #dc2626; }
+
+    .row-edit, .row-delete {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 24px; height: 24px; font-size: 0.72rem; cursor: pointer;
+      border-radius: 0.4rem; flex-shrink: 0; border: 1px solid;
+    }
+    .row-edit { background: #ecfdf5; border-color: #a7f3d0; color: #059669; margin-right: 0.3rem; }
+    .row-edit:hover { background: #d1fae5; border-color: #10b981; color: #047857; }
+    .row-delete { background: #fef2f2; border-color: #fecaca; color: #dc2626; }
+    .row-delete:hover { background: #fee2e2; border-color: #dc2626; color: #b91c1c; }
+
+    .toast { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(20px); background: #0f172a; color: #fff; padding: 0.75rem 1.25rem; border-radius: 0.6rem; font-size: 0.85rem; opacity: 0; pointer-events: none; transition: opacity 0.2s, transform 0.2s; z-index: 200; }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* Add/edit modal */
+    .fm-modal-overlay {
+      display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.55);
+      align-items: center; justify-content: center; z-index: 300; padding: 1rem;
+    }
+    .fm-modal-overlay.show { display: flex; }
+    .fm-modal { background: #ffffff; border-radius: 1rem; width: 100%; max-width: 460px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(15,23,42,0.25); }
+    .fm-modal-head { display: flex; align-items: flex-start; justify-content: space-between; padding: 1.1rem 1.3rem 0.2rem; }
+    .fm-modal-head-text h3 { font-size: 1.1rem; font-weight: 800; margin-bottom: 0.15rem; }
+    .fm-modal-head-text span { font-size: 0.78rem; color: #94a3b8; font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em; }
+    .fm-modal-close { width: 28px; height: 28px; border-radius: 50%; border: none; background: #f1f5f9; color: #64748b; cursor: pointer; font-size: 0.85rem; }
+    .fm-modal-close:hover { background: #e2e8f0; color: #0f172a; }
+    .fm-modal-body { padding: 1.1rem 1.3rem 1.3rem; display: flex; flex-direction: column; gap: 1.1rem; }
+    .fm-field { display: flex; flex-direction: column; gap: 0.4rem; font-size: 0.8rem; font-weight: 600; color: #364752; }
+    .fm-field input, .fm-field select {
+      padding: 0.6rem 0.7rem; border: 1px solid #cbd5e1; border-radius: 0.5rem;
+      font-size: 0.9rem; font-family: inherit; color: #0f172a; background: #fff;
+    }
+    .fm-field input:focus, .fm-field select:focus { outline: none; border-color: #10b981; box-shadow: 0 0 0 2px rgba(16,185,129,0.15); }
+    .fm-field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .fm-hint { font-size: 0.76rem; color: #94a3b8; margin-top: -0.4rem; }
+    .fm-modal-foot { padding: 0.3rem 1.3rem 1.3rem; display: flex; gap: 0.75rem; }
+    .fm-modal-foot .pbtn { flex: 1; justify-content: center; }
+
+    .gold-type-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.7rem; }
+    .gold-type-card {
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.4rem;
+      padding: 0.9rem 0.5rem; border: 1.5px solid #e2e8f0; border-radius: 0.75rem;
+      cursor: pointer; background: #fff; text-align: center;
+    }
+    .gold-type-card:hover { border-color: #94a3b8; }
+    .gold-type-card.selected { border-color: #0f172a; background: #f8fafc; box-shadow: 0 0 0 1px #0f172a; }
+    .gold-type-card .gt-icon { font-size: 1.4rem; }
+    .gold-type-card .gt-label { font-size: 0.78rem; font-weight: 600; color: #364752; }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a href="dashboard.html" class="sidebar-logo">
+        <div class="sidebar-logo-icon">💰</div>
+        <span>FinFlow</span>
+      </a>
+
+      <nav class="sidebar-nav">
+        <a href="dashboard.html">
+          <span class="nav-icon">▦</span>
+          <span class="nav-label">Dashboard</span>
+        </a>
+        <a href="fire-plan.html">
+          <span class="nav-icon">🧭</span>
+          <span class="nav-label">FIRE Plan</span>
+          <span class="nav-chevron">›</span>
+        </a>
+
+        <a href="net-worth.html" class="nav-group-head open">
+          <span class="nav-icon">📈</span>
+          <span class="nav-label">Networth</span>
+          <span class="nav-chevron">⌄</span>
+        </a>
+        <div class="sidebar-subnav">
+          <a href="portfolio.html">
+            <span class="nav-icon">📊</span>
+            <span class="nav-label">Stocks/MF</span>
+          </a>
+          <a href="gold.html" class="active">
+            <span class="nav-icon">🥇</span>
+            <span class="nav-label">Gold + Commodities</span>
+          </a>
+          <a href="bonds.html">
+            <span class="nav-icon">🏛️</span>
+            <span class="nav-label">Government Scheme</span>
+          </a>
+          <a href="properties.html">
+            <span class="nav-icon">🏠</span>
+            <span class="nav-label">Properties</span>
+          </a>
+          <a href="personal-debt.html">
+            <span class="nav-icon">🔄</span>
+            <span class="nav-label">Personal Debt & Receivable</span>
+          </a>
+        </div>
+
+        <a href="money-required.html">
+          <span class="nav-icon">🪴</span>
+          <span class="nav-label">Expenses</span>
+          <span class="nav-chevron">›</span>
+        </a>
+
+        <a href="expense-quick-add.html">
+          <span class="nav-icon">⚡</span>
+          <span class="nav-label">Daily Expenses Tracker</span>
+        </a>
+        <a href="tax-planning.html">
+          <span class="nav-icon">🧾</span>
+          <span class="nav-label">Tax Planning</span>
+        </a>
+        <a href="insurance-tracker.html">
+          <span class="nav-icon">🛡️</span>
+          <span class="nav-label">Insurance Tracker</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="reminders.html">
+          <span class="nav-icon">🔔</span>
+          <span class="nav-label">Reminders</span>
+        </a>
+        <a href="vault-overview.html">
+          <span class="nav-icon">🔒</span>
+          <span class="nav-label">Document Vault</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="split/dashboard.html">
+          <span class="nav-icon">💸</span>
+          <span class="nav-label">SplitExpenses(SplitWise)</span>
+        </a>
+        <a href="life-expectancy.html">
+          <span class="nav-icon">❤️</span>
+          <span class="nav-label">Health</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="astrology.html">
+          <span class="nav-icon">🔮</span>
+          <span class="nav-label">Spiritual</span>
+        </a>
+        <a href="#">
+          <span class="nav-icon">⚙️</span>
+          <span class="nav-label">Settings</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-spacer"></div>
+
+      <div class="feedback-card">
+        <div class="fc-icon">💬</div>
+        <strong>Got feedback?</strong>
+        <p>Have an idea or found a bug? We read every message.</p>
+        <a href="mailto:hello@finflow.app">✉ Contact Us</a>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <h1>Gold + Commodities</h1>
+        <div class="topbar-right">
+          <div class="language-selector">🌐 English ▾</div>
+          <details class="user-menu">
+            <summary>👤</summary>
+            <div class="user-menu-panel">
+              <a href="#">Settings</a>
+              <a href="#" onclick="signOutAndRedirect('index.html'); return false;">Log Out</a>
+            </div>
+          </details>
+        </div>
+      </div>
+
+      <div class="page-head">
+        <div>
+          <h2>Gold + Commodities</h2>
+          <p>Gold, silver, platinum and other precious metals — track grams bought, not just rupees; current value updates from today's rate per gram.</p>
+        </div>
+        <div class="head-actions">
+          <button type="button" class="pbtn" onclick="openAddModal()">➕ Add Item</button>
+        </div>
+      </div>
+
+      <p class="load-error" id="loadError"></p>
+
+      <div class="gold-hero" id="goldHero" style="display:none;">
+        <div class="gold-hero-stats">
+          <div class="gold-hero-stat">
+            <div class="gold-hero-icon">💰</div>
+            <div class="gold-hero-label">Current Gold Value</div>
+            <div class="gold-hero-value" id="heroCurrentValue">₹0</div>
+            <div class="gold-hero-sub">At today's rate per gram</div>
+          </div>
+          <div class="gold-hero-stat">
+            <div class="gold-hero-icon">🧾</div>
+            <div class="gold-hero-label">Total Value While Buying</div>
+            <div class="gold-hero-value" id="heroBuyValue">₹0</div>
+            <div class="gold-hero-sub">Original purchase price, combined</div>
+          </div>
+          <div class="gold-hero-stat">
+            <div class="gold-hero-icon">⚖️</div>
+            <div class="gold-hero-label">Total Grams</div>
+            <div class="gold-hero-value" id="heroGrams">0 g</div>
+          </div>
+        </div>
+        <div class="gold-hero-progress">
+          <div class="gold-hero-donut-wrap">
+            <div id="heroDonutSvgHolder"></div>
+            <div class="gold-hero-progress-label">
+              <div class="gold-hero-progress-pct" id="heroGainPct">0%</div>
+              <div class="gold-hero-progress-sub">Value<br>Gained</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-card" id="goldCard">
+        <p class="grid-hint">🥇 Enter today's rate per gram on any item to refresh its current value. Use ✎ to edit, ✕ to remove.</p>
+        <div class="grid-scroll">
+          <table class="gold-table">
+            <thead>
+              <tr>
+                <th>Item</th>
+                <th>Type</th>
+                <th>Purity</th>
+                <th>Grams</th>
+                <th>Purchase Price</th>
+                <th>Rate/g Today</th>
+                <th>Current Value</th>
+                <th>Gain / Loss</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="goldBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="empty-state" id="emptyState" style="display:none;">
+        <p>No items added yet.</p>
+        <button type="button" class="pbtn" onclick="openAddModal()">➕ Add Item</button>
+      </div>
+    </main>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <div class="fm-modal-overlay" id="fmModalOverlay" onclick="if (event.target === this) closeModal();">
+    <div class="fm-modal">
+      <div class="fm-modal-head">
+        <div class="fm-modal-head-text">
+          <h3 id="fmModalTitle">Add Item</h3>
+        </div>
+        <button type="button" class="fm-modal-close" onclick="closeModal()">✕</button>
+      </div>
+
+      <div class="fm-modal-body">
+        <div class="fm-field">
+          <span>Type</span>
+          <div class="gold-type-grid" id="goldTypeGrid"></div>
+        </div>
+
+        <label class="fm-field">
+          <span>Item Name</span>
+          <input type="text" id="fmName" placeholder="e.g. Gold Necklace, Wedding Coins">
+        </label>
+
+        <div class="fm-field-row">
+          <label class="fm-field">
+            <span>Purity</span>
+            <select id="fmPurity">
+              <option value="24k">24K (99.9%)</option>
+              <option value="22k">22K (91.6%)</option>
+              <option value="18k">18K (75%)</option>
+              <option value="other">Other / Unknown</option>
+            </select>
+          </label>
+          <label class="fm-field">
+            <span>Weight (grams)</span>
+            <input type="number" min="0" step="0.01" id="fmGrams" placeholder="e.g. 10">
+          </label>
+        </div>
+
+        <label class="fm-field">
+          <span>Price While Purchasing (₹, total)</span>
+          <input type="number" min="0" id="fmPurchasePrice" placeholder="e.g. 55000">
+        </label>
+
+        <label class="fm-field">
+          <span>Today's Rate (₹ per gram)</span>
+          <input type="number" min="0" step="0.01" id="fmCurrentRate" placeholder="e.g. 6800" oninput="previewCurrentValue()">
+        </label>
+        <p class="fm-hint" id="fmPreview"></p>
+      </div>
+
+      <div class="fm-modal-foot">
+        <button type="button" class="pbtn outline" onclick="closeModal()">Cancel</button>
+        <button type="button" class="pbtn" id="fmSubmitBtn" onclick="saveGold()">Add Item</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-client.js"></script>
+  <script src="js/obligations-calc.js"></script>
+  <script src="js/obligations-widget.js"></script>
+  <script>
+    var GOLD_TYPES = [
+      { key: 'jewellery', icon: '💍', label: 'Jewellery' },
+      { key: 'coins', icon: '🪙', label: 'Coins' },
+      { key: 'bars', icon: '🧱', label: 'Bars / Biscuits' },
+      { key: 'digital_gold', icon: '📱', label: 'Digital Gold' },
+      { key: 'sgb', icon: '📜', label: 'Sovereign Gold Bond' },
+      { key: 'silver', icon: '🥈', label: 'Silver' },
+      { key: 'platinum', icon: '🔘', label: 'Platinum' },
+      { key: 'other', icon: '✨', label: 'Other' }
+    ];
+
+    var PURITY_LABELS = { '24k': '24K', '22k': '22K', '18k': '18K', 'other': 'Other' };
+
+    var holdings = []; // [{ id, name, gold_type, purity, grams, purchase_price, current_rate_per_gram }]
+    var editingId = null;
+    var selectedType = 'jewellery';
+
+    function fmtRupee(n, compact) {
+      var amount = Math.round(Number(n) || 0);
+      var sign = amount < 0 ? '-' : '';
+      var abs = Math.abs(amount);
+      if (compact) {
+        if (abs >= 10000000) return sign + '₹' + Number((abs / 10000000).toFixed(2)).toString() + ' Cr';
+        if (abs >= 100000) return sign + '₹' + Number((abs / 100000).toFixed(2)).toString() + ' L';
+      }
+      var digits = String(abs);
+      var last3 = digits.slice(-3);
+      var rest = digits.slice(0, -3);
+      var restFormatted = rest.replace(/\B(?=(\d{2})+(?!\d))/g, ',');
+      var out = rest ? restFormatted + ',' + last3 : last3;
+      return sign + '₹' + out;
+    }
+
+    function fmtGrams(g) {
+      var n = Number(g) || 0;
+      return (n % 1 === 0 ? n.toString() : n.toFixed(2)) + ' g';
+    }
+
+    function escapeHtml(s) {
+      return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function typeInfo(key) {
+      return GOLD_TYPES.find(function (t) { return t.key === key; }) || GOLD_TYPES[GOLD_TYPES.length - 1];
+    }
+
+    function showLoadError(prefix, error) {
+      console.error(prefix, error);
+      var el = document.getElementById('loadError');
+      if (!el) return;
+      el.textContent = '⚠️ ' + prefix + ': ' + (error && error.message ? error.message : String(error)) +
+        (error && error.code ? ' (code ' + error.code + ')' : '');
+      el.classList.add('show');
+    }
+
+    var toastTimer = null;
+    function showToast(msg) {
+      var toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(function () { toast.classList.remove('show'); }, 2600);
+    }
+
+    async function loadGold() {
+      var { data, error } = await supabaseClient.from('gold_holdings').select('*').order('created_at');
+      if (error) { showLoadError('Could not load gold holdings', error); return; }
+      holdings = (data || []).map(function (row) {
+        return {
+          id: row.id, name: row.name, gold_type: row.gold_type, purity: row.purity,
+          grams: Number(row.grams) || 0, purchase_price: Number(row.purchase_price) || 0,
+          current_rate_per_gram: row.current_rate_per_gram === null ? null : Number(row.current_rate_per_gram)
+        };
+      });
+    }
+
+    /* ---- Value math: grams × today's rate/gram = current value; compared ----
+       against what was actually paid to get gain/loss in ₹ and %.        ---- */
+    function currentValueOf(h) { return h.current_rate_per_gram !== null ? h.grams * h.current_rate_per_gram : null; }
+    function gainOf(h) {
+      var cur = currentValueOf(h);
+      return cur === null ? null : cur - h.purchase_price;
+    }
+    function gainPctOf(h) {
+      var gain = gainOf(h);
+      return (gain === null || !h.purchase_price) ? null : gain / h.purchase_price * 100;
+    }
+
+    function buildProgressDonutSvg(pct, size, strokeW, color) {
+      var r = (size - strokeW) / 2;
+      var cx = size / 2, cy = size / 2;
+      var circumference = 2 * Math.PI * r;
+      var clamped = Math.max(0, Math.min(100, Math.abs(pct)));
+      var len = circumference * (clamped / 100);
+      return '<svg viewBox="0 0 ' + size + ' ' + size + '">' +
+        '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="' + strokeW + '"/>' +
+        '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="' + color + '" stroke-width="' + strokeW + '" ' +
+        'stroke-dasharray="' + len + ' ' + circumference + '" stroke-linecap="round" transform="rotate(-90 ' + cx + ' ' + cy + ')"/>' +
+        '</svg>';
+    }
+
+    function render() {
+      var card = document.getElementById('goldCard');
+      var body = document.getElementById('goldBody');
+      var emptyEl = document.getElementById('emptyState');
+
+      if (holdings.length === 0) {
+        body.innerHTML = '';
+        card.style.display = 'none';
+        emptyEl.style.display = 'block';
+      } else {
+        card.style.display = '';
+        emptyEl.style.display = 'none';
+        body.innerHTML = holdings.map(function (h) {
+          var t = typeInfo(h.gold_type);
+          var curVal = currentValueOf(h);
+          var gain = gainOf(h);
+          var gainPct = gainPctOf(h);
+
+          return '<tr>' +
+            '<td class="name-col">' + escapeHtml(h.name) + '<span class="ob-widget-slot" id="obWidget-' + h.id + '"></span></td>' +
+            '<td class="type-col"><span class="type-pill">' + t.icon + ' ' + t.label + '</span></td>' +
+            '<td class="type-col"><span class="purity-pill">' + (PURITY_LABELS[h.purity] || 'Other') + '</span></td>' +
+            '<td>' + fmtGrams(h.grams) + '</td>' +
+            '<td>' + fmtRupee(h.purchase_price) + '</td>' +
+            '<td>' + (h.current_rate_per_gram !== null ? fmtRupee(h.current_rate_per_gram) : '—') + '</td>' +
+            '<td><b>' + (curVal !== null ? fmtRupee(curVal) : '—') + '</b></td>' +
+            '<td>' + (gain !== null ? '<span class="pct-pill ' + (gain >= 0 ? 'pos' : 'neg') + '">' + fmtRupee(gain) + ' (' + (gainPct > 0 ? '+' : '') + gainPct.toFixed(1) + '%)</span>' : '—') + '</td>' +
+            '<td>' +
+              '<button type="button" class="row-edit" data-id="' + h.id + '" onclick="openEditModal(this.dataset.id)" title="Edit">✎</button>' +
+              '<button type="button" class="row-delete" data-id="' + h.id + '" data-name="' + escapeHtml(h.name) + '" onclick="deleteGold(this.dataset.id, this.dataset.name)" title="Delete">✕</button>' +
+            '</td>' +
+          '</tr>';
+        }).join('');
+
+        if (typeof ObligationsWidget !== 'undefined') {
+          holdings.forEach(function (h) {
+            var slot = document.getElementById('obWidget-' + h.id);
+            if (slot) ObligationsWidget.render(slot, 'gold_holding', h.id);
+          });
+        }
+      }
+
+      renderHero();
+    }
+
+    /* Overview hero: combined current value at today's rate, what was
+       originally paid, total grams held, and a ring for overall % gain. */
+    function renderHero() {
+      var hero = document.getElementById('goldHero');
+      if (holdings.length === 0) { hero.style.display = 'none'; return; }
+      hero.style.display = 'flex';
+
+      var currentTotal = 0, buyTotal = 0, gramsTotal = 0;
+      holdings.forEach(function (h) {
+        var cur = currentValueOf(h);
+        currentTotal += cur !== null ? cur : 0;
+        buyTotal += h.purchase_price;
+        gramsTotal += h.grams;
+      });
+      var gainPct = buyTotal ? (currentTotal - buyTotal) / buyTotal * 100 : 0;
+
+      document.getElementById('heroCurrentValue').textContent = fmtRupee(currentTotal, true);
+      document.getElementById('heroBuyValue').textContent = fmtRupee(buyTotal, true);
+      document.getElementById('heroGrams').textContent = fmtGrams(gramsTotal);
+
+      var pctColor = gainPct >= 0 ? '#4ade80' : '#f87171';
+      document.getElementById('heroGainPct').textContent = (gainPct > 0 ? '+' : '') + gainPct.toFixed(1) + '%';
+      document.getElementById('heroGainPct').style.color = pctColor;
+      document.getElementById('heroDonutSvgHolder').innerHTML = buildProgressDonutSvg(gainPct, 110, 14, pctColor);
+    }
+
+    function renderTypeGrid() {
+      var grid = document.getElementById('goldTypeGrid');
+      grid.innerHTML = GOLD_TYPES.map(function (t) {
+        return '<div class="gold-type-card' + (t.key === selectedType ? ' selected' : '') + '" data-key="' + t.key + '" onclick="selectGoldType(this.dataset.key)">' +
+          '<span class="gt-icon">' + t.icon + '</span>' +
+          '<span class="gt-label">' + t.label + '</span>' +
+        '</div>';
+      }).join('');
+    }
+
+    function selectGoldType(key) {
+      selectedType = key;
+      renderTypeGrid();
+    }
+
+    function previewCurrentValue() {
+      var grams = Number(document.getElementById('fmGrams').value) || 0;
+      var rate = document.getElementById('fmCurrentRate').value;
+      var preview = document.getElementById('fmPreview');
+      if (rate === '' || !grams) { preview.textContent = ''; return; }
+      var val = grams * Number(rate);
+      preview.textContent = fmtGrams(grams) + ' × ' + fmtRupee(Number(rate)) + '/g = ' + fmtRupee(val) + ' today';
+    }
+
+    function openAddModal() {
+      editingId = null;
+      selectedType = 'jewellery';
+      document.getElementById('fmModalTitle').textContent = 'Add Item';
+      document.getElementById('fmSubmitBtn').textContent = 'Add Item';
+      document.getElementById('fmName').value = '';
+      document.getElementById('fmPurity').value = '24k';
+      document.getElementById('fmGrams').value = '';
+      document.getElementById('fmPurchasePrice').value = '';
+      document.getElementById('fmCurrentRate').value = '';
+      document.getElementById('fmPreview').textContent = '';
+      renderTypeGrid();
+      document.getElementById('fmModalOverlay').classList.add('show');
+      document.getElementById('fmName').focus();
+    }
+
+    function openEditModal(id) {
+      var h = holdings.find(function (x) { return x.id === id; });
+      if (!h) return;
+      editingId = id;
+      selectedType = h.gold_type;
+      document.getElementById('fmModalTitle').textContent = 'Edit Item';
+      document.getElementById('fmSubmitBtn').textContent = 'Save Changes';
+      document.getElementById('fmName').value = h.name;
+      document.getElementById('fmPurity').value = h.purity;
+      document.getElementById('fmGrams').value = h.grams;
+      document.getElementById('fmPurchasePrice').value = h.purchase_price;
+      document.getElementById('fmCurrentRate').value = h.current_rate_per_gram !== null ? h.current_rate_per_gram : '';
+      renderTypeGrid();
+      previewCurrentValue();
+      document.getElementById('fmModalOverlay').classList.add('show');
+      document.getElementById('fmName').focus();
+    }
+
+    function closeModal() {
+      document.getElementById('fmModalOverlay').classList.remove('show');
+      editingId = null;
+    }
+
+    async function saveGold() {
+      var name = document.getElementById('fmName').value.trim();
+      if (!name) { showToast('Enter a name for this item.'); return; }
+      var purity = document.getElementById('fmPurity').value;
+      var grams = Number(document.getElementById('fmGrams').value) || 0;
+      if (!grams) { showToast('Enter the weight in grams.'); return; }
+      var purchasePrice = Number(document.getElementById('fmPurchasePrice').value) || 0;
+      var rateInput = document.getElementById('fmCurrentRate').value;
+      var currentRate = rateInput === '' ? null : Number(rateInput);
+
+      var payload = {
+        name: name, gold_type: selectedType, purity: purity, grams: grams,
+        purchase_price: purchasePrice, current_rate_per_gram: currentRate
+      };
+
+      if (editingId) {
+        payload.updated_at = new Date().toISOString();
+        var { error } = await supabaseClient.from('gold_holdings').update(payload).eq('id', editingId);
+        if (error) { showToast('Could not save changes: ' + error.message); return; }
+        showToast('Updated.');
+      } else {
+        var { error: insErr } = await supabaseClient.from('gold_holdings').insert(payload);
+        if (insErr) { showToast('Could not add: ' + insErr.message); return; }
+        showToast('Gold added.');
+      }
+
+      closeModal();
+      await loadGold();
+      render();
+    }
+
+    async function deleteGold(id, name) {
+      if (!confirm('Delete "' + name + '"? This can\'t be undone.')) return;
+      var { error } = await supabaseClient.from('gold_holdings').delete().eq('id', id);
+      if (error) { showToast('Could not delete: ' + error.message); return; }
+      await loadGold();
+      render();
+      showToast('Deleted.');
+    }
+
+    /* ---- One-time migration: moves any "Commodities" rows whose name looks ----
+       like gold out of the old flat other_investments table isn't reliable  ----
+       by name matching, so this only migrates rows explicitly still tagged  ----
+       'Gold' from the earliest version of that table, if any remain.       ---- */
+    var GOLD_MIGRATE_KEY = 'finflow_gold_v1_setup';
+
+    async function ensureGoldMigration() {
+      if (localStorage.getItem(GOLD_MIGRATE_KEY)) return false;
+      var touched = false;
+
+      var { data: legacyRows, error: selErr } = await supabaseClient.from('other_investments').select('*').eq('category', 'Gold');
+      if (!selErr && legacyRows && legacyRows.length) {
+        for (var i = 0; i < legacyRows.length; i++) {
+          var row = legacyRows[i];
+          var { error: insErr } = await supabaseClient.from('gold_holdings').insert({
+            name: row.name, gold_type: 'other', purity: 'other', grams: 0,
+            purchase_price: Number(row.invested) || 0, current_rate_per_gram: null
+          });
+          if (!insErr) {
+            await supabaseClient.from('other_investments').delete().eq('id', row.id);
+            touched = true;
+          }
+        }
+      }
+
+      localStorage.setItem(GOLD_MIGRATE_KEY, '1');
+      return touched;
+    }
+
+    (async function init() {
+      var user = await requireAuth('index.html#login');
+      if (!user) return;
+      await ensureGoldMigration();
+      await loadGold();
+      render();
+    })();
+  </script>
+</body>
+</html>

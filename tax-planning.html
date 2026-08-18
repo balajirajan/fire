@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tax Planning - FinFlow</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f8fafc;
+      color: #0f172a;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    a, button { color: inherit; text-decoration: none; font-family: inherit; }
+
+    .app-shell { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
+    @media (max-width: 860px) { .app-shell { grid-template-columns: 1fr; } .sidebar { display: none; } }
+
+    /* Sidebar */
+    .sidebar { background: #ffffff; border-right: 1px solid #e2e8f0; display: flex; flex-direction: column; padding: 1.5rem 1.25rem; }
+    .sidebar-logo { display: flex; align-items: center; gap: 0.65rem; font-size: 1.1rem; font-weight: 800; margin-bottom: 2rem; padding: 0 0.25rem; }
+    .sidebar-logo-icon { width: 30px; height: 30px; background: linear-gradient(135deg, #0ea5e9, #10b981); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; flex-shrink: 0; }
+    .sidebar-nav { display: flex; flex-direction: column; gap: 0.25rem; }
+    .sidebar-nav a, .sidebar-nav .nav-group-head { display: flex; align-items: center; gap: 0.75rem; padding: 0.7rem 0.75rem; border-radius: 0.6rem; font-size: 0.9rem; font-weight: 500; color: #364752; }
+    .sidebar-nav a:hover, .sidebar-nav .nav-group-head:hover { background: #f1f5f9; }
+    .sidebar-nav a.active { background: #0f172a; color: #ffffff; font-weight: 600; }
+    .sidebar-nav .nav-group-head.open { background: #f1f5f9; font-weight: 700; }
+    .sidebar-nav .nav-group-head.active { background: #0f172a; color: #ffffff; font-weight: 600; }
+    .sidebar-nav .nav-group-head.active .nav-chevron { color: rgba(255,255,255,0.6); }
+    .sidebar-nav .nav-icon { font-size: 1rem; width: 20px; text-align: center; flex-shrink: 0; }
+    .sidebar-nav .nav-label { flex: 1; }
+    .sidebar-nav .nav-chevron { color: #94a3b8; font-size: 0.85rem; }
+    .sidebar-subnav { display: flex; flex-direction: column; gap: 0.2rem; padding-left: 1.6rem; margin: 0.15rem 0 0.3rem; }
+    .sidebar-subnav a { display: flex; align-items: center; gap: 0.6rem; padding: 0.55rem 0.6rem; border-radius: 0.5rem; font-size: 0.85rem; font-weight: 500; color: #364752; }
+    .sidebar-subnav a:hover { background: #f1f5f9; }
+    .sidebar-subnav a.active { background: #0f172a; color: #fff; font-weight: 600; }
+    .sidebar-spacer { flex: 1; }
+    .feedback-card { background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 0.9rem; padding: 1.1rem; margin-top: 1.5rem; }
+    .feedback-card .fc-icon { width: 32px; height: 32px; border-radius: 0.6rem; background: #eef2f7; display: flex; align-items: center; justify-content: center; font-size: 0.95rem; margin-bottom: 0.6rem; }
+    .feedback-card strong { display: block; font-size: 0.85rem; margin-bottom: 0.3rem; }
+    .feedback-card p { font-size: 0.78rem; color: #64748b; line-height: 1.5; margin-bottom: 0.85rem; }
+    .feedback-card a { display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; width: 100%; padding: 0.55rem; border: 1px solid #cbd5e1; border-radius: 0.5rem; font-size: 0.8rem; font-weight: 600; color: #364752; }
+    .feedback-card a:hover { border-color: #10b981; color: #10b981; }
+
+    /* Main */
+    .main { padding: 1.5rem 2.5rem 3rem; min-width: 0; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; padding-bottom: 1.25rem; border-bottom: 1px solid #e2e8f0; margin-bottom: 1.5rem; }
+    .topbar h1 { font-size: 1.4rem; font-weight: 700; }
+    .topbar-right { display: flex; align-items: center; gap: 0.85rem; }
+    .language-selector { display: flex; align-items: center; gap: 0.5rem; background: #ffffff; padding: 0.5rem 0.9rem; border-radius: 0.5rem; color: #51636f; border: 1px solid #e2e8f0; cursor: pointer; font-size: 0.85rem; }
+    .user-menu { position: relative; list-style: none; }
+    .user-menu > summary { cursor: pointer; list-style: none; width: 34px; height: 34px; border-radius: 50%; background: #eef2f7; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; font-size: 1rem; }
+    .user-menu > summary::-webkit-details-marker { display: none; }
+    .user-menu-panel { position: absolute; top: calc(100% + 0.6rem); right: 0; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 0.75rem; box-shadow: 0 10px 30px rgba(15,23,42,0.12); padding: 0.4rem; min-width: 150px; z-index: 20; }
+    .user-menu-panel a { display: block; padding: 0.55rem 0.7rem; border-radius: 0.5rem; font-size: 0.85rem; color: #364752; font-weight: 500; }
+    .user-menu-panel a:hover { background: #f1f5f9; color: #10b981; }
+
+    .page-head { margin-bottom: 1rem; }
+    .page-head h2 { font-size: 1.6rem; font-weight: 800; margin-bottom: 0.3rem; }
+    .page-head p { color: #64748b; font-size: 0.9rem; }
+
+    .disclaimer-banner { display: flex; align-items: center; gap: 0.55rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 0.65rem; padding: 0.6rem 0.9rem; margin-bottom: 1.5rem; font-size: 0.76rem; color: #64748b; line-height: 1.5; }
+
+    /* Input card */
+    .q-card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 1.1rem; padding: 1.6rem 1.75rem; margin-bottom: 1.25rem; box-shadow: 0 4px 16px rgba(15,23,42,0.03); }
+    .q-card-eyebrow { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #10b981; margin-bottom: 1.1rem; padding-bottom: 0.75rem; border-bottom: 1px solid #e2e8f0; }
+    .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.1rem; }
+    @media (max-width: 700px) { .field-grid { grid-template-columns: 1fr; } }
+    .field-label { font-size: 0.83rem; font-weight: 600; color: #0f172a; margin-bottom: 0.5rem; display: block; }
+    .field-note { font-size: 0.73rem; color: #94a3b8; margin-top: 0.35rem; }
+    .num-input {
+      width: 100%; padding: 0.65rem 0.8rem; border: 1px solid #cbd5e1; border-radius: 0.55rem;
+      font-size: 0.9rem; font-family: inherit; color: #0f172a;
+    }
+    .num-input:focus { outline: none; border-color: #10b981; box-shadow: 0 0 0 2px rgba(16,185,129,0.15); }
+    .field-item { margin-bottom: 1.1rem; }
+    .checkbox-field { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.4rem; }
+
+    /* Hero */
+    .tax-hero { background: linear-gradient(135deg, #0f172a, #1e293b); border-radius: 1.25rem; padding: 1.75rem 2rem; color: #fff; margin-bottom: 1.5rem; }
+    .tax-hero-compare { display: grid; grid-template-columns: 1fr auto 1fr; gap: 1.5rem; align-items: center; margin-bottom: 1.25rem; }
+    @media (max-width: 700px) { .tax-hero-compare { grid-template-columns: 1fr; } }
+    .tax-hero-regime { text-align: center; padding: 1rem; border-radius: 1rem; }
+    .tax-hero-regime.winner { background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.4); }
+    .tax-hero-regime-label { font-size: 0.75rem; color: #94a3b8; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.5rem; }
+    .tax-hero-regime-value { font-size: 1.7rem; font-weight: 800; }
+    .tax-hero-vs { font-size: 0.85rem; color: #64748b; font-weight: 700; text-align: center; }
+    .tax-hero-verdict { text-align: center; font-size: 0.95rem; font-weight: 700; color: #4ade80; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.12); }
+
+    .savings-card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 1.1rem; padding: 1.5rem 1.6rem; margin-bottom: 1.5rem; box-shadow: 0 4px 16px rgba(15,23,42,0.03); }
+    .savings-card h3 { font-size: 1rem; font-weight: 800; margin-bottom: 0.3rem; }
+    .savings-card .sc-sub { font-size: 0.8rem; color: #94a3b8; margin-bottom: 1.1rem; }
+    .headroom-row { display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 0; border-bottom: 1px solid #f1f5f9; }
+    .headroom-row:last-child { border-bottom: none; }
+    .headroom-name { font-size: 0.87rem; font-weight: 700; color: #0f172a; }
+    .headroom-sub { font-size: 0.75rem; color: #94a3b8; margin-top: 0.15rem; }
+    .headroom-value { text-align: right; }
+    .headroom-amount { font-size: 0.9rem; font-weight: 800; color: #059669; }
+    .headroom-tax-save { font-size: 0.72rem; color: #94a3b8; }
+    .headroom-maxed { font-size: 0.85rem; font-weight: 700; color: #94a3b8; }
+
+    .breakdown-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    .breakdown-table th { text-align: left; padding: 0.6rem 0.75rem; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; color: #94a3b8; border-bottom: 1px solid #e2e8f0; }
+    .breakdown-table td { padding: 0.6rem 0.75rem; border-bottom: 1px solid #f1f5f9; color: #364752; font-weight: 600; }
+    .breakdown-table td.num { text-align: right; }
+
+    .disclaimer { font-size: 0.78rem; color: #94a3b8; line-height: 1.6; padding: 1rem 1.2rem; background: #f8fafc; border-radius: 0.75rem; margin-top: 1rem; }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a href="dashboard.html" class="sidebar-logo">
+        <div class="sidebar-logo-icon">💰</div>
+        <span>FinFlow</span>
+      </a>
+
+      <nav class="sidebar-nav">
+        <a href="dashboard.html">
+          <span class="nav-icon">▦</span>
+          <span class="nav-label">Dashboard</span>
+        </a>
+        <a href="fire-plan.html">
+          <span class="nav-icon">🧭</span>
+          <span class="nav-label">FIRE Plan</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="net-worth.html">
+          <span class="nav-icon">📈</span>
+          <span class="nav-label">Networth</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="money-required.html">
+          <span class="nav-icon">🪴</span>
+          <span class="nav-label">Expenses</span>
+          <span class="nav-chevron">›</span>
+        </a>
+
+        <a href="expense-quick-add.html">
+          <span class="nav-icon">⚡</span>
+          <span class="nav-label">Daily Expenses Tracker</span>
+        </a>
+        <a href="tax-planning.html" class="active">
+          <span class="nav-icon">🧾</span>
+          <span class="nav-label">Tax Planning</span>
+        </a>
+        <a href="insurance-tracker.html">
+          <span class="nav-icon">🛡️</span>
+          <span class="nav-label">Insurance Tracker</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="reminders.html">
+          <span class="nav-icon">🔔</span>
+          <span class="nav-label">Reminders</span>
+        </a>
+        <a href="vault-overview.html">
+          <span class="nav-icon">🔒</span>
+          <span class="nav-label">Document Vault</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="split/dashboard.html">
+          <span class="nav-icon">💸</span>
+          <span class="nav-label">SplitExpenses(SplitWise)</span>
+        </a>
+        <a href="life-expectancy.html">
+          <span class="nav-icon">❤️</span>
+          <span class="nav-label">Health</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="astrology.html">
+          <span class="nav-icon">🔮</span>
+          <span class="nav-label">Spiritual</span>
+        </a>
+        <a href="#">
+          <span class="nav-icon">⚙️</span>
+          <span class="nav-label">Settings</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-spacer"></div>
+
+      <div class="feedback-card">
+        <div class="fc-icon">💬</div>
+        <strong>Got feedback?</strong>
+        <p>Have an idea or found a bug? We read every message.</p>
+        <a href="mailto:hello@finflow.app">✉ Contact Us</a>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <h1>Tax Planning</h1>
+        <div class="topbar-right">
+          <div class="language-selector">🌐 English ▾</div>
+          <details class="user-menu">
+            <summary>👤</summary>
+            <div class="user-menu-panel">
+              <a href="#">Settings</a>
+              <a href="#" onclick="signOutAndRedirect('index.html'); return false;">Log Out</a>
+            </div>
+          </details>
+        </div>
+      </div>
+
+      <div class="page-head">
+        <h2>Tax Planning</h2>
+        <p>Compare the Old and New tax regimes, track your deductions, and see exactly how much more you could save.</p>
+      </div>
+
+      <div class="disclaimer-banner">🧾 Uses FY 2025-26 (AY 2026-27) slabs — an educational estimate, not a substitute for a CA or the official IT department calculator. Rules and limits change; always verify before filing.</div>
+
+      <div class="q-card">
+        <div class="q-card-eyebrow">Your Income</div>
+        <div class="field-grid">
+          <div class="field-item">
+            <label class="field-label">Annual gross salary / taxable income (₹)</label>
+            <input type="number" class="num-input" id="grossIncomeInput" min="0" step="1000" value="1200000">
+            <div class="field-note">Before any deductions — your CTC minus employer PF contribution is a reasonable estimate.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card">
+        <div class="q-card-eyebrow">Deductions (Old Regime Only)</div>
+        <div class="field-grid">
+          <div class="field-item">
+            <label class="field-label">Section 80C (PPF, ELSS, EPF, life insurance, etc.)</label>
+            <input type="number" class="num-input" id="deduction80cInput" min="0" max="150000" step="1000" value="0">
+            <div class="field-note">Max ₹1,50,000</div>
+          </div>
+          <div class="field-item">
+            <label class="field-label">Section 80D (health insurance premium)</label>
+            <input type="number" class="num-input" id="deduction80dInput" min="0" step="1000" value="0">
+            <div class="field-note" id="deduction80dNote">Max ₹25,000 (self &amp; family)</div>
+            <div class="checkbox-field">
+              <input type="checkbox" id="seniorParentsCheck">
+              <label for="seniorParentsCheck" style="font-size:0.8rem;color:#364752;">Also paying premium for senior citizen parents (+₹50,000 limit)</label>
+            </div>
+          </div>
+          <div class="field-item">
+            <label class="field-label">NPS — Section 80CCD(1B)</label>
+            <input type="number" class="num-input" id="deductionNpsInput" min="0" max="50000" step="1000" value="0">
+            <div class="field-note">Max ₹50,000, over and above 80C</div>
+          </div>
+          <div class="field-item">
+            <label class="field-label">Home loan interest — Section 24(b)</label>
+            <input type="number" class="num-input" id="deductionHomeLoanInput" min="0" max="200000" step="1000" value="0">
+            <div class="field-note">Max ₹2,00,000 (self-occupied property)</div>
+          </div>
+          <div class="field-item">
+            <label class="field-label">HRA exemption claimed</label>
+            <input type="number" class="num-input" id="deductionHraInput" min="0" step="1000" value="0">
+            <div class="field-note">Enter the exempt portion — this calculator doesn't derive it from rent/basic/city</div>
+          </div>
+          <div class="field-item">
+            <label class="field-label">Other deductions (80E, 80G, 80TTA, etc.)</label>
+            <input type="number" class="num-input" id="deductionOtherInput" min="0" step="1000" value="0">
+          </div>
+        </div>
+      </div>
+
+      <div class="tax-hero" id="taxHero">
+        <div class="tax-hero-compare">
+          <div class="tax-hero-regime" id="oldRegimeCard">
+            <div class="tax-hero-regime-label">Old Regime</div>
+            <div class="tax-hero-regime-value" id="oldRegimeTax">₹0</div>
+          </div>
+          <div class="tax-hero-vs">VS</div>
+          <div class="tax-hero-regime" id="newRegimeCard">
+            <div class="tax-hero-regime-label">New Regime</div>
+            <div class="tax-hero-regime-value" id="newRegimeTax">₹0</div>
+          </div>
+        </div>
+        <div class="tax-hero-verdict" id="taxVerdict">—</div>
+      </div>
+
+      <div class="savings-card">
+        <h3>💡 How Much More You Could Save</h3>
+        <div class="sc-sub">Unused headroom in your Old Regime deductions, and what maxing it out would be worth in tax</div>
+        <div id="headroomList"></div>
+      </div>
+
+      <div class="savings-card">
+        <h3>Tax Breakdown</h3>
+        <div class="sc-sub">Taxable income and total tax (incl. 4% cess) under each regime</div>
+        <table class="breakdown-table">
+          <thead><tr><th>Regime</th><th class="num">Taxable Income</th><th class="num">Tax + Cess</th></tr></thead>
+          <tbody id="breakdownBody"></tbody>
+        </table>
+      </div>
+
+      <div class="disclaimer">⚠️ This is an educational estimate based on publicly available FY 2025-26 slab rates. It doesn't account for every deduction, surcharge on very high incomes, or your exact HRA calculation. Please verify with a qualified CA or the official Income Tax e-filing portal before making filing decisions.</div>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-client.js"></script>
+  <script>
+    var NEW_REGIME_SLABS = [
+      { from: 0, to: 400000, rate: 0 },
+      { from: 400000, to: 800000, rate: 0.05 },
+      { from: 800000, to: 1200000, rate: 0.10 },
+      { from: 1200000, to: 1600000, rate: 0.15 },
+      { from: 1600000, to: 2000000, rate: 0.20 },
+      { from: 2000000, to: 2400000, rate: 0.25 },
+      { from: 2400000, to: null, rate: 0.30 }
+    ];
+    var OLD_REGIME_SLABS = [
+      { from: 0, to: 250000, rate: 0 },
+      { from: 250000, to: 500000, rate: 0.05 },
+      { from: 500000, to: 1000000, rate: 0.20 },
+      { from: 1000000, to: null, rate: 0.30 }
+    ];
+    var NEW_STD_DEDUCTION = 75000;
+    var OLD_STD_DEDUCTION = 50000;
+    var NEW_REBATE_THRESHOLD = 1200000;
+    var OLD_REBATE_THRESHOLD = 500000;
+    var CESS_RATE = 0.04;
+
+    var state = {
+      grossIncome: 1200000,
+      d80c: 0, d80d: 0, dNps: 0, dHomeLoan: 0, dHra: 0, dOther: 0,
+      seniorParents: false
+    };
+
+    function calcSlabTax(taxableIncome, slabs) {
+      var tax = 0;
+      for (var i = 0; i < slabs.length; i++) {
+        var slab = slabs[i];
+        if (taxableIncome > slab.from) {
+          var upper = slab.to === null ? taxableIncome : Math.min(taxableIncome, slab.to);
+          tax += (upper - slab.from) * slab.rate;
+        }
+      }
+      return tax;
+    }
+
+    function applyMarginalRelief(tax, taxableIncome, threshold) {
+      if (taxableIncome <= threshold) return 0;
+      var excess = taxableIncome - threshold;
+      return tax > excess ? excess : tax;
+    }
+
+    function formatRupees(amount) {
+      var n = Math.round(Number(amount) || 0);
+      return '₹' + n.toLocaleString('en-IN');
+    }
+
+    function computeOldRegimeTaxableIncome() {
+      var totalDeductions = OLD_STD_DEDUCTION + state.d80c + state.d80d + state.dNps + state.dHomeLoan + state.dHra + state.dOther;
+      return Math.max(0, state.grossIncome - totalDeductions);
+    }
+
+    function computeNewRegimeTaxableIncome() {
+      return Math.max(0, state.grossIncome - NEW_STD_DEDUCTION);
+    }
+
+    function computeRegimeTax(taxableIncome, slabs, threshold) {
+      var rawTax = calcSlabTax(taxableIncome, slabs);
+      var tax = applyMarginalRelief(rawTax, taxableIncome, threshold);
+      var cess = tax * CESS_RATE;
+      return { taxableIncome: taxableIncome, tax: tax, cess: cess, total: tax + cess };
+    }
+
+    function renderHeadroom(oldResult) {
+      var d80cMax = 150000;
+      var d80dMax = state.seniorParents ? 75000 : 25000;
+      var npsMax = 50000;
+
+      var marginalRate = 0;
+      for (var i = OLD_REGIME_SLABS.length - 1; i >= 0; i--) {
+        if (oldResult.taxableIncome > OLD_REGIME_SLABS[i].from) { marginalRate = OLD_REGIME_SLABS[i].rate; break; }
+      }
+      var effectiveRate = marginalRate * (1 + CESS_RATE);
+
+      var items = [
+        { name: 'Section 80C', current: state.d80c, max: d80cMax },
+        { name: 'Section 80D', current: state.d80d, max: d80dMax },
+        { name: 'NPS 80CCD(1B)', current: state.dNps, max: npsMax }
+      ];
+
+      document.getElementById('headroomList').innerHTML = items.map(function (it) {
+        var headroom = Math.max(0, it.max - it.current);
+        if (headroom < 1) {
+          return '<div class="headroom-row"><div><div class="headroom-name">' + it.name + '</div><div class="headroom-sub">Fully utilised</div></div><div class="headroom-maxed">✓ Maxed</div></div>';
+        }
+        var potentialSaving = headroom * effectiveRate;
+        return '<div class="headroom-row">' +
+          '<div><div class="headroom-name">' + it.name + '</div><div class="headroom-sub">₹' + Math.round(headroom).toLocaleString('en-IN') + ' unused of ₹' + it.max.toLocaleString('en-IN') + '</div></div>' +
+          '<div class="headroom-value"><div class="headroom-amount">+' + formatRupees(potentialSaving) + '</div><div class="headroom-tax-save">potential tax saved</div></div>' +
+        '</div>';
+      }).join('');
+    }
+
+    function recalculate() {
+      var oldTaxable = computeOldRegimeTaxableIncome();
+      var newTaxable = computeNewRegimeTaxableIncome();
+      var oldResult = computeRegimeTax(oldTaxable, OLD_REGIME_SLABS, OLD_REBATE_THRESHOLD);
+      var newResult = computeRegimeTax(newTaxable, NEW_REGIME_SLABS, NEW_REBATE_THRESHOLD);
+
+      document.getElementById('oldRegimeTax').textContent = formatRupees(oldResult.total);
+      document.getElementById('newRegimeTax').textContent = formatRupees(newResult.total);
+
+      var oldCard = document.getElementById('oldRegimeCard');
+      var newCard = document.getElementById('newRegimeCard');
+      var verdict = document.getElementById('taxVerdict');
+      oldCard.className = 'tax-hero-regime';
+      newCard.className = 'tax-hero-regime';
+
+      if (Math.abs(oldResult.total - newResult.total) < 1) {
+        verdict.textContent = 'Both regimes work out about the same for you.';
+      } else if (oldResult.total < newResult.total) {
+        oldCard.className = 'tax-hero-regime winner';
+        verdict.textContent = 'Old Regime saves you ' + formatRupees(newResult.total - oldResult.total) + ' this year.';
+      } else {
+        newCard.className = 'tax-hero-regime winner';
+        verdict.textContent = 'New Regime saves you ' + formatRupees(oldResult.total - newResult.total) + ' this year.';
+      }
+
+      document.getElementById('breakdownBody').innerHTML =
+        '<tr><td>Old Regime</td><td class="num">' + formatRupees(oldResult.taxableIncome) + '</td><td class="num">' + formatRupees(oldResult.total) + '</td></tr>' +
+        '<tr><td>New Regime</td><td class="num">' + formatRupees(newResult.taxableIncome) + '</td><td class="num">' + formatRupees(newResult.total) + '</td></tr>';
+
+      renderHeadroom(oldResult);
+      scheduleSave();
+    }
+
+    function wireNumberInput(inputId, stateKey, callback) {
+      document.getElementById(inputId).addEventListener('input', function () {
+        state[stateKey] = Number(this.value) || 0;
+        if (callback) callback();
+        recalculate();
+      });
+    }
+
+    function updateD80dNote() {
+      document.getElementById('deduction80dNote').textContent = state.seniorParents ? 'Max ₹75,000 (self, family + senior citizen parents)' : 'Max ₹25,000 (self & family)';
+      document.getElementById('deduction80dInput').max = state.seniorParents ? 75000 : 25000;
+    }
+
+    /* ---- Persistence, mirroring fire_plan_inputs / health_inputs ---- */
+
+    async function loadSavedInputs() {
+      var { data, error } = await supabaseClient.from('tax_planning_inputs').select('*').maybeSingle();
+      if (error) { console.error('Could not load saved tax planning inputs', error); return null; }
+      return data;
+    }
+
+    async function saveInputs() {
+      var payload = {
+        gross_income: state.grossIncome,
+        deduction_80c: state.d80c, deduction_80d: state.d80d, deduction_nps: state.dNps,
+        home_loan_interest: state.dHomeLoan, hra_exemption: state.dHra, other_deductions: state.dOther,
+        senior_citizen_parents: state.seniorParents,
+        updated_at: new Date().toISOString()
+      };
+      var { error } = await supabaseClient.from('tax_planning_inputs').upsert(payload, { onConflict: 'user_id' });
+      if (error) console.error('Could not save tax planning inputs', error);
+    }
+
+    var saveTimer = null;
+    function scheduleSave() {
+      if (saveTimer) clearTimeout(saveTimer);
+      saveTimer = setTimeout(saveInputs, 600);
+    }
+
+    function applySaved(saved) {
+      state.grossIncome = saved.gross_income;
+      state.d80c = saved.deduction_80c; state.d80d = saved.deduction_80d; state.dNps = saved.deduction_nps;
+      state.dHomeLoan = saved.home_loan_interest; state.dHra = saved.hra_exemption; state.dOther = saved.other_deductions;
+      state.seniorParents = saved.senior_citizen_parents;
+
+      document.getElementById('grossIncomeInput').value = state.grossIncome;
+      document.getElementById('deduction80cInput').value = state.d80c;
+      document.getElementById('deduction80dInput').value = state.d80d;
+      document.getElementById('deductionNpsInput').value = state.dNps;
+      document.getElementById('deductionHomeLoanInput').value = state.dHomeLoan;
+      document.getElementById('deductionHraInput').value = state.dHra;
+      document.getElementById('deductionOtherInput').value = state.dOther;
+      document.getElementById('seniorParentsCheck').checked = state.seniorParents;
+      updateD80dNote();
+    }
+
+    (async function init() {
+      var user = await requireAuth('index.html#login');
+      if (!user) return;
+
+      var saved = await loadSavedInputs();
+      if (saved) applySaved(saved);
+
+      wireNumberInput('grossIncomeInput', 'grossIncome');
+      wireNumberInput('deduction80cInput', 'd80c');
+      wireNumberInput('deduction80dInput', 'd80d');
+      wireNumberInput('deductionNpsInput', 'dNps');
+      wireNumberInput('deductionHomeLoanInput', 'dHomeLoan');
+      wireNumberInput('deductionHraInput', 'dHra');
+      wireNumberInput('deductionOtherInput', 'dOther');
+      document.getElementById('seniorParentsCheck').addEventListener('change', function () {
+        state.seniorParents = this.checked;
+        updateD80dNote();
+        recalculate();
+      });
+
+      recalculate();
+      if (!saved) await saveInputs();
+    })();
+  </script>
+</body>
+</html>

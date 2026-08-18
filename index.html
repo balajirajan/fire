@@ -1,0 +1,1132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FinFlow - Track. Build. Freedom.</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #f8fafc 0%, #eefcf6 50%, #eff8ff 100%);
+      color: #0f172a;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Navigation */
+    nav {
+      position: relative;
+      z-index: 50;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5rem 3rem;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 1.25rem;
+      font-weight: bold;
+      color: #0f172a;
+    }
+
+    .logo-icon {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, #0ea5e9, #10b981);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+      font-size: 0.95rem;
+    }
+
+    .nav-links a {
+      color: #51636f;
+      text-decoration: none;
+      transition: color 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .nav-links a:hover {
+      color: #10b981;
+    }
+
+    .dropdown-arrow {
+      font-size: 0.8rem;
+    }
+
+    .language-selector {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: #f1f5f9;
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      color: #51636f;
+      border: 1px solid #e2e8f0;
+      cursor: pointer;
+    }
+
+    .nav-menu {
+      position: relative;
+      list-style: none;
+    }
+
+    .nav-menu > summary {
+      cursor: pointer;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      color: #51636f;
+      font-size: 0.95rem;
+    }
+
+    .nav-menu > summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .nav-menu > summary:hover,
+    .nav-menu[open] > summary {
+      color: #10b981;
+    }
+
+    .nav-menu-panel {
+      position: absolute;
+      top: calc(100% + 0.75rem);
+      right: 0;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 0.75rem;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.12);
+      padding: 0.5rem;
+      min-width: 170px;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      z-index: 60;
+    }
+
+    .nav-menu-panel a {
+      padding: 0.6rem 0.75rem;
+      border-radius: 0.5rem;
+      color: #364752;
+      font-size: 0.9rem;
+      font-weight: 500;
+      text-decoration: none;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .nav-menu-panel a:hover {
+      background: #f1f5f9;
+      color: #10b981;
+    }
+
+    .nav-menu-panel a.menu-signup-btn {
+      background: linear-gradient(to right, #0ea5e9, #10b981);
+      color: #ffffff;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    .nav-menu-panel a.menu-signup-btn:hover {
+      opacity: 0.9;
+      color: #ffffff;
+    }
+
+    /* Main Container */
+    .main-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      padding: 3rem;
+      max-width: 1400px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 2;
+      min-height: calc(100vh - 80px);
+      align-items: center;
+    }
+
+    @media (max-width: 1024px) {
+      .main-container {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+    }
+
+    /* Hero Section */
+    .hero {
+      padding: 2rem;
+    }
+
+    .hero h1 {
+      font-size: 3.5rem;
+      line-height: 1.2;
+      margin-bottom: 1.5rem;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .hero h1 .gradient {
+      background: linear-gradient(to right, #0ea5e9, #10b981);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero p {
+      font-size: 1.1rem;
+      color: #51636f;
+      margin-bottom: 2rem;
+      line-height: 1.6;
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      border: none;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-primary {
+      background: linear-gradient(to right, #0ea5e9, #10b981);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(16, 185, 129, 0.25);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      border: 1px solid #cbd5e1;
+      color: #364752;
+    }
+
+    .btn-secondary:hover {
+      border-color: #10b981;
+      color: #10b981;
+    }
+
+    .references-btn {
+      background: #f1f5f9;
+      border: 1px solid #e2e8f0;
+      color: #51636f;
+      margin-top: 1rem;
+      width: fit-content;
+    }
+
+    .references-btn:hover {
+      background: #e2e8f0;
+    }
+
+    .hero-subtext {
+      color: #64748b;
+      font-size: 0.95rem;
+      margin-top: 1rem;
+    }
+
+    /* Login Form */
+    .login-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .login-box {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 1rem;
+      padding: 2.5rem;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 10px 40px rgba(15, 23, 42, 0.06);
+    }
+
+    .login-box h2 {
+      font-size: 1.75rem;
+      margin-bottom: 0.5rem;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .login-box .subtitle {
+      color: #64748b;
+      font-size: 0.95rem;
+      margin-bottom: 2rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.95rem;
+      margin-bottom: 0.5rem;
+      color: #364752;
+      font-weight: 500;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 0.5rem;
+      color: #0f172a;
+      font-size: 0.95rem;
+      transition: all 0.3s;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: #10b981;
+      background: #ffffff;
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+    }
+
+    .form-group input::placeholder {
+      color: #94a3b8;
+    }
+
+    .form-options {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      font-size: 0.9rem;
+    }
+
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .checkbox-group input[type="checkbox"] {
+      cursor: pointer;
+      width: 18px;
+      height: 18px;
+      accent-color: #10b981;
+    }
+
+    .checkbox-group label {
+      margin: 0;
+      cursor: pointer;
+      color: #364752;
+    }
+
+    .forgot-password {
+      color: #0ea5e9;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+
+    .forgot-password:hover {
+      color: #10b981;
+    }
+
+    .signin-btn {
+      width: 100%;
+      padding: 0.875rem;
+      background: linear-gradient(to right, #0ea5e9, #10b981);
+      color: white;
+      border: none;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-bottom: 1.5rem;
+    }
+
+    .signin-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(16, 185, 129, 0.25);
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      color: #94a3b8;
+      font-size: 0.85rem;
+    }
+
+    .divider::before,
+    .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #e2e8f0;
+    }
+
+    .google-btn {
+      width: 100%;
+      padding: 0.75rem;
+      background: transparent;
+      border: 1px solid #e2e8f0;
+      color: #364752;
+      border-radius: 0.5rem;
+      font-size: 0.95rem;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      transition: all 0.3s;
+      margin-bottom: 1.5rem;
+    }
+
+    .google-btn:hover {
+      border-color: #10b981;
+      color: #10b981;
+    }
+
+    .google-icon {
+      font-size: 1.2rem;
+    }
+
+    .terms {
+      font-size: 0.8rem;
+      color: #94a3b8;
+      text-align: center;
+      margin-bottom: 1rem;
+      line-height: 1.5;
+    }
+
+    .terms a {
+      color: #0ea5e9;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+
+    .terms a:hover {
+      color: #10b981;
+    }
+
+    .signup-link {
+      text-align: center;
+      font-size: 0.9rem;
+      color: #64748b;
+    }
+
+    .signup-link a {
+      color: #0ea5e9;
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.3s;
+    }
+
+    .signup-link a:hover {
+      color: #10b981;
+    }
+
+    .auth-message {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #b91c1c;
+      font-size: 0.82rem;
+      padding: 0.65rem 0.85rem;
+      border-radius: 0.5rem;
+      margin-bottom: 1.25rem;
+      line-height: 1.5;
+    }
+
+    .auth-message.info {
+      background: #f0fdf7;
+      border-color: #bbf7d0;
+      color: #047857;
+    }
+
+    /* Features Section */
+    .features-section {
+      position: relative;
+      z-index: 2;
+      padding: 5rem 3rem 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .features-eyebrow {
+      text-align: center;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: #059669;
+      margin-bottom: 0.75rem;
+    }
+
+    .features-heading {
+      text-align: center;
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: #0f172a;
+    }
+
+    .features-subtext {
+      text-align: center;
+      color: #51636f;
+      max-width: 620px;
+      margin: 0 auto 3.5rem;
+      line-height: 1.6;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+
+    @media (max-width: 900px) {
+      .features-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 600px) {
+      .features-grid { grid-template-columns: 1fr; }
+    }
+
+    .feature-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 1rem;
+      padding: 1.75rem;
+      box-shadow: 0 4px 16px rgba(15, 23, 42, 0.03);
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 14px 32px rgba(15, 23, 42, 0.08);
+    }
+
+    .feature-icon {
+      width: 46px;
+      height: 46px;
+      border-radius: 0.7rem;
+      background: linear-gradient(135deg, #0ea5e9, #10b981);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      margin-bottom: 1rem;
+    }
+
+    .feature-card h3 {
+      font-size: 1.02rem;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 0.5rem;
+    }
+
+    .feature-card p {
+      font-size: 0.87rem;
+      color: #51636f;
+      line-height: 1.6;
+    }
+
+    /* Path to Freedom Section */
+    .path-section {
+      position: relative;
+      z-index: 2;
+      padding: 5rem 3rem 6rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .path-eyebrow {
+      text-align: center;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: #059669;
+      margin-bottom: 0.75rem;
+    }
+
+    .path-heading {
+      text-align: center;
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      background: linear-gradient(to right, #d97706, #2563eb, #059669);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .path-subtext {
+      text-align: center;
+      color: #51636f;
+      max-width: 600px;
+      margin: 0 auto 4rem;
+      line-height: 1.6;
+    }
+
+    .path-flag {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 3rem;
+    }
+
+    .path-flag-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      border: 2px solid rgba(217, 119, 6, 0.4);
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+    }
+
+    .path-steps {
+      position: relative;
+    }
+
+    .path-steps::before {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: linear-gradient(to bottom, rgba(217,119,6,0.35), rgba(37,99,235,0.35), rgba(5,150,105,0.35));
+      transform: translateX(-50%);
+    }
+
+    @media (max-width: 900px) {
+      .path-steps::before { display: none; }
+    }
+
+    .path-step {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 2rem;
+      margin-bottom: 3rem;
+      position: relative;
+    }
+
+    .path-step:nth-child(even) .path-step-content {
+      grid-column: 3;
+      text-align: left;
+    }
+
+    .path-step:nth-child(odd) .path-step-content {
+      grid-column: 1;
+      text-align: right;
+    }
+
+    .path-step-icon-wrap {
+      grid-column: 2;
+      display: flex;
+      justify-content: center;
+    }
+
+    .path-step-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: #ffffff;
+      border: 2px solid;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      z-index: 2;
+      flex-shrink: 0;
+      box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08);
+    }
+
+    .path-step:nth-child(1) .path-step-icon { border-color: rgba(37, 99, 235, 0.5); }
+    .path-step:nth-child(2) .path-step-icon { border-color: rgba(5, 150, 105, 0.5); }
+    .path-step:nth-child(3) .path-step-icon { border-color: rgba(217, 119, 6, 0.5); }
+
+    .path-step-quote {
+      font-size: 0.9rem;
+      font-style: italic;
+      margin-bottom: 0.5rem;
+    }
+
+    .path-step:nth-child(1) .path-step-quote { color: #2563eb; }
+    .path-step:nth-child(2) .path-step-quote { color: #059669; }
+    .path-step:nth-child(3) .path-step-quote { color: #d97706; }
+
+    .path-step-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 0.5rem;
+    }
+
+    .path-step-desc {
+      color: #51636f;
+      font-size: 0.95rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .path-step-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .path-step:nth-child(1) .path-step-link { color: #2563eb; }
+    .path-step:nth-child(2) .path-step-link { color: #059669; }
+    .path-step:nth-child(3) .path-step-link { color: #d97706; }
+
+    .path-step-link:hover { opacity: 0.8; }
+
+    @media (max-width: 900px) {
+      .path-step,
+      .path-step:nth-child(even) .path-step-content,
+      .path-step:nth-child(odd) .path-step-content {
+        grid-template-columns: 1fr;
+        grid-column: 1;
+        text-align: center;
+      }
+      .path-step { display: block; }
+      .path-step-icon-wrap { justify-content: center; margin-bottom: 1rem; }
+    }
+
+    .path-here {
+      text-align: center;
+      margin-top: 2rem;
+    }
+
+    .path-here-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      border: 2px solid #cbd5e1;
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      margin: 0 auto 1rem;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+    }
+
+    .path-here-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 0.4rem;
+    }
+
+    .path-here-sub {
+      color: #64748b;
+      font-size: 0.9rem;
+      margin-bottom: 1.5rem;
+    }
+
+    footer {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      padding: 2rem;
+      color: #64748b;
+      font-size: 0.8rem;
+      border-top: 1px solid #e2e8f0;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav>
+    <div class="logo">
+      <div class="logo-icon">💰</div>
+      <span>FinFlow</span>
+    </div>
+    <div class="nav-links">
+      <a href="#features">Features</a>
+      <a href="calculator/free-calculators.html">Tools</a>
+      <a href="#learn">Learn</a>
+      <a href="services.html">Services</a>
+      <details class="nav-menu">
+        <summary>Menu <span class="dropdown-arrow">▼</span></summary>
+        <div class="nav-menu-panel">
+          <a href="#login" onclick="if (typeof setAuthMode === 'function') setAuthMode('signin')">Log In</a>
+          <a href="#login" class="menu-signup-btn" onclick="if (typeof setAuthMode === 'function') setAuthMode('signup')">Sign Up</a>
+        </div>
+      </details>
+      <div class="language-selector">
+        🌐 English
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Container -->
+  <div class="main-container">
+    <!-- Hero Section -->
+    <section class="hero">
+      <h1>
+        Track Your Money.<br>
+        Build Your Wealth.<br>
+        <span class="gradient">Reach Your Freedom.</span>
+      </h1>
+      <p>The all-in-one personal finance app for budgeting, net worth tracking, FIRE planning, and portfolio analysis.</p>
+
+      <div class="hero-buttons">
+        <button class="btn btn-primary">
+          → Start Tracking My Money
+        </button>
+        <button class="btn btn-secondary">
+          👁 Try the live demo
+        </button>
+      </div>
+
+      <p class="hero-subtext">In under 5 minutes, you could</p>
+
+      <button class="btn references-btn">
+        📚 Our References ▼
+      </button>
+    </section>
+
+    <!-- Login Form -->
+    <div class="login-container" id="login">
+      <div class="login-box">
+        <h2 id="authTitle">Welcome Back</h2>
+        <p class="subtitle" id="authSubtitle">Sign in to continue your journey</p>
+
+        <p class="auth-message" id="authMessage" style="display:none;"></p>
+
+        <form onsubmit="handleAuthSubmit(event)">
+          <div class="form-group" id="nameField" style="display:none;">
+            <label>Full name</label>
+            <input type="text" placeholder="Your name" id="fullName">
+          </div>
+
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" placeholder="you@example.com" id="email" required>
+          </div>
+
+          <div class="form-group">
+            <label>Password</label>
+            <input type="password" placeholder="••••••••" id="password" required minlength="6">
+          </div>
+
+          <div class="form-options">
+            <div class="checkbox-group">
+              <input type="checkbox" id="remember" checked>
+              <label for="remember">Remember me</label>
+            </div>
+            <a href="#" class="forgot-password" onclick="handleForgotPassword(event)">Forgot password?</a>
+          </div>
+
+          <button type="submit" class="signin-btn" id="authSubmitBtn">Sign In</button>
+        </form>
+
+        <div class="divider">OR</div>
+
+        <button class="google-btn" onclick="handleGoogleSignIn()">
+          <span class="google-icon">G</span>
+          Sign in with Google
+        </button>
+
+        <p class="terms">
+          By signing up, you accept the <a href="#">Terms and Conditions</a> and <a href="#">Privacy Policy</a>
+        </p>
+
+        <p class="signup-link" id="authToggleWrap">
+          New here? <a href="#" onclick="toggleAuthMode(event)">Join now</a>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Features -->
+  <section class="features-section" id="features">
+    <p class="features-eyebrow">Everything in one place</p>
+    <h2 class="features-heading">One app for your entire financial life</h2>
+    <p class="features-subtext">
+      From daily spending to decades-long FIRE plans, every part of your money — tracked, planned and protected in one place.
+    </p>
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">📈</div>
+        <h3>Net Worth Tracking</h3>
+        <p>Every account, investment, gold holding and property in one live number — no more scattered spreadsheets.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🧭</div>
+        <h3>FIRE Planning &amp; Goals</h3>
+        <p>Model the exact year work becomes optional, and track goal-based savings — education, a wedding, a home down payment — against real linked accounts.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <h3>Daily Expense Capture</h3>
+        <p>Log a spend in under 15 seconds. Smart pre-fill learns your habits — category, payment method, who paid — from your own history.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🪴</div>
+        <h3>Monthly Budgeting</h3>
+        <p>A month-by-month grid for expenses, income, loans and bank balances, with automatic category breakdowns.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🧾</div>
+        <h3>Tax Planning</h3>
+        <p>Estimate your tax liability and track deductions across 80C, 80D, NPS, home loan interest and more.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🛡️</div>
+        <h3>Insurance Tracker</h3>
+        <p>Every policy — term, health, vehicle — with premiums, sums assured and renewal dates in one list.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🔒</div>
+        <h3>Document Vault</h3>
+        <p>Bank-grade AES-256 encryption for your most sensitive documents, locked with a passphrase only you know — not even we can read them.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">💸</div>
+        <h3>SplitExpenses(SplitWise)</h3>
+        <p>Split group expenses with friends and family, track balances, and settle up — right inside your FinFlow dashboard.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">❤️</div>
+        <h3>Health &amp; Longevity</h3>
+        <p>Estimate your life expectancy from real health inputs, so your financial plan accounts for the years you're actually planning for.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🔮</div>
+        <h3>Vedic Astrology</h3>
+        <p>Rashi, Nakshatra and Lagna, for the tradition of it — a bit of fun alongside the numbers, never a financial prediction.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🧮</div>
+        <h3>Financial Calculators</h3>
+        <p>A full suite of free calculators — SIP, EMI, compound interest and more — no login required.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Your Path to Financial Freedom -->
+  <section class="path-section">
+    <p class="path-eyebrow">Your path to financial freedom</p>
+    <h2 class="path-heading">Live the Life You Want</h2>
+    <p class="path-subtext">
+      Maybe it's more time with your kids. A year of travel. Work you choose because you want to,
+      not because you have to. Whatever your freedom looks like, it starts with knowing exactly where you stand.
+    </p>
+
+    <div class="path-flag">
+      <div class="path-flag-icon">🚩</div>
+    </div>
+
+    <div class="path-steps">
+      <div class="path-step">
+        <div class="path-step-content">
+          <p class="path-step-quote">"Another month gone, and no idea where the money went."</p>
+          <h3 class="path-step-title">Know where your money goes</h3>
+          <p class="path-step-desc">Every expense sorted, automatically.</p>
+          <a href="#" class="path-step-link">See a real budget in the demo →</a>
+        </div>
+        <div class="path-step-icon-wrap">
+          <div class="path-step-icon">📊</div>
+        </div>
+        <div></div>
+      </div>
+
+      <div class="path-step">
+        <div></div>
+        <div class="path-step-icon-wrap">
+          <div class="path-step-icon">📈</div>
+        </div>
+        <div class="path-step-content">
+          <p class="path-step-quote">"My money is scattered across six apps — I never see the whole picture."</p>
+          <h3 class="path-step-title">Your entire net worth, in one place</h3>
+          <p class="path-step-desc">Banks, brokers, crypto, property — one live number.</p>
+          <a href="#" class="path-step-link">See a live net worth in the demo →</a>
+        </div>
+      </div>
+
+      <div class="path-step">
+        <div class="path-step-content">
+          <p class="path-step-quote">"Will I ever be able to stop working?"</p>
+          <h3 class="path-step-title">Plan your financial life, decades ahead</h3>
+          <p class="path-step-desc">See the year work becomes optional.</p>
+          <a href="#" class="path-step-link">See a 30-year plan in the demo →</a>
+        </div>
+        <div class="path-step-icon-wrap">
+          <div class="path-step-icon">🧭</div>
+        </div>
+        <div></div>
+      </div>
+    </div>
+
+    <div class="path-here">
+      <div class="path-here-icon">📍</div>
+      <p class="path-here-title">You are here</p>
+      <p class="path-here-sub">The first step takes about two minutes.</p>
+      <button class="btn btn-primary">Start your path →</button>
+    </div>
+  </section>
+
+  <footer>
+    &copy; 2026 FinFlow. All rights reserved.
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-client.js"></script>
+  <script>
+    let authMode = 'signin';
+
+    function toggleAuthMode(event) {
+      if (event) event.preventDefault();
+      setAuthMode(authMode === 'signin' ? 'signup' : 'signin');
+    }
+
+    function setAuthMode(mode) {
+      authMode = mode;
+      const isSignup = authMode === 'signup';
+
+      document.getElementById('authTitle').textContent = isSignup ? 'Create your account' : 'Welcome Back';
+      document.getElementById('authSubtitle').textContent = isSignup ? 'Start tracking your money in minutes' : 'Sign in to continue your journey';
+      document.getElementById('nameField').style.display = isSignup ? '' : 'none';
+      document.getElementById('authSubmitBtn').textContent = isSignup ? 'Create Account' : 'Sign In';
+      document.getElementById('authToggleWrap').innerHTML = isSignup
+        ? 'Already have an account? <a href="#" onclick="toggleAuthMode(event)">Sign in</a>'
+        : 'New here? <a href="#" onclick="toggleAuthMode(event)">Join now</a>';
+      hideAuthMessage();
+    }
+
+    function showAuthMessage(msg, type) {
+      const el = document.getElementById('authMessage');
+      el.textContent = msg;
+      el.className = 'auth-message' + (type === 'info' ? ' info' : '');
+      el.style.display = 'block';
+    }
+
+    function hideAuthMessage() {
+      document.getElementById('authMessage').style.display = 'none';
+    }
+
+    async function handleAuthSubmit(event) {
+      event.preventDefault();
+      hideAuthMessage();
+
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const btn = document.getElementById('authSubmitBtn');
+      const originalLabel = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = authMode === 'signup' ? 'Creating account…' : 'Signing in…';
+
+      try {
+        if (authMode === 'signup') {
+          const fullName = document.getElementById('fullName').value.trim();
+          const { data, error } = await supabaseClient.auth.signUp({
+            email, password,
+            options: { data: fullName ? { full_name: fullName } : {} }
+          });
+          if (error) throw error;
+
+          if (data.session) {
+            window.location.href = 'dashboard.html';
+            return;
+          }
+          showAuthMessage('Account created — check your email to confirm, then sign in.', 'info');
+          toggleAuthMode();
+        } else {
+          const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+          if (error) throw error;
+          window.location.href = 'dashboard.html';
+          return;
+        }
+      } catch (err) {
+        showAuthMessage(err.message || 'Something went wrong. Please try again.');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = originalLabel;
+      }
+    }
+
+    async function handleForgotPassword(event) {
+      event.preventDefault();
+      const email = document.getElementById('email').value.trim();
+      if (!email) {
+        showAuthMessage('Enter your email above first, then click "Forgot password?" again.');
+        return;
+      }
+      try {
+        const { error } = await supabaseClient.auth.resetPasswordForEmail(email);
+        if (error) throw error;
+        showAuthMessage('Password reset email sent — check your inbox.', 'info');
+      } catch (err) {
+        showAuthMessage(err.message || 'Could not send reset email.');
+      }
+    }
+
+    function handleGoogleSignIn() {
+      alert('Google Sign-In needs a Google OAuth provider configured in your Supabase project (Authentication → Providers) — not set up yet in this demo.');
+    }
+
+    // If already signed in, skip straight to the dashboard.
+    (async function redirectIfSignedIn() {
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (session) window.location.href = 'dashboard.html';
+    })();
+  </script>
+</body>
+</html>

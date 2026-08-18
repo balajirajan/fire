@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stocks/MF - FinFlow</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f8fafc;
+      color: #0f172a;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    a, button { color: inherit; text-decoration: none; font-family: inherit; }
+
+    .app-shell { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
+    @media (max-width: 860px) { .app-shell { grid-template-columns: 1fr; } .sidebar { display: none; } }
+
+    /* Sidebar */
+    .sidebar { background: #ffffff; border-right: 1px solid #e2e8f0; display: flex; flex-direction: column; padding: 1.5rem 1.25rem; }
+    .sidebar-logo { display: flex; align-items: center; gap: 0.65rem; font-size: 1.1rem; font-weight: 800; margin-bottom: 2rem; padding: 0 0.25rem; }
+    .sidebar-logo-icon { width: 30px; height: 30px; background: linear-gradient(135deg, #0ea5e9, #10b981); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; flex-shrink: 0; }
+    .sidebar-nav { display: flex; flex-direction: column; gap: 0.25rem; }
+    .sidebar-nav a, .sidebar-nav .nav-group-head { display: flex; align-items: center; gap: 0.75rem; padding: 0.7rem 0.75rem; border-radius: 0.6rem; font-size: 0.9rem; font-weight: 500; color: #364752; }
+    .sidebar-nav a:hover, .sidebar-nav .nav-group-head:hover { background: #f1f5f9; }
+    .sidebar-nav a.active { background: #0f172a; color: #ffffff; font-weight: 600; }
+    .sidebar-nav .nav-group-head.open { background: #f1f5f9; font-weight: 700; }
+    .sidebar-nav .nav-icon { font-size: 1rem; width: 20px; text-align: center; flex-shrink: 0; }
+    .sidebar-nav .nav-label { flex: 1; }
+    .sidebar-nav .nav-chevron { color: #94a3b8; font-size: 0.85rem; }
+    .sidebar-subnav { display: flex; flex-direction: column; gap: 0.2rem; padding-left: 1.6rem; margin: 0.15rem 0 0.3rem; }
+    .sidebar-subnav a { display: flex; align-items: center; gap: 0.6rem; padding: 0.55rem 0.6rem; border-radius: 0.5rem; font-size: 0.85rem; font-weight: 500; color: #364752; }
+    .sidebar-subnav a:hover { background: #f1f5f9; }
+    .sidebar-subnav a.active { background: #0f172a; color: #fff; font-weight: 600; }
+    .sidebar-subnav a.disabled { color: #cbd5e1; cursor: default; pointer-events: none; display: flex; justify-content: space-between; }
+    .soon-pill { font-size: 0.62rem; font-weight: 700; color: #8b5cf6; background: rgba(139,92,246,0.12); padding: 0.15rem 0.5rem; border-radius: 999px; }
+    .sidebar-spacer { flex: 1; }
+    .feedback-card { background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 0.9rem; padding: 1.1rem; margin-top: 1.5rem; }
+    .feedback-card .fc-icon { width: 32px; height: 32px; border-radius: 0.6rem; background: #eef2f7; display: flex; align-items: center; justify-content: center; font-size: 0.95rem; margin-bottom: 0.6rem; }
+    .feedback-card strong { display: block; font-size: 0.85rem; margin-bottom: 0.3rem; }
+    .feedback-card p { font-size: 0.78rem; color: #64748b; line-height: 1.5; margin-bottom: 0.85rem; }
+    .feedback-card a { display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; width: 100%; padding: 0.55rem; border: 1px solid #cbd5e1; border-radius: 0.5rem; font-size: 0.8rem; font-weight: 600; color: #364752; }
+    .feedback-card a:hover { border-color: #10b981; color: #10b981; }
+
+    /* Main */
+    .main { padding: 1.5rem 2.5rem 3rem; min-width: 0; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; padding-bottom: 1.25rem; border-bottom: 1px solid #e2e8f0; margin-bottom: 1.5rem; }
+    .topbar h1 { font-size: 1.4rem; font-weight: 700; }
+    .topbar-right { display: flex; align-items: center; gap: 0.85rem; }
+    .language-selector { display: flex; align-items: center; gap: 0.5rem; background: #ffffff; padding: 0.5rem 0.9rem; border-radius: 0.5rem; color: #51636f; border: 1px solid #e2e8f0; cursor: pointer; font-size: 0.85rem; }
+    .user-menu { position: relative; list-style: none; }
+    .user-menu > summary { cursor: pointer; list-style: none; width: 34px; height: 34px; border-radius: 50%; background: #eef2f7; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; font-size: 1rem; }
+    .user-menu > summary::-webkit-details-marker { display: none; }
+    .user-menu-panel { position: absolute; top: calc(100% + 0.6rem); right: 0; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 0.75rem; box-shadow: 0 10px 30px rgba(15,23,42,0.12); padding: 0.4rem; min-width: 150px; z-index: 20; }
+    .user-menu-panel a { display: block; padding: 0.55rem 0.7rem; border-radius: 0.5rem; font-size: 0.85rem; color: #364752; font-weight: 500; }
+    .user-menu-panel a:hover { background: #f1f5f9; color: #10b981; }
+
+    .page-head { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem; }
+    .page-head h2 { font-size: 1.6rem; font-weight: 800; margin-bottom: 0.3rem; }
+    .page-head p { color: #64748b; font-size: 0.9rem; }
+    .head-actions { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+
+    .pbtn { display: inline-flex; align-items: center; gap: 0.45rem; padding: 0.65rem 1.1rem; border-radius: 0.6rem; font-size: 0.85rem; font-weight: 600; cursor: pointer; border: none; background: linear-gradient(to right, #0ea5e9, #10b981); color: #fff; white-space: nowrap; }
+    .pbtn:hover { opacity: 0.92; }
+
+    .year-nav { display: flex; align-items: center; gap: 0.75rem; }
+    .year-nav button { width: 32px; height: 32px; border-radius: 0.5rem; border: 1px solid #cbd5e1; background: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; }
+    .year-nav button:hover { border-color: #10b981; color: #10b981; }
+    .year-nav .year-label { font-size: 1.05rem; font-weight: 700; min-width: 56px; text-align: center; }
+
+    /* Summary cards */
+    .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
+    @media (max-width: 700px) { .summary-grid { grid-template-columns: 1fr; } }
+    .summary-card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 1rem; padding: 1.1rem 1.3rem; box-shadow: 0 4px 16px rgba(15,23,42,0.03); }
+    .summary-label { font-size: 0.78rem; font-weight: 600; color: #64748b; margin-bottom: 0.35rem; }
+    .summary-value { font-size: 1.4rem; font-weight: 800; }
+
+    /* Grid card */
+    .grid-card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 1.1rem; box-shadow: 0 4px 16px rgba(15,23,42,0.03); overflow: hidden; }
+    .grid-scroll { overflow-x: auto; }
+    .grid-hint { padding: 0.85rem 1.3rem; font-size: 0.78rem; color: #64748b; border-bottom: 1px solid #f1f5f9; }
+    .load-error { display: none; padding: 0.85rem 1.3rem; font-size: 0.8rem; color: #991b1b; background: #fef2f2; border-bottom: 1px solid #fecaca; }
+    .load-error.show { display: block; }
+
+    table.expense-grid { border-collapse: collapse; width: 100%; min-width: 2600px; }
+    table.expense-grid th, table.expense-grid td {
+      padding: 0.5rem 0.45rem;
+      font-size: 0.8rem;
+      border: 1px solid #e2e8f0;
+      white-space: nowrap;
+      text-align: right;
+    }
+    table.expense-grid thead th {
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+      border-bottom: 1px solid #e2e8f0;
+      background: #f8fafc;
+    }
+    table.expense-grid thead th.sub-head { font-size: 0.62rem; }
+    .sticky-col {
+      position: sticky;
+      left: 0;
+      z-index: 2;
+      text-align: left;
+      font-weight: 600;
+      border-right: 2px solid #cbd5e1;
+      min-width: 210px;
+    }
+    table.expense-grid thead th.sticky-col { background: #f8fafc; z-index: 3; }
+    .month-end { border-right: 2px solid #cbd5e1 !important; }
+    .month-head { display: inline-flex; align-items: center; gap: 0.2rem; justify-content: center; width: 100%; }
+    .month-menu { position: relative; list-style: none; }
+    .month-menu > summary { cursor: pointer; list-style: none; color: #94a3b8; font-size: 0.85rem; font-weight: 700; padding: 0 0.1rem; line-height: 1; }
+    .month-menu > summary::-webkit-details-marker { display: none; }
+    .month-menu > summary:hover { color: #364752; }
+    .month-menu-panel {
+      position: absolute; top: calc(100% + 0.3rem); left: 50%; transform: translateX(-50%);
+      background: #ffffff; border: 1px solid #e2e8f0; border-radius: 0.5rem;
+      box-shadow: 0 10px 30px rgba(15,23,42,0.15);
+      padding: 0.3rem; min-width: 170px; z-index: 50;
+      display: flex; flex-direction: column; gap: 0.15rem;
+    }
+    .month-menu-panel button {
+      text-align: left; padding: 0.45rem 0.6rem; border-radius: 0.4rem;
+      font-size: 0.78rem; font-weight: 600; color: #364752;
+      background: none; border: none; cursor: pointer;
+      text-transform: none; letter-spacing: normal; white-space: nowrap;
+    }
+    .month-menu-panel button:hover { background: #f1f5f9; }
+
+    /* Group header rows */
+    tr.group-row td { background: #8b5cf6; color: #ffffff; font-weight: 800; border-bottom: 1px solid #7c3aed; }
+    tr.group-row td.sticky-col { background: #8b5cf6; }
+    tr.group-row:hover td { background: #7c3aed; }
+    tr.group-row:hover td.sticky-col { background: #7c3aed; }
+
+    /* Item rows */
+    tr.item-row td { background: #ffffff; }
+    tr.item-row td.sticky-col { background: #ffffff; padding-left: 1.6rem; color: #364752; font-weight: 500; }
+    tr.item-row:hover td:not(.sticky-col) { background: #f8fafc; }
+    tr.item-row:hover td.sticky-col { background: #f1f5f9; }
+
+    .row-name { display: inline-flex; align-items: center; gap: 0.35rem; }
+    .row-icon-btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 21px; height: 21px; font-size: 0.72rem; cursor: pointer;
+      border-radius: 0.4rem; flex-shrink: 0;
+      background: #eef2f7; border: 1px solid #dde3ea; color: #64748b;
+    }
+    .row-icon-btn:hover { border-color: #94a3b8; color: #364752; }
+    .group-row .row-icon-btn { background: rgba(255,255,255,0.3); border-color: rgba(255,255,255,0.55); color: #ffffff; }
+    .group-row .row-icon-btn:hover { background: rgba(255,255,255,0.5); border-color: #ffffff; }
+    .item-row .row-icon-btn.edit-btn { background: #ecfdf5; border-color: #a7f3d0; color: #059669; }
+    .item-row .row-icon-btn.edit-btn:hover { background: #d1fae5; border-color: #10b981; color: #047857; }
+    .item-row .row-icon-btn.delete-btn { background: #fef2f2; border-color: #fecaca; color: #dc2626; }
+    .item-row .row-icon-btn.delete-btn:hover { background: #fee2e2; border-color: #dc2626; color: #b91c1c; }
+    .add-item-btn { background: rgba(255,255,255,0.9) !important; border-color: #ffffff !important; color: #7c3aed !important; font-weight: 700; width: auto !important; padding: 0 0.4rem; }
+    .add-item-btn:hover { background: #ffffff !important; }
+
+    .grid-cell-input {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 0.3rem 0.15rem;
+      border: none;
+      border-radius: 0;
+      background: #fbfcfd;
+      font-size: 0.78rem;
+      font-family: inherit;
+      text-align: right;
+      color: #0f172a;
+      display: block;
+    }
+    .grid-cell-input:hover { background: #f0fdf7; }
+    .grid-cell-input:focus { outline: 2px solid #10b981; outline-offset: -2px; background: #fff; }
+    .grid-cell-input::-webkit-outer-spin-button,
+    .grid-cell-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+    .grid-cell-input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
+
+    .cell-pct { text-align: center; background: #f8fafc; font-weight: 700; }
+    .pct-pos { color: #059669; }
+    .pct-neg { color: #dc2626; }
+
+    tr.add-group-row td { background: #f8fafc; border-bottom: none; padding-top: 0.4rem; padding-bottom: 0.4rem; }
+    .add-group-input {
+      width: 100%;
+      padding: 0.45rem 0.6rem;
+      border: 1px dashed #cbd5e1;
+      border-radius: 0.5rem;
+      background: #ffffff;
+      font-size: 0.83rem;
+      font-family: inherit;
+      color: #0f172a;
+    }
+    .add-group-input::placeholder { color: #10b981; font-weight: 600; }
+    .add-group-input:hover { border-color: #10b981; }
+    .add-group-input:focus { outline: none; border-style: solid; border-color: #10b981; box-shadow: 0 0 0 2px rgba(16,185,129,0.15); }
+
+    table.expense-grid tfoot td {
+      font-weight: 800;
+      background: #1f2937;
+      color: #fff;
+      border-top: 2px solid #0f172a;
+      border-bottom: none;
+    }
+    table.expense-grid tfoot td.sticky-col { background: #1f2937; }
+    table.expense-grid tfoot td.pct-cell.pct-pos { color: #4ade80; }
+    table.expense-grid tfoot td.pct-cell.pct-neg { color: #f87171; }
+
+    .empty-groups { text-align: center; padding: 3rem 2rem; color: #64748b; font-size: 0.9rem; }
+    .empty-groups .pbtn { margin-top: 1rem; }
+
+    .toast { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(20px); background: #0f172a; color: #fff; padding: 0.75rem 1.25rem; border-radius: 0.6rem; font-size: 0.85rem; opacity: 0; pointer-events: none; transition: opacity 0.2s, transform 0.2s; z-index: 200; }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a href="dashboard.html" class="sidebar-logo">
+        <div class="sidebar-logo-icon">💰</div>
+        <span>FinFlow</span>
+      </a>
+
+      <nav class="sidebar-nav">
+        <a href="dashboard.html">
+          <span class="nav-icon">▦</span>
+          <span class="nav-label">Dashboard</span>
+        </a>
+        <a href="fire-plan.html">
+          <span class="nav-icon">🧭</span>
+          <span class="nav-label">FIRE Plan</span>
+          <span class="nav-chevron">›</span>
+        </a>
+
+        <a href="net-worth.html" class="nav-group-head open">
+          <span class="nav-icon">📈</span>
+          <span class="nav-label">Networth</span>
+          <span class="nav-chevron">⌄</span>
+        </a>
+        <div class="sidebar-subnav">
+          <a href="portfolio.html" class="active">
+            <span class="nav-icon">📊</span>
+            <span class="nav-label">Stocks/MF</span>
+          </a>
+          <a href="gold.html">
+            <span class="nav-icon">🥇</span>
+            <span class="nav-label">Gold + Commodities</span>
+          </a>
+          <a href="bonds.html">
+            <span class="nav-icon">🏛️</span>
+            <span class="nav-label">Government Scheme</span>
+          </a>
+          <a href="properties.html">
+            <span class="nav-icon">🏠</span>
+            <span class="nav-label">Properties</span>
+          </a>
+          <a href="personal-debt.html">
+            <span class="nav-icon">🔄</span>
+            <span class="nav-label">Personal Debt & Receivable</span>
+          </a>
+        </div>
+
+        <a href="money-required.html">
+          <span class="nav-icon">🪴</span>
+          <span class="nav-label">Expenses</span>
+          <span class="nav-chevron">›</span>
+        </a>
+
+        <a href="expense-quick-add.html">
+          <span class="nav-icon">⚡</span>
+          <span class="nav-label">Daily Expenses Tracker</span>
+        </a>
+        <a href="tax-planning.html">
+          <span class="nav-icon">🧾</span>
+          <span class="nav-label">Tax Planning</span>
+        </a>
+        <a href="insurance-tracker.html">
+          <span class="nav-icon">🛡️</span>
+          <span class="nav-label">Insurance Tracker</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="reminders.html">
+          <span class="nav-icon">🔔</span>
+          <span class="nav-label">Reminders</span>
+        </a>
+        <a href="vault-overview.html">
+          <span class="nav-icon">🔒</span>
+          <span class="nav-label">Document Vault</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="split/dashboard.html">
+          <span class="nav-icon">💸</span>
+          <span class="nav-label">SplitExpenses(SplitWise)</span>
+        </a>
+        <a href="life-expectancy.html">
+          <span class="nav-icon">❤️</span>
+          <span class="nav-label">Health</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="astrology.html">
+          <span class="nav-icon">🔮</span>
+          <span class="nav-label">Spiritual</span>
+        </a>
+        <a href="#">
+          <span class="nav-icon">⚙️</span>
+          <span class="nav-label">Settings</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-spacer"></div>
+
+      <div class="feedback-card">
+        <div class="fc-icon">💬</div>
+        <strong>Got feedback?</strong>
+        <p>Have an idea or found a bug? We read every message.</p>
+        <a href="mailto:hello@finflow.app">✉ Contact Us</a>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <h1>Stocks/MF</h1>
+        <div class="topbar-right">
+          <div class="language-selector">🌐 English ▾</div>
+          <details class="user-menu">
+            <summary>👤</summary>
+            <div class="user-menu-panel">
+              <a href="#">Settings</a>
+              <a href="#" onclick="signOutAndRedirect('index.html'); return false;">Log Out</a>
+            </div>
+          </details>
+        </div>
+      </div>
+
+      <div class="page-head">
+        <div>
+          <h2>Stocks/MF</h2>
+          <p>Stocks and Mutual Funds, tracked month by month — type what you invested, the current value, and the return is calculated automatically.</p>
+        </div>
+        <div class="head-actions">
+          <div class="year-nav">
+            <button type="button" onclick="shiftYear(-1)" aria-label="Previous year">‹</button>
+            <span class="year-label" id="yearLabel">2026</span>
+            <button type="button" onclick="shiftYear(1)" aria-label="Next year">›</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="summary-grid">
+        <div class="summary-card">
+          <div class="summary-label">Latest current value</div>
+          <div class="summary-value" id="sumYearTotal">₹0</div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-label">Total invested</div>
+          <div class="summary-value" id="sumAvgMonth">₹0</div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-label">Overall return</div>
+          <div class="summary-value" id="sumTopCategory">—</div>
+        </div>
+      </div>
+
+      <div class="grid-card">
+        <p class="load-error" id="loadError"></p>
+        <p class="grid-hint">💡 Each month has three columns: type what you invested, type the current value, and % is calculated automatically. Use ✎ to rename, ✕ to remove, + to add a holding.</p>
+        <div class="grid-scroll" id="gridScrollWrap">
+          <table class="expense-grid" id="gridTable">
+            <thead>
+              <tr id="gridHeadRow1">
+                <th rowspan="2" class="sticky-col">Purchase Items</th>
+              </tr>
+              <tr id="gridHeadRow2"></tr>
+            </thead>
+            <tbody id="gridBody"></tbody>
+            <tfoot>
+              <tr id="gridFootRow">
+                <td class="sticky-col">Total</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+        <div class="empty-groups" id="emptyGroups" style="display:none;">
+          <p>No categories yet — add your first one to start tracking.</p>
+          <button type="button" class="pbtn" onclick="addGroup()">+ Add Master Category</button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-client.js"></script>
+  <script>
+    var SECTION = 'portfolio';
+    var monthLabels = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    var currentYear = 2026;
+    var groups = []; // [{ id, name, items: [{ id, name, invested: {YYYY-MM:n}, current: {YYYY-MM:n} }] }]
+
+    function monthKey(year, monthIdx) {
+      return year + '-' + String(monthIdx + 1).padStart(2, '0');
+    }
+
+    function fmtRupee(n, compact) {
+      var amount = Math.round(Number(n) || 0);
+      if (compact) {
+        var abs = Math.abs(amount);
+        if (abs >= 10000000) return '₹' + Number((abs / 10000000).toFixed(2)).toString() + ' Cr';
+        if (abs >= 100000) return '₹' + Number((abs / 100000).toFixed(2)).toString() + ' L';
+      }
+      var digits = String(Math.abs(amount));
+      var last3 = digits.slice(-3);
+      var rest = digits.slice(0, -3);
+      var restFormatted = rest.replace(/\B(?=(\d{2})+(?!\d))/g, ',');
+      var out = rest ? restFormatted + ',' + last3 : last3;
+      return (amount < 0 ? '-' : '') + '₹' + out;
+    }
+
+    function fmtPct(n) {
+      if (n === null || !isFinite(n)) return '—';
+      return (n > 0 ? '+' : '') + n.toFixed(2) + '%';
+    }
+
+    function pctClass(n) {
+      if (n === null || !isFinite(n)) return '';
+      return n >= 0 ? 'pct-pos' : 'pct-neg';
+    }
+
+    /* ---- Data loading ---- */
+
+    function showLoadError(prefix, error) {
+      console.error(prefix, error);
+      var el = document.getElementById('loadError');
+      if (!el) return;
+      el.textContent = '⚠️ ' + prefix + ': ' + (error && error.message ? error.message : String(error)) +
+        (error && error.code ? ' (code ' + error.code + ')' : '');
+      el.classList.add('show');
+    }
+
+    function clearLoadError() {
+      var el = document.getElementById('loadError');
+      if (el) { el.textContent = ''; el.classList.remove('show'); }
+    }
+
+    async function loadAll() {
+      var { data: groupRows, error: gErr } = await supabaseClient.from('expense_groups').select('*').eq('section', SECTION).order('sort_order');
+      if (gErr) { showLoadError('Could not load categories', gErr); showToast('Could not load categories: ' + gErr.message); return; }
+
+      var groupIds = (groupRows || []).map(function (g) { return g.id; });
+      var itemRows = [];
+      if (groupIds.length) {
+        var { data: iData, error: iErr } = await supabaseClient.from('expense_items').select('*').in('group_id', groupIds).order('sort_order');
+        if (iErr) { showLoadError('Could not load line items', iErr); showToast('Could not load line items: ' + iErr.message); return; }
+        itemRows = iData || [];
+      }
+
+      var itemIds = itemRows.map(function (it) { return it.id; });
+      var gridRows = [];
+      if (itemIds.length) {
+        var { data: aData, error: amErr } = await supabaseClient.from('expense_grid').select('*').in('item_id', itemIds);
+        if (amErr) { showLoadError('Could not load amounts', amErr); showToast('Could not load amounts: ' + amErr.message); return; }
+        gridRows = aData || [];
+      }
+
+      clearLoadError();
+      groups = (groupRows || []).map(function (g) {
+        var items = (itemRows || []).filter(function (it) { return it.group_id === g.id; }).map(function (it) {
+          var invested = {}, current = {};
+          (gridRows || []).filter(function (row) { return row.item_id === it.id; }).forEach(function (row) {
+            invested[row.month] = Number(row.amount);
+            current[row.month] = Number(row.current_value);
+          });
+          return { id: it.id, name: it.name, invested: invested, current: current };
+        });
+        return { id: g.id, name: g.name, items: items };
+      });
+    }
+
+    /* ---- Remove duplicate categories/items (same name), keeping the first of each ---- */
+
+    async function dedupeDefaults() {
+      var seenGroupNames = {};
+      var groupIdsToDelete = [];
+      groups.forEach(function (g) {
+        if (seenGroupNames[g.name]) {
+          groupIdsToDelete.push(g.id);
+        } else {
+          seenGroupNames[g.name] = true;
+        }
+      });
+
+      var itemIdsToDelete = [];
+      groups.forEach(function (g) {
+        if (groupIdsToDelete.indexOf(g.id) !== -1) return;
+        var seenItemNames = {};
+        g.items.forEach(function (it) {
+          if (seenItemNames[it.name]) {
+            itemIdsToDelete.push(it.id);
+          } else {
+            seenItemNames[it.name] = true;
+          }
+        });
+      });
+
+      var changed = false;
+
+      if (groupIdsToDelete.length) {
+        var { error: gErr } = await supabaseClient.from('expense_groups').delete().in('id', groupIdsToDelete);
+        if (gErr) { showLoadError('Could not remove duplicate categories', gErr); showToast('Could not remove duplicates: ' + gErr.message); return false; }
+        changed = true;
+      }
+
+      if (itemIdsToDelete.length) {
+        var { error: iErr } = await supabaseClient.from('expense_items').delete().in('id', itemIdsToDelete);
+        if (iErr) { showLoadError('Could not remove duplicate items', iErr); showToast('Could not remove duplicates: ' + iErr.message); return false; }
+        changed = true;
+      }
+
+      if (changed) showToast('Removed duplicate categories.');
+      return changed;
+    }
+
+    /* ---- Default starter data for the monthly grid (Stocks & Mutual Funds) ---- */
+
+    async function ensureDefaults() {
+      var starter = [
+        { name: 'Stocks/MF', items: [
+          { name: 'Stocks', invested: [500000, 500000, 520000, 520000], current: [520000, 545000, 560000, 590000] },
+          { name: 'Mutual Funds', invested: [700000, 700000, 720000, 720000], current: [730000, 745000, 760000, 780000] }
+        ]}
+      ];
+
+      var touched = false;
+
+      for (var gi = 0; gi < starter.length; gi++) {
+        var g = starter[gi];
+        var groupRow = groups.find(function (x) { return x.name === g.name; });
+
+        if (!groupRow) {
+          var { data: newGroup, error: gErr } = await supabaseClient.from('expense_groups').insert({ section: SECTION, name: g.name, sort_order: gi }).select().single();
+          if (gErr) { showLoadError('Could not create category "' + g.name + '"', gErr); showToast('Could not create starter data: ' + gErr.message); return; }
+          groupRow = { id: newGroup.id, name: g.name, items: [] };
+          groups.push(groupRow);
+          touched = true;
+        }
+
+        for (var ii = 0; ii < g.items.length; ii++) {
+          var it = g.items[ii];
+          var itemRow = groupRow.items.find(function (x) { return x.name === it.name; });
+
+          if (!itemRow) {
+            var { data: newItem, error: iErr } = await supabaseClient.from('expense_items').insert({ group_id: groupRow.id, name: it.name, sort_order: ii }).select().single();
+            if (iErr) { showLoadError('Could not create item "' + it.name + '"', iErr); showToast('Could not create starter data: ' + iErr.message); return; }
+            itemRow = { id: newItem.id, name: it.name, invested: {}, current: {} };
+            groupRow.items.push(itemRow);
+            touched = true;
+          }
+
+          var missingCells = it.invested
+            .map(function (amt, mi) { return { key: monthKey(currentYear, mi), invested: amt, current: it.current[mi] }; })
+            .filter(function (c) { return !itemRow.invested[c.key]; });
+
+          if (missingCells.length) {
+            var cells = missingCells.map(function (c) { return { item_id: itemRow.id, month: c.key, amount: c.invested, current_value: c.current }; });
+            var { error: cErr } = await supabaseClient.from('expense_grid').insert(cells);
+            if (cErr) { showLoadError('Could not save amounts for "' + it.name + '"', cErr); showToast('Could not create starter data: ' + cErr.message); return; }
+            missingCells.forEach(function (c) { itemRow.invested[c.key] = c.invested; itemRow.current[c.key] = c.current; });
+            touched = true;
+          }
+        }
+      }
+
+      return touched;
+    }
+
+    /* One-time cleanup (localStorage-gated, never re-runs once done): if the old
+       investments.html page already has a "Stocks, MF & Crypto" / "Investments"
+       group (section='investments'), moves its Stocks and Mutual Funds items
+       over here so existing data isn't lost when the page splits in two. */
+    var PORTFOLIO_MIGRATE_KEY = 'finflow_portfolio_v1_setup';
+
+    // Always runs (not localStorage-gated): renames an older "Portfolio"
+    // category to "Stocks/MF" if one is still around from before the rename.
+    async function renamePortfolioIfNeeded() {
+      var renameTarget = groups.find(function (g) { return g.name === 'Portfolio'; });
+      if (!renameTarget) return false;
+      var { error } = await supabaseClient.from('expense_groups').update({ name: 'Stocks/MF' }).eq('id', renameTarget.id);
+      if (error) return false;
+      renameTarget.name = 'Stocks/MF';
+      return true;
+    }
+
+    async function ensurePortfolioMigration() {
+      if (localStorage.getItem(PORTFOLIO_MIGRATE_KEY)) return false;
+      var touched = false;
+
+      var { data: legacyGroups } = await supabaseClient.from('expense_groups').select('*').eq('section', 'investments');
+      var legacy = (legacyGroups || []).find(function (g) { return g.name === 'Stocks, MF & Crypto' || g.name === 'Investments'; });
+
+      if (legacy) {
+        var { data: legacyItems } = await supabaseClient.from('expense_items').select('*').eq('group_id', legacy.id);
+        var moveNames = ['Stocks', 'Mutual Funds'];
+        var toMove = (legacyItems || []).filter(function (it) { return moveNames.indexOf(it.name) !== -1; });
+
+        if (toMove.length) {
+          var portfolioGroup = groups.find(function (g) { return g.name === 'Stocks/MF'; });
+          if (!portfolioGroup) {
+            var { data: newGroup, error: gErr } = await supabaseClient.from('expense_groups').insert({ section: SECTION, name: 'Stocks/MF', sort_order: 0 }).select().single();
+            if (gErr) { showLoadError('Could not create Stocks/MF category', gErr); localStorage.setItem(PORTFOLIO_MIGRATE_KEY, '1'); return touched; }
+            portfolioGroup = { id: newGroup.id, name: 'Stocks/MF', items: [] };
+            groups.push(portfolioGroup);
+          }
+
+          for (var i = 0; i < toMove.length; i++) {
+            var { error: mvErr } = await supabaseClient.from('expense_items').update({ group_id: portfolioGroup.id }).eq('id', toMove[i].id);
+            if (!mvErr) touched = true;
+          }
+        }
+      }
+
+      localStorage.setItem(PORTFOLIO_MIGRATE_KEY, '1');
+      return touched;
+    }
+
+    /* ---- Category (group) CRUD ---- */
+
+    async function addGroupWithName(name) {
+      if (!name || !name.trim()) return;
+      var { error } = await supabaseClient.from('expense_groups').insert({ section: SECTION, name: name.trim(), sort_order: groups.length });
+      if (error) { showToast('Could not add category: ' + error.message); return; }
+      await refresh();
+      showToast('Master category added.');
+    }
+
+    async function addGroup() {
+      var name = prompt('Name this master category (e.g. "Stocks/MF"):');
+      await addGroupWithName(name);
+    }
+
+    function handleAddGroupKey(event, input) {
+      if (event.key !== 'Enter') return;
+      var name = input.value;
+      input.value = '';
+      addGroupWithName(name);
+    }
+
+    async function renameGroup(groupId, currentName) {
+      var name = prompt('Rename master category:', currentName);
+      if (!name || !name.trim() || name.trim() === currentName) return;
+      var { error } = await supabaseClient.from('expense_groups').update({ name: name.trim() }).eq('id', groupId);
+      if (error) { showToast('Could not rename category: ' + error.message); return; }
+      await refresh();
+    }
+
+    async function deleteGroup(groupId, name) {
+      if (!confirm('Delete "' + name + '" and every holding inside it? This can\'t be undone.')) return;
+      var { error } = await supabaseClient.from('expense_groups').delete().eq('id', groupId);
+      if (error) { showToast('Could not delete category: ' + error.message); return; }
+      await refresh();
+      showToast('Category deleted.');
+    }
+
+    /* ---- Line item CRUD ---- */
+
+    async function addItem(groupId, sortOrder) {
+      var name = prompt('Name this holding (e.g. "Stocks", "Gold"):');
+      if (!name || !name.trim()) return;
+      var { error } = await supabaseClient.from('expense_items').insert({ group_id: groupId, name: name.trim(), sort_order: sortOrder });
+      if (error) { showToast('Could not add holding: ' + error.message); return; }
+      await refresh();
+      showToast('Holding added.');
+    }
+
+    async function renameItem(itemId, currentName) {
+      var name = prompt('Rename holding:', currentName);
+      if (!name || !name.trim() || name.trim() === currentName) return;
+      var { error } = await supabaseClient.from('expense_items').update({ name: name.trim() }).eq('id', itemId);
+      if (error) { showToast('Could not rename holding: ' + error.message); return; }
+      await refresh();
+    }
+
+    async function deleteItem(itemId, name) {
+      if (!confirm('Delete "' + name + '"? This can\'t be undone.')) return;
+      var { error } = await supabaseClient.from('expense_items').delete().eq('id', itemId);
+      if (error) { showToast('Could not delete holding: ' + error.message); return; }
+      await refresh();
+      showToast('Holding deleted.');
+    }
+
+    /* ---- Amount cell editing ---- */
+
+    async function handleCellChange(input) {
+      var itemId = input.dataset.item;
+      var m = Number(input.dataset.month);
+      var field = input.dataset.field; // 'invested' or 'current'
+      var key = monthKey(currentYear, m);
+      var val = Number(input.value) || 0;
+
+      var item = null;
+      groups.forEach(function (g) { g.items.forEach(function (it) { if (it.id === itemId) item = it; }); });
+      if (item) {
+        if (field === 'invested') item.invested[key] = val; else item.current[key] = val;
+      }
+      recomputeTotals();
+
+      var payload = { item_id: itemId, month: key, updated_at: new Date().toISOString() };
+      if (field === 'invested') payload.amount = val; else payload.current_value = val;
+
+      var { error } = await supabaseClient
+        .from('expense_grid')
+        .upsert(payload, { onConflict: 'user_id,item_id,month' });
+      if (error) showToast('Could not save: ' + error.message);
+    }
+
+    /* ---- Rendering ---- */
+
+    function buildHeader() {
+      var head1 = '<th rowspan="2" class="sticky-col">Purchase Items</th>';
+      var head2 = '';
+      for (var m = 0; m < 12; m++) {
+        var copyItem = m > 0
+          ? '<button type="button" onclick="copyMonthForward(' + (m - 1) + ')">📋 Copy from ' + monthLabels[m - 1] + '</button>'
+          : '';
+        head1 += '<th colspan="3"><span class="month-head">' + monthLabels[m] +
+          '<details class="month-menu"><summary title="Month options">⋮</summary>' +
+          '<div class="month-menu-panel">' + copyItem +
+          '<button type="button" onclick="clearMonth(' + m + ')">🗑 Clear ' + monthLabels[m] + '</button>' +
+          '</div></details></span></th>';
+        head2 += '<th class="sub-head">Investment</th><th class="sub-head">Current Value</th><th class="sub-head month-end">%</th>';
+      }
+      document.getElementById('gridHeadRow1').innerHTML = head1;
+      document.getElementById('gridHeadRow2').innerHTML = head2;
+
+      var footHtml = '<td class="sticky-col">Total</td>';
+      for (var mf = 0; mf < 12; mf++) {
+        footHtml += '<td id="footInv' + mf + '">₹0</td><td id="footCur' + mf + '">₹0</td><td class="pct-cell month-end" id="footPct' + mf + '">—</td>';
+      }
+      document.getElementById('gridFootRow').innerHTML = footHtml;
+    }
+
+    async function copyMonthForward(monthIdx) {
+      var fromKey = monthKey(currentYear, monthIdx);
+      var toKey = monthKey(currentYear, monthIdx + 1);
+      var fromLabel = monthLabels[monthIdx];
+      var toLabel = monthLabels[monthIdx + 1];
+
+      var sourceItems = [];
+      groups.forEach(function (g) {
+        g.items.forEach(function (it) {
+          if (it.invested[fromKey] || it.current[fromKey]) sourceItems.push(it);
+        });
+      });
+
+      if (sourceItems.length === 0) {
+        showToast('No amounts in ' + fromLabel + ' to copy.');
+        return;
+      }
+      if (!confirm('Copy ' + fromLabel + '\'s amounts into ' + toLabel + '? This overwrites any existing ' + toLabel + ' values.')) return;
+
+      var cells = sourceItems.map(function (it) {
+        return { item_id: it.id, month: toKey, amount: it.invested[fromKey] || 0, current_value: it.current[fromKey] || 0 };
+      });
+      var { error } = await supabaseClient.from('expense_grid').upsert(cells, { onConflict: 'user_id,item_id,month' });
+      if (error) { showToast('Could not copy: ' + error.message); return; }
+
+      await refresh();
+      showToast('Copied ' + fromLabel + ' → ' + toLabel + '.');
+    }
+
+    async function clearMonth(monthIdx) {
+      var key = monthKey(currentYear, monthIdx);
+      var label = monthLabels[monthIdx];
+
+      var itemsWithValue = [];
+      groups.forEach(function (g) {
+        g.items.forEach(function (it) {
+          if (it.invested[key] || it.current[key]) itemsWithValue.push(it);
+        });
+      });
+
+      if (itemsWithValue.length === 0) {
+        showToast(label + ' is already empty.');
+        return;
+      }
+      if (!confirm('Clear all amounts entered for ' + label + '? This can\'t be undone.')) return;
+
+      var cells = itemsWithValue.map(function (it) {
+        return { item_id: it.id, month: key, amount: 0, current_value: 0 };
+      });
+      var { error } = await supabaseClient.from('expense_grid').upsert(cells, { onConflict: 'user_id,item_id,month' });
+      if (error) { showToast('Could not clear: ' + error.message); return; }
+
+      await refresh();
+      showToast(label + ' cleared.');
+    }
+
+    function render() {
+      buildHeader();
+      var body = document.getElementById('gridBody');
+      var wrap = document.getElementById('gridScrollWrap');
+      var emptyEl = document.getElementById('emptyGroups');
+
+      if (groups.length === 0) {
+        body.innerHTML = '';
+        wrap.style.display = 'none';
+        emptyEl.style.display = 'block';
+        recomputeTotals();
+        return;
+      }
+      wrap.style.display = '';
+      emptyEl.style.display = 'none';
+
+      var html = '';
+      groups.forEach(function (g) {
+        html += '<tr class="group-row" data-group="' + g.id + '">' +
+          '<td class="sticky-col"><span class="row-name">' + escapeHtml(g.name) +
+            ' <button type="button" class="row-icon-btn edit-btn" data-id="' + g.id + '" data-name="' + escapeHtml(g.name) + '" onclick="renameGroup(this.dataset.id, this.dataset.name)" title="Rename master category">✎</button>' +
+            ' <button type="button" class="row-icon-btn delete-btn" data-id="' + g.id + '" data-name="' + escapeHtml(g.name) + '" onclick="deleteGroup(this.dataset.id, this.dataset.name)" title="Delete master category">✕</button>' +
+            ' <button type="button" class="row-icon-btn add-item-btn" data-id="' + g.id + '" data-order="' + g.items.length + '" onclick="addItem(this.dataset.id, Number(this.dataset.order))" title="Add holding">+ Add</button>' +
+          '</span></td>';
+        for (var m = 0; m < 12; m++) {
+          html += '<td id="groupInv-' + g.id + '-' + m + '">₹0</td>' +
+            '<td id="groupCur-' + g.id + '-' + m + '">₹0</td>' +
+            '<td class="cell-pct month-end" id="groupPct-' + g.id + '-' + m + '">—</td>';
+        }
+        html += '</tr>';
+
+        g.items.forEach(function (it) {
+          html += '<tr class="item-row" data-item="' + it.id + '">' +
+            '<td class="sticky-col"><span class="row-name">' + escapeHtml(it.name) +
+              ' <button type="button" class="row-icon-btn edit-btn" data-id="' + it.id + '" data-name="' + escapeHtml(it.name) + '" onclick="renameItem(this.dataset.id, this.dataset.name)" title="Rename">✎</button>' +
+              ' <button type="button" class="row-icon-btn delete-btn" data-id="' + it.id + '" data-name="' + escapeHtml(it.name) + '" onclick="deleteItem(this.dataset.id, this.dataset.name)" title="Delete">✕</button>' +
+            '</span></td>';
+          for (var mi = 0; mi < 12; mi++) {
+            var key = monthKey(currentYear, mi);
+            var invVal = it.invested[key] || 0;
+            var curVal = it.current[key] || 0;
+            html += '<td><input type="number" min="0" step="1" class="grid-cell-input" value="' + invVal + '" ' +
+              'data-item="' + it.id + '" data-month="' + mi + '" data-field="invested" onchange="handleCellChange(this)"></td>';
+            html += '<td><input type="number" min="0" step="1" class="grid-cell-input" value="' + curVal + '" ' +
+              'data-item="' + it.id + '" data-month="' + mi + '" data-field="current" onchange="handleCellChange(this)"></td>';
+            html += '<td class="cell-pct month-end" id="pct-' + it.id + '-' + mi + '">—</td>';
+          }
+          html += '</tr>';
+        });
+      });
+
+      html += '<tr class="add-group-row">' +
+        '<td class="sticky-col"><input type="text" class="add-group-input" placeholder="+ Add master category…" onkeydown="handleAddGroupKey(event, this)"></td>' +
+        '<td colspan="36"></td>' +
+        '</tr>';
+
+      body.innerHTML = html;
+      recomputeTotals();
+    }
+
+    function escapeHtml(s) {
+      return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function recomputeTotals() {
+      var invByMonth = new Array(12).fill(0);
+      var curByMonth = new Array(12).fill(0);
+
+      groups.forEach(function (g) {
+        var gInv = new Array(12).fill(0);
+        var gCur = new Array(12).fill(0);
+
+        g.items.forEach(function (it) {
+          for (var m = 0; m < 12; m++) {
+            var key = monthKey(currentYear, m);
+            var iv = it.invested[key] || 0;
+            var cv = it.current[key] || 0;
+            gInv[m] += iv;
+            gCur[m] += cv;
+
+            var pctEl = document.getElementById('pct-' + it.id + '-' + m);
+            if (pctEl) {
+              var pct = iv ? ((cv - iv) / iv * 100) : null;
+              pctEl.textContent = fmtPct(pct);
+              pctEl.className = 'cell-pct month-end ' + pctClass(pct);
+            }
+          }
+        });
+
+        for (var m2 = 0; m2 < 12; m2++) {
+          invByMonth[m2] += gInv[m2];
+          curByMonth[m2] += gCur[m2];
+          var gInvEl = document.getElementById('groupInv-' + g.id + '-' + m2);
+          var gCurEl = document.getElementById('groupCur-' + g.id + '-' + m2);
+          var gPctEl = document.getElementById('groupPct-' + g.id + '-' + m2);
+          if (gInvEl) gInvEl.textContent = fmtRupee(gInv[m2]);
+          if (gCurEl) gCurEl.textContent = fmtRupee(gCur[m2]);
+          if (gPctEl) {
+            var gpct = gInv[m2] ? ((gCur[m2] - gInv[m2]) / gInv[m2] * 100) : null;
+            gPctEl.textContent = fmtPct(gpct);
+            gPctEl.className = 'cell-pct month-end ' + pctClass(gpct);
+          }
+        }
+      });
+
+      var latestInv = 0, latestCur = 0;
+      for (var lm = 11; lm >= 0; lm--) {
+        if (invByMonth[lm] > 0 || curByMonth[lm] > 0) { latestInv = invByMonth[lm]; latestCur = curByMonth[lm]; break; }
+      }
+
+      for (var mm = 0; mm < 12; mm++) {
+        var fi = document.getElementById('footInv' + mm);
+        var fc = document.getElementById('footCur' + mm);
+        var fp = document.getElementById('footPct' + mm);
+        if (fi) fi.textContent = fmtRupee(invByMonth[mm]);
+        if (fc) fc.textContent = fmtRupee(curByMonth[mm]);
+        if (fp) {
+          var fpct = invByMonth[mm] ? ((curByMonth[mm] - invByMonth[mm]) / invByMonth[mm] * 100) : null;
+          fp.textContent = fmtPct(fpct);
+          fp.className = 'pct-cell month-end ' + pctClass(fpct);
+        }
+      }
+
+      document.getElementById('sumYearTotal').textContent = fmtRupee(latestCur, true);
+      document.getElementById('sumAvgMonth').textContent = fmtRupee(latestInv, true);
+      var overallPct = latestInv ? ((latestCur - latestInv) / latestInv * 100) : null;
+      var topEl = document.getElementById('sumTopCategory');
+      topEl.textContent = fmtPct(overallPct);
+      topEl.className = 'summary-value ' + pctClass(overallPct);
+    }
+
+    async function refresh() {
+      await loadAll();
+      render();
+    }
+
+    function shiftYear(delta) {
+      currentYear += delta;
+      document.getElementById('yearLabel').textContent = currentYear;
+      render();
+    }
+
+    var toastTimer = null;
+    function showToast(msg) {
+      var toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(function () { toast.classList.remove('show'); }, 2600);
+    }
+
+    (async function init() {
+      var user = await requireAuth('index.html#login');
+      if (!user) return;
+      await loadAll();
+      var deduped = await dedupeDefaults();
+      if (deduped) await loadAll();
+      var renamed = await renamePortfolioIfNeeded();
+      if (renamed) await loadAll();
+      var migrated = await ensurePortfolioMigration();
+      if (migrated) await loadAll();
+      if (groups.length === 0) {
+        var touched = await ensureDefaults();
+        if (touched) await loadAll();
+      }
+      render();
+    })();
+  </script>
+</body>
+</html>

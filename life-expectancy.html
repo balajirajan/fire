@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Life Expectancy Calculator - FinFlow</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f8fafc;
+      color: #0f172a;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    a, button { color: inherit; text-decoration: none; font-family: inherit; }
+
+    .app-shell { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
+    @media (max-width: 860px) { .app-shell { grid-template-columns: 1fr; } .sidebar { display: none; } }
+
+    /* Sidebar */
+    .sidebar { background: #ffffff; border-right: 1px solid #e2e8f0; display: flex; flex-direction: column; padding: 1.5rem 1.25rem; }
+    .sidebar-logo { display: flex; align-items: center; gap: 0.65rem; font-size: 1.1rem; font-weight: 800; margin-bottom: 2rem; padding: 0 0.25rem; }
+    .sidebar-logo-icon { width: 30px; height: 30px; background: linear-gradient(135deg, #0ea5e9, #10b981); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; flex-shrink: 0; }
+    .sidebar-nav { display: flex; flex-direction: column; gap: 0.25rem; }
+    .sidebar-nav a, .sidebar-nav .nav-group-head { display: flex; align-items: center; gap: 0.75rem; padding: 0.7rem 0.75rem; border-radius: 0.6rem; font-size: 0.9rem; font-weight: 500; color: #364752; }
+    .sidebar-nav a:hover, .sidebar-nav .nav-group-head:hover { background: #f1f5f9; }
+    .sidebar-nav a.active { background: #0f172a; color: #ffffff; font-weight: 600; }
+    .sidebar-nav .nav-group-head.open { background: #f1f5f9; font-weight: 700; }
+    .sidebar-nav .nav-group-head.active { background: #0f172a; color: #ffffff; font-weight: 600; }
+    .sidebar-nav .nav-group-head.active .nav-chevron { color: rgba(255,255,255,0.6); }
+    .sidebar-nav .nav-icon { font-size: 1rem; width: 20px; text-align: center; flex-shrink: 0; }
+    .sidebar-nav .nav-label { flex: 1; }
+    .sidebar-nav .nav-chevron { color: #94a3b8; font-size: 0.85rem; }
+    .sidebar-subnav { display: flex; flex-direction: column; gap: 0.2rem; padding-left: 1.6rem; margin: 0.15rem 0 0.3rem; }
+    .sidebar-subnav a { display: flex; align-items: center; gap: 0.6rem; padding: 0.55rem 0.6rem; border-radius: 0.5rem; font-size: 0.85rem; font-weight: 500; color: #364752; }
+    .sidebar-subnav a:hover { background: #f1f5f9; }
+    .sidebar-subnav a.active { background: #0f172a; color: #fff; font-weight: 600; }
+    .sidebar-spacer { flex: 1; }
+    .feedback-card { background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 0.9rem; padding: 1.1rem; margin-top: 1.5rem; }
+    .feedback-card .fc-icon { width: 32px; height: 32px; border-radius: 0.6rem; background: #eef2f7; display: flex; align-items: center; justify-content: center; font-size: 0.95rem; margin-bottom: 0.6rem; }
+    .feedback-card strong { display: block; font-size: 0.85rem; margin-bottom: 0.3rem; }
+    .feedback-card p { font-size: 0.78rem; color: #64748b; line-height: 1.5; margin-bottom: 0.85rem; }
+    .feedback-card a { display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; width: 100%; padding: 0.55rem; border: 1px solid #cbd5e1; border-radius: 0.5rem; font-size: 0.8rem; font-weight: 600; color: #364752; }
+    .feedback-card a:hover { border-color: #10b981; color: #10b981; }
+
+    /* Main */
+    .main { padding: 1.5rem 2.5rem 3rem; min-width: 0; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; padding-bottom: 1.25rem; border-bottom: 1px solid #e2e8f0; margin-bottom: 1.5rem; }
+    .topbar h1 { font-size: 1.4rem; font-weight: 700; }
+    .topbar-right { display: flex; align-items: center; gap: 0.85rem; }
+    .language-selector { display: flex; align-items: center; gap: 0.5rem; background: #ffffff; padding: 0.5rem 0.9rem; border-radius: 0.5rem; color: #51636f; border: 1px solid #e2e8f0; cursor: pointer; font-size: 0.85rem; }
+    .user-menu { position: relative; list-style: none; }
+    .user-menu > summary { cursor: pointer; list-style: none; width: 34px; height: 34px; border-radius: 50%; background: #eef2f7; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; font-size: 1rem; }
+    .user-menu > summary::-webkit-details-marker { display: none; }
+    .user-menu-panel { position: absolute; top: calc(100% + 0.6rem); right: 0; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 0.75rem; box-shadow: 0 10px 30px rgba(15,23,42,0.12); padding: 0.4rem; min-width: 150px; z-index: 20; }
+    .user-menu-panel a { display: block; padding: 0.55rem 0.7rem; border-radius: 0.5rem; font-size: 0.85rem; color: #364752; font-weight: 500; }
+    .user-menu-panel a:hover { background: #f1f5f9; color: #10b981; }
+
+    .page-head { margin-bottom: 1.5rem; }
+    .page-head h2 { font-size: 1.6rem; font-weight: 800; margin-bottom: 0.3rem; }
+    .page-head p { color: #64748b; font-size: 0.9rem; }
+
+    /* Results hero */
+    .health-hero {
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      border-radius: 1.25rem;
+      padding: 1.75rem 2rem;
+      color: #fff;
+      margin-bottom: 1.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.75rem;
+    }
+    .health-hero-stats { display: grid; grid-template-columns: repeat(3, minmax(140px, 1fr)); gap: 1.4rem 1.75rem; flex: 1; min-width: 280px; }
+    .health-hero-stat.primary .health-hero-value { font-size: 2.1rem; }
+    #heroDaysLived, #heroDaysRemaining { font-size: 1.05rem; line-height: 1.4; }
+    @media (max-width: 700px) { .health-hero-stats { grid-template-columns: repeat(2, 1fr); } }
+    .health-hero-icon { font-size: 1.1rem; margin-bottom: 0.4rem; opacity: 0.9; }
+    .health-hero-label { font-size: 0.78rem; color: #94a3b8; font-weight: 600; margin-bottom: 0.3rem; }
+    .health-hero-value { font-size: 1.6rem; font-weight: 800; }
+    .health-hero-value.negative { color: #f87171; }
+    .health-hero-value.positive { color: #4ade80; }
+    .health-hero-sub { font-size: 0.72rem; color: #94a3b8; margin-top: 0.3rem; }
+    .health-hero-progress { display: flex; flex-direction: column; align-items: center; }
+    .health-hero-donut-wrap { position: relative; width: 112px; height: 112px; flex-shrink: 0; }
+    .health-hero-donut-wrap svg { width: 112px; height: 112px; display: block; }
+    .health-hero-progress-label { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    .health-hero-progress-pct { font-size: 1.3rem; font-weight: 800; }
+    .health-hero-progress-sub { font-size: 0.6rem; color: #94a3b8; text-align: center; line-height: 1.3; margin-top: 0.15rem; }
+
+    /* Breakdown card */
+    .chart-card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 1.1rem; padding: 1.5rem 1.4rem 1.1rem; margin-bottom: 1.5rem; box-shadow: 0 4px 16px rgba(15,23,42,0.03); }
+    .chart-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.2rem; }
+    .chart-card .chart-sub { font-size: 0.78rem; color: #94a3b8; margin-bottom: 0.9rem; }
+
+    .breakdown-list { display: flex; flex-direction: column; gap: 0.6rem; }
+    .breakdown-row { display: flex; align-items: center; gap: 0.85rem; }
+    .breakdown-label { width: 170px; flex-shrink: 0; font-size: 0.83rem; font-weight: 600; color: #364752; }
+    .breakdown-bar-col { flex: 1; display: flex; flex-direction: column; gap: 0.25rem; min-width: 0; }
+    .breakdown-bar-wrap { width: 100%; height: 22px; background: #f1f5f9; border-radius: 999px; position: relative; overflow: hidden; }
+    .breakdown-bar { position: absolute; top: 0; bottom: 0; border-radius: 999px; }
+    .breakdown-bar.pos { background: #10b981; left: 50%; }
+    .breakdown-bar.neg { background: #ef4444; right: 50%; }
+    .breakdown-mid-line { position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; background: #cbd5e1; }
+    .breakdown-range { display: flex; justify-content: space-between; font-size: 0.64rem; font-weight: 600; color: #94a3b8; }
+    .breakdown-value { width: 62px; flex-shrink: 0; text-align: right; font-size: 0.83rem; font-weight: 800; }
+    .breakdown-value.pos { color: #059669; }
+    .breakdown-value.neg { color: #dc2626; }
+
+    /* Input section intro + progress */
+    .input-section-head { margin: 0.5rem 0 1rem; }
+    .input-section-head h3 { font-size: 1.15rem; font-weight: 800; margin-bottom: 0.3rem; }
+    .input-section-head p { font-size: 0.85rem; color: #64748b; }
+
+    .progress-banner { background: linear-gradient(135deg, #ecfdf5, #eff6ff); border: 1px solid #d1fae5; border-radius: 1rem; padding: 1rem 1.25rem; margin-bottom: 1.5rem; }
+    .progress-banner-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.6rem; }
+    .progress-banner-title { font-size: 0.88rem; font-weight: 700; color: #0f172a; }
+    .progress-banner-count { font-size: 0.8rem; font-weight: 700; color: #059669; }
+    .progress-banner-track { height: 10px; background: rgba(255,255,255,0.7); border-radius: 999px; overflow: hidden; }
+    .progress-banner-fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg, #34d399, #10b981); width: 0%; transition: width 0.4s ease; }
+    .progress-banner.complete .progress-banner-count { color: #7c3aed; }
+    .progress-banner.complete .progress-banner-fill { background: linear-gradient(90deg, #a855f7, #6366f1); }
+
+    /* Question cards */
+    .q-card { background: #ffffff; border: 1px solid #e5e7eb; border-top: 3px solid var(--accent, #e2e8f0); border-radius: 1.1rem; padding: 1.6rem 1.75rem; margin-bottom: 1.25rem; box-shadow: 0 4px 16px rgba(15,23,42,0.03); transition: box-shadow 0.2s ease, transform 0.2s ease; }
+    .q-card.answered { box-shadow: 0 6px 20px rgba(15,23,42,0.07); }
+    .q-card-eyebrow { margin-bottom: 1.1rem; padding-bottom: 0.9rem; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; gap: 0.75rem; }
+    .q-card-icon-badge { width: 34px; height: 34px; border-radius: 50%; background: var(--accent-bg, #f1f5f9); display: flex; align-items: center; justify-content: center; font-size: 1.05rem; flex-shrink: 0; }
+    .q-card-title-wrap { flex: 1; display: flex; flex-direction: column; gap: 0.15rem; min-width: 0; }
+    .q-card-title { font-size: 0.92rem; font-weight: 800; color: #0f172a; }
+    .q-card-subtitle { font-size: 0.75rem; font-weight: 500; color: #94a3b8; }
+    .q-card.answered .q-card-title::after { content: '✓'; display: inline-flex; align-items: center; justify-content: center; width: 15px; height: 15px; margin-left: 0.4rem; border-radius: 50%; background: var(--accent, #10b981); color: #fff; font-size: 0.6rem; font-weight: 800; vertical-align: middle; }
+    .q-field { margin-bottom: 1.4rem; }
+    .q-field:last-child { margin-bottom: 0; }
+    .q-field-label { font-size: 0.88rem; font-weight: 600; color: #0f172a; margin-bottom: 0.7rem; }
+    .q-field-note { font-size: 0.74rem; color: #94a3b8; margin-top: 0.4rem; }
+    .q-field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+    .choice-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 0.6rem; }
+    .choice-btn {
+      position: relative;
+      display: flex; align-items: center; justify-content: center; text-align: center;
+      padding: 0.7rem 0.6rem; border: 1.5px solid #e2e8f0; border-radius: 0.65rem;
+      cursor: pointer; background: #fff; font-size: 0.83rem; font-weight: 600; color: #364752;
+      transition: border-color 0.15s ease, transform 0.1s ease, background 0.15s ease;
+    }
+    .choice-btn:hover { border-color: var(--accent, #94a3b8); transform: translateY(-1px); }
+    .choice-btn:active { transform: scale(0.97); }
+    .choice-btn.selected { border-color: var(--accent, #0f172a); background: var(--accent-bg, #f8fafc); box-shadow: 0 0 0 1px var(--accent, #0f172a); color: #0f172a; }
+    .choice-btn.selected::after { content: '✓'; position: absolute; top: -6px; right: -6px; width: 16px; height: 16px; border-radius: 50%; background: var(--accent, #10b981); color: #fff; font-size: 0.6rem; font-weight: 800; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 0 2px #fff; }
+
+    .num-input {
+      width: 100%; padding: 0.65rem 0.8rem; border: 1px solid #cbd5e1; border-radius: 0.55rem;
+      font-size: 0.9rem; font-family: inherit; color: #0f172a;
+    }
+    .num-input:focus { outline: none; border-color: #10b981; box-shadow: 0 0 0 2px rgba(16,185,129,0.15); }
+
+    .conditional-fields { display: none; margin-top: 1rem; padding-top: 1rem; border-top: 1px dashed #e2e8f0; }
+    .conditional-fields.show { display: block; }
+
+    .bmi-readout { margin-top: 0.9rem; padding: 0.75rem 1rem; background: #f8fafc; border-radius: 0.65rem; font-size: 0.85rem; color: #364752; }
+    .bmi-readout b { font-weight: 800; }
+    .bmi-pill { display: inline-block; padding: 0.15rem 0.55rem; border-radius: 999px; font-size: 0.72rem; font-weight: 700; margin-left: 0.4rem; }
+    .bmi-pill.under { background: rgba(59,130,246,0.12); color: #1d4ed8; }
+    .bmi-pill.normal { background: rgba(16,185,129,0.12); color: #059669; }
+    .bmi-pill.over { background: rgba(245,158,11,0.12); color: #b45309; }
+    .bmi-pill.obese { background: rgba(220,38,38,0.12); color: #dc2626; }
+
+    .checkbox-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 0.6rem; }
+    .checkbox-btn {
+      display: flex; align-items: center; gap: 0.5rem; text-align: left;
+      padding: 0.65rem 0.8rem; border: 1.5px solid #e2e8f0; border-radius: 0.65rem;
+      cursor: pointer; background: #fff; font-size: 0.82rem; font-weight: 600; color: #364752;
+    }
+    .checkbox-btn:hover { border-color: #94a3b8; }
+    .checkbox-btn.selected { border-color: #dc2626; background: #fef2f2; color: #b91c1c; }
+    .checkbox-btn .cb-mark { width: 16px; height: 16px; border-radius: 0.3rem; border: 1.5px solid #cbd5e1; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; background: #fff; }
+    .checkbox-btn.selected .cb-mark { border-color: #dc2626; background: #dc2626; color: #fff; }
+
+    .disclaimer { font-size: 0.78rem; color: #94a3b8; line-height: 1.6; padding: 1rem 1.2rem; background: #f8fafc; border-radius: 0.75rem; margin-top: 1rem; }
+
+    /* Global longevity comparison */
+    .compare-table-wrap { overflow-x: auto; }
+    .compare-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    .compare-table th { text-align: left; padding: 0.6rem 0.75rem; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; color: #94a3b8; border-bottom: 1px solid #e2e8f0; }
+    .compare-table td { padding: 0.65rem 0.75rem; border-bottom: 1px solid #f1f5f9; color: #364752; font-weight: 600; }
+    .compare-table tr.highlight td { background: #f0fdf4; color: #065f46; font-weight: 800; }
+    .compare-table tr.you-row td { background: #0f172a; color: #fff; font-weight: 800; border-bottom: none; }
+    .compare-callout { margin-top: 0.9rem; font-size: 0.82rem; color: #64748b; }
+    .compare-callout b { color: #0f172a; }
+
+    /* Personalized longevity timeline */
+    .timeline-wrap { padding: 2.75rem 0.75rem 1.75rem; }
+    .timeline-track { position: relative; height: 4px; background: #e2e8f0; border-radius: 999px; }
+    .timeline-marker { position: absolute; top: 50%; transform: translate(-50%, -50%); }
+    .timeline-dot { width: 14px; height: 14px; border-radius: 50%; background: #0f172a; border: 3px solid #fff; box-shadow: 0 0 0 1px #e2e8f0; }
+    .timeline-marker.you .timeline-dot { background: #0ea5e9; }
+    .timeline-marker.retire .timeline-dot { background: #f59e0b; }
+    .timeline-marker.expect .timeline-dot { background: #10b981; }
+    .timeline-marker.potential .timeline-dot { background: #a855f7; }
+    .timeline-label { position: absolute; left: 50%; transform: translateX(-50%); top: 20px; white-space: nowrap; text-align: center; font-size: 0.72rem; font-weight: 700; color: #364752; }
+    .timeline-marker.label-above .timeline-label { top: auto; bottom: 20px; }
+    .timeline-label .tl-age { display: block; font-size: 0.65rem; font-weight: 600; color: #94a3b8; }
+
+    /* What's Moving Your Number — two columns, sorted lowest to highest */
+    .breakdown-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 0 2rem; }
+    @media (max-width: 700px) { .breakdown-columns { grid-template-columns: 1fr; } }
+
+    /* Category grid + per-card score badge */
+    .q-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+    .q-grid > .q-card { margin-bottom: 0; }
+    .q-grid > .q-card.full { grid-column: 1 / -1; }
+    @media (max-width: 900px) { .q-grid { grid-template-columns: 1fr; } }
+    .q-card-score { margin-left: auto; font-size: 0.72rem; font-weight: 800; letter-spacing: normal; text-transform: none; padding: 0.15rem 0.55rem; border-radius: 999px; }
+    .q-card-score.pos { background: rgba(16,185,129,0.12); color: #059669; }
+    .q-card-score.neg { background: rgba(220,38,38,0.12); color: #dc2626; }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a href="dashboard.html" class="sidebar-logo">
+        <div class="sidebar-logo-icon">💰</div>
+        <span>FinFlow</span>
+      </a>
+
+      <nav class="sidebar-nav">
+        <a href="dashboard.html">
+          <span class="nav-icon">▦</span>
+          <span class="nav-label">Dashboard</span>
+        </a>
+        <a href="fire-plan.html">
+          <span class="nav-icon">🧭</span>
+          <span class="nav-label">FIRE Plan</span>
+          <span class="nav-chevron">›</span>
+        </a>
+
+        <a href="net-worth.html">
+          <span class="nav-icon">📈</span>
+          <span class="nav-label">Networth</span>
+          <span class="nav-chevron">›</span>
+        </a>
+
+        <a href="money-required.html">
+          <span class="nav-icon">🪴</span>
+          <span class="nav-label">Expenses</span>
+          <span class="nav-chevron">›</span>
+        </a>
+
+        <a href="expense-quick-add.html">
+          <span class="nav-icon">⚡</span>
+          <span class="nav-label">Daily Expenses Tracker</span>
+        </a>
+        <a href="tax-planning.html">
+          <span class="nav-icon">🧾</span>
+          <span class="nav-label">Tax Planning</span>
+        </a>
+        <a href="insurance-tracker.html">
+          <span class="nav-icon">🛡️</span>
+          <span class="nav-label">Insurance Tracker</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="reminders.html">
+          <span class="nav-icon">🔔</span>
+          <span class="nav-label">Reminders</span>
+        </a>
+        <a href="vault-overview.html">
+          <span class="nav-icon">🔒</span>
+          <span class="nav-label">Document Vault</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="split/dashboard.html">
+          <span class="nav-icon">💸</span>
+          <span class="nav-label">SplitExpenses(SplitWise)</span>
+        </a>
+        <a href="life-expectancy.html" class="nav-group-head open active">
+          <span class="nav-icon">❤️</span>
+          <span class="nav-label">Health</span>
+          <span class="nav-chevron">⌄</span>
+        </a>
+        <div class="sidebar-subnav">
+          <a href="life-expectancy.html" class="active">
+            <span class="nav-icon">📉</span>
+            <span class="nav-label">Life Expectancy</span>
+          </a>
+          <a href="health-medicine-tracker.html">
+            <span class="nav-icon">💊</span>
+            <span class="nav-label">Medicine Tracker</span>
+          </a>
+          <a href="health-checkup-reports.html">
+            <span class="nav-icon">🩺</span>
+            <span class="nav-label">Checkup Reports</span>
+          </a>
+        </div>
+        <a href="astrology.html">
+          <span class="nav-icon">🔮</span>
+          <span class="nav-label">Spiritual</span>
+        </a>
+        <a href="#">
+          <span class="nav-icon">⚙️</span>
+          <span class="nav-label">Settings</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-spacer"></div>
+
+      <div class="feedback-card">
+        <div class="fc-icon">💬</div>
+        <strong>Got feedback?</strong>
+        <p>Have an idea or found a bug? We read every message.</p>
+        <a href="mailto:hello@finflow.app">✉ Contact Us</a>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <h1>Health</h1>
+        <div class="topbar-right">
+          <div class="language-selector">🌐 English ▾</div>
+          <details class="user-menu">
+            <summary>👤</summary>
+            <div class="user-menu-panel">
+              <a href="#">Settings</a>
+              <a href="#" onclick="signOutAndRedirect('index.html'); return false;">Log Out</a>
+            </div>
+          </details>
+        </div>
+      </div>
+
+      <div class="page-head">
+        <h2>Life Expectancy Calculator</h2>
+        <p>Health is the real wealth — answer a few questions to estimate your life expectancy and see which habits move the number most.</p>
+      </div>
+
+      <div class="health-hero" id="healthHero">
+        <div class="health-hero-stats">
+          <div class="health-hero-stat">
+            <div class="health-hero-icon">🎂</div>
+            <div class="health-hero-label">Current Age</div>
+            <div class="health-hero-value" id="heroCurrentAge">0</div>
+            <div class="health-hero-sub">years old</div>
+          </div>
+          <div class="health-hero-stat primary">
+            <div class="health-hero-icon">⏳</div>
+            <div class="health-hero-label">Estimated Life Expectancy</div>
+            <div class="health-hero-value" id="heroLifeExpectancy">0</div>
+            <div class="health-hero-sub">years</div>
+          </div>
+          <div class="health-hero-stat">
+            <div class="health-hero-icon">☀️</div>
+            <div class="health-hero-label">Days Lived</div>
+            <div class="health-hero-value" id="heroDaysLived">0</div>
+            <div class="health-hero-sub">since birth</div>
+          </div>
+          <div class="health-hero-stat">
+            <div class="health-hero-icon">📅</div>
+            <div class="health-hero-label">Days Remaining (Est.)</div>
+            <div class="health-hero-value" id="heroDaysRemaining">0</div>
+            <div class="health-hero-sub">from your current age</div>
+          </div>
+          <div class="health-hero-stat">
+            <div class="health-hero-icon">🎉</div>
+            <div class="health-hero-label">Expected Birthdays Remaining</div>
+            <div class="health-hero-value" id="heroBirthdaysRemaining">0</div>
+            <div class="health-hero-sub">more birthdays</div>
+          </div>
+          <div class="health-hero-stat">
+            <div class="health-hero-icon">📊</div>
+            <div class="health-hero-label">You vs. National Average</div>
+            <div class="health-hero-value" id="heroVsAverage">0</div>
+            <div class="health-hero-sub" id="heroVsAverageSub">years</div>
+          </div>
+        </div>
+        <div class="health-hero-progress">
+          <div class="health-hero-donut-wrap">
+            <div id="heroDonutSvgHolder"></div>
+            <div class="health-hero-progress-label">
+              <div class="health-hero-progress-pct" id="heroLifeProgressPct">0%</div>
+              <div class="health-hero-progress-sub">Life<br>Progress</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <h3>What's Moving Your Number</h3>
+        <p class="chart-sub">Each habit's net effect, in years — sorted lowest to highest.</p>
+        <div class="breakdown-columns" id="breakdownList"></div>
+      </div>
+
+      <div class="input-section-head">
+        <h3>Tell Us About Yourself</h3>
+        <p>12 quick categories, no essays. Every answer sharpens your estimate in real time — and it's all saved automatically as you go.</p>
+      </div>
+
+      <div class="progress-banner" id="progressBanner">
+        <div class="progress-banner-head">
+          <span class="progress-banner-title">🎯 Your Health Profile</span>
+          <span class="progress-banner-count" id="progressCount">0 / 12 answered</span>
+        </div>
+        <div class="progress-banner-track"><div class="progress-banner-fill" id="progressFill" style="width:0%;"></div></div>
+      </div>
+
+      <div class="q-grid">
+      <div class="q-card" style="--accent:#64748b;--accent-bg:rgba(100,116,139,0.12);">
+        <div class="q-card-eyebrow">
+          <span class="q-card-icon-badge">👤</span>
+          <span class="q-card-title-wrap"><span class="q-card-title">About You</span><span class="q-card-subtitle">Let's start with the basics.</span></span>
+        </div>
+        <div class="q-field">
+          <div class="q-field-label">Sex at birth</div>
+          <div class="choice-grid" id="sexGrid"></div>
+          <div class="q-field-note">This is about biological sex for life-expectancy statistics, not gender identity.</div>
+        </div>
+        <div class="q-field">
+          <div class="q-field-label">Current age</div>
+          <input type="number" class="num-input" id="ageInput" min="18" max="100" value="30" style="max-width:160px;">
+        </div>
+      </div>
+
+      <div class="q-card" style="--accent:#f97316;--accent-bg:rgba(249,115,22,0.12);">
+        <div class="q-card-eyebrow">
+          <span class="q-card-icon-badge">🚬</span>
+          <span class="q-card-title-wrap"><span class="q-card-title">Smoking</span><span class="q-card-subtitle">Every cigarette-free day adds up.</span></span>
+          <span class="q-card-score" data-score="smoking">+0.0 yrs</span>
+        </div>
+        <div class="q-field">
+          <div class="q-field-label">Do you smoke?</div>
+          <div class="choice-grid" id="smokingGrid"></div>
+        </div>
+        <div class="conditional-fields" id="currentSmokerFields">
+          <div class="q-field-row">
+            <div class="q-field">
+              <div class="q-field-label">Cigarettes per day</div>
+              <input type="number" class="num-input" id="cigsPerDayInput" min="1" max="60" value="10">
+            </div>
+            <div class="q-field">
+              <div class="q-field-label">Years smoked</div>
+              <input type="number" class="num-input" id="yearsSmokedInput" min="0" max="70" value="5">
+            </div>
+          </div>
+        </div>
+        <div class="conditional-fields" id="formerSmokerFields">
+          <div class="q-field">
+            <div class="q-field-label">Years since you quit</div>
+            <input type="number" class="num-input" id="yearsQuitInput" min="0" max="60" value="5" style="max-width:200px;">
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" style="--accent:#a855f7;--accent-bg:rgba(168,85,247,0.12);">
+        <div class="q-card-eyebrow">
+          <span class="q-card-icon-badge">🍷</span>
+          <span class="q-card-title-wrap"><span class="q-card-title">Alcohol</span><span class="q-card-subtitle">Moderation goes a long way.</span></span>
+          <span class="q-card-score" data-score="alcohol">+0.0 yrs</span>
+        </div>
+        <div class="q-field">
+          <div class="q-field-label">How often do you drink alcohol?</div>
+          <div class="choice-grid" id="alcoholGrid"></div>
+        </div>
+      </div>
+
+      <div class="q-card" style="--accent:#22c55e;--accent-bg:rgba(34,197,94,0.12);">
+        <div class="q-card-eyebrow">
+          <span class="q-card-icon-badge">🥗</span>
+          <span class="q-card-title-wrap"><span class="q-card-title">Diet</span><span class="q-card-subtitle">You are what you eat — literally.</span></span>
+          <span class="q-card-score" data-score="diet">+0.0 yrs</span>
+        </div>
+        <div class="q-field">
+          <div class="q-field-label">How many servings of fruits &amp; vegetables do you eat per day?</div>
+          <div class="choice-grid" id="fruitVegGrid"></div>
+        </div>
+        <div class="q-field">
+          <div class="q-field-label">How often do you eat processed, fried or junk food?</div>
+          <div class="choice-grid" id="junkFoodGrid"></div>
+        </div>
+      </div>
+
+      <div class="q-card" style="--accent:#3b82f6;--accent-bg:rgba(59,130,246,0.12);">
+        <div class="q-card-eyebrow">
+          <span class="q-card-icon-badge">🏃</span>
+          <span class="q-card-title-wrap"><span class="q-card-title">Physical Activity</span><span class="q-card-subtitle">Movement is medicine.</span></span>
+          <span class="q-card-score" data-score="activity">+0.0 yrs</span>
+        </div>
+        <div class="q-field">
+          <div class="q-field-label">Days per week with at least 30 minutes of exercise</div>
+          <div class="choice-grid" id="exerciseDaysGrid"></div>
+        </div>
+        <div class="q-field">
+          <div class="q-field-label">How would you describe your typical activity level?</div>
+          <div class="choice-grid" id="activityLevelGrid"></div>
+        </div>
+      </div>
+
+      <div class="q-card" style="--accent:#14b8a6;--accent-bg:rgba(20,184,166,0.12);">
+        <div class="q-card-eyebrow">
+          <span class="q-card-icon-badge">⚖️</span>
+          <span class="q-card-title-wrap"><span class="q-card-title">Body Weight</span><span class="q-card-subtitle">A healthy balance, not a number game.</span></span>
+          <span class="q-card-score" data-score="weight">+0.0 yrs</span>
+        </div>
+        <div class="q-field-row">
+          <div class="q-field">
+            <div class="q-field-label">Height (cm)</div>
+            <input type="number" class="num-input" id="heightInput" min="100" max="230" value="170">
+          </div>
+          <div class="q-field">
+            <div class="q-field-label">Weight (kg)</div>
+            <input type="number" class="num-input" id="weightInput" min="30" max="200" value="70">
+          </div>
+        </div>
+        <div class="bmi-readout">Your BMI is <b id="bmiValue">24.2</b><span class="bmi-pill" id="bmiPill">Normal</span></div>
+      </div>
+
+      <div class="q-card" style="--accent:#6366f1;--accent-bg:rgba(99,102,241,0.12);">
+        <div class="q-card-eyebrow">
+          <span class="q-card-icon-badge">😴</span>
+          <span class="q-card-title-wrap"><span class="q-card-title">Sleep</span><span class="q-card-subtitle">Recovery happens while you rest.</span></span>
+          <span class="q-card-score" data-score="sleep">+0.0 yrs</span>
+        </div>
+        <div class="q-field">
+          <div class="q-field-label">How many hours do you sleep per night, on average?</div>
+          <div class="choice-grid" id="sleepGrid"></div>
+        </div>
+      </div>
+
+      <div class="q-card" style="--accent:#ec4899;--accent-bg:rgba(236,72,153,0.12);">
+        <div class="q-card-eyebrow">
+          <span class="q-card-icon-badge">🧠</span>
+          <span class="q-card-title-wrap"><span class="q-card-title">Mental &amp; Social Wellbeing</span><span class="q-card-subtitle">Your mind matters as much as your body.</span></span>
+          <span class="q-card-score" data-score="mental">+0.0 yrs</span>
+        </div>
+        <div class="q-field">
+          <div class="q-field-label">How would you rate your everyday stress level?</div>
+          <div class="choice-grid" id="stressGrid"></div>
+        </div>
+        <div class="q-field">
+          <div class="q-field-label">How connected do you feel to friends and family?</div>
+          <div class="choice-grid" id="socialGrid"></div>
+        </div>
+      </div>
+
+      <div class="q-card full" style="--accent:#f43f5e;--accent-bg:rgba(244,63,94,0.12);">
+        <div class="q-card-eyebrow">
+          <span class="q-card-icon-badge">💞</span>
+          <span class="q-card-title-wrap"><span class="q-card-title">Family &amp; Relationships</span><span class="q-card-subtitle">The people around you shape your years.</span></span>
+          <span class="q-card-score" data-score="family">+0.0 yrs</span>
+        </div>
+        <div class="q-field">
+          <div class="q-field-label">Relationship status</div>
+          <div class="choice-grid" id="relationshipStatusGrid"></div>
+        </div>
+        <div class="conditional-fields" id="partnerSupportFields">
+          <div class="q-field">
+            <div class="q-field-label">How supportive is your spouse / partner?</div>
+            <div class="choice-grid" id="partnerSupportGrid"></div>
+          </div>
+        </div>
+        <div class="q-field">
+          <div class="q-field-label">How often do you spend quality time with family?</div>
+          <div class="choice-grid" id="familyTimeGrid"></div>
+        </div>
+        <div class="q-field">
+          <div class="q-field-label">Intimacy / closeness frequency</div>
+          <div class="choice-grid" id="intimacyFrequencyGrid"></div>
+          <div class="q-field-note">Optional — used only for a general wellbeing correlation. Choose "Prefer not to say" if you'd rather skip this.</div>
+        </div>
+      </div>
+
+      <div class="q-card full" style="--accent:#ef4444;--accent-bg:rgba(239,68,68,0.12);">
+        <div class="q-card-eyebrow">
+          <span class="q-card-icon-badge">🩺</span>
+          <span class="q-card-title-wrap"><span class="q-card-title">Existing Health Conditions</span><span class="q-card-subtitle">Knowledge is the first step to managing it.</span></span>
+          <span class="q-card-score" data-score="conditions">+0.0 yrs</span>
+        </div>
+        <div class="q-field">
+          <div class="q-field-label">Select any that apply to you</div>
+          <div class="checkbox-grid" id="conditionsGrid"></div>
+        </div>
+      </div>
+
+      <div class="q-card" style="--accent:#06b6d4;--accent-bg:rgba(6,182,212,0.12);">
+        <div class="q-card-eyebrow">
+          <span class="q-card-icon-badge">✅</span>
+          <span class="q-card-title-wrap"><span class="q-card-title">Preventive Care &amp; Safety</span><span class="q-card-subtitle">An ounce of prevention...</span></span>
+          <span class="q-card-score" data-score="prevention">+0.0 yrs</span>
+        </div>
+        <div class="q-field">
+          <div class="q-field-label">Do you get regular health checkups?</div>
+          <div class="choice-grid" id="checkupGrid"></div>
+        </div>
+        <div class="q-field">
+          <div class="q-field-label">Do you always wear a seatbelt / follow road safety?</div>
+          <div class="choice-grid" id="seatbeltGrid"></div>
+        </div>
+      </div>
+
+      <div class="q-card full" style="--accent:#10b981;--accent-bg:rgba(16,185,129,0.12);">
+        <div class="q-card-eyebrow">
+          <span class="q-card-icon-badge">🌍</span>
+          <span class="q-card-title-wrap"><span class="q-card-title">Environment</span><span class="q-card-subtitle">Your surroundings quietly shape your health.</span></span>
+          <span class="q-card-score" data-score="environment">+0.0 yrs</span>
+        </div>
+        <div class="q-field">
+          <div class="q-field-label">Where do you live?</div>
+          <div class="choice-grid" id="livingAreaGrid"></div>
+        </div>
+        <div class="q-field">
+          <div class="q-field-label">Air quality in your area</div>
+          <div class="choice-grid" id="airQualityGrid"></div>
+        </div>
+        <div class="q-field">
+          <div class="q-field-label">Drinking water quality</div>
+          <div class="choice-grid" id="waterQualityGrid"></div>
+        </div>
+        <div class="q-field">
+          <div class="q-field-label">Access to healthcare (hospitals / clinics)</div>
+          <div class="choice-grid" id="healthcareAccessGrid"></div>
+        </div>
+      </div>
+
+      </div>
+
+      <div class="chart-card">
+        <h3>Global Longevity Comparison</h3>
+        <p class="chart-sub">Average life expectancy by country — India shown first as your baseline.</p>
+        <div class="compare-table-wrap">
+          <table class="compare-table">
+            <thead><tr><th>Region</th><th>Male</th><th>Female</th></tr></thead>
+            <tbody id="compareTableBody"></tbody>
+          </table>
+        </div>
+        <div class="compare-callout" id="compareCallout"></div>
+      </div>
+
+      <div class="chart-card">
+        <h3>Personalized Longevity Timeline</h3>
+        <p class="chart-sub">Your life mapped from birth to your potential — showing what's possible with better habits.</p>
+        <div class="timeline-wrap">
+          <div class="timeline-track" id="timelineTrack"></div>
+        </div>
+      </div>
+
+      <div class="disclaimer">⚠️ This is an educational estimate based on general population health research, not a medical diagnosis or clinical tool. It doesn't account for your family history, genetics, or medications. Please consult a healthcare professional for personalized advice.</div>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-client.js"></script>
+  <script>
+    var CHOICES = {
+      sex: [
+        { key: 'male', label: '♂ Male' },
+        { key: 'female', label: '♀ Female' }
+      ],
+      smokingStatus: [
+        { key: 'never', label: 'Never smoked' },
+        { key: 'former', label: 'Former smoker' },
+        { key: 'current', label: 'Current smoker' }
+      ],
+      alcohol: [
+        { key: 'never', label: 'Never' },
+        { key: 'occasional', label: 'Occasionally\n(1-2/week)' },
+        { key: 'regular', label: 'Regularly\n(3-14/week)' },
+        { key: 'heavy', label: 'Heavily\n(15+/week)' }
+      ],
+      fruitVeg: [
+        { key: '0', label: '0 servings' },
+        { key: '1-2', label: '1-2 servings' },
+        { key: '3-4', label: '3-4 servings' },
+        { key: '5+', label: '5+ servings' }
+      ],
+      junkFood: [
+        { key: 'rarely', label: 'Rarely' },
+        { key: 'few_times', label: 'A few times a week' },
+        { key: 'daily', label: 'Daily' }
+      ],
+      exerciseDays: [
+        { key: '0', label: '0 days' },
+        { key: '1-2', label: '1-2 days' },
+        { key: '3-4', label: '3-4 days' },
+        { key: '5-7', label: '5-7 days' }
+      ],
+      activityLevel: [
+        { key: 'sedentary', label: 'Sedentary\n(mostly sitting)' },
+        { key: 'light', label: 'Lightly active' },
+        { key: 'moderate', label: 'Moderately active' },
+        { key: 'vigorous', label: 'Very active' }
+      ],
+      sleepHours: [
+        { key: 'lt5', label: 'Less than 5 hrs' },
+        { key: '5-6', label: '5-6 hrs' },
+        { key: '7-8', label: '7-8 hrs' },
+        { key: '9plus', label: '9+ hrs' }
+      ],
+      stressLevel: [
+        { key: 'low', label: 'Low' },
+        { key: 'moderate', label: 'Moderate' },
+        { key: 'high', label: 'High' }
+      ],
+      socialConnection: [
+        { key: 'strong', label: 'Strong' },
+        { key: 'moderate', label: 'Moderate' },
+        { key: 'isolated', label: 'Isolated' },
+        { key: 'lonely', label: 'Lonely' }
+      ],
+      checkupFrequency: [
+        { key: 'yearly', label: 'Yearly' },
+        { key: 'occasionally', label: 'Occasionally' },
+        { key: 'rarely', label: 'Rarely or never' }
+      ],
+      seatbeltHabit: [
+        { key: 'always', label: 'Always' },
+        { key: 'sometimes', label: 'Sometimes' },
+        { key: 'rarely', label: 'Rarely' }
+      ],
+      livingArea: [
+        { key: 'metro', label: 'Metro City' },
+        { key: 'city', label: 'City' },
+        { key: 'town', label: 'Town' },
+        { key: 'village', label: 'Village' }
+      ],
+      airQuality: [
+        { key: 'good', label: 'Good' },
+        { key: 'moderate', label: 'Moderate' },
+        { key: 'poor', label: 'Poor' },
+        { key: 'very_poor', label: 'Very Poor' }
+      ],
+      waterQuality: [
+        { key: 'purified', label: 'Purified /\nFiltered' },
+        { key: 'municipal', label: 'Municipal\n(treated)' },
+        { key: 'borewell', label: 'Borewell / Well\n(untreated)' },
+        { key: 'poor', label: 'Poor /\nContaminated' }
+      ],
+      healthcareAccess: [
+        { key: 'excellent', label: 'Excellent' },
+        { key: 'good', label: 'Good' },
+        { key: 'limited', label: 'Limited' },
+        { key: 'very_limited', label: 'Very Limited' }
+      ],
+      relationshipStatus: [
+        { key: 'married', label: 'Married /\nPartnered' },
+        { key: 'single', label: 'Single' },
+        { key: 'divorced', label: 'Divorced /\nSeparated' },
+        { key: 'widowed', label: 'Widowed' }
+      ],
+      partnerSupport: [
+        { key: 'very', label: 'Very supportive' },
+        { key: 'somewhat', label: 'Somewhat supportive' },
+        { key: 'not_very', label: 'Not very supportive' },
+        { key: 'conflict', label: 'High conflict' }
+      ],
+      familyTime: [
+        { key: 'daily', label: 'Daily' },
+        { key: 'weekly', label: 'Weekly' },
+        { key: 'rarely', label: 'Rarely' }
+      ],
+      intimacyFrequency: [
+        { key: 'rare', label: 'Rarely or never' },
+        { key: '1-2', label: '1-2 times/week' },
+        { key: '3-4', label: '3-4 times/week' },
+        { key: '5plus', label: '5+ times/week' },
+        { key: 'skip', label: 'Prefer not to say' }
+      ]
+    };
+
+    var CONDITIONS = [
+      { key: 'diabetes', label: 'Diabetes' },
+      { key: 'bp', label: 'High blood pressure' },
+      { key: 'heart', label: 'Heart disease' },
+      { key: 'cholesterol', label: 'High cholesterol' },
+      { key: 'asthma', label: 'Asthma / COPD' },
+      { key: 'cancer', label: 'Cancer (current or history)' },
+      { key: 'depression', label: 'Depression / anxiety' }
+    ];
+
+    var state = {
+      sex: 'male', age: 30,
+      smokingStatus: 'never', cigsPerDay: 10, yearsSmoked: 5, yearsQuit: 5,
+      alcohol: 'occasional',
+      fruitVeg: '1-2', junkFood: 'few_times',
+      exerciseDays: '1-2', activityLevel: 'light',
+      heightCm: 170, weightKg: 70,
+      sleepHours: '7-8',
+      stressLevel: 'moderate', socialConnection: 'moderate',
+      conditions: [],
+      checkupFrequency: 'occasionally', seatbeltHabit: 'always',
+      livingArea: 'city', airQuality: 'moderate', waterQuality: 'municipal', healthcareAccess: 'good',
+      relationshipStatus: 'married', partnerSupport: 'somewhat', familyTime: 'weekly', intimacyFrequency: 'skip'
+    };
+
+    function escapeHtml(s) {
+      return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function markCardAnswered(el) {
+      var card = el.closest('.q-card');
+      if (card && !card.classList.contains('answered')) {
+        card.classList.add('answered');
+        updateProgress();
+      }
+    }
+
+    function updateProgress() {
+      var total = document.querySelectorAll('.q-grid > .q-card').length;
+      var answered = document.querySelectorAll('.q-grid > .q-card.answered').length;
+      var pct = total ? Math.round((answered / total) * 100) : 0;
+      document.getElementById('progressCount').textContent = answered + ' / ' + total + ' answered';
+      document.getElementById('progressFill').style.width = pct + '%';
+      document.getElementById('progressBanner').classList.toggle('complete', answered === total);
+    }
+
+    function renderChoiceGrid(gridId, choiceKey, stateKey, onSelect) {
+      var el = document.getElementById(gridId);
+      el.innerHTML = CHOICES[choiceKey].map(function (c) {
+        return '<div class="choice-btn' + (state[stateKey] === c.key ? ' selected' : '') + '" data-key="' + c.key + '">' +
+          escapeHtml(c.label).replace(/\n/g, '<br>') +
+        '</div>';
+      }).join('');
+      Array.prototype.forEach.call(el.querySelectorAll('.choice-btn'), function (btn, i) {
+        btn.addEventListener('click', function () {
+          state[stateKey] = CHOICES[choiceKey][i].key;
+          renderChoiceGrid(gridId, choiceKey, stateKey);
+          if (onSelect) onSelect();
+          markCardAnswered(el);
+          recalculate();
+          scheduleSave();
+        });
+      });
+    }
+
+    function renderConditionsGrid() {
+      var el = document.getElementById('conditionsGrid');
+      var items = CONDITIONS.concat([{ key: 'none', label: 'None of the above' }]);
+      el.innerHTML = items.map(function (c) {
+        var isNone = c.key === 'none';
+        var selected = isNone ? state.conditions.length === 0 : state.conditions.indexOf(c.key) !== -1;
+        return '<div class="checkbox-btn' + (selected ? ' selected' : '') + '" data-key="' + c.key + '">' +
+          '<span class="cb-mark">' + (selected ? '✓' : '') + '</span>' + escapeHtml(c.label) +
+        '</div>';
+      }).join('');
+      Array.prototype.forEach.call(el.querySelectorAll('.checkbox-btn'), function (btn) {
+        btn.addEventListener('click', function () {
+          var key = btn.dataset.key;
+          if (key === 'none') {
+            state.conditions = [];
+          } else {
+            var idx = state.conditions.indexOf(key);
+            if (idx === -1) state.conditions.push(key); else state.conditions.splice(idx, 1);
+          }
+          renderConditionsGrid();
+          markCardAnswered(el);
+          recalculate();
+          scheduleSave();
+        });
+      });
+    }
+
+    function toggleSmokerFields() {
+      document.getElementById('currentSmokerFields').classList.toggle('show', state.smokingStatus === 'current');
+      document.getElementById('formerSmokerFields').classList.toggle('show', state.smokingStatus === 'former');
+    }
+
+    function togglePartnerSupportFields() {
+      document.getElementById('partnerSupportFields').classList.toggle('show', state.relationshipStatus === 'married');
+    }
+
+    function computeBmi() {
+      var h = Number(state.heightCm) / 100;
+      var w = Number(state.weightKg);
+      if (!h || !w) return 22;
+      return w / (h * h);
+    }
+
+    function renderBmi() {
+      var bmi = computeBmi();
+      document.getElementById('bmiValue').textContent = bmi.toFixed(1);
+      var pill = document.getElementById('bmiPill');
+      var label, cls;
+      if (bmi < 18.5) { label = 'Underweight'; cls = 'under'; }
+      else if (bmi < 25) { label = 'Normal'; cls = 'normal'; }
+      else if (bmi < 30) { label = 'Overweight'; cls = 'over'; }
+      else { label = 'Obese'; cls = 'obese'; }
+      pill.textContent = label;
+      pill.className = 'bmi-pill ' + cls;
+    }
+
+    /* ---- Scoring model: a transparent, educational additive-years        ----
+       estimate (base life expectancy adjusted by lifestyle factors) —     ----
+       not a clinical or proprietary actuarial model.                     ---- */
+    function calculate() {
+      var base = state.sex === 'female' ? 72 : 69;
+      var mods = {};
+
+      if (state.smokingStatus === 'never') {
+        mods.smoking = 0;
+      } else if (state.smokingStatus === 'current') {
+        var perDay = Number(state.cigsPerDay) || 10;
+        mods.smoking = perDay <= 10 ? -6 : (perDay <= 20 ? -10 : -14);
+      } else {
+        var yq = Number(state.yearsQuit) || 0;
+        mods.smoking = yq >= 15 ? -1 : (yq >= 5 ? -3 : -5);
+      }
+
+      mods.alcohol = { never: 0.5, occasional: 0.5, regular: -1, heavy: -5 }[state.alcohol];
+
+      var fv = { '0': -2, '1-2': -0.5, '3-4': 1, '5+': 2 }[state.fruitVeg];
+      var jf = { rarely: 1, few_times: 0, daily: -2 }[state.junkFood];
+      mods.diet = fv + jf;
+
+      var days = { '0': -3, '1-2': -1, '3-4': 1, '5-7': 2.5 }[state.exerciseDays];
+      var level = { sedentary: -2, light: 0, moderate: 1, vigorous: 2 }[state.activityLevel];
+      mods.activity = days + level;
+
+      var bmi = computeBmi();
+      mods.weight = bmi < 18.5 ? -1 : (bmi < 25 ? 1 : (bmi < 30 ? -1 : -4));
+
+      mods.sleep = { lt5: -2, '5-6': -0.5, '7-8': 1, '9plus': -1 }[state.sleepHours];
+
+      var stress = { low: 1, moderate: 0, high: -2 }[state.stressLevel];
+      var social = { strong: 2, moderate: 0.5, isolated: -1.5, lonely: -3 }[state.socialConnection];
+      mods.mental = stress + social;
+
+      var condPoints = { diabetes: -3, bp: -2, heart: -4, cholesterol: -1, asthma: -1.5, cancer: -3, depression: -1 };
+      mods.conditions = state.conditions.reduce(function (s, c) { return s + (condPoints[c] || 0); }, 0);
+
+      var checkup = { yearly: 1, occasionally: 0, rarely: -1 }[state.checkupFrequency];
+      var seatbelt = { always: 0.3, sometimes: 0, rarely: -1 }[state.seatbeltHabit];
+      mods.prevention = checkup + seatbelt;
+
+      var livingAreaMod = { metro: -0.5, city: -0.3, town: 0.2, village: 0.3 }[state.livingArea];
+      var airMod = { good: 1, moderate: 0, poor: -1.5, very_poor: -3 }[state.airQuality];
+      var waterMod = { purified: 0.5, municipal: 0, borewell: -1, poor: -2 }[state.waterQuality];
+      var healthcareMod = { excellent: 1, good: 0.3, limited: -0.8, very_limited: -2 }[state.healthcareAccess];
+      mods.environment = livingAreaMod + airMod + waterMod + healthcareMod;
+
+      var relMod = { married: 1.5, single: 0, divorced: -1, widowed: -1 }[state.relationshipStatus];
+      var partnerMod = state.relationshipStatus === 'married' ? { very: 1, somewhat: 0.3, not_very: -0.5, conflict: -1.5 }[state.partnerSupport] : 0;
+      var familyTimeMod = { daily: 1, weekly: 0.3, rarely: -1 }[state.familyTime];
+      var intimacyMod = { rare: 0, '1-2': 0.3, '3-4': 0.7, '5plus': 0.5, skip: 0 }[state.intimacyFrequency];
+      mods.family = relMod + partnerMod + familyTimeMod + intimacyMod;
+
+      var totalMod = Object.keys(mods).reduce(function (s, k) { return s + mods[k]; }, 0);
+      var age = Number(state.age) || 30;
+      var lifeExpectancy = Math.max(age + 1, Math.min(105, base + totalMod));
+
+      return { base: base, mods: mods, totalMod: totalMod, lifeExpectancy: lifeExpectancy, age: age };
+    }
+
+    function buildProgressDonutSvg(pct, size, strokeW, color) {
+      var r = (size - strokeW) / 2;
+      var cx = size / 2, cy = size / 2;
+      var circumference = 2 * Math.PI * r;
+      var len = circumference * Math.max(0, Math.min(1, pct / 100));
+      return '<svg viewBox="0 0 ' + size + ' ' + size + '">' +
+        '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="' + strokeW + '"/>' +
+        '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="' + color + '" stroke-width="' + strokeW + '" ' +
+        'stroke-dasharray="' + len + ' ' + circumference + '" stroke-linecap="round" transform="rotate(-90 ' + cx + ' ' + cy + ')"/>' +
+        '</svg>';
+    }
+
+    var MOD_LABELS = {
+      smoking: 'Smoking', alcohol: 'Alcohol', diet: 'Diet', activity: 'Physical Activity',
+      weight: 'Body Weight (BMI)', sleep: 'Sleep', mental: 'Mental & Social', conditions: 'Health Conditions', prevention: 'Preventive Care',
+      environment: 'Environment', family: 'Family & Relationships'
+    };
+
+    /* Best-case value per category, used to compute the "Potential" marker  */
+    /* on the longevity timeline — i.e. years achievable with ideal habits.  */
+    var POINT_MAX = {
+      smoking: 0, alcohol: 0.5, diet: 3, activity: 4.5, weight: 1, sleep: 1, mental: 4, conditions: 0, prevention: 1.3,
+      environment: 2.8, family: 4.2
+    };
+
+    var COUNTRY_DATA = [
+      { region: 'India', male: 69, female: 72 },
+      { region: 'Global Average', male: 70, female: 75 },
+      { region: 'United States', male: 75, female: 80 },
+      { region: 'United Kingdom', male: 79, female: 83 },
+      { region: 'Germany', male: 79, female: 83 },
+      { region: 'Australia', male: 81, female: 85 },
+      { region: 'Japan', male: 81, female: 87 }
+    ];
+
+    function updateScoreBadges(result) {
+      Array.prototype.forEach.call(document.querySelectorAll('.q-card-score[data-score]'), function (el) {
+        var key = el.dataset.score;
+        var val = result.mods[key] || 0;
+        el.textContent = (val > 0 ? '+' : '') + val.toFixed(1) + ' yrs';
+        el.className = 'q-card-score ' + (val >= 0 ? 'pos' : 'neg');
+      });
+    }
+
+    function formatYearsMonthsDays(years) {
+      var totalDays = years * 365.25;
+      var y = Math.floor(totalDays / 365.25);
+      var remAfterYears = totalDays - y * 365.25;
+      var m = Math.floor(remAfterYears / 30.44);
+      var d = Math.round(remAfterYears - m * 30.44);
+      if (d >= 31) { d -= 31; m += 1; }
+      if (m >= 12) { m -= 12; y += 1; }
+      return y + 'Y, ' + m + 'M, ' + d + ' days';
+    }
+
+    function renderHeroStats(result) {
+      var yearsLeft = Math.max(0, result.lifeExpectancy - result.age);
+      document.getElementById('heroCurrentAge').textContent = result.age;
+      document.getElementById('heroDaysLived').textContent = formatYearsMonthsDays(result.age);
+      document.getElementById('heroDaysRemaining').textContent = formatYearsMonthsDays(yearsLeft);
+      document.getElementById('heroBirthdaysRemaining').textContent = Math.floor(yearsLeft);
+    }
+
+    function renderComparison(result) {
+      var rows = COUNTRY_DATA.map(function (c, i) {
+        return '<tr class="' + (i === 0 ? 'highlight' : '') + '"><td>' + c.region + (i === 0 ? ' 🇮🇳' : '') + '</td><td>' + c.male + '</td><td>' + c.female + '</td></tr>';
+      }).join('');
+      rows += '<tr class="you-row"><td>You (estimated)</td><td colspan="2">' + Math.round(result.lifeExpectancy) + ' years</td></tr>';
+      document.getElementById('compareTableBody').innerHTML = rows;
+
+      var diff = result.lifeExpectancy - result.base;
+      document.getElementById('compareCallout').innerHTML = 'Your estimate is <b>' + (diff >= 0 ? '+' : '') + diff.toFixed(1) + ' years</b> ' + (diff >= 0 ? 'above' : 'below') + ' the India ' + (state.sex === 'female' ? 'female' : 'male') + ' average.';
+    }
+
+    function renderTimeline(result) {
+      var retireAge = 60;
+      var potentialTotalMod = Object.keys(POINT_MAX).reduce(function (s, k) { return s + POINT_MAX[k]; }, 0);
+      var potentialLifeExpectancy = Math.min(105, result.base + potentialTotalMod);
+      var maxScale = Math.max(100, potentialLifeExpectancy + 2, retireAge + 5);
+
+      var markers = [
+        { label: 'Birth', age: 0, cls: 'birth' },
+        { label: 'You', age: result.age, cls: 'you' },
+        { label: 'Retire', age: retireAge, cls: 'retire' },
+        { label: 'Expected', age: Math.round(result.lifeExpectancy), cls: 'expect' },
+        { label: 'Potential', age: Math.round(potentialLifeExpectancy), cls: 'potential' }
+      ];
+
+      document.getElementById('timelineTrack').innerHTML = markers.map(function (m, i) {
+        var pct = Math.max(0, Math.min(100, (m.age / maxScale) * 100));
+        var above = i % 2 === 1 ? ' label-above' : '';
+        return '<div class="timeline-marker ' + m.cls + above + '" style="left:' + pct + '%;">' +
+          '<div class="timeline-dot"></div>' +
+          '<div class="timeline-label">' + m.label + '<span class="tl-age">age ' + m.age + '</span></div>' +
+        '</div>';
+      }).join('');
+    }
+
+    function renderBreakdown(result) {
+      var entries = Object.keys(MOD_LABELS).map(function (key) {
+        return { label: MOD_LABELS[key], val: result.mods[key] || 0 };
+      });
+      entries.sort(function (a, b) { return a.val - b.val; });
+
+      var maxAbs = Math.max.apply(null, entries.map(function (e) { return Math.abs(e.val); }).concat([1]));
+      var rangeLabel = maxAbs.toFixed(1);
+
+      function rowHtml(e) {
+        var pctWidth = Math.min(50, Math.round(Math.abs(e.val) / maxAbs * 50));
+        var barHtml = e.val >= 0
+          ? '<div class="breakdown-bar pos" style="width:' + pctWidth + '%;"></div>'
+          : '<div class="breakdown-bar neg" style="width:' + pctWidth + '%;"></div>';
+        return '<div class="breakdown-row">' +
+          '<div class="breakdown-label">' + e.label + '</div>' +
+          '<div class="breakdown-bar-col">' +
+            '<div class="breakdown-bar-wrap">' + barHtml + '<div class="breakdown-mid-line"></div></div>' +
+            '<div class="breakdown-range"><span>-' + rangeLabel + '</span><span>+' + rangeLabel + '</span></div>' +
+          '</div>' +
+          '<div class="breakdown-value ' + (e.val >= 0 ? 'pos' : 'neg') + '">' + (e.val > 0 ? '+' : '') + e.val.toFixed(1) + '</div>' +
+        '</div>';
+      }
+
+      var half = Math.ceil(entries.length / 2);
+      var left = entries.slice(0, half);
+      var right = entries.slice(half);
+
+      document.getElementById('breakdownList').innerHTML =
+        '<div class="breakdown-list">' + left.map(rowHtml).join('') + '</div>' +
+        '<div class="breakdown-list">' + right.map(rowHtml).join('') + '</div>';
+    }
+
+    function recalculate() {
+      var result = calculate();
+
+      document.getElementById('heroLifeExpectancy').textContent = Math.round(result.lifeExpectancy);
+
+      var vsAvg = result.totalMod;
+      var vsAvgEl = document.getElementById('heroVsAverage');
+      vsAvgEl.textContent = (vsAvg > 0 ? '+' : '') + vsAvg.toFixed(1);
+      vsAvgEl.className = 'health-hero-value ' + (vsAvg >= 0 ? 'positive' : 'negative');
+      document.getElementById('heroVsAverageSub').textContent = (vsAvg >= 0 ? 'years above' : 'years below') + ' the ' + (state.sex === 'female' ? 'female' : 'male') + ' average';
+
+      var lifeProgressPct = Math.max(0, Math.min(100, Math.round((result.age / result.lifeExpectancy) * 100)));
+      document.getElementById('heroLifeProgressPct').textContent = lifeProgressPct + '%';
+      document.getElementById('heroDonutSvgHolder').innerHTML = buildProgressDonutSvg(lifeProgressPct, 112, 14, '#38bdf8');
+
+      renderBreakdown(result);
+      renderBmi();
+      updateScoreBadges(result);
+      renderHeroStats(result);
+      renderComparison(result);
+      renderTimeline(result);
+    }
+
+    /* ---- Persist answers to Supabase, same pattern as fire_plan_inputs — ----
+       so your answers don't reset every time you revisit this page.      ---- */
+
+    async function loadSavedInputs() {
+      var { data, error } = await supabaseClient.from('health_inputs').select('*').maybeSingle();
+      if (error) { console.error('Could not load saved health inputs', error); return null; }
+      return data;
+    }
+
+    async function saveInputs() {
+      var payload = {
+        sex: state.sex, age: Number(state.age),
+        smoking_status: state.smokingStatus, cigarettes_per_day: Number(state.cigsPerDay),
+        years_smoked: Number(state.yearsSmoked), years_quit: Number(state.yearsQuit),
+        alcohol: state.alcohol,
+        fruit_veg_servings: state.fruitVeg, junk_food: state.junkFood,
+        exercise_days: state.exerciseDays, activity_level: state.activityLevel,
+        height_cm: Number(state.heightCm), weight_kg: Number(state.weightKg),
+        sleep_hours: state.sleepHours,
+        stress_level: state.stressLevel, social_connection: state.socialConnection,
+        conditions: state.conditions,
+        checkup_frequency: state.checkupFrequency, seatbelt_habit: state.seatbeltHabit,
+        living_area: state.livingArea, air_quality: state.airQuality,
+        water_quality: state.waterQuality, healthcare_access: state.healthcareAccess,
+        relationship_status: state.relationshipStatus, partner_support: state.partnerSupport,
+        family_time: state.familyTime, intimacy_frequency: state.intimacyFrequency,
+        updated_at: new Date().toISOString()
+      };
+      var { error } = await supabaseClient.from('health_inputs').upsert(payload, { onConflict: 'user_id' });
+      if (error) console.error('Could not save health inputs', error);
+    }
+
+    var saveTimer = null;
+    function scheduleSave() {
+      if (saveTimer) clearTimeout(saveTimer);
+      saveTimer = setTimeout(saveInputs, 600);
+    }
+
+    function applySaved(saved) {
+      state.sex = saved.sex; state.age = saved.age;
+      state.smokingStatus = saved.smoking_status; state.cigsPerDay = saved.cigarettes_per_day;
+      state.yearsSmoked = saved.years_smoked; state.yearsQuit = saved.years_quit;
+      state.alcohol = saved.alcohol;
+      state.fruitVeg = saved.fruit_veg_servings; state.junkFood = saved.junk_food;
+      state.exerciseDays = saved.exercise_days; state.activityLevel = saved.activity_level;
+      state.heightCm = saved.height_cm; state.weightKg = saved.weight_kg;
+      state.sleepHours = saved.sleep_hours;
+      state.stressLevel = saved.stress_level; state.socialConnection = saved.social_connection;
+      state.conditions = saved.conditions || [];
+      state.checkupFrequency = saved.checkup_frequency; state.seatbeltHabit = saved.seatbelt_habit;
+      state.livingArea = saved.living_area; state.airQuality = saved.air_quality;
+      state.waterQuality = saved.water_quality; state.healthcareAccess = saved.healthcare_access;
+      state.relationshipStatus = saved.relationship_status; state.partnerSupport = saved.partner_support;
+      state.familyTime = saved.family_time; state.intimacyFrequency = saved.intimacy_frequency;
+
+      document.getElementById('ageInput').value = state.age;
+      document.getElementById('cigsPerDayInput').value = state.cigsPerDay;
+      document.getElementById('yearsSmokedInput').value = state.yearsSmoked;
+      document.getElementById('yearsQuitInput').value = state.yearsQuit;
+      document.getElementById('heightInput').value = state.heightCm;
+      document.getElementById('weightInput').value = state.weightKg;
+    }
+
+    function wireNumberInput(inputId, stateKey) {
+      var el = document.getElementById(inputId);
+      el.addEventListener('input', function () {
+        state[stateKey] = Number(this.value) || 0;
+        markCardAnswered(el);
+        recalculate();
+        scheduleSave();
+      });
+    }
+
+    function renderAll() {
+      renderChoiceGrid('sexGrid', 'sex', 'sex');
+      renderChoiceGrid('smokingGrid', 'smokingStatus', 'smokingStatus', toggleSmokerFields);
+      renderChoiceGrid('alcoholGrid', 'alcohol', 'alcohol');
+      renderChoiceGrid('fruitVegGrid', 'fruitVeg', 'fruitVeg');
+      renderChoiceGrid('junkFoodGrid', 'junkFood', 'junkFood');
+      renderChoiceGrid('exerciseDaysGrid', 'exerciseDays', 'exerciseDays');
+      renderChoiceGrid('activityLevelGrid', 'activityLevel', 'activityLevel');
+      renderChoiceGrid('sleepGrid', 'sleepHours', 'sleepHours');
+      renderChoiceGrid('stressGrid', 'stressLevel', 'stressLevel');
+      renderChoiceGrid('socialGrid', 'socialConnection', 'socialConnection');
+      renderChoiceGrid('checkupGrid', 'checkupFrequency', 'checkupFrequency');
+      renderChoiceGrid('seatbeltGrid', 'seatbeltHabit', 'seatbeltHabit');
+      renderChoiceGrid('livingAreaGrid', 'livingArea', 'livingArea');
+      renderChoiceGrid('airQualityGrid', 'airQuality', 'airQuality');
+      renderChoiceGrid('waterQualityGrid', 'waterQuality', 'waterQuality');
+      renderChoiceGrid('healthcareAccessGrid', 'healthcareAccess', 'healthcareAccess');
+      renderChoiceGrid('relationshipStatusGrid', 'relationshipStatus', 'relationshipStatus', togglePartnerSupportFields);
+      renderChoiceGrid('partnerSupportGrid', 'partnerSupport', 'partnerSupport');
+      renderChoiceGrid('familyTimeGrid', 'familyTime', 'familyTime');
+      renderChoiceGrid('intimacyFrequencyGrid', 'intimacyFrequency', 'intimacyFrequency');
+      renderConditionsGrid();
+      toggleSmokerFields();
+      togglePartnerSupportFields();
+      updateProgress();
+    }
+
+    (async function init() {
+      var user = await requireAuth('index.html#login');
+      if (!user) return;
+
+      var saved = await loadSavedInputs();
+      if (saved) applySaved(saved);
+
+      renderAll();
+      if (saved) {
+        Array.prototype.forEach.call(document.querySelectorAll('.q-grid > .q-card'), function (card) {
+          card.classList.add('answered');
+        });
+        updateProgress();
+      }
+      wireNumberInput('ageInput', 'age');
+      wireNumberInput('cigsPerDayInput', 'cigsPerDay');
+      wireNumberInput('yearsSmokedInput', 'yearsSmoked');
+      wireNumberInput('yearsQuitInput', 'yearsQuit');
+      wireNumberInput('heightInput', 'heightCm');
+      wireNumberInput('weightInput', 'weightKg');
+
+      recalculate();
+      if (!saved) await saveInputs();
+    })();
+  </script>
+</body>
+</html>

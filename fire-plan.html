@@ -1,0 +1,1259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FIRE Plan - FinFlow</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f8fafc;
+      color: #0f172a;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    a, button { color: inherit; text-decoration: none; font-family: inherit; }
+
+    .app-shell { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
+    @media (max-width: 860px) { .app-shell { grid-template-columns: 1fr; } .sidebar { display: none; } }
+
+    /* Sidebar */
+    .sidebar { background: #ffffff; border-right: 1px solid #e2e8f0; display: flex; flex-direction: column; padding: 1.5rem 1.25rem; }
+    .sidebar-logo { display: flex; align-items: center; gap: 0.65rem; font-size: 1.1rem; font-weight: 800; margin-bottom: 2rem; padding: 0 0.25rem; }
+    .sidebar-logo-icon { width: 30px; height: 30px; background: linear-gradient(135deg, #0ea5e9, #10b981); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; flex-shrink: 0; }
+    .sidebar-nav { display: flex; flex-direction: column; gap: 0.25rem; }
+    .sidebar-nav a, .sidebar-nav .nav-group-head { display: flex; align-items: center; gap: 0.75rem; padding: 0.7rem 0.75rem; border-radius: 0.6rem; font-size: 0.9rem; font-weight: 500; color: #364752; }
+    .sidebar-nav a:hover, .sidebar-nav .nav-group-head:hover { background: #f1f5f9; }
+    .sidebar-nav a.active { background: #0f172a; color: #ffffff; font-weight: 600; }
+    .sidebar-nav .nav-group-head.open { background: #f1f5f9; font-weight: 700; }
+    .sidebar-nav .nav-group-head.active { background: #0f172a; color: #ffffff; font-weight: 600; }
+    .sidebar-nav .nav-group-head.active .nav-chevron { color: rgba(255,255,255,0.6); }
+    .sidebar-nav .nav-icon { font-size: 1rem; width: 20px; text-align: center; flex-shrink: 0; }
+    .sidebar-nav .nav-label { flex: 1; }
+    .sidebar-nav .nav-chevron { color: #94a3b8; font-size: 0.85rem; }
+    .sidebar-subnav { display: flex; flex-direction: column; gap: 0.2rem; padding-left: 1.6rem; margin: 0.15rem 0 0.3rem; }
+    .sidebar-subnav a { display: flex; align-items: center; gap: 0.6rem; padding: 0.55rem 0.6rem; border-radius: 0.5rem; font-size: 0.85rem; font-weight: 500; color: #364752; }
+    .sidebar-subnav a:hover { background: #f1f5f9; }
+    .sidebar-subnav a.active { background: #0f172a; color: #fff; font-weight: 600; }
+    .sidebar-spacer { flex: 1; }
+    .feedback-card { background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 0.9rem; padding: 1.1rem; margin-top: 1.5rem; }
+    .feedback-card .fc-icon { width: 32px; height: 32px; border-radius: 0.6rem; background: #eef2f7; display: flex; align-items: center; justify-content: center; font-size: 0.95rem; margin-bottom: 0.6rem; }
+    .feedback-card strong { display: block; font-size: 0.85rem; margin-bottom: 0.3rem; }
+    .feedback-card p { font-size: 0.78rem; color: #64748b; line-height: 1.5; margin-bottom: 0.85rem; }
+    .feedback-card a { display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; width: 100%; padding: 0.55rem; border: 1px solid #cbd5e1; border-radius: 0.5rem; font-size: 0.8rem; font-weight: 600; color: #364752; }
+    .feedback-card a:hover { border-color: #10b981; color: #10b981; }
+
+    /* Main */
+    .main { padding: 1.5rem 2.5rem 3rem; min-width: 0; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; padding-bottom: 1.25rem; border-bottom: 1px solid #e2e8f0; margin-bottom: 1.5rem; }
+    .topbar h1 { font-size: 1.4rem; font-weight: 700; }
+    .topbar-right { display: flex; align-items: center; gap: 0.85rem; }
+    .language-selector { display: flex; align-items: center; gap: 0.5rem; background: #ffffff; padding: 0.5rem 0.9rem; border-radius: 0.5rem; color: #51636f; border: 1px solid #e2e8f0; cursor: pointer; font-size: 0.85rem; }
+    .user-menu { position: relative; list-style: none; }
+    .user-menu > summary { cursor: pointer; list-style: none; width: 34px; height: 34px; border-radius: 50%; background: #eef2f7; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; font-size: 1rem; }
+    .user-menu > summary::-webkit-details-marker { display: none; }
+    .user-menu-panel { position: absolute; top: calc(100% + 0.6rem); right: 0; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 0.75rem; box-shadow: 0 10px 30px rgba(15,23,42,0.12); padding: 0.4rem; min-width: 150px; z-index: 20; }
+    .user-menu-panel a { display: block; padding: 0.55rem 0.7rem; border-radius: 0.5rem; font-size: 0.85rem; color: #364752; font-weight: 500; }
+    .user-menu-panel a:hover { background: #f1f5f9; color: #10b981; }
+
+    .page-head { margin-bottom: 1.5rem; }
+    .page-head h2 { font-size: 1.6rem; font-weight: 800; margin-bottom: 0.3rem; }
+    .page-head p { color: #64748b; font-size: 0.9rem; }
+
+    /* Calculator grid */
+    .fc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; align-items: start; margin-bottom: 1.5rem; }
+    @media (max-width: 900px) { .fc-grid { grid-template-columns: 1fr; } }
+
+    .fc-card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 1.1rem; padding: 1.75rem; box-shadow: 0 4px 16px rgba(15,23,42,0.03); }
+    .fc-card-eyebrow { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #10b981; margin-bottom: 1.25rem; padding-bottom: 0.85rem; border-bottom: 1px solid #e2e8f0; }
+
+    .calc-field { margin-bottom: 1.6rem; }
+    .calc-field:last-child { margin-bottom: 0; }
+    .calc-field-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.6rem; gap: 0.75rem; }
+    .calc-field-head strong { font-size: 0.9rem; color: #0f172a; font-weight: 600; }
+    .calc-field-value { font-weight: 700; color: #0f172a; background: #f1f5f9; padding: 0.3rem 0.7rem; border-radius: 0.5rem; font-size: 0.88rem; white-space: nowrap; }
+    #expensesValue { cursor: pointer; border: 1px dashed transparent; transition: border-color 0.2s; }
+    #expensesValue:hover { border-color: #10b981; }
+    .calc-slider { width: 100%; -webkit-appearance: none; appearance: none; height: 6px; border-radius: 50px; outline: none; cursor: pointer; background: #e2e8f0; }
+    .calc-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 20px; height: 20px; border-radius: 50%; background: #fff; border: 3px solid #10b981; box-shadow: 0 2px 8px rgba(15,23,42,0.18); cursor: pointer; }
+    .calc-slider::-moz-range-thumb { width: 20px; height: 20px; border-radius: 50%; background: #fff; border: 3px solid #10b981; cursor: pointer; }
+
+    /* FIRE number result */
+    .fire-number-card { text-align: center; }
+    .fire-number-card p.lead { color: #64748b; font-size: 0.9rem; margin-bottom: 0.75rem; }
+    .fire-number-wrap { display: flex; align-items: center; justify-content: center; gap: 0.6rem; margin-bottom: 1.5rem; }
+    .fire-number { font-size: 2.2rem; font-weight: 800; background: linear-gradient(to right, #0ea5e9, #10b981); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .copy-btn { background: none; border: 1px solid #cbd5e1; border-radius: 8px; padding: 6px 8px; cursor: pointer; color: #10b981; display: inline-flex; position: relative; }
+    .copy-btn:hover { background: #f1f5f9; }
+    .copy-btn.copied::after { content: "Copied!"; position: absolute; bottom: 130%; left: 50%; transform: translateX(-50%); background: #0f172a; color: #fff; font-size: 0.7rem; padding: 3px 8px; border-radius: 5px; white-space: nowrap; }
+
+    .fc-timeline { display: flex; align-items: center; gap: 0.75rem; background: #f8fafc; border-radius: 0.9rem; padding: 1rem; margin-bottom: 1.5rem; }
+    .fc-timeline-item { flex: 1; text-align: center; }
+    .fc-timeline-label { font-size: 0.72rem; color: #64748b; margin-bottom: 0.25rem; }
+    .fc-timeline-value { font-size: 1.15rem; font-weight: 700; color: #10b981; }
+    .fc-timeline-sep { width: 2px; height: 24px; background: #e2e8f0; }
+
+    .fc-snapshot { text-align: left; background: #f8fafc; border-radius: 0.9rem; padding: 1.25rem 1.4rem; }
+    .fc-snapshot-title { font-weight: 700; font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.05em; color: #364752; margin-bottom: 0.75rem; }
+    .fc-metric-row { display: flex; justify-content: space-between; align-items: baseline; padding: 0.6rem 0; border-bottom: 1px dashed #e2e8f0; font-size: 0.88rem; color: #364752; gap: 1rem; }
+    .fc-metric-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .fc-metric-row strong { color: #0f172a; font-size: 0.98rem; white-space: nowrap; }
+    .fc-metric-row span[title] { border-bottom: 1px dotted #94a3b8; cursor: help; }
+
+    /* Projection card */
+    .proj-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+    .proj-metric { background: #f8fafc; border-radius: 0.9rem; padding: 0.9rem 1rem; }
+    .proj-metric-label { font-size: 0.82rem; font-weight: 600; color: #364752; margin-bottom: 0.35rem; }
+    .proj-metric-value { font-size: 1.1rem; font-weight: 700; color: #10b981; }
+    .proj-metric-value.warn { color: #dc2626; }
+    .proj-metric-sub { font-size: 0.72rem; color: #94a3b8; margin-top: 0.15rem; }
+
+    /* Chart card */
+    .chart-card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 1.1rem; padding: 1.5rem 1.4rem 1.1rem; margin-bottom: 1.5rem; box-shadow: 0 4px 16px rgba(15,23,42,0.03); }
+    .fc-viz-grid { display: grid; grid-template-columns: 1fr 240px; gap: 1.25rem; align-items: start; }
+    @media (max-width: 880px) { .fc-viz-grid { grid-template-columns: 1fr; } }
+    .fc-chart-eyebrow { font-size: 0.66rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #10b981; margin-bottom: 0.2rem; }
+    .fc-chart-title { font-size: 1.05rem; font-weight: 700; margin-bottom: 0.15rem; }
+    .fc-chart-meta { font-size: 0.76rem; color: #94a3b8; }
+    .fc-legend { display: flex; flex-wrap: wrap; gap: 1.2rem; margin-top: 0.85rem; padding-top: 0.85rem; border-top: 1px solid #f1f5f9; font-size: 0.76rem; color: #64748b; }
+    .fc-legend span { display: inline-flex; align-items: center; gap: 0.4rem; }
+    .fc-legend i { width: 18px; height: 3px; border-radius: 2px; display: inline-block; }
+
+    .fc-stats-col { display: flex; flex-direction: column; gap: 0.85rem; }
+    @media (max-width: 880px) { .fc-stats-col { display: grid; grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 560px) { .fc-stats-col { grid-template-columns: 1fr 1fr; } }
+    .fc-stat-card { background: #f8fafc; border-radius: 1rem; padding: 1.1rem 1.1rem 0.9rem; }
+    .fc-stat-eyebrow { font-size: 0.64rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #10b981; margin-bottom: 0.5rem; }
+    .fc-stat-value { font-size: 1.4rem; font-weight: 800; color: #0f172a; margin-bottom: 0.25rem; }
+    .fc-stat-value.warn { color: #c2410c; }
+    .fc-stat-badge { display: inline-flex; font-size: 0.64rem; font-weight: 700; padding: 2px 8px; border-radius: 999px; margin-bottom: 0.3rem; }
+    .fc-stat-badge.ok { background: rgba(16,185,129,0.12); color: #047857; }
+    .fc-stat-badge.warn { background: rgba(194,65,12,0.1); color: #c2410c; }
+    .fc-stat-sub { font-size: 0.72rem; color: #94a3b8; }
+
+    /* Reference content */
+    .fc-content h3 { font-size: 1rem; font-weight: 700; margin: 1.25rem 0 0.6rem; }
+    .fc-content h3:first-child { margin-top: 0; }
+    .fc-content p { color: #364752; line-height: 1.65; font-size: 0.88rem; margin-bottom: 0.65rem; }
+    .fc-formula-box { background: #f0fdf7; border-left: 4px solid #10b981; border-radius: 0.6rem; padding: 1rem 1.25rem; margin: 0.75rem 0; }
+    .fc-formula-box strong { font-size: 0.95rem; }
+    .fc-formula-box p { font-size: 0.8rem; color: #364752; margin: 0.5rem 0 0; }
+
+    .faq-wrap details { background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 0.75rem; padding: 0 1.1rem; margin-bottom: 0.6rem; }
+    .faq-wrap summary { cursor: pointer; padding: 0.85rem 0; font-weight: 600; font-size: 0.88rem; list-style: none; display: flex; justify-content: space-between; align-items: center; color: #0f172a; }
+    .faq-wrap summary::-webkit-details-marker { display: none; }
+    .faq-wrap summary::after { content: '+'; font-size: 1.1rem; color: #94a3b8; transition: transform 0.2s; }
+    .faq-wrap details[open] summary::after { transform: rotate(45deg); }
+    .faq-wrap details p { padding-bottom: 0.85rem; color: #64748b; font-size: 0.83rem; line-height: 1.6; margin: 0; }
+
+    .sync-btn { background: none; border: none; padding: 0; color: #10b981; font-weight: 600; font-size: inherit; cursor: pointer; text-decoration: underline; }
+    .expense-status-note { font-size: 0.76rem; color: #64748b; margin-top: 0.3rem; }
+
+    /* FIRE progress hero — real data, same dark-gradient theme as every other page */
+    .fire-hero {
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      border-radius: 1.25rem;
+      padding: 1.75rem 2rem;
+      color: #fff;
+      margin-bottom: 1.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.75rem;
+    }
+    .fire-hero-stats { display: flex; flex-wrap: wrap; gap: 2.25rem; flex: 1; min-width: 280px; }
+    .fire-hero-stat { min-width: 150px; }
+    .fire-hero-icon { font-size: 1.1rem; margin-bottom: 0.4rem; opacity: 0.9; }
+    .fire-hero-label { font-size: 0.78rem; color: #94a3b8; font-weight: 600; margin-bottom: 0.3rem; }
+    .fire-hero-value { font-size: 1.75rem; font-weight: 800; }
+    .fire-hero-value.negative { color: #f87171; }
+    .fire-hero-sub { font-size: 0.72rem; color: #94a3b8; margin-top: 0.3rem; }
+    .fire-hero-progress { display: flex; flex-direction: column; align-items: center; }
+    .fire-hero-donut-wrap { position: relative; width: 110px; height: 110px; flex-shrink: 0; }
+    .fire-hero-donut-wrap svg { width: 110px; height: 110px; display: block; }
+    .fire-hero-progress-label { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    .fire-hero-progress-pct { font-size: 1.3rem; font-weight: 800; }
+    .fire-hero-progress-sub { font-size: 0.6rem; color: #94a3b8; text-align: center; line-height: 1.3; margin-top: 0.15rem; }
+
+    /* Cash flow card */
+    .cashflow-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.85rem; }
+    @media (max-width: 760px) { .cashflow-grid { grid-template-columns: 1fr 1fr; } }
+    .cashflow-item { background: #f8fafc; border-radius: 0.9rem; padding: 0.9rem 1rem; }
+    .cashflow-item span { display: block; font-size: 0.78rem; font-weight: 600; color: #64748b; margin-bottom: 0.35rem; }
+    .cashflow-item b { font-size: 1.15rem; font-weight: 800; color: #0f172a; }
+    .cashflow-item.neg b { color: #dc2626; }
+    .cashflow-item.total { background: #f0fdf7; }
+    .cashflow-item.total b { color: #059669; }
+    .cashflow-item.total.negative { background: #fef2f2; }
+    .cashflow-item.total.negative b { color: #dc2626; }
+
+    /* Asset composition donut */
+    .donut-row { display: flex; align-items: center; gap: 1.75rem; flex-wrap: wrap; }
+    .donut-svg { width: 150px; height: 150px; flex-shrink: 0; }
+    .donut-legend { flex: 1; min-width: 200px; display: flex; flex-direction: column; gap: 0.55rem; }
+    .donut-legend-row { display: flex; align-items: center; justify-content: space-between; font-size: 0.82rem; gap: 0.75rem; }
+    .donut-legend-name { display: flex; align-items: center; gap: 0.5rem; color: #364752; font-weight: 600; }
+    .donut-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+    .donut-legend-val { color: #64748b; font-weight: 700; white-space: nowrap; }
+
+    .charts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; align-items: stretch; }
+    @media (max-width: 900px) { .charts-row { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a href="dashboard.html" class="sidebar-logo">
+        <div class="sidebar-logo-icon">💰</div>
+        <span>FinFlow</span>
+      </a>
+
+      <nav class="sidebar-nav">
+        <a href="dashboard.html">
+          <span class="nav-icon">▦</span>
+          <span class="nav-label">Dashboard</span>
+        </a>
+        <a href="fire-plan.html" class="nav-group-head open active">
+          <span class="nav-icon">🧭</span>
+          <span class="nav-label">FIRE Plan</span>
+          <span class="nav-chevron">⌄</span>
+        </a>
+        <div class="sidebar-subnav">
+          <a href="fire-plan.html" class="active">
+            <span class="nav-icon">🧮</span>
+            <span class="nav-label">FIRE Calculation</span>
+          </a>
+          <a href="fire-goals.html">
+            <span class="nav-icon">🎯</span>
+            <span class="nav-label">Goal</span>
+          </a>
+        </div>
+
+
+        <a href="net-worth.html">
+          <span class="nav-icon">📈</span>
+          <span class="nav-label">Networth</span>
+          <span class="nav-chevron">›</span>
+        </a>
+
+        <a href="money-required.html">
+          <span class="nav-icon">🪴</span>
+          <span class="nav-label">Expenses</span>
+          <span class="nav-chevron">›</span>
+        </a>
+
+        <a href="expense-quick-add.html">
+          <span class="nav-icon">⚡</span>
+          <span class="nav-label">Daily Expenses Tracker</span>
+        </a>
+        <a href="tax-planning.html">
+          <span class="nav-icon">🧾</span>
+          <span class="nav-label">Tax Planning</span>
+        </a>
+        <a href="insurance-tracker.html">
+          <span class="nav-icon">🛡️</span>
+          <span class="nav-label">Insurance Tracker</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="reminders.html">
+          <span class="nav-icon">🔔</span>
+          <span class="nav-label">Reminders</span>
+        </a>
+        <a href="vault-overview.html">
+          <span class="nav-icon">🔒</span>
+          <span class="nav-label">Document Vault</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="split/dashboard.html">
+          <span class="nav-icon">💸</span>
+          <span class="nav-label">SplitExpenses(SplitWise)</span>
+        </a>
+        <a href="life-expectancy.html">
+          <span class="nav-icon">❤️</span>
+          <span class="nav-label">Health</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="astrology.html">
+          <span class="nav-icon">🔮</span>
+          <span class="nav-label">Spiritual</span>
+        </a>
+        <a href="#">
+          <span class="nav-icon">⚙️</span>
+          <span class="nav-label">Settings</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-spacer"></div>
+
+      <div class="feedback-card">
+        <div class="fc-icon">💬</div>
+        <strong>Got feedback?</strong>
+        <p>Have an idea or found a bug? We read every message.</p>
+        <a href="mailto:hello@finflow.app">✉ Contact Us</a>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <h1>FIRE Plan</h1>
+        <div class="topbar-right">
+          <div class="language-selector">🌐 English ▾</div>
+          <details class="user-menu">
+            <summary>👤</summary>
+            <div class="user-menu-panel">
+              <a href="#">Settings</a>
+              <a href="#" onclick="signOutAndRedirect('index.html'); return false;">Log Out</a>
+            </div>
+          </details>
+        </div>
+      </div>
+
+      <div class="page-head">
+        <h2>FIRE Plan</h2>
+        <p><b>F</b>inancial <b>I</b>ndependence, <b>R</b>etire <b>E</b>arly — find your number and the savings path to get there, adjusted for Indian inflation.</p>
+      </div>
+
+      <div class="fire-hero" id="fireHero">
+        <div class="fire-hero-stats">
+          <div class="fire-hero-stat">
+            <div class="fire-hero-icon">💰</div>
+            <div class="fire-hero-label">Current Net Worth</div>
+            <div class="fire-hero-value" id="heroNetWorth">₹0</div>
+            <div class="fire-hero-sub">Counted toward your FIRE corpus</div>
+          </div>
+          <div class="fire-hero-stat">
+            <div class="fire-hero-icon">📊</div>
+            <div class="fire-hero-label">Savings Rate</div>
+            <div class="fire-hero-value" id="heroSavingsRate">—</div>
+            <div class="fire-hero-sub">This month · Income kept, not spent</div>
+          </div>
+          <div class="fire-hero-stat">
+            <div class="fire-hero-icon">💵</div>
+            <div class="fire-hero-label">Monthly Surplus</div>
+            <div class="fire-hero-value" id="heroSurplus">₹0</div>
+            <div class="fire-hero-sub">Income − Expenses − Loan EMI</div>
+          </div>
+        </div>
+        <div class="fire-hero-progress">
+          <div class="fire-hero-donut-wrap">
+            <div id="heroDonutSvgHolder"></div>
+            <div class="fire-hero-progress-label">
+              <div class="fire-hero-progress-pct" id="heroFirePct">0%</div>
+              <div class="fire-hero-progress-sub">of your<br>FIRE Number</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="charts-row">
+        <div class="chart-card">
+          <h3 style="font-size:1rem;font-weight:700;margin-bottom:0.2rem;">This Month's Cash Flow</h3>
+          <p class="chart-sub" style="font-size:0.78rem;color:#94a3b8;margin-bottom:0.75rem;">Pulled live from Income, Expenses and Loan/EMI — this is what funds your Monthly Investment below.</p>
+          <div class="cashflow-grid" id="cashflowGrid"></div>
+        </div>
+        <div class="chart-card">
+          <h3 style="font-size:1rem;font-weight:700;margin-bottom:0.2rem;">What Makes Up Your Corpus</h3>
+          <p class="chart-sub" style="font-size:0.78rem;color:#94a3b8;margin-bottom:0.75rem;">Where your current net worth is held, across every Networth section.</p>
+          <div id="assetCompositionWrap"></div>
+        </div>
+      </div>
+
+      <div class="fc-grid">
+        <div class="fc-card">
+          <div class="fc-card-eyebrow">Your expenses &amp; timeline</div>
+
+          <div class="calc-field">
+            <div class="calc-field-head">
+              <strong>Monthly household expenses</strong>
+              <span class="calc-field-value" id="expensesValue" onclick="startEditExpenses()" title="Click to type an exact amount">₹1,00,000</span>
+              <input type="number" id="expensesInput" min="20000" max="500000" step="1000" style="display:none;width:120px;text-align:right;padding:0.3rem 0.6rem;border:1px solid #10b981;border-radius:0.5rem;font-size:0.9rem;font-family:inherit;color:#0f172a;outline:none;">
+            </div>
+            <input type="range" class="calc-slider" id="expensesRange" min="20000" max="500000" step="10000" value="100000">
+            <p style="font-size: 0.78rem; margin-top: 0.5rem;">
+              <button type="button" class="sync-btn" onclick="syncExpenseFromApp(true)">🔄 Use this month's total from Expenses</button>
+            </p>
+            <p class="expense-status-note" id="expenseStatusNote"></p>
+          </div>
+
+          <div class="calc-field">
+            <div class="calc-field-head"><strong>Current Age</strong><span class="calc-field-value" id="ageValue">30</span></div>
+            <input type="range" class="calc-slider" id="ageRange" min="18" max="60" step="1" value="30">
+          </div>
+
+          <div class="calc-field">
+            <div class="calc-field-head"><strong>Target FIRE Age</strong><span class="calc-field-value" id="retireValue">50</span></div>
+            <input type="range" class="calc-slider" id="retireRange" min="30" max="70" step="1" value="50">
+          </div>
+
+          <div class="calc-field">
+            <div class="calc-field-head"><strong>Life Expectancy</strong><span class="calc-field-value" id="lifeValue">85</span></div>
+            <input type="range" class="calc-slider" id="lifeRange" min="50" max="100" step="1" value="85">
+          </div>
+
+          <div class="calc-field">
+            <div class="calc-field-head"><strong>Inflation (%)</strong><span class="calc-field-value" id="inflationValue">7%</span></div>
+            <input type="range" class="calc-slider" id="inflationRange" min="1" max="12" step="0.5" value="7">
+          </div>
+        </div>
+
+        <div class="fc-card fire-number-card">
+          <p class="lead">Your F.I.R.E Number at Age <strong id="retireAgeRes">50</strong></p>
+          <div class="fire-number-wrap">
+            <span class="fire-number" id="fireNumber">₹0</span>
+            <button class="copy-btn" onclick="copyFireNumber()" title="Copy FIRE number" aria-label="Copy FIRE number">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+            </button>
+          </div>
+
+          <div class="fc-timeline">
+            <div class="fc-timeline-item">
+              <div class="fc-timeline-label">Current Age</div>
+              <div class="fc-timeline-value" id="tlCurrentAge">30</div>
+            </div>
+            <div class="fc-timeline-sep"></div>
+            <div class="fc-timeline-item">
+              <div class="fc-timeline-label">Years to FIRE</div>
+              <div class="fc-timeline-value" id="tlYearsToGo">20 yrs</div>
+            </div>
+            <div class="fc-timeline-sep"></div>
+            <div class="fc-timeline-item">
+              <div class="fc-timeline-label">FIRE Age</div>
+              <div class="fc-timeline-value" id="tlRetireAge">50</div>
+            </div>
+          </div>
+
+          <div class="fc-snapshot">
+            <div class="fc-snapshot-title">FIRE Snapshot</div>
+            <div class="fc-metric-row"><span>Annual Expenses Today</span><strong id="annualExpenseToday">₹0</strong></div>
+            <div class="fc-metric-row"><span>Expense at Age <span id="expenseFireAgeLabel">50</span></span><strong id="expenseAtFireAge">₹0</strong></div>
+            <div class="fc-metric-row"><span title="15x your annual expenses. Covers essential living costs with a streamlined lifestyle — the minimum to retire early.">Lean FIRE ⓘ</span><strong id="leanFireValue">₹0</strong></div>
+            <div class="fc-metric-row"><span title="50x your annual expenses. Allows for a higher lifestyle spend — travel, comfort, no compromise.">Fat FIRE ⓘ</span><strong id="fatFireValue">₹0</strong></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="fc-grid">
+        <div class="fc-card">
+          <div class="fc-card-eyebrow">Your portfolio &amp; assumptions</div>
+
+          <div class="calc-field">
+            <div class="calc-field-head"><strong>Current Portfolio (₹)</strong><span class="calc-field-value" id="corpusValue">₹5,00,000</span></div>
+            <input type="range" class="calc-slider" id="corpusRange" min="0" max="50000000" step="100000" value="500000">
+            <p style="font-size: 0.78rem; margin-top: 0.5rem;">
+              <button type="button" class="sync-btn" onclick="syncCorpusFromApp(true)">🔄 Use my Net Worth total</button>
+            </p>
+            <p class="expense-status-note" id="corpusStatusNote"></p>
+          </div>
+
+          <div class="calc-field">
+            <div class="calc-field-head"><strong>Monthly Investment (₹)</strong><span class="calc-field-value" id="savingValue">₹25,000</span></div>
+            <input type="range" class="calc-slider" id="savingRange" min="0" max="500000" step="5000" value="25000">
+            <p style="font-size: 0.78rem; margin-top: 0.5rem;">
+              <button type="button" class="sync-btn" onclick="syncSavingFromApp(true)">🔄 Use this month's surplus (Income − Expenses − EMI)</button>
+            </p>
+            <p class="expense-status-note" id="savingStatusNote"></p>
+          </div>
+
+          <div class="calc-field">
+            <div class="calc-field-head"><strong>Return Before FIRE (%)</strong><span class="calc-field-value" id="roiValue">12%</span></div>
+            <input type="range" class="calc-slider" id="roiRange" min="0" max="20" step="1" value="12">
+          </div>
+
+          <div class="calc-field">
+            <div class="calc-field-head"><strong>Return After FIRE (%)</strong><span class="calc-field-value" id="postRoiValue">8%</span></div>
+            <input type="range" class="calc-slider" id="postRoiRange" min="0" max="15" step="1" value="8">
+          </div>
+        </div>
+
+        <div class="fc-card">
+          <div class="fc-card-eyebrow">Projection</div>
+          <div class="proj-grid">
+            <div class="proj-metric">
+              <div class="proj-metric-label">Portfolio at FIRE Age</div>
+              <div class="proj-metric-value" id="projTotal">₹0</div>
+              <div class="proj-metric-sub">With ongoing SIP</div>
+            </div>
+            <div class="proj-metric">
+              <div class="proj-metric-label" id="projGapTitle">Gap to Fill</div>
+              <div class="proj-metric-value warn" id="projGapValue">₹0</div>
+              <div class="proj-metric-sub" id="projGapSub">Shortfall — additional needed</div>
+            </div>
+            <div class="proj-metric">
+              <div class="proj-metric-label">Monthly SIP Required</div>
+              <div class="proj-metric-value warn" id="projReqSip">₹0</div>
+              <div class="proj-metric-sub" id="projReqSipSub">To hit your FIRE number exactly</div>
+            </div>
+            <div class="proj-metric">
+              <div class="proj-metric-label">FIRE Corpus Lasts Until</div>
+              <div class="proj-metric-value warn" id="projSurviveAge">—</div>
+              <div class="proj-metric-sub" id="projSurviveSub"><span class="fc-stat-badge warn" id="projSurviveBadge">⚠️ Depletes Early</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <div class="fc-viz-grid">
+          <div>
+            <p class="fc-chart-eyebrow">Wealth Trajectory</p>
+            <h3 class="fc-chart-title">Your complete financial journey</h3>
+            <p class="fc-chart-meta" id="fireChartMeta">Age 30 → FIRE 50 → Age 85</p>
+            <div id="fireChart" style="margin-top: 0.75rem;"></div>
+            <div class="fc-legend">
+              <span><i style="background:#10b981;"></i>Accumulation</span>
+              <span><i style="background:#0ea5e9;"></i>Withdrawal</span>
+              <span><i style="background:transparent;border-top:2.5px dashed #f59e0b;"></i>FIRE Target</span>
+              <span><i style="background:transparent;border-top:2px dashed #94a3b8;"></i>Retirement</span>
+            </div>
+          </div>
+
+          <div class="fc-stats-col">
+            <div class="fc-stat-card">
+              <p class="fc-stat-eyebrow">Monthly Income at FIRE Age</p>
+              <p class="fc-stat-value" id="statMonthlyIncome">₹0</p>
+              <p class="fc-stat-sub" id="statMonthlyIncomeSub">≈ ₹0 in today's value</p>
+            </div>
+            <div class="fc-stat-card">
+              <p class="fc-stat-eyebrow">Your Money Lasts Until</p>
+              <span class="fc-stat-badge warn" id="statSurviveBadge">⚠️ Depletes Early</span>
+              <p class="fc-stat-value warn" id="statSurviveAge">—</p>
+              <p class="fc-stat-sub" id="statSurviveSub">—</p>
+            </div>
+            <div class="fc-stat-card" style="background: linear-gradient(145deg,#f0fdf7,#e6f9ef);">
+              <p class="fc-stat-eyebrow">Years of Financial Freedom</p>
+              <p class="fc-stat-value" id="statFreeYears">0 yrs</p>
+              <p class="fc-stat-sub" id="statFreeSub">—</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="chart-card fc-content">
+        <h3>What is FIRE?</h3>
+        <p>FIRE stands for Financial Independence, Retire Early. It's a simple idea: build enough wealth to cover your living expenses for life, so that work becomes a choice rather than a necessity — whether that means quitting the 9-to-5 at 45, going part-time, or just knowing you <em>could</em> stop anytime without panic.</p>
+
+        <h3>How your FIRE Number is calculated</h3>
+        <p>The calculator projects your monthly expenses forward to your target FIRE age using your inflation assumption, then applies the 4% Safe Withdrawal Rate:</p>
+        <div class="fc-formula-box">
+          <strong>FIRE Number = Annual Expenses at Retirement × 25</strong>
+          <p>The 25× multiple comes from the 4% rule — withdrawing 4% of a well-invested corpus each year is designed to sustain it through a long retirement. Multiplying by 25 is the same as dividing by 4%.</p>
+        </div>
+        <p>The portfolio section then checks your progress: it projects your current portfolio and monthly SIP forward to your FIRE age, and shows either the surplus you're on track for, or the gap — and the extra monthly SIP needed to close it.</p>
+
+        <h3>Lean FIRE, Fat FIRE, and everything in between</h3>
+        <p><strong>Lean FIRE</strong> (15× annual expenses) covers the essentials — housing, food, healthcare — on a streamlined budget. <strong>Fat FIRE</strong> (50× annual expenses) keeps your full lifestyle intact, including travel and discretionary spending. Most people land somewhere between the two; both are shown in your FIRE Snapshot above.</p>
+
+        <h3>Is the 4% rule safe for India?</h3>
+        <p>The 4% rule comes from US market data, where inflation has historically run 2–3%. India's long-term inflation averages 6–7%, and healthcare costs rise even faster (12–15% a year). Most Indian planners recommend a more conservative 3–3.5% withdrawal rate — meaning a corpus closer to 28–33× expenses. Treat this calculator's 25× output as a starting point, and build in a 10–15% buffer.</p>
+
+        <h3>Include your PPF, NPS and EPF</h3>
+        <p>Retirement savings sitting in EPF, PPF, and NPS count toward your FIRE corpus too — don't leave them out. Add your EPF balance, PPF maturity value, and the 60% tax-free NPS lump sum to the <strong>Current Portfolio</strong> field so your gap or surplus reflects reality, not an inflated target — or just use the "Use my Net Worth total" sync above.</p>
+      </div>
+
+      <div class="chart-card">
+        <h3 style="font-size:1rem;font-weight:700;margin-bottom:0.9rem;">Frequently Asked Questions</h3>
+        <div class="faq-wrap">
+          <details open>
+            <summary>What is a good FIRE number in India?</summary>
+            <p>It depends entirely on your lifestyle, future expenses, and retirement age — there's no universal number. Many Indians aiming for early retirement target somewhere between ₹5 crore and ₹12 crore, but the calculator above gives you a figure based on your actual expenses.</p>
+          </details>
+          <details>
+            <summary>Is FIRE realistic on a regular salary?</summary>
+            <p>Yes. With early planning and a disciplined SIP, even someone earning ₹60,000/month can reach FIRE in 15–20 years. Starting early matters more than starting big — time in the market is the biggest lever you have.</p>
+          </details>
+          <details>
+            <summary>What if I'm already 40 or 45?</summary>
+            <p>Starting now is still better than not starting. You may need to push your target FIRE age or invest more aggressively — use the sliders above to see exactly what changes would close the gap.</p>
+          </details>
+          <details>
+            <summary>What happens if markets crash right after I FIRE?</summary>
+            <p>This is called sequence-of-returns risk — a bad market stretch in your first 5–10 retired years can do lasting damage to your corpus. Mitigate it with a 2–3 year cash buffer and a higher debt allocation in early retirement, and lean toward a more conservative withdrawal rate (3–3.5% instead of 4%).</p>
+          </details>
+          <details>
+            <summary>Should I plan my kids' education separately?</summary>
+            <p>Yes. Treat goals like education or a wedding as separate line items outside your FIRE corpus, so a big one-time expense doesn't derail your retirement plan.</p>
+          </details>
+          <details>
+            <summary>How often should I revisit this number?</summary>
+            <p>Once a year, or after any major life change — a raise, a new expense, a shift in your target retirement age. Your FIRE number moves as your life does.</p>
+          </details>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-client.js"></script>
+  <script>
+    var SLIDER_FILL = '#10b981';
+    var SLIDER_TRACK = '#e2e8f0';
+
+    function applyFill(slider) {
+      var pct = 100 * (slider.value - slider.min) / (slider.max - slider.min);
+      slider.style.background = 'linear-gradient(90deg, ' + SLIDER_FILL + ' ' + pct + '%, ' + SLIDER_TRACK + ' ' + pct + '%)';
+    }
+
+    function formatRupee(value, compact) {
+      var amount = Math.round(Number(value) || 0);
+      if (compact) {
+        var abs = Math.abs(amount);
+        var sign = amount < 0 ? '-' : '';
+        if (abs >= 10000000) return sign + '₹' + trimDecimals(abs / 10000000) + ' Cr';
+        if (abs >= 100000) return sign + '₹' + trimDecimals(abs / 100000) + ' L';
+      }
+      return '₹' + formatIndianNumber(amount);
+    }
+
+    function trimDecimals(num) {
+      return Number(num.toFixed(2)).toString();
+    }
+
+    function formatIndianNumber(value) {
+      var digits = String(Math.abs(value));
+      var last3 = digits.slice(-3);
+      var rest = digits.slice(0, -3);
+      var restFormatted = rest.replace(/\B(?=(\d{2})+(?!\d))/g, ',');
+      var out = rest ? restFormatted + ',' + last3 : last3;
+      return (value < 0 ? '-' : '') + out;
+    }
+
+    var realExpense = 0, realIncome = 0, realLoanEmi = 0;
+    var realCorpus = { portfolio: 0, gold: 0, gov: 0, properties: 0, iouNet: 0, total: 0 };
+
+    var els = {};
+    ['expensesRange','ageRange','retireRange','lifeRange','inflationRange','corpusRange','savingRange','roiRange','postRoiRange'].forEach(function (id) {
+      els[id] = document.getElementById(id);
+    });
+
+    var displayFormatters = {
+      expensesRange: function (v) { return formatRupee(v); },
+      ageRange: function (v) { return v; },
+      retireRange: function (v) { return v; },
+      lifeRange: function (v) { return v; },
+      inflationRange: function (v) { return v + '%'; },
+      corpusRange: function (v) { return formatRupee(v); },
+      savingRange: function (v) { return formatRupee(v); },
+      roiRange: function (v) { return v + '%'; },
+      postRoiRange: function (v) { return v + '%'; }
+    };
+
+    var displayIds = {
+      expensesRange: 'expensesValue', ageRange: 'ageValue', retireRange: 'retireValue',
+      lifeRange: 'lifeValue', inflationRange: 'inflationValue', corpusRange: 'corpusValue',
+      savingRange: 'savingValue', roiRange: 'roiValue', postRoiRange: 'postRoiValue'
+    };
+
+    Object.keys(els).forEach(function (id) {
+      var el = els[id];
+      applyFill(el);
+      document.getElementById(displayIds[id]).textContent = displayFormatters[id](el.value);
+      el.addEventListener('input', function () {
+        applyFill(el);
+        document.getElementById(displayIds[id]).textContent = displayFormatters[id](el.value);
+        recalculate();
+        scheduleSaveInputs();
+      });
+    });
+
+    function getInputs() {
+      return {
+        monthlyExpenses: Number(els.expensesRange.value),
+        age: Number(els.ageRange.value),
+        fireAge: Math.max(Number(els.retireRange.value), Number(els.ageRange.value) + 1),
+        life: Math.max(Number(els.lifeRange.value), Number(els.retireRange.value) + 1),
+        inflation: Number(els.inflationRange.value) / 100,
+        corpus: Number(els.corpusRange.value),
+        monthlySaving: Number(els.savingRange.value),
+        roi: Number(els.roiRange.value) / 100,
+        postRoi: Number(els.postRoiRange.value) / 100
+      };
+    }
+
+    function futureValue(corpus, monthlySaving, annualRate, months) {
+      var mRate = Math.pow(1 + annualRate, 1 / 12) - 1;
+      var fvLumpsum = corpus * Math.pow(1 + mRate, months);
+      var fvSip;
+      if (Math.abs(mRate) < 1e-9) {
+        fvSip = monthlySaving * months;
+      } else {
+        fvSip = monthlySaving * ((Math.pow(1 + mRate, months) - 1) / mRate);
+      }
+      return fvLumpsum + fvSip;
+    }
+
+    function requiredMonthlySip(target, corpus, annualRate, months) {
+      var mRate = Math.pow(1 + annualRate, 1 / 12) - 1;
+      var fvLumpsum = corpus * Math.pow(1 + mRate, months);
+      var remaining = target - fvLumpsum;
+      if (remaining <= 0) return 0;
+      if (Math.abs(mRate) < 1e-9) return remaining / months;
+      return remaining * mRate / (Math.pow(1 + mRate, months) - 1);
+    }
+
+    function yearlyAccumulationSeries(corpus, monthlySaving, annualRate, years) {
+      var points = [];
+      for (var y = 0; y <= years; y++) {
+        points.push(futureValue(corpus, monthlySaving, annualRate, y * 12));
+      }
+      return points;
+    }
+
+    function simulateWithdrawal(startCorpus, startAnnualExpense, postRoi, inflation, maxYears) {
+      var values = [startCorpus];
+      var corpus = startCorpus;
+      var expense = startAnnualExpense;
+      var depletionYear = null;
+      for (var y = 1; y <= maxYears; y++) {
+        corpus = corpus * (1 + postRoi) - expense;
+        expense = expense * (1 + inflation);
+        if (corpus <= 0 && depletionYear === null) {
+          depletionYear = y;
+          corpus = 0;
+        }
+        values.push(Math.max(0, corpus));
+      }
+      return { values: values, depletionYear: depletionYear };
+    }
+
+    function recalculate() {
+      var i = getInputs();
+      var yearsToFire = i.fireAge - i.age;
+      var annualExpenseToday = i.monthlyExpenses * 12;
+      var annualExpenseAtFire = annualExpenseToday * Math.pow(1 + i.inflation, yearsToFire);
+      var fireNumber = annualExpenseAtFire * 25;
+      var leanFire = annualExpenseAtFire * 15;
+      var fatFire = annualExpenseAtFire * 50;
+
+      document.getElementById('retireAgeRes').textContent = i.fireAge;
+      document.getElementById('fireNumber').textContent = formatRupee(fireNumber, true);
+      document.getElementById('tlCurrentAge').textContent = i.age;
+      document.getElementById('tlYearsToGo').textContent = yearsToFire + ' yrs';
+      document.getElementById('tlRetireAge').textContent = i.fireAge;
+      document.getElementById('annualExpenseToday').textContent = formatRupee(annualExpenseToday, true);
+      document.getElementById('expenseFireAgeLabel').textContent = i.fireAge;
+      document.getElementById('expenseAtFireAge').textContent = formatRupee(annualExpenseAtFire, true);
+      document.getElementById('leanFireValue').textContent = formatRupee(leanFire, true);
+      document.getElementById('fatFireValue').textContent = formatRupee(fatFire, true);
+
+      var monthsToFire = yearsToFire * 12;
+      var projectedPortfolio = futureValue(i.corpus, i.monthlySaving, i.roi, monthsToFire);
+      var gap = projectedPortfolio - fireNumber;
+      var reqSip = requiredMonthlySip(fireNumber, i.corpus, i.roi, monthsToFire);
+      var extraSipNeeded = Math.max(0, reqSip - i.monthlySaving);
+
+      document.getElementById('projTotal').textContent = formatRupee(projectedPortfolio, true);
+
+      var gapTitleEl = document.getElementById('projGapTitle');
+      var gapValueEl = document.getElementById('projGapValue');
+      var gapSubEl = document.getElementById('projGapSub');
+      if (gap >= 0) {
+        gapTitleEl.textContent = 'Projected Surplus';
+        gapValueEl.textContent = '+' + formatRupee(gap, true);
+        gapValueEl.classList.remove('warn');
+        gapSubEl.textContent = 'Surplus — you are on track';
+      } else {
+        gapTitleEl.textContent = 'Gap to Fill';
+        gapValueEl.textContent = '-' + formatRupee(Math.abs(gap), true);
+        gapValueEl.classList.add('warn');
+        gapSubEl.textContent = 'Shortfall — additional needed';
+      }
+
+      var reqSipEl = document.getElementById('projReqSip');
+      var reqSipSubEl = document.getElementById('projReqSipSub');
+      if (reqSip <= i.monthlySaving) {
+        reqSipEl.textContent = formatRupee(i.monthlySaving, true);
+        reqSipEl.classList.remove('warn');
+        reqSipSubEl.textContent = 'Your current SIP already covers this';
+      } else {
+        reqSipEl.textContent = formatRupee(reqSip, true);
+        reqSipEl.classList.add('warn');
+        reqSipSubEl.textContent = 'Need ' + formatRupee(extraSipNeeded, true) + '/mo more than current';
+      }
+
+      var maxWithdrawYears = Math.max(1, (i.life - i.fireAge) + 25);
+      var withdrawal = simulateWithdrawal(projectedPortfolio, annualExpenseAtFire, i.postRoi, i.inflation, maxWithdrawYears);
+      var depletionAge = withdrawal.depletionYear !== null ? i.fireAge + withdrawal.depletionYear : null;
+      var onTrack = depletionAge === null || depletionAge > i.life;
+
+      var surviveAgeEl = document.getElementById('projSurviveAge');
+      var surviveBadgeEl = document.getElementById('projSurviveBadge');
+      if (onTrack) {
+        surviveAgeEl.textContent = 'Age ' + i.life + '+';
+        surviveAgeEl.classList.remove('warn');
+        surviveBadgeEl.textContent = '✓ On Track';
+        surviveBadgeEl.classList.remove('warn');
+        surviveBadgeEl.classList.add('ok');
+      } else {
+        surviveAgeEl.textContent = 'Age ' + depletionAge;
+        surviveAgeEl.classList.add('warn');
+        surviveBadgeEl.textContent = '⚠️ Depletes Early';
+        surviveBadgeEl.classList.remove('ok');
+        surviveBadgeEl.classList.add('warn');
+      }
+
+      var monthlyIncomeAtFire = (projectedPortfolio * 0.04) / 12;
+      var monthlyIncomeToday = monthlyIncomeAtFire / Math.pow(1 + i.inflation, yearsToFire);
+      document.getElementById('statMonthlyIncome').textContent = formatRupee(monthlyIncomeAtFire, true);
+      document.getElementById('statMonthlyIncomeSub').textContent = '≈ ' + formatRupee(monthlyIncomeToday, true) + " in today's value";
+
+      var statSurviveAgeEl = document.getElementById('statSurviveAge');
+      var statSurviveBadgeEl = document.getElementById('statSurviveBadge');
+      var statSurviveSubEl = document.getElementById('statSurviveSub');
+      var freeYears = (depletionAge || i.life) - i.fireAge;
+      if (onTrack) {
+        statSurviveAgeEl.textContent = 'Age ' + i.life + '+';
+        statSurviveAgeEl.classList.remove('warn');
+        statSurviveBadgeEl.textContent = '✓ On Track';
+        statSurviveBadgeEl.classList.remove('warn'); statSurviveBadgeEl.classList.add('ok');
+        statSurviveSubEl.textContent = 'Outlives your ' + i.life + '-yr plan horizon';
+      } else {
+        statSurviveAgeEl.textContent = 'Age ' + depletionAge;
+        statSurviveAgeEl.classList.add('warn');
+        statSurviveBadgeEl.textContent = '⚠️ Depletes Early';
+        statSurviveBadgeEl.classList.remove('ok'); statSurviveBadgeEl.classList.add('warn');
+        statSurviveSubEl.textContent = 'Runs out ' + (i.life - depletionAge) + ' yrs before horizon';
+      }
+      document.getElementById('statFreeYears').textContent = Math.max(0, freeYears) + ' yrs';
+      document.getElementById('statFreeSub').textContent = 'Age ' + i.fireAge + ' → Age ' + (depletionAge || i.life);
+      document.getElementById('fireChartMeta').textContent = 'Age ' + i.age + ' → FIRE ' + i.fireAge + ' → Age ' + i.life;
+
+      renderChart(i, yearsToFire, projectedPortfolio, fireNumber, withdrawal);
+      renderProgressHero(fireNumber);
+    }
+
+    function renderChart(i, yearsToFire, projectedPortfolio, fireNumber, withdrawal) {
+      var accumValues = yearlyAccumulationSeries(i.corpus, i.monthlySaving, i.roi, yearsToFire);
+      var ages = [];
+      var accum = [];
+      var withdraw = [];
+      for (var y = 0; y <= yearsToFire; y++) {
+        ages.push(i.age + y);
+        accum.push(accumValues[y]);
+        withdraw.push(null);
+      }
+      for (var w = 1; w < withdrawal.values.length; w++) {
+        ages.push(i.fireAge + w);
+        accum.push(null);
+        withdraw.push(withdrawal.values[w]);
+        if (i.fireAge + w >= i.life + 5) break;
+      }
+
+      var maxVal = Math.max.apply(null, accum.concat(withdraw).map(function (v) { return v || 0; }).concat([fireNumber])) * 1.12;
+      var W = 640, H = 260, padL = 56, padR = 16, padT = 24, padB = 30;
+      var plotW = W - padL - padR, plotH = H - padT - padB;
+      var n = ages.length;
+
+      function xAt(idx) { return padL + (idx / (n - 1)) * plotW; }
+      function yAt(val) { return padT + plotH - (val / maxVal) * plotH; }
+
+      function buildPath(series) {
+        var segs = [];
+        var current = null;
+        for (var k = 0; k < series.length; k++) {
+          if (series[k] === null || series[k] === undefined) {
+            if (current) { segs.push(current); current = null; }
+            continue;
+          }
+          var pt = xAt(k) + ',' + yAt(series[k]);
+          current = current ? current + ' L' + pt : 'M' + pt;
+        }
+        if (current) segs.push(current);
+        return segs;
+      }
+
+      function areaFromLine(lineSeg, series) {
+        var firstIdx = -1, lastIdx = -1;
+        for (var k = 0; k < series.length; k++) {
+          if (series[k] !== null && series[k] !== undefined) {
+            if (firstIdx === -1) firstIdx = k;
+            lastIdx = k;
+          }
+        }
+        if (firstIdx === -1) return '';
+        return lineSeg + ' L' + xAt(lastIdx) + ',' + yAt(0) + ' L' + xAt(firstIdx) + ',' + yAt(0) + ' Z';
+      }
+
+      var accumLines = buildPath(accum);
+      var withdrawLines = buildPath(withdraw);
+
+      var gridLines = '';
+      for (var g = 0; g <= 4; g++) {
+        var gy = padT + (g / 4) * plotH;
+        gridLines += '<line x1="' + padL + '" y1="' + gy + '" x2="' + (W - padR) + '" y2="' + gy + '" stroke="#eef2f6" stroke-width="1"/>';
+        var val = maxVal * (1 - g / 4);
+        gridLines += '<text x="' + (padL - 8) + '" y="' + (gy + 4) + '" text-anchor="end" font-size="10" fill="#94a3b8">' + formatRupee(val, true) + '</text>';
+      }
+
+      var fireY = yAt(fireNumber);
+      var fireLine = '<line x1="' + padL + '" y1="' + fireY + '" x2="' + (W - padR) + '" y2="' + fireY + '" stroke="#f59e0b" stroke-width="2" stroke-dasharray="6 4"/>' +
+        '<text x="' + (W - padR) + '" y="' + (fireY - 6) + '" text-anchor="end" font-size="10" font-weight="700" fill="#92400e">FIRE: ' + formatRupee(fireNumber, true) + '</text>';
+
+      var retireIdx = yearsToFire;
+      var retireX = xAt(retireIdx);
+      var retireLine = '<line x1="' + retireX + '" y1="' + padT + '" x2="' + retireX + '" y2="' + (padT + plotH) + '" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="4 4"/>' +
+        '<text x="' + retireX + '" y="' + (padT - 8) + '" text-anchor="middle" font-size="10" font-weight="700" fill="#64748b">Retirement</text>';
+
+      var xLabels = '';
+      var labelStep = Math.max(1, Math.round(n / 6));
+      for (var li = 0; li < n; li += labelStep) {
+        xLabels += '<text x="' + xAt(li) + '" y="' + (H - 8) + '" text-anchor="middle" font-size="10" fill="#94a3b8">Age ' + ages[li] + '</text>';
+      }
+
+      var svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" style="width:100%;height:auto;font-family:inherit;">' +
+        gridLines +
+        accumLines.map(function (seg) { return '<path d="' + areaFromLine(seg, accum) + '" fill="rgba(16,185,129,0.14)" stroke="none"/>'; }).join('') +
+        withdrawLines.map(function (seg) { return '<path d="' + areaFromLine(seg, withdraw) + '" fill="rgba(14,165,233,0.12)" stroke="none"/>'; }).join('') +
+        accumLines.map(function (seg) { return '<path d="' + seg + '" fill="none" stroke="#10b981" stroke-width="2.5"/>'; }).join('') +
+        withdrawLines.map(function (seg) { return '<path d="' + seg + '" fill="none" stroke="#0ea5e9" stroke-width="2.5"/>'; }).join('') +
+        retireLine + fireLine + xLabels +
+        '</svg>';
+
+      document.getElementById('fireChart').innerHTML = svg;
+    }
+
+    function copyFireNumber() {
+      var raw = document.getElementById('fireNumber').textContent;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(raw).then(function () {
+          var btn = document.querySelector('.copy-btn');
+          btn.classList.add('copied');
+          setTimeout(function () { btn.classList.remove('copied'); }, 1500);
+        });
+      }
+    }
+
+    /* ---- Live sync from the rest of the app, instead of a separate     ----
+       standalone calculator's localStorage value.                       ---- */
+
+    function todayMonthKey() {
+      var d = new Date();
+      return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+    }
+
+    async function loadCurrentMonthTotal(section) {
+      var { data: groups } = await supabaseClient.from('expense_groups').select('id').eq('section', section);
+      var groupIds = (groups || []).map(function (g) { return g.id; });
+      if (!groupIds.length) return 0;
+      var { data: items } = await supabaseClient.from('expense_items').select('id').in('group_id', groupIds);
+      var itemIds = (items || []).map(function (i) { return i.id; });
+      if (!itemIds.length) return 0;
+      var { data: grid } = await supabaseClient.from('expense_grid').select('amount').eq('month', todayMonthKey()).in('item_id', itemIds);
+      return (grid || []).reduce(function (s, r) { return s + (Number(r.amount) || 0); }, 0);
+    }
+
+    function setSliderFromValue(sliderId, displayId, value) {
+      var slider = els[sliderId];
+      var step = Number(slider.step);
+      var clamped = Math.min(Math.max(value, Number(slider.min)), Number(slider.max));
+      clamped = Math.round(clamped / step) * step;
+      slider.value = clamped;
+      applyFill(slider);
+      document.getElementById(displayId).textContent = displayFormatters[sliderId](clamped);
+      return clamped;
+    }
+
+    /* ---- Persist every slider to Supabase, so age/target FIRE age/etc.  ----
+       survive a page reload instead of resetting to hardcoded defaults.  ---- */
+
+    async function loadSavedInputs() {
+      var { data, error } = await supabaseClient.from('fire_plan_inputs').select('*').maybeSingle();
+      if (error) { console.error('Could not load saved FIRE plan inputs', error); return null; }
+      return data;
+    }
+
+    async function saveInputs() {
+      var payload = {
+        monthly_expenses: Number(els.expensesRange.value),
+        age: Number(els.ageRange.value),
+        fire_age: Number(els.retireRange.value),
+        life_expectancy: Number(els.lifeRange.value),
+        inflation_pct: Number(els.inflationRange.value),
+        corpus: Number(els.corpusRange.value),
+        monthly_saving: Number(els.savingRange.value),
+        roi_pct: Number(els.roiRange.value),
+        post_roi_pct: Number(els.postRoiRange.value),
+        updated_at: new Date().toISOString()
+      };
+      var { error } = await supabaseClient.from('fire_plan_inputs').upsert(payload, { onConflict: 'user_id' });
+      if (error) console.error('Could not save FIRE plan inputs', error);
+    }
+
+    var saveInputsTimer = null;
+    function scheduleSaveInputs() {
+      if (saveInputsTimer) clearTimeout(saveInputsTimer);
+      saveInputsTimer = setTimeout(saveInputs, 600);
+    }
+
+    async function syncExpenseFromApp(explicit) {
+      var note = document.getElementById('expenseStatusNote');
+      realExpense = await loadCurrentMonthTotal('expenses');
+
+      if (!realExpense) {
+        if (explicit) note.innerHTML = "No expenses found for this month yet — add some in <a href=\"expenses.html\" style=\"color:#10b981;font-weight:600;\">Expenses</a> first.";
+        return;
+      }
+
+      var clamped = setSliderFromValue('expensesRange', 'expensesValue', realExpense);
+      recalculate();
+      await saveInputs();
+
+      var adjustedNote = clamped !== Math.round(realExpense) ? ' (adjusted to fit this slider’s range)' : '';
+      note.innerHTML = '✓ Synced ' + formatRupee(realExpense) + '/mo from this month\'s Expenses' + adjustedNote + '.';
+    }
+
+    /* ---- FIRE corpus: everything that counts toward your number — the   ----
+       four investable Networth sections plus your personal-IOU net       ----
+       position (receivables help, debts owed to others hurt).            ---- */
+    async function loadFireCorpusBreakdown() {
+      var results = await Promise.all([
+        loadCurrentMonthTotal('portfolio'),
+        (async function () {
+          var { data } = await supabaseClient.from('gold_holdings').select('grams, current_rate_per_gram');
+          return (data || []).reduce(function (s, r) { return s + (r.current_rate_per_gram !== null ? Number(r.grams) * Number(r.current_rate_per_gram) : 0); }, 0);
+        })(),
+        (async function () {
+          var { data } = await supabaseClient.from('other_investments').select('current_value').eq('category', 'Government Scheme');
+          return (data || []).reduce(function (s, r) { return s + Number(r.current_value || 0); }, 0);
+        })(),
+        (async function () {
+          var { data } = await supabaseClient.from('properties').select('current_value, has_mortgage, mortgage_balance');
+          return (data || []).reduce(function (s, p) { return s + Number(p.current_value || 0) - (p.has_mortgage ? Number(p.mortgage_balance || 0) : 0); }, 0);
+        })(),
+        (async function () {
+          var { data } = await supabaseClient.from('personal_ious').select('direction, balance');
+          return (data || []).reduce(function (s, r) { return s + (r.direction === 'owed_to_me' ? Number(r.balance || 0) : -Number(r.balance || 0)); }, 0);
+        })()
+      ]);
+      var breakdown = { portfolio: results[0], gold: results[1], gov: results[2], properties: results[3], iouNet: results[4] };
+      breakdown.total = breakdown.portfolio + breakdown.gold + breakdown.gov + breakdown.properties + breakdown.iouNet;
+      return breakdown;
+    }
+
+    async function syncCorpusFromApp(explicit) {
+      var note = document.getElementById('corpusStatusNote');
+      var breakdown = await loadFireCorpusBreakdown();
+      realCorpus = breakdown;
+
+      if (!breakdown.total) {
+        if (explicit) note.innerHTML = "No investments found yet — add some in <a href=\"net-worth.html\" style=\"color:#10b981;font-weight:600;\">Net Worth</a> first.";
+        return;
+      }
+
+      var clamped = setSliderFromValue('corpusRange', 'corpusValue', breakdown.total);
+      renderAssetComposition();
+      recalculate();
+      await saveInputs();
+
+      var adjustedNote = clamped !== Math.round(breakdown.total) ? ' (adjusted to fit this slider’s range)' : '';
+      note.innerHTML = '✓ Synced ' + formatRupee(breakdown.total, true) + ' from your Net Worth total' + adjustedNote + '.';
+    }
+
+    async function syncSavingFromApp(explicit) {
+      var note = document.getElementById('savingStatusNote');
+      var results = await Promise.all([loadCurrentMonthTotal('income'), loadCurrentMonthTotal('expenses'), loadCurrentMonthTotal('loans')]);
+      realIncome = results[0]; realExpense = results[1]; realLoanEmi = results[2];
+      var surplus = realIncome - realExpense - realLoanEmi;
+
+      if (surplus <= 0) {
+        if (explicit) note.innerHTML = surplus < 0
+          ? "Your expenses and EMI currently exceed your income this month — nothing left over to suggest."
+          : "No income found for this month yet — add some in <a href=\"income.html\" style=\"color:#10b981;font-weight:600;\">Income</a> first.";
+        renderCashFlowCard();
+        return;
+      }
+
+      var clamped = setSliderFromValue('savingRange', 'savingValue', surplus);
+      renderCashFlowCard();
+      recalculate();
+      await saveInputs();
+
+      var adjustedNote = clamped !== Math.round(surplus) ? ' (adjusted to fit this slider’s range)' : '';
+      note.innerHTML = '✓ Synced ' + formatRupee(surplus) + '/mo surplus' + adjustedNote + '.';
+    }
+
+    /* ---- Charts: a single-value progress ring, and a multi-segment donut ---- */
+
+    function buildProgressDonutSvg(pct, size, strokeW, color) {
+      var r = (size - strokeW) / 2;
+      var cx = size / 2, cy = size / 2;
+      var circumference = 2 * Math.PI * r;
+      var len = circumference * Math.max(0, Math.min(1, pct / 100));
+      return '<svg viewBox="0 0 ' + size + ' ' + size + '">' +
+        '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="' + strokeW + '"/>' +
+        '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="' + color + '" stroke-width="' + strokeW + '" ' +
+        'stroke-dasharray="' + len + ' ' + circumference + '" stroke-linecap="round" transform="rotate(-90 ' + cx + ' ' + cy + ')"/>' +
+        '</svg>';
+    }
+
+    function buildDonutSvg(segments, size, strokeW) {
+      var total = segments.reduce(function (s, d) { return s + d.value; }, 0);
+      var r = (size - strokeW) / 2;
+      var cx = size / 2, cy = size / 2;
+      var circumference = 2 * Math.PI * r;
+      var offset = 0;
+
+      var svg = '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="#f1f5f9" stroke-width="' + strokeW + '"/>';
+      segments.forEach(function (d) {
+        if (!d.value) return;
+        var frac = total ? d.value / total : 0;
+        var len = circumference * frac;
+        svg += '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="' + d.color + '" stroke-width="' + strokeW + '" ' +
+          'stroke-dasharray="' + len + ' ' + circumference + '" stroke-dashoffset="' + (-offset) + '" transform="rotate(-90 ' + cx + ' ' + cy + ')"/>';
+        offset += len;
+      });
+      return '<svg viewBox="0 0 ' + size + ' ' + size + '" class="donut-svg">' + svg + '</svg>';
+    }
+
+    function escapeHtml(s) {
+      return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    /* Updates the top hero — called once with real data on load, and again
+       every time a slider changes (since the FIRE Number it's compared
+       against moves with your assumptions). */
+    function renderProgressHero(fireNumber) {
+      document.getElementById('heroNetWorth').textContent = formatRupee(realCorpus.total, true);
+
+      var surplus = realIncome - realExpense - realLoanEmi;
+      var savingsRateEl = document.getElementById('heroSavingsRate');
+      if (realIncome > 0) {
+        var rate = (surplus / realIncome) * 100;
+        savingsRateEl.textContent = (rate >= 0 ? '' : '-') + Math.abs(Math.round(rate)) + '%';
+        savingsRateEl.className = 'fire-hero-value' + (rate < 0 ? ' negative' : '');
+      } else {
+        savingsRateEl.textContent = '—';
+      }
+
+      var surplusEl = document.getElementById('heroSurplus');
+      surplusEl.textContent = formatRupee(surplus, true);
+      surplusEl.className = 'fire-hero-value' + (surplus < 0 ? ' negative' : '');
+
+      var pct = fireNumber ? Math.round((realCorpus.total / fireNumber) * 100) : 0;
+      var pctColor = pct >= 100 ? '#4ade80' : '#7dd3fc';
+      document.getElementById('heroFirePct').textContent = Math.max(0, pct) + '%';
+      document.getElementById('heroDonutSvgHolder').innerHTML = buildProgressDonutSvg(pct, 110, 14, pctColor);
+    }
+
+    function renderCashFlowCard() {
+      var surplus = realIncome - realExpense - realLoanEmi;
+      var wrap = document.getElementById('cashflowGrid');
+      wrap.innerHTML =
+        '<div class="cashflow-item"><span>Income</span><b>' + formatRupee(realIncome, true) + '</b></div>' +
+        '<div class="cashflow-item neg"><span>Expenses</span><b>-' + formatRupee(realExpense, true) + '</b></div>' +
+        '<div class="cashflow-item neg"><span>Loan EMI</span><b>-' + formatRupee(realLoanEmi, true) + '</b></div>' +
+        '<div class="cashflow-item total' + (surplus < 0 ? ' negative' : '') + '"><span>Surplus</span><b>' + formatRupee(surplus, true) + '</b></div>';
+    }
+
+    function renderAssetComposition() {
+      var wrap = document.getElementById('assetCompositionWrap');
+      var segments = [
+        { label: 'Stocks/MF', value: realCorpus.portfolio, color: '#0ea5e9' },
+        { label: 'Gold + Commodities', value: realCorpus.gold, color: '#f59e0b' },
+        { label: 'Government Scheme', value: realCorpus.gov, color: '#8b5cf6' },
+        { label: 'Properties (equity)', value: realCorpus.properties, color: '#10b981' },
+        { label: 'Receivable, net of debt', value: realCorpus.iouNet, color: '#06b6d4' }
+      ];
+      var withValue = segments.filter(function (s) { return s.value > 0; });
+      if (withValue.length === 0) {
+        wrap.innerHTML = '<div style="text-align:center;padding:2rem 1rem;color:#94a3b8;font-size:0.85rem;">No holdings yet — add one in any Networth section to see it here.</div>';
+        return;
+      }
+      var total = withValue.reduce(function (s, d) { return s + d.value; }, 0);
+      var legend = withValue.map(function (d) {
+        var pct = total ? Math.round(d.value / total * 100) : 0;
+        return '<div class="donut-legend-row">' +
+          '<span class="donut-legend-name"><span class="donut-dot" style="background:' + d.color + ';"></span>' + escapeHtml(d.label) + '</span>' +
+          '<span class="donut-legend-val">' + formatRupee(d.value, true) + ' (' + pct + '%)</span>' +
+          '</div>';
+      }).join('');
+      wrap.innerHTML = '<div class="donut-row">' + buildDonutSvg(withValue, 150, 24) + '<div class="donut-legend">' + legend + '</div></div>';
+    }
+
+    function startEditExpenses() {
+      var span = document.getElementById('expensesValue');
+      var input = document.getElementById('expensesInput');
+      span.style.display = 'none';
+      input.value = els.expensesRange.value;
+      input.style.display = 'inline-block';
+      input.focus();
+      input.select();
+    }
+
+    function commitExpensesEdit() {
+      var input = document.getElementById('expensesInput');
+      var span = document.getElementById('expensesValue');
+      var slider = els.expensesRange;
+      var raw = parseInt(input.value, 10);
+      input.style.display = 'none';
+      span.style.display = '';
+
+      if (isNaN(raw) || raw <= 0) return;
+
+      var clamped = Math.min(Math.max(raw, Number(slider.min)), Number(slider.max));
+      slider.value = clamped;
+      applyFill(slider);
+      span.textContent = formatRupee(clamped);
+      recalculate();
+      scheduleSaveInputs();
+
+      var note = document.getElementById('expenseStatusNote');
+      note.textContent = clamped !== raw
+        ? 'Adjusted to fit the ₹20,000–₹5,00,000 range.'
+        : '';
+    }
+
+    document.getElementById('expensesInput').addEventListener('blur', commitExpensesEdit);
+    document.getElementById('expensesInput').addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') { e.preventDefault(); this.blur(); }
+      if (e.key === 'Escape') { this.value = els.expensesRange.value; this.blur(); }
+    });
+
+    (async function init() {
+      var user = await requireAuth('index.html#login');
+      if (!user) return;
+
+      var results = await Promise.all([
+        loadCurrentMonthTotal('expenses'),
+        loadCurrentMonthTotal('income'),
+        loadCurrentMonthTotal('loans'),
+        loadFireCorpusBreakdown(),
+        loadSavedInputs()
+      ]);
+      realExpense = results[0];
+      realIncome = results[1];
+      realLoanEmi = results[2];
+      realCorpus = results[3];
+      var saved = results[4];
+
+      if (saved) {
+        // Restore every slider exactly as you left it — nothing here is
+        // re-derived from live data, so your assumptions never reset.
+        setSliderFromValue('expensesRange', 'expensesValue', saved.monthly_expenses);
+        setSliderFromValue('ageRange', 'ageValue', saved.age);
+        setSliderFromValue('retireRange', 'retireValue', saved.fire_age);
+        setSliderFromValue('lifeRange', 'lifeValue', saved.life_expectancy);
+        setSliderFromValue('inflationRange', 'inflationValue', saved.inflation_pct);
+        setSliderFromValue('corpusRange', 'corpusValue', saved.corpus);
+        setSliderFromValue('savingRange', 'savingValue', saved.monthly_saving);
+        setSliderFromValue('roiRange', 'roiValue', saved.roi_pct);
+        setSliderFromValue('postRoiRange', 'postRoiValue', saved.post_roi_pct);
+      } else {
+        // First-ever visit: seed a sensible starting point from real data.
+        if (realExpense) setSliderFromValue('expensesRange', 'expensesValue', realExpense);
+        if (realCorpus.total) setSliderFromValue('corpusRange', 'corpusValue', realCorpus.total);
+        var surplus = realIncome - realExpense - realLoanEmi;
+        if (surplus > 0) setSliderFromValue('savingRange', 'savingValue', surplus);
+        await saveInputs();
+      }
+
+      renderCashFlowCard();
+      renderAssetComposition();
+      recalculate();
+    })();
+  </script>
+</body>
+</html>

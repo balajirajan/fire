@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Goal Detail - FinFlow</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f8fafc;
+      color: #0f172a;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    a, button { color: inherit; text-decoration: none; font-family: inherit; }
+
+    .app-shell { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
+    @media (max-width: 860px) { .app-shell { grid-template-columns: 1fr; } .sidebar { display: none; } }
+
+    .sidebar { background: #ffffff; border-right: 1px solid #e2e8f0; display: flex; flex-direction: column; padding: 1.5rem 1.25rem; }
+    .sidebar-logo { display: flex; align-items: center; gap: 0.65rem; font-size: 1.1rem; font-weight: 800; margin-bottom: 2rem; padding: 0 0.25rem; }
+    .sidebar-logo-icon { width: 30px; height: 30px; background: linear-gradient(135deg, #0ea5e9, #10b981); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; flex-shrink: 0; }
+    .sidebar-nav { display: flex; flex-direction: column; gap: 0.25rem; }
+    .sidebar-nav a, .sidebar-nav .nav-group-head { display: flex; align-items: center; gap: 0.75rem; padding: 0.7rem 0.75rem; border-radius: 0.6rem; font-size: 0.9rem; font-weight: 500; color: #364752; }
+    .sidebar-nav a:hover, .sidebar-nav .nav-group-head:hover { background: #f1f5f9; }
+    .sidebar-nav a.active { background: #0f172a; color: #ffffff; font-weight: 600; }
+    .sidebar-nav .nav-group-head.open { background: #f1f5f9; font-weight: 700; }
+    .sidebar-nav .nav-group-head.active { background: #0f172a; color: #ffffff; font-weight: 600; }
+    .sidebar-nav .nav-group-head.active .nav-chevron { color: rgba(255,255,255,0.6); }
+    .sidebar-nav .nav-icon { font-size: 1rem; width: 20px; text-align: center; flex-shrink: 0; }
+    .sidebar-nav .nav-label { flex: 1; }
+    .sidebar-nav .nav-chevron { color: #94a3b8; font-size: 0.85rem; }
+    .sidebar-subnav { display: flex; flex-direction: column; gap: 0.2rem; padding-left: 1.6rem; margin: 0.15rem 0 0.3rem; }
+    .sidebar-subnav a { display: flex; align-items: center; gap: 0.6rem; padding: 0.55rem 0.6rem; border-radius: 0.5rem; font-size: 0.85rem; font-weight: 500; color: #364752; }
+    .sidebar-subnav a:hover { background: #f1f5f9; }
+    .sidebar-subnav a.active { background: #0f172a; color: #fff; font-weight: 600; }
+    .sidebar-spacer { flex: 1; }
+    .feedback-card { background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 0.9rem; padding: 1.1rem; margin-top: 1.5rem; }
+    .feedback-card .fc-icon { width: 32px; height: 32px; border-radius: 0.6rem; background: #eef2f7; display: flex; align-items: center; justify-content: center; font-size: 0.95rem; margin-bottom: 0.6rem; }
+    .feedback-card strong { display: block; font-size: 0.85rem; margin-bottom: 0.3rem; }
+    .feedback-card p { font-size: 0.78rem; color: #64748b; line-height: 1.5; margin-bottom: 0.85rem; }
+    .feedback-card a { display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; width: 100%; padding: 0.55rem; border: 1px solid #cbd5e1; border-radius: 0.5rem; font-size: 0.8rem; font-weight: 600; color: #364752; }
+    .feedback-card a:hover { border-color: #10b981; color: #10b981; }
+
+    .main { padding: 1.5rem 2.5rem 3rem; min-width: 0; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; padding-bottom: 1.25rem; border-bottom: 1px solid #e2e8f0; margin-bottom: 1.5rem; }
+    .topbar h1 { font-size: 1.4rem; font-weight: 700; }
+    .topbar-right { display: flex; align-items: center; gap: 0.85rem; }
+    .language-selector { display: flex; align-items: center; gap: 0.5rem; background: #ffffff; padding: 0.5rem 0.9rem; border-radius: 0.5rem; color: #51636f; border: 1px solid #e2e8f0; cursor: pointer; font-size: 0.85rem; }
+    .user-menu { position: relative; list-style: none; }
+    .user-menu > summary { cursor: pointer; list-style: none; width: 34px; height: 34px; border-radius: 50%; background: #eef2f7; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; font-size: 1rem; }
+    .user-menu > summary::-webkit-details-marker { display: none; }
+    .user-menu-panel { position: absolute; top: calc(100% + 0.6rem); right: 0; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 0.75rem; box-shadow: 0 10px 30px rgba(15,23,42,0.12); padding: 0.4rem; min-width: 150px; z-index: 20; }
+    .user-menu-panel a { display: block; padding: 0.55rem 0.7rem; border-radius: 0.5rem; font-size: 0.85rem; color: #364752; font-weight: 500; }
+    .user-menu-panel a:hover { background: #f1f5f9; color: #10b981; }
+
+    .back-link { font-size: 0.85rem; font-weight: 600; color: #0ea5e9; margin-bottom: 0.75rem; display: inline-block; }
+
+    .goal-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+    .goal-head-left { display: flex; align-items: center; gap: 0.9rem; }
+    .goal-head-icon { width: 48px; height: 48px; border-radius: 0.8rem; background: #fff; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; flex-shrink: 0; }
+    .goal-head h2 { font-size: 1.4rem; font-weight: 800; margin-bottom: 0.35rem; }
+    .goal-tags { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+    .goal-tag { font-size: 0.7rem; font-weight: 700; padding: 0.22rem 0.55rem; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.03em; }
+    .goal-tag.owner { background: #eef2ff; color: #4338ca; }
+    .goal-tag.priority-high { background: #fef2f2; color: #dc2626; }
+    .goal-tag.priority-medium { background: #fffbeb; color: #b45309; }
+    .goal-tag.priority-low { background: #f1f5f9; color: #64748b; }
+    .status-badge { font-size: 0.7rem; font-weight: 700; padding: 0.22rem 0.6rem; border-radius: 999px; white-space: nowrap; }
+    .status-badge.ahead { background: #ecfdf5; color: #059669; }
+    .status-badge.on_track { background: #eff6ff; color: #2563eb; }
+    .status-badge.behind { background: #fef2f2; color: #dc2626; }
+    .status-badge.not_enough_data { background: #f1f5f9; color: #64748b; }
+    .goal-head-actions { display: flex; gap: 0.6rem; }
+
+    .btn-primary { padding: 0.6rem 1.1rem; border: none; border-radius: 0.6rem; background: linear-gradient(135deg, #0ea5e9, #10b981); color: #fff; font-size: 0.85rem; font-weight: 700; cursor: pointer; }
+    .btn-primary:hover { opacity: 0.92; }
+    .btn-secondary { padding: 0.55rem 1rem; border: 1px solid #cbd5e1; border-radius: 0.6rem; background: #fff; color: #364752; font-size: 0.83rem; font-weight: 600; cursor: pointer; }
+    .btn-secondary:hover { border-color: #94a3b8; }
+    .btn-danger { padding: 0.55rem 1rem; border: 1px solid #fecaca; border-radius: 0.6rem; background: #fff; color: #dc2626; font-size: 0.83rem; font-weight: 600; cursor: pointer; }
+    .btn-danger:hover { border-color: #dc2626; }
+    .btn-danger-text { color: #dc2626; font-size: 0.78rem; font-weight: 700; cursor: pointer; background: none; border: none; }
+
+    .stat-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.1rem; margin-bottom: 1.5rem; }
+    @media (max-width: 780px) { .stat-cards { grid-template-columns: 1fr; } }
+    .stat-card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 1.1rem; padding: 1.3rem 1.4rem; box-shadow: 0 4px 16px rgba(15,23,42,0.03); }
+    .stat-card-label { font-size: 0.78rem; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 0.5rem; }
+    .stat-card-value { font-size: 1.4rem; font-weight: 800; margin-bottom: 0.35rem; }
+    .stat-card-sub { font-size: 0.78rem; color: #94a3b8; }
+
+    .card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 1.1rem; padding: 1.4rem 1.5rem; box-shadow: 0 4px 16px rgba(15,23,42,0.03); margin-bottom: 1.5rem; }
+    .card-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+    .card-head h3 { font-size: 1.02rem; font-weight: 800; }
+    .card-note { font-size: 0.82rem; color: #64748b; line-height: 1.6; }
+
+    .progress-editor { display: flex; align-items: center; gap: 0.7rem; flex-wrap: wrap; margin-top: 0.9rem; }
+    .progress-editor input { padding: 0.55rem 0.7rem; border: 1px solid #cbd5e1; border-radius: 0.55rem; font-size: 0.88rem; font-family: inherit; width: 180px; }
+    .progress-editor input:focus { outline: none; border-color: #10b981; box-shadow: 0 0 0 2px rgba(16,185,129,0.15); }
+
+    .placeholder-note { background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 0.8rem; padding: 1rem 1.1rem; font-size: 0.82rem; color: #64748b; line-height: 1.6; }
+
+    table.contrib-table { width: 100%; border-collapse: collapse; }
+    table.contrib-table th, table.contrib-table td { text-align: left; padding: 0.6rem 0.5rem; font-size: 0.85rem; border-bottom: 1px solid #f1f5f9; }
+    table.contrib-table th { color: #64748b; font-weight: 700; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.03em; }
+    table.contrib-table td.amount { font-weight: 700; color: #059669; }
+    .empty-mini { color: #94a3b8; font-size: 0.85rem; padding: 1rem 0; text-align: center; }
+
+    .contrib-form { display: grid; grid-template-columns: 1fr 1fr 1.4fr auto; gap: 0.7rem; align-items: end; margin-top: 1.1rem; }
+    @media (max-width: 700px) { .contrib-form { grid-template-columns: 1fr; } }
+    .contrib-form label { font-size: 0.78rem; font-weight: 600; color: #0f172a; margin-bottom: 0.35rem; display: block; }
+    .contrib-form input { width: 100%; padding: 0.55rem 0.7rem; border: 1px solid #cbd5e1; border-radius: 0.55rem; font-size: 0.85rem; font-family: inherit; }
+    .contrib-form input:focus { outline: none; border-color: #10b981; box-shadow: 0 0 0 2px rgba(16,185,129,0.15); }
+
+    .form-error { font-size: 0.8rem; color: #dc2626; font-weight: 600; margin-bottom: 0.7rem; }
+
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.55); align-items: center; justify-content: center; z-index: 50; padding: 1rem; }
+    .modal-overlay.show { display: flex; }
+    .modal-box { background: #fff; border-radius: 1.1rem; padding: 1.6rem 1.75rem; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; }
+    .modal-box h3 { font-size: 1.1rem; font-weight: 800; margin-bottom: 1.1rem; }
+    .field-label { font-size: 0.83rem; font-weight: 600; color: #0f172a; margin-bottom: 0.4rem; display: block; }
+    .field-hint { font-size: 0.74rem; color: #94a3b8; margin: -0.6rem 0 0.9rem; }
+    .field-input, .field-select {
+      width: 100%; padding: 0.6rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 0.55rem;
+      font-size: 0.88rem; font-family: inherit; color: #0f172a; margin-bottom: 0.9rem; background: #fff;
+    }
+    .field-input:focus, .field-select:focus { outline: none; border-color: #10b981; box-shadow: 0 0 0 2px rgba(16,185,129,0.15); }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+    .modal-actions { display: flex; gap: 0.7rem; margin-top: 0.5rem; }
+    .modal-actions button { flex: 1; }
+
+    .loading-note { color: #94a3b8; font-size: 0.9rem; padding: 2rem 0; text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a href="dashboard.html" class="sidebar-logo">
+        <div class="sidebar-logo-icon">💰</div>
+        <span>FinFlow</span>
+      </a>
+
+      <nav class="sidebar-nav">
+        <a href="dashboard.html">
+          <span class="nav-icon">▦</span>
+          <span class="nav-label">Dashboard</span>
+        </a>
+
+        <a href="fire-plan.html" class="nav-group-head open active">
+          <span class="nav-icon">🧭</span>
+          <span class="nav-label">FIRE Plan</span>
+          <span class="nav-chevron">⌄</span>
+        </a>
+        <div class="sidebar-subnav">
+          <a href="fire-plan.html">
+            <span class="nav-icon">🧮</span>
+            <span class="nav-label">FIRE Calculation</span>
+          </a>
+          <a href="fire-goals.html" class="active">
+            <span class="nav-icon">🎯</span>
+            <span class="nav-label">Goal</span>
+          </a>
+        </div>
+
+        <a href="net-worth.html">
+          <span class="nav-icon">📈</span>
+          <span class="nav-label">Networth</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="money-required.html">
+          <span class="nav-icon">🪴</span>
+          <span class="nav-label">Expenses</span>
+          <span class="nav-chevron">›</span>
+        </a>
+
+        <a href="expense-quick-add.html">
+          <span class="nav-icon">⚡</span>
+          <span class="nav-label">Daily Expenses Tracker</span>
+        </a>
+        <a href="tax-planning.html">
+          <span class="nav-icon">🧾</span>
+          <span class="nav-label">Tax Planning</span>
+        </a>
+        <a href="insurance-tracker.html">
+          <span class="nav-icon">🛡️</span>
+          <span class="nav-label">Insurance Tracker</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="reminders.html">
+          <span class="nav-icon">🔔</span>
+          <span class="nav-label">Reminders</span>
+        </a>
+        <a href="vault-overview.html">
+          <span class="nav-icon">🔒</span>
+          <span class="nav-label">Document Vault</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="split/dashboard.html">
+          <span class="nav-icon">💸</span>
+          <span class="nav-label">SplitExpenses(SplitWise)</span>
+        </a>
+        <a href="life-expectancy.html">
+          <span class="nav-icon">❤️</span>
+          <span class="nav-label">Health</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="astrology.html">
+          <span class="nav-icon">🔮</span>
+          <span class="nav-label">Spiritual</span>
+        </a>
+        <a href="#">
+          <span class="nav-icon">⚙️</span>
+          <span class="nav-label">Settings</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-spacer"></div>
+
+      <div class="feedback-card">
+        <div class="fc-icon">💬</div>
+        <strong>Got feedback?</strong>
+        <p>Have an idea or found a bug? We read every message.</p>
+        <a href="mailto:hello@finflow.app">✉ Contact Us</a>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <h1>FIRE Plan</h1>
+        <div class="topbar-right">
+          <div class="language-selector">🌐 English ▾</div>
+          <details class="user-menu">
+            <summary>👤</summary>
+            <div class="user-menu-panel">
+              <a href="#">Settings</a>
+              <a href="#" onclick="signOutAndRedirect('index.html'); return false;">Log Out</a>
+            </div>
+          </details>
+        </div>
+      </div>
+
+      <a href="fire-goals.html" class="back-link">← Goal Based Savings</a>
+
+      <div id="loadingNote" class="loading-note">Loading goal…</div>
+
+      <div id="detailContent" style="display:none;">
+        <div class="goal-head">
+          <div class="goal-head-left">
+            <div class="goal-head-icon" id="goalIcon">🎯</div>
+            <div>
+              <h2 id="goalName">—</h2>
+              <div class="goal-tags" id="goalTags"></div>
+            </div>
+          </div>
+          <div class="goal-head-actions">
+            <button type="button" class="btn-secondary" id="editGoalBtn">Edit Goal</button>
+            <button type="button" class="btn-danger" id="deleteGoalBtn">Delete</button>
+          </div>
+        </div>
+
+        <div class="stat-cards">
+          <div class="stat-card">
+            <div class="stat-card-label">Future Value Needed</div>
+            <div class="stat-card-value" id="statFutureValue">₹0</div>
+            <div class="stat-card-sub" id="statFutureValueSub">Today's target, inflated to the target date</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-label">Required Monthly Contribution</div>
+            <div class="stat-card-value" id="statRequiredMonthly">₹0</div>
+            <div class="stat-card-sub" id="statRequiredMonthlySub">To close the gap by the target date</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-label">Projected Completion</div>
+            <div class="stat-card-value" id="statProjected">—</div>
+            <div class="stat-card-sub" id="statProjectedSub">Based on your actual contribution pace</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><h3>Current Progress</h3></div>
+          <p class="card-note" id="progressNote">Manually entered — link an account below to derive this automatically instead.</p>
+          <div class="progress-editor" id="progressEditor">
+            <input type="number" id="currentValueInput" min="0" step="1000">
+            <button type="button" class="btn-primary" id="saveProgressBtn">Update</button>
+            <span class="form-error" id="progressError"></span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <h3>Linked Accounts</h3>
+            <button type="button" class="btn-secondary" id="linkAccountBtn">+ Link Account</button>
+          </div>
+          <table class="contrib-table" id="linkedTable" style="display:none;">
+            <thead><tr><th>Name</th><th>Type</th><th>Current Value</th><th></th></tr></thead>
+            <tbody id="linkedTableBody"></tbody>
+          </table>
+          <div class="empty-mini" id="linkedEmpty">No accounts linked yet — progress above is entered manually. Link an account to derive progress from its live value instead.</div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><h3>Contribution History</h3></div>
+          <div class="form-error" id="contribFormError"></div>
+          <table class="contrib-table" id="contribTable" style="display:none;">
+            <thead><tr><th>Date</th><th>Amount</th><th>Note</th><th></th></tr></thead>
+            <tbody id="contribTableBody"></tbody>
+          </table>
+          <div class="empty-mini" id="contribEmpty">No contributions logged yet.</div>
+
+          <div class="contrib-form">
+            <div>
+              <label>Amount (₹)</label>
+              <input type="number" id="contribAmountInput" min="0" step="500">
+            </div>
+            <div>
+              <label>Date</label>
+              <input type="date" id="contribDateInput">
+            </div>
+            <div>
+              <label>Note (optional)</label>
+              <input type="text" id="contribNoteInput" placeholder="e.g. Monthly SIP">
+            </div>
+            <button type="button" class="btn-primary" id="addContribBtn">Add</button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div class="modal-overlay" id="goalModal">
+    <div class="modal-box">
+      <h3>Edit Goal</h3>
+      <div class="form-error" id="goalFormError"></div>
+
+      <label class="field-label">Goal name</label>
+      <input type="text" class="field-input" id="goalNameInput">
+
+      <div class="field-row">
+        <div>
+          <label class="field-label">Category</label>
+          <select class="field-select" id="goalCategoryInput">
+            <option value="education">🎓 Education</option>
+            <option value="house">🏠 House</option>
+            <option value="travel">✈️ Travel</option>
+            <option value="car">🚗 Car</option>
+            <option value="wedding">💍 Wedding</option>
+            <option value="emergency_fund">🛟 Emergency Fund</option>
+            <option value="other">🎯 Other</option>
+          </select>
+        </div>
+        <div>
+          <label class="field-label">Owner</label>
+          <select class="field-select" id="goalOwnerInput">
+            <option value="self">Self</option>
+            <option value="spouse">Spouse</option>
+            <option value="joint">Joint</option>
+            <option value="child">Child</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div>
+          <label class="field-label">Target amount (₹, today's value)</label>
+          <input type="number" class="field-input" id="goalTargetInput" min="0" step="10000">
+        </div>
+        <div>
+          <label class="field-label">Target date</label>
+          <input type="date" class="field-input" id="goalDateInput">
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div>
+          <label class="field-label">Priority</label>
+          <select class="field-select" id="goalPriorityInput">
+            <option value="high">High</option>
+            <option value="medium">Medium</option>
+            <option value="low">Low</option>
+          </select>
+        </div>
+        <div>
+          <label class="field-label">Expected return (% p.a.)</label>
+          <input type="number" class="field-input" id="goalReturnInput" min="0" max="30" step="0.5">
+        </div>
+      </div>
+
+      <label class="field-label">Goal inflation rate (% p.a.)</label>
+      <input type="number" class="field-input" id="goalInflationInput" min="0" max="20" step="0.5">
+      <div class="field-hint">Education and healthcare typically run 8–10%; general expenses 5–6%.</div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" id="cancelGoalBtn">Cancel</button>
+        <button type="button" class="btn-primary" id="saveGoalBtn">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="linkPickerModal">
+    <div class="modal-box">
+      <h3>Link an Account</h3>
+      <div class="form-error" id="linkPickerError"></div>
+      <div class="empty-mini" id="linkPickerEmpty" style="display:none;">No unlinked accounts available — everything with a value is already linked to a goal.</div>
+      <table class="contrib-table" id="linkPickerTable" style="display:none;">
+        <thead><tr><th>Name</th><th>Type</th><th>Current Value</th><th></th></tr></thead>
+        <tbody id="linkPickerTableBody"></tbody>
+      </table>
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" id="closeLinkPickerBtn">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-client.js"></script>
+  <script src="js/goals-calc.js"></script>
+  <script src="js/goal-links.js"></script>
+  <script>
+    var goalId = new URLSearchParams(window.location.search).get('id');
+    var goal = null;
+    var contributions = [];
+    var allGoalLinks = [];
+    var linkableSources = [];
+    var sourceMap = {};
+
+    var CATEGORY_ICON = { education: '🎓', house: '🏠', travel: '✈️', car: '🚗', wedding: '💍', emergency_fund: '🛟', other: '🎯' };
+    var OWNER_LABEL = { self: 'Self', spouse: 'Spouse', joint: 'Joint', child: 'Child', other: 'Other' };
+    var STATUS_LABEL = { ahead: 'Ahead of Schedule', on_track: 'On Track', behind: 'Behind Schedule', not_enough_data: 'Not Enough Data' };
+
+    function formatRupees(amount) {
+      var n = Math.round(Number(amount) || 0);
+      return '₹' + n.toLocaleString('en-IN');
+    }
+
+    function escapeHtml(s) {
+      return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function renderHead() {
+      document.getElementById('goalIcon').textContent = CATEGORY_ICON[goal.category] || '🎯';
+      document.getElementById('goalName').textContent = goal.name;
+      document.getElementById('goalTags').innerHTML =
+        '<span class="goal-tag owner">' + OWNER_LABEL[goal.owner] + '</span>' +
+        '<span class="goal-tag priority-' + goal.priority + '">' + goal.priority + ' priority</span>' +
+        '<span id="statusBadgeSlot"></span>';
+    }
+
+    function renderStats() {
+      var now = new Date();
+      var targetDate = new Date(goal.target_date + 'T00:00:00');
+      var linkedItems = GoalLinks.linkedItemsForGoal(allGoalLinks, goal.id, sourceMap);
+      var currentValue = GoalLinks.currentValueForGoal(goal, allGoalLinks, sourceMap);
+
+      var hasLinks = linkedItems.length > 0;
+      document.getElementById('progressEditor').style.display = hasLinks ? 'none' : 'flex';
+      document.getElementById('progressNote').textContent = hasLinks
+        ? 'Derived from ' + linkedItems.length + ' linked account(s) — unlink them below to switch back to manual entry.'
+        : 'Manually entered — link an account below to derive this automatically instead.';
+
+      var futureValueNeeded = GoalsCalc.calcFutureValueNeeded(Number(goal.target_amount), Number(goal.goal_inflation_rate), now, targetDate);
+      var requiredMonthly = GoalsCalc.calcRequiredMonthlyContribution(currentValue, futureValueNeeded, Number(goal.expected_annual_return), now, targetDate);
+      var avgMonthly = GoalsCalc.calcAverageMonthlyContribution(contributions, now);
+      var projected = GoalsCalc.calcProjectedCompletion(currentValue, futureValueNeeded, avgMonthly, Number(goal.expected_annual_return), now);
+      var badge = GoalsCalc.calcStatusBadge(projected, targetDate);
+
+      document.getElementById('statFutureValue').textContent = formatRupees(futureValueNeeded);
+      document.getElementById('statFutureValueSub').textContent = goal.goal_inflation_rate + '% inflation to ' + goal.target_date;
+
+      document.getElementById('statRequiredMonthly').textContent = formatRupees(requiredMonthly);
+      document.getElementById('statRequiredMonthlySub').textContent = requiredMonthly === 0 ? 'Goal is already fully funded' : 'At ' + goal.expected_annual_return + '% expected return';
+
+      var projectedEl = document.getElementById('statProjected');
+      var projectedSubEl = document.getElementById('statProjectedSub');
+      if (projected.status === 'not_enough_data') {
+        projectedEl.textContent = 'Not enough data';
+        projectedSubEl.textContent = 'Log a few contributions to see a projection';
+      } else if (projected.status === 'already_funded') {
+        projectedEl.textContent = 'Already funded';
+        projectedSubEl.textContent = 'Current progress already meets the future value needed';
+      } else if (projected.status === 'no_progress') {
+        projectedEl.textContent = 'No progress';
+        projectedSubEl.textContent = 'Recent contributions average ₹0/month';
+      } else if (projected.status === 'too_far') {
+        projectedEl.textContent = '50+ years away';
+        projectedSubEl.textContent = 'At the current contribution pace';
+      } else {
+        var d = projected.date;
+        projectedEl.textContent = d.toLocaleDateString('en-IN', { year: 'numeric', month: 'short' });
+        projectedSubEl.textContent = 'Avg ' + formatRupees(avgMonthly) + '/month over recent history';
+      }
+
+      var slot = document.getElementById('statusBadgeSlot');
+      if (slot) {
+        var badgeSpan = document.createElement('span');
+        badgeSpan.className = 'status-badge ' + badge;
+        badgeSpan.textContent = STATUS_LABEL[badge];
+        slot.replaceWith(badgeSpan);
+      }
+
+      document.getElementById('currentValueInput').value = currentValue;
+    }
+
+    function renderContributions() {
+      var tbody = document.getElementById('contribTableBody');
+      var table = document.getElementById('contribTable');
+      var empty = document.getElementById('contribEmpty');
+
+      if (!contributions.length) {
+        table.style.display = 'none';
+        empty.style.display = 'block';
+        return;
+      }
+      table.style.display = 'table';
+      empty.style.display = 'none';
+
+      var sorted = contributions.slice().sort(function (a, b) { return new Date(b.contributed_at) - new Date(a.contributed_at); });
+      tbody.innerHTML = sorted.map(function (c) {
+        return '<tr>' +
+          '<td>' + c.contributed_at + '</td>' +
+          '<td class="amount">' + formatRupees(c.amount) + '</td>' +
+          '<td>' + escapeHtml(c.note || '—') + '</td>' +
+          '<td><button type="button" class="btn-danger-text" data-delete-contrib="' + c.id + '">Delete</button></td>' +
+        '</tr>';
+      }).join('');
+
+      Array.prototype.forEach.call(tbody.querySelectorAll('[data-delete-contrib]'), function (btn) {
+        btn.addEventListener('click', function () { deleteContribution(btn.dataset.deleteContrib); });
+      });
+    }
+
+    function renderLinkedAccounts() {
+      var linkedItems = GoalLinks.linkedItemsForGoal(allGoalLinks, goal.id, sourceMap);
+      var table = document.getElementById('linkedTable');
+      var body = document.getElementById('linkedTableBody');
+      var empty = document.getElementById('linkedEmpty');
+
+      if (!linkedItems.length) {
+        table.style.display = 'none';
+        empty.style.display = 'block';
+        return;
+      }
+      table.style.display = 'table';
+      empty.style.display = 'none';
+
+      body.innerHTML = linkedItems.map(function (item) {
+        return '<tr>' +
+          '<td>' + escapeHtml(item.name) + '</td>' +
+          '<td>' + escapeHtml(item.category_label) + '</td>' +
+          '<td class="amount">' + formatRupees(item.current_value) + '</td>' +
+          '<td><button type="button" class="btn-danger-text" data-unlink="' + item.link_id + '">Unlink</button></td>' +
+        '</tr>';
+      }).join('');
+
+      Array.prototype.forEach.call(body.querySelectorAll('[data-unlink]'), function (btn) {
+        btn.addEventListener('click', function () { unlinkAccount(btn.dataset.unlink); });
+      });
+    }
+
+    function renderLinkPicker() {
+      var available = GoalLinks.availableSources(linkableSources, allGoalLinks);
+      var table = document.getElementById('linkPickerTable');
+      var body = document.getElementById('linkPickerTableBody');
+      var empty = document.getElementById('linkPickerEmpty');
+
+      if (!available.length) {
+        table.style.display = 'none';
+        empty.style.display = 'block';
+        return;
+      }
+      table.style.display = 'table';
+      empty.style.display = 'none';
+
+      body.innerHTML = available.map(function (src) {
+        return '<tr>' +
+          '<td>' + escapeHtml(src.name) + '</td>' +
+          '<td>' + escapeHtml(src.category_label) + '</td>' +
+          '<td class="amount">' + formatRupees(src.current_value) + '</td>' +
+          '<td><button type="button" class="btn-primary" data-link-type="' + src.source_type + '" data-link-id="' + src.source_id + '">Link</button></td>' +
+        '</tr>';
+      }).join('');
+
+      Array.prototype.forEach.call(body.querySelectorAll('[data-link-id]'), function (btn) {
+        btn.addEventListener('click', function () { linkAccount(btn.dataset.linkType, btn.dataset.linkId); });
+      });
+    }
+
+    function openLinkPicker() {
+      document.getElementById('linkPickerError').textContent = '';
+      renderLinkPicker();
+      document.getElementById('linkPickerModal').classList.add('show');
+    }
+
+    function closeLinkPicker() {
+      document.getElementById('linkPickerModal').classList.remove('show');
+    }
+
+    async function loadLinkData() {
+      allGoalLinks = await GoalLinks.fetchAllGoalLinks();
+      linkableSources = await GoalLinks.fetchLinkableSources();
+      sourceMap = GoalLinks.buildSourceMap(linkableSources);
+    }
+
+    async function linkAccount(sourceType, sourceId) {
+      var { error } = await GoalLinks.linkSource(goalId, sourceType, sourceId);
+      if (error) { document.getElementById('linkPickerError').textContent = 'Could not link this account.'; console.error(error); return; }
+      await loadLinkData();
+      renderStats();
+      renderLinkedAccounts();
+      renderLinkPicker();
+    }
+
+    async function unlinkAccount(linkId) {
+      var { error } = await GoalLinks.unlinkSource(linkId);
+      if (error) { console.error('Could not unlink account', error); return; }
+      await loadLinkData();
+      renderStats();
+      renderLinkedAccounts();
+    }
+
+    async function loadGoal() {
+      var { data, error } = await supabaseClient.from('goals').select('*').eq('id', goalId).maybeSingle();
+      if (error || !data) {
+        document.getElementById('loadingNote').textContent = 'Goal not found.';
+        console.error(error);
+        return false;
+      }
+      goal = data;
+      return true;
+    }
+
+    async function loadContributions() {
+      var { data, error } = await supabaseClient.from('goal_contributions').select('*').eq('goal_id', goalId).order('contributed_at', { ascending: false });
+      if (error) { console.error('Could not load contributions', error); contributions = []; return; }
+      contributions = data || [];
+    }
+
+    async function refresh() {
+      await Promise.all([loadGoal(), loadContributions(), loadLinkData()]);
+      if (!goal) return;
+      renderHead();
+      renderStats();
+      renderContributions();
+      renderLinkedAccounts();
+    }
+
+    async function saveProgress() {
+      var errEl = document.getElementById('progressError');
+      var val = Number(document.getElementById('currentValueInput').value);
+      if (isNaN(val) || val < 0) { errEl.textContent = 'Enter a valid amount.'; return; }
+      errEl.textContent = '';
+      var { error } = await supabaseClient.from('goals').update({ manual_current_value: val, updated_at: new Date().toISOString() }).eq('id', goalId);
+      if (error) { errEl.textContent = 'Could not update progress.'; console.error(error); return; }
+      await refresh();
+    }
+
+    async function addContribution() {
+      var errEl = document.getElementById('contribFormError');
+      var amount = Number(document.getElementById('contribAmountInput').value);
+      var date = document.getElementById('contribDateInput').value;
+      var note = document.getElementById('contribNoteInput').value.trim();
+
+      if (!amount || amount <= 0) { errEl.textContent = 'Enter a valid contribution amount.'; return; }
+      if (!date) { errEl.textContent = 'Choose a date.'; return; }
+      errEl.textContent = '';
+
+      var { error } = await supabaseClient.from('goal_contributions').insert({
+        goal_id: goalId, amount: amount, contributed_at: date, note: note || null
+      });
+      if (error) { errEl.textContent = 'Could not add contribution.'; console.error(error); return; }
+
+      document.getElementById('contribAmountInput').value = '';
+      document.getElementById('contribNoteInput').value = '';
+      await loadContributions();
+      renderStats();
+      renderContributions();
+    }
+
+    async function deleteContribution(id) {
+      var { error } = await supabaseClient.from('goal_contributions').delete().eq('id', id);
+      if (error) { console.error('Could not delete contribution', error); return; }
+      await loadContributions();
+      renderStats();
+      renderContributions();
+    }
+
+    function openEditModal() {
+      document.getElementById('goalFormError').textContent = '';
+      document.getElementById('goalNameInput').value = goal.name;
+      document.getElementById('goalCategoryInput').value = goal.category;
+      document.getElementById('goalOwnerInput').value = goal.owner;
+      document.getElementById('goalTargetInput').value = goal.target_amount;
+      document.getElementById('goalDateInput').value = goal.target_date;
+      document.getElementById('goalPriorityInput').value = goal.priority;
+      document.getElementById('goalReturnInput').value = goal.expected_annual_return;
+      document.getElementById('goalInflationInput').value = goal.goal_inflation_rate;
+      document.getElementById('goalModal').classList.add('show');
+    }
+
+    function closeEditModal() {
+      document.getElementById('goalModal').classList.remove('show');
+    }
+
+    async function saveGoalEdits() {
+      var errEl = document.getElementById('goalFormError');
+      var name = document.getElementById('goalNameInput').value.trim();
+      var target = Number(document.getElementById('goalTargetInput').value);
+      var date = document.getElementById('goalDateInput').value;
+
+      if (!name) { errEl.textContent = 'Please enter a goal name.'; return; }
+      if (!target || target <= 0) { errEl.textContent = 'Please enter a valid target amount.'; return; }
+      if (!date) { errEl.textContent = 'Please choose a target date.'; return; }
+
+      var payload = {
+        name: name,
+        category: document.getElementById('goalCategoryInput').value,
+        owner: document.getElementById('goalOwnerInput').value,
+        target_amount: target,
+        target_date: date,
+        priority: document.getElementById('goalPriorityInput').value,
+        expected_annual_return: Number(document.getElementById('goalReturnInput').value) || 0,
+        goal_inflation_rate: Number(document.getElementById('goalInflationInput').value) || 0,
+        updated_at: new Date().toISOString()
+      };
+
+      var { error } = await supabaseClient.from('goals').update(payload).eq('id', goalId);
+      if (error) { errEl.textContent = 'Could not save changes.'; console.error(error); return; }
+
+      closeEditModal();
+      await refresh();
+    }
+
+    async function deleteGoal() {
+      if (!confirm('Delete this goal? This also removes its contribution history.')) return;
+      var { error } = await supabaseClient.from('goals').delete().eq('id', goalId);
+      if (error) { console.error('Could not delete goal', error); return; }
+      window.location.href = 'fire-goals.html';
+    }
+
+    (async function init() {
+      var user = await requireAuth('index.html#login');
+      if (!user) return;
+
+      if (!goalId) {
+        document.getElementById('loadingNote').textContent = 'No goal specified.';
+        return;
+      }
+
+      document.getElementById('contribDateInput').value = new Date().toISOString().slice(0, 10);
+
+      document.getElementById('saveProgressBtn').addEventListener('click', saveProgress);
+      document.getElementById('addContribBtn').addEventListener('click', addContribution);
+      document.getElementById('editGoalBtn').addEventListener('click', openEditModal);
+      document.getElementById('deleteGoalBtn').addEventListener('click', deleteGoal);
+      document.getElementById('cancelGoalBtn').addEventListener('click', closeEditModal);
+      document.getElementById('saveGoalBtn').addEventListener('click', saveGoalEdits);
+      document.getElementById('goalModal').addEventListener('click', function (e) { if (e.target === this) closeEditModal(); });
+      document.getElementById('linkAccountBtn').addEventListener('click', openLinkPicker);
+      document.getElementById('closeLinkPickerBtn').addEventListener('click', closeLinkPicker);
+      document.getElementById('linkPickerModal').addEventListener('click', function (e) { if (e.target === this) closeLinkPicker(); });
+
+      await refresh();
+      if (goal) {
+        document.getElementById('loadingNote').style.display = 'none';
+        document.getElementById('detailContent').style.display = 'block';
+      }
+    })();
+  </script>
+</body>
+</html>

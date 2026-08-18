@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Free Financial Calculators &amp; Tools (No Sign-Up) - FinFlow</title>
+  <meta name="description" content="Free financial calculators for India: FIRE planning, SIP &amp; investing, EMI &amp; loans, income tax, retirement, NPS, and more. No sign-up, no email.">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #ffffff;
+      color: #0f172a;
+      min-height: 100vh;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+
+    /* Nav */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.25rem 2rem;
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 1.25rem;
+      font-weight: bold;
+      color: #0f172a;
+    }
+
+    .logo-icon {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, #0ea5e9, #10b981);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+      font-size: 0.95rem;
+    }
+
+    .nav-links a {
+      color: #51636f;
+      text-decoration: none;
+      transition: color 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .nav-links a:hover {
+      color: #10b981;
+    }
+
+    .dropdown-arrow {
+      font-size: 0.8rem;
+    }
+
+    .language-selector {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: #f1f5f9;
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      color: #51636f;
+      border: 1px solid #e2e8f0;
+      cursor: pointer;
+    }
+
+    .nav-menu {
+      position: relative;
+      list-style: none;
+    }
+
+    .nav-menu > summary {
+      cursor: pointer;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      color: #51636f;
+      font-size: 0.95rem;
+    }
+
+    .nav-menu > summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .nav-menu > summary:hover,
+    .nav-menu[open] > summary {
+      color: #10b981;
+    }
+
+    .nav-menu-panel {
+      position: absolute;
+      top: calc(100% + 0.75rem);
+      right: 0;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 0.75rem;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.12);
+      padding: 0.5rem;
+      min-width: 170px;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      z-index: 60;
+    }
+
+    .nav-menu-panel a {
+      padding: 0.6rem 0.75rem;
+      border-radius: 0.5rem;
+      color: #364752;
+      font-size: 0.9rem;
+      font-weight: 500;
+      text-decoration: none;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .nav-menu-panel a:hover {
+      background: #f1f5f9;
+      color: #10b981;
+    }
+
+    .nav-menu-panel a.menu-signup-btn {
+      background: linear-gradient(to right, #0ea5e9, #10b981);
+      color: #ffffff;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    .nav-menu-panel a.menu-signup-btn:hover {
+      opacity: 0.9;
+      color: #ffffff;
+    }
+
+    /* Hero */
+    .hero {
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(135deg, #f0f9ff 0%, #ecfdf5 60%, #f0f9ff 100%);
+      padding: 4rem 2rem 3rem;
+      text-align: center;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(14, 165, 233, 0.10) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(14, 165, 233, 0.10) 1px, transparent 1px);
+      background-size: 48px 48px;
+      opacity: 0.6;
+    }
+
+    .hero-inner { position: relative; z-index: 2; max-width: 780px; margin: 0 auto; }
+
+    .hero h1 {
+      font-size: 2.6rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+      line-height: 1.15;
+      color: #0f172a;
+    }
+
+    .hero p {
+      color: #51636f;
+      font-size: 1.05rem;
+      line-height: 1.6;
+      margin-bottom: 1.75rem;
+    }
+
+    .trust-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.25rem;
+      justify-content: center;
+      font-size: 0.85rem;
+      color: #059669;
+    }
+    .trust-badges span { display: flex; align-items: center; gap: 0.4rem; }
+
+    /* Search */
+    .search-wrap {
+      padding: 2rem 0 0.5rem;
+    }
+    .search-input {
+      width: 100%;
+      max-width: 620px;
+      display: block;
+      margin: 0 auto;
+      padding: 14px 20px 14px 48px;
+      border: 2px solid #e2e8f0;
+      border-radius: 50px;
+      font-size: 16px;
+      outline: none;
+      background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%2310b981' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E") no-repeat 16px center;
+      transition: border-color 0.2s;
+      color: #0f172a;
+    }
+    .search-input:focus {
+      border-color: #10b981;
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.12);
+    }
+
+    /* Filter pills */
+    .filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding: 14px 0 8px;
+      justify-content: center;
+    }
+    .filter-pill {
+      white-space: nowrap;
+      padding: 8px 20px;
+      border-radius: 50px;
+      border: 2px solid #e2e8f0;
+      background: #fff;
+      color: #364752;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .filter-pill:hover  { border-color: #10b981; color: #10b981; }
+    .filter-pill.active { background: #10b981; border-color: #10b981; color: #fff; }
+
+    /* Sections */
+    section.block { padding: 2.5rem 2rem 3rem; }
+    section.block.alt { background: #f8fafc; }
+
+    .section-title {
+      font-size: 1.7rem;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 0.5rem;
+      color: #0f172a;
+    }
+
+    .section-sub {
+      color: #64748b;
+      text-align: center;
+      max-width: 720px;
+      margin: 0 auto 2.25rem;
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    .section-sub a { color: #0284c7; }
+    .section-sub a:hover { text-decoration: underline; }
+
+    .category-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #059669;
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    /* Tool grid */
+    .tool-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      max-width: 1100px;
+      margin: 0 auto 1rem;
+    }
+
+    @media (max-width: 900px) {
+      .tool-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 520px) {
+      .tool-grid { grid-template-columns: 1fr; }
+    }
+
+    .tool-card {
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 1rem;
+      padding: 1.4rem;
+      transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .tool-card:hover {
+      transform: translateY(-3px);
+      border-color: #10b981;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+    }
+
+    .tool-icon-wrap {
+      width: 44px;
+      height: 44px;
+      border-radius: 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      margin-bottom: 0.9rem;
+    }
+
+    .tool-card h3 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+      color: #0f172a;
+    }
+
+    .tool-card p {
+      font-size: 0.8rem;
+      color: #64748b;
+      line-height: 1.45;
+      flex: 1;
+    }
+
+    .tool-card .open-link {
+      margin-top: 0.75rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #0284c7;
+    }
+
+    /* No-results */
+    .no-results {
+      display: none;
+      text-align: center;
+      padding: 3rem 0;
+      color: #64748b;
+      font-size: 1rem;
+    }
+
+    /* Most Useful row */
+    .popular-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    @media (max-width: 800px) {
+      .popular-grid { grid-template-columns: 1fr; }
+    }
+
+    .popular-card {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 1rem;
+      padding: 1.25rem;
+      transition: all 0.25s;
+    }
+    .popular-card:hover {
+      border-color: #10b981;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+      transform: translateY(-2px);
+    }
+    .popular-card .tool-icon-wrap { flex-shrink: 0; margin-bottom: 0; }
+    .popular-card h3 { margin-bottom: 0.3rem; }
+    .popular-card p { font-size: 0.8rem; color: #64748b; }
+
+    /* Table */
+    .table-wrap {
+      max-width: 950px;
+      margin: 0 auto;
+      overflow-x: auto;
+      border-radius: 1rem;
+      border: 1px solid #e5e7eb;
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 0.85rem; min-width: 600px; }
+    thead { background: #f1f5f9; }
+    th, td { padding: 0.85rem 1rem; text-align: left; }
+    th { color: #0f172a; font-weight: 600; }
+    tbody tr { border-top: 1px solid #e5e7eb; }
+    td { color: #364752; }
+    td:first-child { color: #0284c7; font-weight: 500; white-space: nowrap; }
+
+    /* FAQ */
+    .faq-wrap { max-width: 750px; margin: 0 auto; }
+    .faq-wrap details {
+      background: #f8fafc;
+      border: 1px solid #e5e7eb;
+      border-radius: 0.75rem;
+      padding: 0 1.25rem;
+      margin-bottom: 0.75rem;
+    }
+    .faq-wrap summary {
+      cursor: pointer;
+      padding: 1rem 0;
+      font-weight: 600;
+      font-size: 0.95rem;
+      list-style: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #0f172a;
+    }
+    .faq-wrap summary::-webkit-details-marker { display: none; }
+    .faq-wrap summary::after { content: '+'; font-size: 1.2rem; color: #94a3b8; transition: transform 0.2s; }
+    .faq-wrap details[open] summary::after { transform: rotate(45deg); }
+    .faq-wrap details p { padding-bottom: 1rem; color: #64748b; font-size: 0.88rem; line-height: 1.6; }
+
+    /* CTA */
+    .cta-section {
+      text-align: center;
+      padding: 4rem 2rem;
+      background: linear-gradient(135deg, #f0f9ff, #ecfdf5, #f0f9ff);
+    }
+    .cta-section h2 { font-size: 1.9rem; margin-bottom: 0.75rem; color: #0f172a; }
+    .cta-section p { color: #51636f; margin-bottom: 1.75rem; }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.85rem 1.75rem;
+      border-radius: 0.6rem;
+      background: linear-gradient(to right, #0ea5e9, #10b981);
+      color: white;
+      font-weight: 600;
+      font-size: 0.95rem;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(16, 185, 129, 0.25);
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem;
+      color: #64748b;
+      font-size: 0.8rem;
+      border-top: 1px solid #e5e7eb;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="../index.html" class="logo">
+      <div class="logo-icon">💰</div>
+      <span>FinFlow</span>
+    </a>
+    <div class="nav-links">
+      <a href="../index.html#features">Features</a>
+      <a href="free-calculators.html">Tools</a>
+      <a href="../index.html#learn">Learn</a>
+      <a href="../services.html">Services</a>
+      <details class="nav-menu">
+        <summary>Menu <span class="dropdown-arrow">▼</span></summary>
+        <div class="nav-menu-panel">
+          <a href="../index.html#login">Log In</a>
+          <a href="../index.html#login" class="menu-signup-btn">Sign Up</a>
+        </div>
+      </details>
+      <div class="language-selector">
+        🌐 English
+      </div>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-inner">
+      <h1>Free Financial Calculators &amp; Tools</h1>
+      <p>FinFlow offers free financial calculators built for India — FIRE planning, SIP &amp; investing, EMI &amp; loans, income tax, retirement, NPS, and more. No sign-up, no email, no paywall.</p>
+      <div class="trust-badges">
+        <span>✓ 100% free</span>
+        <span>✓ No sign-up</span>
+        <span>✓ No email required</span>
+        <span>✓ Works in your browser</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="container">
+    <div class="search-wrap">
+      <input type="search" id="toolSearch" class="search-input" placeholder="Search calculators…" autocomplete="off" aria-label="Search calculators">
+    </div>
+    <div class="filter-bar" role="tablist" aria-label="Calculator categories">
+      <button class="filter-pill active" data-filter="all" role="tab">All</button>
+      <button class="filter-pill" data-filter="health" role="tab">Financial Health</button>
+      <button class="filter-pill" data-filter="goal" role="tab">Plan Your Goals</button>
+      <button class="filter-pill" data-filter="invest" role="tab">Invest &amp; Grow</button>
+      <button class="filter-pill" data-filter="loan" role="tab">Loans &amp; Debt</button>
+      <button class="filter-pill" data-filter="tax" role="tab">Tax Planning</button>
+    </div>
+  </div>
+
+  <section class="block alt">
+    <p class="category-label">✨ Most Useful</p>
+    <div class="popular-grid">
+      <a href="fire-calculator.html" class="popular-card">
+        <div class="tool-icon-wrap" style="background: rgba(217,119,6,0.12);">🔥</div>
+        <div>
+          <h3>FIRE Calculator</h3>
+          <p>Plan your retirement number and project your path.</p>
+        </div>
+      </a>
+      <a href="monthly-expense-calculator.html" class="popular-card">
+        <div class="tool-icon-wrap" style="background: rgba(16,185,129,0.12);">🧮</div>
+        <div>
+          <h3>Monthly Expense Calculator</h3>
+          <p>See exactly where your money goes every month.</p>
+        </div>
+      </a>
+      <a href="fitness-score.html" class="popular-card">
+        <div class="tool-icon-wrap" style="background: rgba(79,70,229,0.12);">💯</div>
+        <div>
+          <h3>Financial Fitness Score</h3>
+          <p>A 2-minute quiz — get your score out of 100.</p>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <section class="block" id="section-health">
+    <p class="section-title" data-section="health">Financial Health</p>
+    <p class="section-sub">Get an honest read on where you stand today, and how you compare.</p>
+    <div class="tool-grid" id="cards-health">
+      <a href="fitness-score.html" class="tool-card" data-category="health" data-name="financial health score fitness score">
+        <div class="tool-icon-wrap" style="background: rgba(79,70,229,0.12);">💯</div>
+        <h3>Financial Fitness Score</h3>
+        <p>A 2-minute quiz on savings, debt, and protection — get your score out of 100.</p>
+        <span class="open-link">Check your score →</span>
+      </a>
+      <a href="monthly-expense-calculator.html" class="tool-card" data-category="health" data-name="monthly expense calculator budget">
+        <div class="tool-icon-wrap" style="background: rgba(16,185,129,0.12);">🧮</div>
+        <h3>Monthly Expense Calculator</h3>
+        <p>See exactly where your money goes every month, category by category.</p>
+        <span class="open-link">Open calculator →</span>
+      </a>
+      <a href="#" class="tool-card" data-category="health" data-name="net worth percentile">
+        <div class="tool-icon-wrap" style="background: rgba(5,150,105,0.12);">📈</div>
+        <h3>Net Worth Percentile</h3>
+        <p>See where you stack up by age and city.</p>
+        <span class="open-link">Open calculator →</span>
+      </a>
+      <a href="#" class="tool-card" data-category="health" data-name="personal finance blog">
+        <div class="tool-icon-wrap" style="background: rgba(5,150,105,0.12);">📖</div>
+        <h3>Personal Finance Blog</h3>
+        <p>Money guides, FIRE math, and data-driven deep dives.</p>
+        <span class="open-link">Read the blog →</span>
+      </a>
+    </div>
+  </section>
+
+  <section class="block alt" id="section-goal">
+    <p class="section-title" data-section="goal">Plan Your Goals</p>
+    <p class="section-sub">Work out when you can retire early — and what it takes to fund every goal along the way.</p>
+    <div class="tool-grid" id="cards-goal">
+      <a href="fire-calculator.html" class="tool-card" data-category="goal" data-name="fire calculator">
+        <div class="tool-icon-wrap" style="background: rgba(217,119,6,0.12);">🔥</div>
+        <h3>FIRE Calculator</h3>
+        <p>Plan your retirement number and project your path.</p>
+        <span class="open-link">Open calculator →</span>
+      </a>
+      <a href="#" class="tool-card" data-category="goal" data-name="coast fire calculator">
+        <div class="tool-icon-wrap" style="background: rgba(225,29,72,0.12);">🎯</div>
+        <h3>Coast FIRE Calculator</h3>
+        <p>Stop saving when compound interest can finish the job.</p>
+        <span class="open-link">Open calculator →</span>
+      </a>
+      <a href="#" class="tool-card" data-category="goal" data-name="barista fire calculator">
+        <div class="tool-icon-wrap" style="background: rgba(217,119,6,0.12);">☕</div>
+        <h3>Barista FIRE Calculator</h3>
+        <p>Downshift to part-time work — with healthcare costs built in.</p>
+        <span class="open-link">Open calculator →</span>
+      </a>
+      <a href="#" class="tool-card" data-category="goal" data-name="how long will my money last">
+        <div class="tool-icon-wrap" style="background: rgba(79,70,229,0.12);">⏳</div>
+        <h3>How Long Will My Money Last</h3>
+        <p>See how many years your savings cover your spending.</p>
+        <span class="open-link">Open calculator →</span>
+      </a>
+      <a href="#" class="tool-card" data-category="goal" data-name="retirement calculator">
+        <div class="tool-icon-wrap" style="background: rgba(8,145,178,0.12);">🧓</div>
+        <h3>Retirement Calculator</h3>
+        <p>Find out how much you need to retire comfortably.</p>
+        <span class="open-link">Open calculator →</span>
+      </a>
+      <a href="#" class="tool-card" data-category="goal" data-name="nps calculator">
+        <div class="tool-icon-wrap" style="background: rgba(5,150,105,0.12);">🏛️</div>
+        <h3>NPS Calculator</h3>
+        <p>Project your National Pension System corpus and annuity.</p>
+        <span class="open-link">Open calculator →</span>
+      </a>
+      <a href="#" class="tool-card" data-category="goal" data-name="goal sip calculator">
+        <div class="tool-icon-wrap" style="background: rgba(8,145,178,0.12);">🥅</div>
+        <h3>Goal SIP Calculator</h3>
+        <p>Work out the monthly SIP needed for any goal.</p>
+        <span class="open-link">Open calculator →</span>
+      </a>
+      <a href="#" class="tool-card" data-category="goal" data-name="child education planner">
+        <div class="tool-icon-wrap" style="background: rgba(219,39,119,0.12);">🎓</div>
+        <h3>Child Education Planner</h3>
+        <p>Plan future education costs, years in advance.</p>
+        <span class="open-link">Open calculator →</span>
+      </a>
+      <a href="#" class="tool-card" data-category="goal" data-name="dream vacation">
+        <div class="tool-icon-wrap" style="background: rgba(13,148,136,0.12);">🏖️</div>
+        <h3>Dream Vacation</h3>
+        <p>See what it takes to save for your next big trip.</p>
+        <span class="open-link">Open calculator →</span>
+      </a>
+      <a href="#" class="tool-card" data-category="goal" data-name="swp calculator">
+        <div class="tool-icon-wrap" style="background: rgba(8,145,178,0.12);">💧</div>
+        <h3>SWP Calculator</h3>
+        <p>Plan steady withdrawals from your investments.</p>
+        <span class="open-link">Open calculator →</span>
+      </a>
+    </div>
+  </section>
+
+  <section class="block" id="section-invest">
+    <p class="section-title" data-section="invest">Invest &amp; Grow</p>
+    <p class="section-sub">See what your money can do over decades — growth, allocation, and real-world comparisons.</p>
+    <div class="tool-grid" id="cards-invest">
+      <a href="#" class="tool-card" data-category="invest" data-name="compound interest calculator">
+        <div class="tool-icon-wrap" style="background: rgba(8,145,178,0.12);">📈</div>
+        <h3>Compound Interest Calculator</h3>
+        <p>See how fees, inflation, and time shape your future.</p>
+        <span class="open-link">Open calculator →</span>
+      </a>
+      <a href="#" class="tool-card" data-category="invest" data-name="portfolio analysis tool">
+        <div class="tool-icon-wrap" style="background: rgba(37,99,235,0.12);">📊</div>
+        <h3>Portfolio Analysis Tool</h3>
+        <p>Compare mutual funds and ETFs by risk, return, and overlap.</p>
+        <span class="open-link">Open calculator →</span>
+      </a>
+      <a href="#" class="tool-card" data-category="invest" data-name="macro graphs">
+        <div class="tool-icon-wrap" style="background: rgba(6,182,212,0.12);">🌐</div>
+        <h3>Macro Graphs</h3>
+        <p>Compare inflation, rates and growth across countries.</p>
+        <span class="open-link">Explore the data →</span>
+      </a>
+      <a href="#" class="tool-card" data-category="invest" data-name="what-if investment calculator">
+        <div class="tool-icon-wrap" style="background: rgba(124,58,237,0.12);">🔄</div>
+        <h3>What-If Investment Calculator</h3>
+        <p>See what ₹1,00,000 in Nifty 50 or Bitcoin would be worth today.</p>
+        <span class="open-link">Open calculator →</span>
+      </a>
+      <a href="#" class="tool-card" data-category="invest" data-name="dividend snowball">
+        <div class="tool-icon-wrap" style="background: rgba(13,148,136,0.12);">❄️</div>
+        <h3>Dividend Snowball</h3>
+        <p>Watch reinvested dividends snowball into real income.</p>
+        <span class="open-link">Open calculator →</span>
+      </a>
+      <a href="#" class="tool-card" data-category="invest" data-name="sip calculator">
+        <div class="tool-icon-wrap" style="background: rgba(8,145,178,0.12);">🪙</div>
+        <h3>SIP Calculator</h3>
+        <p>Project how your monthly SIP grows over time.</p>
+        <span class="open-link">Open calculator →</span>
+      </a>
+      <a href="#" class="tool-card" data-category="invest" data-name="step-up sip calculator">
+        <div class="tool-icon-wrap" style="background: rgba(124,58,237,0.12);">📶</div>
+        <h3>Step-Up SIP Calculator</h3>
+        <p>Increase your SIP every year and see the difference.</p>
+        <span class="open-link">Open calculator →</span>
+      </a>
+      <a href="#" class="tool-card" data-category="invest" data-name="cagr calculator">
+        <div class="tool-icon-wrap" style="background: rgba(37,99,235,0.12);">📐</div>
+        <h3>CAGR Calculator</h3>
+        <p>Check the average annual return on any investment.</p>
+        <span class="open-link">Open calculator →</span>
+      </a>
+      <a href="#" class="tool-card" data-category="invest" data-name="xirr calculator">
+        <div class="tool-icon-wrap" style="background: rgba(6,182,212,0.12);">➗</div>
+        <h3>XIRR Calculator</h3>
+        <p>Measure returns on investments with irregular cash flows.</p>
+        <span class="open-link">Open calculator →</span>
+      </a>
+      <a href="#" class="tool-card" data-category="invest" data-name="asset allocation calculator">
+        <div class="tool-icon-wrap" style="background: rgba(219,39,119,0.12);">🥧</div>
+        <h3>Asset Allocation Calculator</h3>
+        <p>Find the right equity-debt-gold mix for your risk profile.</p>
+        <span class="open-link">Open calculator →</span>
+      </a>
+      <a href="#" class="tool-card" data-category="invest" data-name="my first 1 crore">
+        <div class="tool-icon-wrap" style="background: rgba(217,119,6,0.12);">🏆</div>
+        <h3>My First 1 Crore</h3>
+        <p>Map the journey to your first ₹1 crore.</p>
+        <span class="open-link">Open calculator →</span>
+      </a>
+      <a href="#" class="tool-card" data-category="invest" data-name="mf overlap calculator">
+        <div class="tool-icon-wrap" style="background: rgba(101,163,13,0.12);">🔍</div>
+        <h3>MF Overlap Calculator</h3>
+        <p>See common stocks across your mutual funds.</p>
+        <span class="open-link">Open calculator →</span>
+      </a>
+    </div>
+  </section>
+
+  <section class="block alt" id="section-loan">
+    <p class="section-title" data-section="loan">Loans &amp; Debt</p>
+    <p class="section-sub">Get the full picture of your biggest debts — loans, EMIs, prepayments, and rent vs buy.</p>
+    <div class="tool-grid" id="cards-loan">
+      <a href="#" class="tool-card" data-category="loan" data-name="mortgage side-by-side">
+        <div class="tool-icon-wrap" style="background: rgba(124,58,237,0.12);">🏠</div>
+        <h3>Mortgage Side-by-Side</h3>
+        <p>Compare two home loans and see lifetime cost.</p>
+        <span class="open-link">Open calculator →</span>
+      </a>
+      <a href="#" class="tool-card" data-category="loan" data-name="mortgage vs invest">
+        <div class="tool-icon-wrap" style="background: rgba(217,119,6,0.12);">⚖️</div>
+        <h3>Mortgage vs Invest</h3>
+        <p>Prepay your home loan early or invest the cash?</p>
+        <span class="open-link">Open calculator →</span>
+      </a>
+      <a href="#" class="tool-card" data-category="loan" data-name="rent vs buy">
+        <div class="tool-icon-wrap" style="background: rgba(5,150,105,0.12);">🔀</div>
+        <h3>Rent vs Buy</h3>
+        <p>Rent and invest, or buy? See the real breakeven year.</p>
+        <span class="open-link">Open calculator →</span>
+      </a>
+      <a href="#" class="tool-card" data-category="loan" data-name="debt snowball vs avalanche">
+        <div class="tool-icon-wrap" style="background: rgba(225,29,72,0.12);">💳</div>
+        <h3>Debt Snowball vs Avalanche</h3>
+        <p>Two payoff methods, one debt-free date — see which wins.</p>
+        <span class="open-link">Open calculator →</span>
+      </a>
+      <a href="#" class="tool-card" data-category="loan" data-name="emi calculator">
+        <div class="tool-icon-wrap" style="background: rgba(37,99,235,0.12);">🧮</div>
+        <h3>EMI Calculator</h3>
+        <p>Estimate your monthly loan repayments instantly.</p>
+        <span class="open-link">Open calculator →</span>
+      </a>
+      <a href="#" class="tool-card" data-category="loan" data-name="loan prepayment calculator">
+        <div class="tool-icon-wrap" style="background: rgba(5,150,105,0.12);">🐖</div>
+        <h3>Loan Prepayment Calculator</h3>
+        <p>See how much prepaying your loan actually saves.</p>
+        <span class="open-link">Open calculator →</span>
+      </a>
+      <a href="#" class="tool-card" data-category="loan" data-name="earn back emi">
+        <div class="tool-icon-wrap" style="background: rgba(8,145,178,0.12);">💼</div>
+        <h3>Earn Back EMI</h3>
+        <p>See how an investment could offset your EMI over time.</p>
+        <span class="open-link">Open calculator →</span>
+      </a>
+    </div>
+  </section>
+
+  <section class="block" id="section-tax">
+    <p class="section-title" data-section="tax">Tax Planning</p>
+    <p class="section-sub">Know what you owe, and what you can save — under India's tax rules.</p>
+    <div class="tool-grid" id="cards-tax" style="grid-template-columns: repeat(3, 1fr); max-width: 850px;">
+      <a href="#" class="tool-card" data-category="tax" data-name="income tax calculator">
+        <div class="tool-icon-wrap" style="background: rgba(225,29,72,0.12);">🧾</div>
+        <h3>Income Tax Calculator</h3>
+        <p>Compare the old vs new tax regime and estimate your tax.</p>
+        <span class="open-link">Open calculator →</span>
+      </a>
+      <a href="#" class="tool-card" data-category="tax" data-name="capital gain tax calculator">
+        <div class="tool-icon-wrap" style="background: rgba(217,119,6,0.12);">💹</div>
+        <h3>Capital Gain Tax Calculator</h3>
+        <p>Estimate tax on your equity, mutual fund, or property gains.</p>
+        <span class="open-link">Open calculator →</span>
+      </a>
+      <a href="#" class="tool-card" data-category="tax" data-name="hra calculator">
+        <div class="tool-icon-wrap" style="background: rgba(5,150,105,0.12);">🏡</div>
+        <h3>HRA Calculator</h3>
+        <p>Work out your HRA exemption from rent and salary.</p>
+        <span class="open-link">Open calculator →</span>
+      </a>
+    </div>
+  </section>
+
+  <div class="container">
+    <div class="no-results" id="no-results">
+      <p>No calculators found for “<span id="no-results-term"></span>”</p>
+    </div>
+  </div>
+
+  <section class="block alt">
+    <p class="section-title">Which calculator answers your question?</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Calculator</th><th>Question it answers</th><th>Key inputs</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>FIRE Calculator</td><td>When can I retire early, and how much do I need?</td><td>Portfolio, savings rate, returns</td></tr>
+          <tr><td>SIP Calculator</td><td>What will my monthly SIP be worth over time?</td><td>Monthly amount, return, tenure</td></tr>
+          <tr><td>Step-Up SIP Calculator</td><td>How much faster can I grow wealth by increasing my SIP yearly?</td><td>Starting SIP, step-up %, tenure</td></tr>
+          <tr><td>EMI Calculator</td><td>What will my monthly loan repayment be?</td><td>Loan amount, rate, tenure</td></tr>
+          <tr><td>Income Tax Calculator</td><td>Old regime or new regime — which saves more tax?</td><td>Income, deductions, regime</td></tr>
+          <tr><td>HRA Calculator</td><td>How much of my HRA is tax-exempt?</td><td>Basic salary, HRA received, rent paid, city</td></tr>
+          <tr><td>NPS Calculator</td><td>What corpus and pension can I expect from NPS?</td><td>Contribution, age, expected return</td></tr>
+          <tr><td>CAGR Calculator</td><td>What was my investment's average annual return?</td><td>Start value, end value, duration</td></tr>
+          <tr><td>XIRR Calculator</td><td>What's my real return with irregular investments?</td><td>Cash flow dates and amounts</td></tr>
+          <tr><td>Mortgage vs Invest</td><td>Prepay the home loan early or invest?</td><td>Loan rate, market return, inflation</td></tr>
+          <tr><td>Rent vs Buy Calculator</td><td>Should I rent or buy — and when does buying win?</td><td>Home price, rent, down payment, return</td></tr>
+          <tr><td>Debt Snowball vs Avalanche</td><td>Snowball or avalanche — when am I debt-free?</td><td>Balances, rates, minimum payments</td></tr>
+          <tr><td>Net Worth Percentile</td><td>How does my net worth compare to my peers?</td><td>Net worth, age, city</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="block">
+    <p class="section-title">Frequently Asked Questions</p>
+    <div class="faq-wrap">
+      <details open>
+        <summary>Are these financial calculators really free?</summary>
+        <p>Yes — every calculator on this page is completely free, with no paywall, no premium tier, and no usage limits. They're maintained as part of the free FinFlow app, so there's no catch hidden inside the tools.</p>
+      </details>
+      <details>
+        <summary>Do I need an account or email to use them?</summary>
+        <p>No. Every calculator on this page runs directly in your browser without registration, email, or credit card. If you want to track your progress over time, you can optionally create a free account in the app.</p>
+      </details>
+      <details>
+        <summary>Which FIRE calculator should I start with?</summary>
+        <p>Start with the FIRE Calculator to find your overall FIRE number and timeline. Then use the Coast FIRE Calculator to see when you could stop saving, and the Barista FIRE Calculator if part-time work is part of your plan.</p>
+      </details>
+      <details>
+        <summary>What's the difference between SIP and Step-Up SIP?</summary>
+        <p>A regular SIP invests the same fixed amount every month throughout the tenure. A Step-Up SIP lets you increase your monthly investment by a fixed percentage each year, helping you build wealth faster as your income grows. Use the Step-Up SIP Calculator to compare both scenarios side by side.</p>
+      </details>
+      <details>
+        <summary>Can I save my results?</summary>
+        <p>The calculators themselves don't store anything — your inputs stay in your browser. If you want to go further, create a free FinFlow account to track your plan against your real numbers.</p>
+      </details>
+    </div>
+  </section>
+
+  <section class="cta-section">
+    <h2>See your full financial picture</h2>
+    <p>One free app for budgets, net worth, portfolio, and your FIRE plan — pick up where the calculators leave off.</p>
+    <a href="../index.html" class="btn-primary">Get Started Free →</a>
+  </section>
+
+  <footer>
+    &copy; 2026 FinFlow. All rights reserved.
+  </footer>
+
+  <script>
+    (function () {
+      var search = document.getElementById('toolSearch');
+      var pills = document.querySelectorAll('.filter-pill');
+      var cards = document.querySelectorAll('[data-category]');
+      var headings = document.querySelectorAll('[data-section]');
+      var noResults = document.getElementById('no-results');
+      var noResultsTerm = document.getElementById('no-results-term');
+      var activeFilter = 'all';
+
+      function applyFilters() {
+        var q = search.value.toLowerCase().trim();
+        var visibleCount = 0;
+
+        cards.forEach(function (card) {
+          var cat = card.dataset.category;
+          var name = card.dataset.name.toLowerCase();
+          var matchFilter = activeFilter === 'all' || cat === activeFilter;
+          var matchSearch = !q || name.indexOf(q) !== -1;
+          var show = matchFilter && matchSearch;
+          card.style.display = show ? '' : 'none';
+          if (show) visibleCount++;
+        });
+
+        headings.forEach(function (h) {
+          var sec = h.dataset.section;
+          var secRow = document.getElementById('cards-' + sec);
+          var visible = secRow && Array.prototype.some.call(
+            secRow.querySelectorAll('[data-category]'),
+            function (c) { return c.style.display !== 'none'; }
+          );
+          var section = document.getElementById('section-' + sec);
+          if (section) section.style.display = visible ? '' : 'none';
+        });
+
+        noResults.style.display = visibleCount === 0 ? 'block' : 'none';
+        if (q && noResultsTerm) noResultsTerm.textContent = search.value;
+      }
+
+      pills.forEach(function (pill) {
+        pill.addEventListener('click', function () {
+          pills.forEach(function (p) { p.classList.remove('active'); });
+          pill.classList.add('active');
+          activeFilter = pill.dataset.filter;
+          applyFilters();
+        });
+      });
+
+      if (search) search.addEventListener('input', applyFilters);
+    }());
+  </script>
+</body>
+</html>

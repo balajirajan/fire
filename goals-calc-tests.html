@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Goals Calc Tests - FinFlow</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f8fafc; color: #0f172a; padding: 2rem; }
+    h1 { font-size: 1.3rem; font-weight: 800; margin-bottom: 0.3rem; }
+    p.sub { color: #64748b; font-size: 0.85rem; margin-bottom: 1.5rem; }
+    .summary { font-size: 0.95rem; font-weight: 700; padding: 0.9rem 1.1rem; border-radius: 0.6rem; margin-bottom: 1.25rem; }
+    .summary.pass { background: #ecfdf5; color: #059669; }
+    .summary.fail { background: #fef2f2; color: #dc2626; }
+    table { width: 100%; border-collapse: collapse; background: #fff; border: 1px solid #e2e8f0; border-radius: 0.6rem; overflow: hidden; }
+    th, td { text-align: left; padding: 0.6rem 0.8rem; font-size: 0.82rem; border-bottom: 1px solid #f1f5f9; }
+    th { background: #f1f5f9; font-weight: 700; }
+    tr.pass td.status { color: #059669; font-weight: 700; }
+    tr.fail td.status { color: #dc2626; font-weight: 700; }
+    td.detail { color: #64748b; font-family: ui-monospace, monospace; font-size: 0.78rem; }
+  </style>
+</head>
+<body>
+  <h1>Goals Calculation — Unit Tests</h1>
+  <p class="sub">Runs js/goals-calc.js in an actual browser and asserts results, since there is no Node/Jest available in this environment. Open this file directly to check pass/fail.</p>
+  <div class="summary" id="summary">Running...</div>
+  <table>
+    <thead><tr><th style="width:40%;">Test</th><th style="width:10%;">Status</th><th>Detail</th></tr></thead>
+    <tbody id="resultsBody"></tbody>
+  </table>
+
+  <script src="js/goals-calc.js"></script>
+  <script>
+    var results = [];
+
+    function approxEqual(actual, expected, tolerance) {
+      return Math.abs(actual - expected) <= tolerance;
+    }
+
+    function assert(name, condition, detail) {
+      results.push({ name: name, pass: !!condition, detail: detail || '' });
+    }
+
+    function d(dateStr) { return new Date(dateStr + 'T00:00:00'); }
+
+    // --- calcFutureValueNeeded ---
+    (function () {
+      var fv = GoalsCalc.calcFutureValueNeeded(1000000, 6, d('2021-08-14'), d('2026-08-14'));
+      assert('futureValueNeeded: 10L @ 6% over 5y ≈ 13,38,225.58', approxEqual(fv, 1338225.58, 1), 'got ' + fv.toFixed(2));
+    })();
+
+    (function () {
+      var fv = GoalsCalc.calcFutureValueNeeded(500000, 0, d('2021-08-14'), d('2026-08-14'));
+      assert('futureValueNeeded: 0% inflation returns target unchanged', approxEqual(fv, 500000, 0.5), 'got ' + fv.toFixed(2));
+    })();
+
+    // --- calcRequiredMonthlyContribution ---
+    (function () {
+      var fvNeeded = 1338225.58;
+      var pmt = GoalsCalc.calcRequiredMonthlyContribution(200000, fvNeeded, 10, d('2021-08-14'), d('2026-08-14'));
+      assert('requiredMonthlyContribution: matches independently-verified Python figure (≈13,032.05)', approxEqual(pmt, 13032.05, 1), 'got ' + pmt.toFixed(2));
+    })();
+
+    (function () {
+      var pmt = GoalsCalc.calcRequiredMonthlyContribution(2000000, 1338225.58, 10, d('2021-08-14'), d('2026-08-14'));
+      assert('requiredMonthlyContribution: floors at 0 when already overfunded', pmt === 0, 'got ' + pmt);
+    })();
+
+    (function () {
+      var pmt = GoalsCalc.calcRequiredMonthlyContribution(0, 500000, 0, d('2024-08-14'), d('2026-08-14'));
+      assert('requiredMonthlyContribution: 0% return, 24 months, matches remaining/months', approxEqual(pmt, 500000 / 24, 0.5), 'got ' + pmt.toFixed(2));
+    })();
+
+    // --- calcAverageMonthlyContribution ---
+    (function () {
+      var avg = GoalsCalc.calcAverageMonthlyContribution([], d('2026-08-14'));
+      assert('averageMonthlyContribution: no history returns null', avg === null, 'got ' + avg);
+    })();
+
+    (function () {
+      var contribs = [
+        { amount: 5000, contributed_at: '2026-06-01' },
+        { amount: 5000, contributed_at: '2026-07-01' },
+        { amount: 5000, contributed_at: '2026-08-01' }
+      ];
+      var avg = GoalsCalc.calcAverageMonthlyContribution(contribs, d('2026-08-14'));
+      assert('averageMonthlyContribution: 3 months of 5,000 ≈ 5,000/mo', approxEqual(avg, 5000, 1), 'got ' + avg.toFixed(2));
+    })();
+
+    (function () {
+      // Only 2 months of history exist (goal is new) — window should shrink to actual history, not force a 6-month divisor.
+      var contribs = [
+        { amount: 10000, contributed_at: '2026-07-01' },
+        { amount: 10000, contributed_at: '2026-08-01' }
+      ];
+      var avg = GoalsCalc.calcAverageMonthlyContribution(contribs, d('2026-08-14'));
+      assert('averageMonthlyContribution: <6mo history averages over actual span, not forced 6mo', approxEqual(avg, 10000, 1), 'got ' + avg.toFixed(2));
+    })();
+
+    // --- calcProjectedCompletion ---
+    (function () {
+      var proj = GoalsCalc.calcProjectedCompletion(500000, 500000, 5000, 10, d('2026-08-14'));
+      assert('projectedCompletion: current >= needed returns already_funded', proj.status === 'already_funded', JSON.stringify(proj));
+    })();
+
+    (function () {
+      var proj = GoalsCalc.calcProjectedCompletion(100000, 500000, null, 10, d('2026-08-14'));
+      assert('projectedCompletion: no contribution history returns not_enough_data', proj.status === 'not_enough_data', JSON.stringify(proj));
+    })();
+
+    (function () {
+      var proj = GoalsCalc.calcProjectedCompletion(100000, 5000000000, 100, 5, d('2026-08-14'));
+      assert('projectedCompletion: contribution too small vs target hits the 600-month cap (too_far)', proj.status === 'too_far' && proj.months === 600, JSON.stringify(proj));
+    })();
+
+    (function () {
+      // Round-trip check: feeding the exact required PMT back in should land the projection close to the target date itself.
+      var from = d('2021-08-14'), target = d('2026-08-14');
+      var fvNeeded = GoalsCalc.calcFutureValueNeeded(1000000, 6, from, target);
+      var pmt = GoalsCalc.calcRequiredMonthlyContribution(200000, fvNeeded, 10, from, target);
+      var proj = GoalsCalc.calcProjectedCompletion(200000, fvNeeded, pmt, 10, from);
+      assert('projectedCompletion: contributing exactly the required PMT completes in ~60 months', proj.status === 'ok' && proj.months >= 59 && proj.months <= 61, JSON.stringify(proj));
+    })();
+
+    // --- calcStatusBadge ---
+    (function () {
+      var badge = GoalsCalc.calcStatusBadge({ status: 'not_enough_data' }, d('2026-12-01'));
+      assert('statusBadge: not_enough_data passes through', badge === 'not_enough_data', 'got ' + badge);
+    })();
+
+    (function () {
+      var badge = GoalsCalc.calcStatusBadge({ status: 'already_funded', date: d('2026-08-14'), months: 0 }, d('2028-01-01'));
+      assert('statusBadge: already_funded is ahead', badge === 'ahead', 'got ' + badge);
+    })();
+
+    (function () {
+      var badge = GoalsCalc.calcStatusBadge({ status: 'too_far', months: 600 }, d('2028-01-01'));
+      assert('statusBadge: too_far is behind', badge === 'behind', 'got ' + badge);
+    })();
+
+    (function () {
+      // Projected date is well before the target date (>60 days early) -> ahead
+      var badge = GoalsCalc.calcStatusBadge({ status: 'ok', date: d('2026-08-14'), months: 12 }, d('2026-12-01'));
+      assert('statusBadge: projected date >60 days before target is ahead', badge === 'ahead', 'got ' + badge);
+    })();
+
+    (function () {
+      // Projected date lands within +/-60 days of the target -> on_track
+      var badge = GoalsCalc.calcStatusBadge({ status: 'ok', date: d('2026-11-01'), months: 12 }, d('2026-12-01'));
+      assert('statusBadge: projected date within 60 days of target is on_track', badge === 'on_track', 'got ' + badge);
+    })();
+
+    (function () {
+      // Projected date is well after the target date -> behind
+      var badge = GoalsCalc.calcStatusBadge({ status: 'ok', date: d('2028-01-01'), months: 60 }, d('2026-12-01'));
+      assert('statusBadge: projected date well after target is behind', badge === 'behind', 'got ' + badge);
+    })();
+
+    // --- render ---
+    var body = document.getElementById('resultsBody');
+    var passCount = 0;
+    results.forEach(function (r) {
+      if (r.pass) passCount++;
+      var tr = document.createElement('tr');
+      tr.className = r.pass ? 'pass' : 'fail';
+      tr.innerHTML = '<td>' + r.name + '</td><td class="status">' + (r.pass ? 'PASS' : 'FAIL') + '</td><td class="detail">' + r.detail + '</td>';
+      body.appendChild(tr);
+    });
+
+    var summary = document.getElementById('summary');
+    var allPass = passCount === results.length;
+    summary.className = 'summary ' + (allPass ? 'pass' : 'fail');
+    summary.textContent = passCount + ' / ' + results.length + ' tests passed' + (allPass ? ' — all green.' : ' — see failures below.');
+  </script>
+</body>
+</html>

@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rashi &amp; Nakshatra Finder - FinFlow</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f8fafc;
+      color: #0f172a;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    a, button { color: inherit; text-decoration: none; font-family: inherit; }
+
+    .app-shell { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
+    @media (max-width: 860px) { .app-shell { grid-template-columns: 1fr; } .sidebar { display: none; } }
+
+    /* Sidebar */
+    .sidebar { background: #ffffff; border-right: 1px solid #e2e8f0; display: flex; flex-direction: column; padding: 1.5rem 1.25rem; }
+    .sidebar-logo { display: flex; align-items: center; gap: 0.65rem; font-size: 1.1rem; font-weight: 800; margin-bottom: 2rem; padding: 0 0.25rem; }
+    .sidebar-logo-icon { width: 30px; height: 30px; background: linear-gradient(135deg, #0ea5e9, #10b981); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; flex-shrink: 0; }
+    .sidebar-nav { display: flex; flex-direction: column; gap: 0.25rem; }
+    .sidebar-nav a, .sidebar-nav .nav-group-head { display: flex; align-items: center; gap: 0.75rem; padding: 0.7rem 0.75rem; border-radius: 0.6rem; font-size: 0.9rem; font-weight: 500; color: #364752; }
+    .sidebar-nav a:hover, .sidebar-nav .nav-group-head:hover { background: #f1f5f9; }
+    .sidebar-nav a.active { background: #0f172a; color: #ffffff; font-weight: 600; }
+    .sidebar-nav .nav-group-head.open { background: #f1f5f9; font-weight: 700; }
+    .sidebar-nav .nav-icon { font-size: 1rem; width: 20px; text-align: center; flex-shrink: 0; }
+    .sidebar-nav .nav-label { flex: 1; }
+    .sidebar-nav .nav-chevron { color: #94a3b8; font-size: 0.85rem; }
+    .sidebar-subnav { display: flex; flex-direction: column; gap: 0.2rem; padding-left: 1.6rem; margin: 0.15rem 0 0.3rem; }
+    .sidebar-subnav a { display: flex; align-items: center; gap: 0.6rem; padding: 0.55rem 0.6rem; border-radius: 0.5rem; font-size: 0.85rem; font-weight: 500; color: #364752; }
+    .sidebar-subnav a:hover { background: #f1f5f9; }
+    .sidebar-subnav a.active { background: #0f172a; color: #fff; font-weight: 600; }
+    .sidebar-spacer { flex: 1; }
+    .feedback-card { background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 0.9rem; padding: 1.1rem; margin-top: 1.5rem; }
+    .feedback-card .fc-icon { width: 32px; height: 32px; border-radius: 0.6rem; background: #eef2f7; display: flex; align-items: center; justify-content: center; font-size: 0.95rem; margin-bottom: 0.6rem; }
+    .feedback-card strong { display: block; font-size: 0.85rem; margin-bottom: 0.3rem; }
+    .feedback-card p { font-size: 0.78rem; color: #64748b; line-height: 1.5; margin-bottom: 0.85rem; }
+    .feedback-card a { display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; width: 100%; padding: 0.55rem; border: 1px solid #cbd5e1; border-radius: 0.5rem; font-size: 0.8rem; font-weight: 600; color: #364752; }
+    .feedback-card a:hover { border-color: #10b981; color: #10b981; }
+
+    /* Main */
+    .main { padding: 1.5rem 2.5rem 3rem; min-width: 0; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; padding-bottom: 1.25rem; border-bottom: 1px solid #e2e8f0; margin-bottom: 1.5rem; }
+    .topbar h1 { font-size: 1.4rem; font-weight: 700; }
+    .topbar-right { display: flex; align-items: center; gap: 0.85rem; }
+    .language-selector { display: flex; align-items: center; gap: 0.5rem; background: #ffffff; padding: 0.5rem 0.9rem; border-radius: 0.5rem; color: #51636f; border: 1px solid #e2e8f0; cursor: pointer; font-size: 0.85rem; }
+    .user-menu { position: relative; list-style: none; }
+    .user-menu > summary { cursor: pointer; list-style: none; width: 34px; height: 34px; border-radius: 50%; background: #eef2f7; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; font-size: 1rem; }
+    .user-menu > summary::-webkit-details-marker { display: none; }
+    .user-menu-panel { position: absolute; top: calc(100% + 0.6rem); right: 0; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 0.75rem; box-shadow: 0 10px 30px rgba(15,23,42,0.12); padding: 0.4rem; min-width: 150px; z-index: 20; }
+    .user-menu-panel a { display: block; padding: 0.55rem 0.7rem; border-radius: 0.5rem; font-size: 0.85rem; color: #364752; font-weight: 500; }
+    .user-menu-panel a:hover { background: #f1f5f9; color: #10b981; }
+
+    .page-head { margin-bottom: 1rem; }
+    .page-head h2 { font-size: 1.6rem; font-weight: 800; margin-bottom: 0.3rem; }
+    .page-head p { color: #64748b; font-size: 0.9rem; }
+
+    .tone-banner { display: flex; align-items: center; gap: 0.55rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 0.65rem; padding: 0.6rem 0.9rem; margin-bottom: 1.5rem; font-size: 0.76rem; color: #64748b; line-height: 1.5; }
+    .tone-banner .tb-icon { font-size: 0.9rem; flex-shrink: 0; }
+
+    .usage-banner { display: flex; align-items: flex-start; gap: 0.75rem; background: linear-gradient(135deg, #eef2ff, #f5f3ff); border: 1px solid #c7d2fe; border-radius: 0.9rem; padding: 1rem 1.2rem; margin-bottom: 1.25rem; }
+    .usage-banner .ub-icon { font-size: 1.3rem; flex-shrink: 0; }
+    .usage-banner > div > strong { display: block; font-size: 1.15rem; font-weight: 800; color: #312e81; margin-bottom: 0.6rem; }
+    .usage-banner-list { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
+    .usage-banner-list li { font-size: 0.82rem; color: #4338ca; line-height: 1.55; padding-left: 1.2rem; position: relative; }
+    .usage-banner-list li::before { content: '◆'; position: absolute; left: 0; top: 0.05em; font-size: 0.65rem; color: #7c3aed; }
+    .usage-banner-list li strong { color: #312e81; font-weight: 700; }
+
+    /* Input card */
+    .astro-input-card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 1.1rem; padding: 1.6rem 1.75rem; margin-bottom: 1.5rem; box-shadow: 0 4px 16px rgba(15,23,42,0.03); }
+    .astro-input-card-head { font-size: 0.95rem; font-weight: 800; color: #0f172a; margin-bottom: 1.2rem; }
+    .astro-input-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.1rem; }
+    @media (max-width: 800px) { .astro-input-grid { grid-template-columns: 1fr; } }
+    .astro-field-label { font-size: 0.83rem; font-weight: 600; color: #0f172a; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.4rem; }
+    .astro-input {
+      width: 100%; padding: 0.65rem 0.8rem; border: 1px solid #cbd5e1; border-radius: 0.55rem;
+      font-size: 0.9rem; font-family: inherit; color: #0f172a; background: #fff;
+    }
+    .astro-input:focus { outline: none; border-color: #a855f7; box-shadow: 0 0 0 2px rgba(168,85,247,0.15); }
+    .astro-field-note { font-size: 0.73rem; color: #94a3b8; margin-top: 0.4rem; }
+    .astro-calc-btn {
+      margin-top: 1.3rem; width: 100%; padding: 0.85rem; border: none; border-radius: 0.7rem;
+      background: linear-gradient(135deg, #7e22ce, #4c1d95); color: #fff; font-size: 0.92rem; font-weight: 700;
+      cursor: pointer; transition: opacity 0.15s ease;
+    }
+    .astro-calc-btn:hover { opacity: 0.9; }
+    .astro-calc-error { font-size: 0.8rem; color: #dc2626; margin-top: 0.7rem; font-weight: 600; }
+
+    /* Results hero */
+    .astro-hero {
+      position: relative; overflow: hidden;
+      background: linear-gradient(135deg, #1e1b4b, #4c1d95);
+      border-radius: 1.25rem;
+      padding: 2rem 2.25rem;
+      color: #fff;
+      margin-bottom: 1.5rem;
+      transition: box-shadow 0.3s ease;
+    }
+    .astro-hero.has-result { box-shadow: 0 0 0 1px var(--el-accent, transparent), 0 20px 45px -22px var(--el-accent, transparent); }
+    .zodiac-ring-wrap { position: absolute; top: 50%; right: -50px; transform: translateY(-50%); width: 280px; height: 280px; pointer-events: none; }
+    @media (max-width: 900px) { .zodiac-ring-wrap { display: none; } }
+    .astro-hero-inner { position: relative; z-index: 1; }
+    .astro-hero-placeholder { text-align: center; padding: 1.5rem 1rem; color: #d8b4fe; font-size: 0.92rem; }
+    .astro-hero-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.75rem; }
+    @media (max-width: 700px) { .astro-hero-stats { grid-template-columns: 1fr; } }
+    .astro-hero-stat { text-align: center; }
+    .astro-result-badge {
+      width: 62px; height: 62px; border-radius: 50%; margin: 0 auto 0.65rem;
+      display: flex; align-items: center; justify-content: center; font-size: 1.85rem;
+      background: var(--badge-bg, rgba(255,255,255,0.12)); border: 2px solid var(--badge-accent, rgba(255,255,255,0.4));
+      color: #fff; transition: all 0.3s ease;
+    }
+    .astro-result-badge.nakshatra { --badge-accent: #facc15; --badge-bg: rgba(250,204,21,0.18); }
+    .astro-hero-label { font-size: 0.72rem; color: #d8b4fe; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 0.35rem; }
+    .astro-hero-value { font-size: 1.3rem; font-weight: 800; }
+    .astro-hero-sub { font-size: 0.76rem; color: #c4b5fd; margin-top: 0.2rem; }
+
+    /* Profile cards */
+    .astro-card { background: #ffffff; border: 1px solid #e5e7eb; border-top: 3px solid var(--el-accent, #e2e8f0); border-radius: 1.1rem; padding: 1.6rem 1.75rem; margin-bottom: 1.25rem; box-shadow: 0 4px 16px rgba(15,23,42,0.03); }
+    .astro-card-head { display: flex; align-items: center; gap: 0.85rem; margin-bottom: 1rem; padding-bottom: 0.85rem; border-bottom: 1px solid #e2e8f0; }
+    .astro-card-head h3 { font-size: 1rem; font-weight: 700; }
+    .astro-card-head .ach-sub { font-size: 0.78rem; color: #94a3b8; margin-top: 0.15rem; }
+    .astro-card-badge { width: 44px; height: 44px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; background: var(--el-bg, #f3e8ff); color: var(--el-accent, #7e22ce); border: 2px solid var(--el-accent, #7e22ce); }
+    .astro-card-badge.nakshatra { background: rgba(250,204,21,0.18); color: #b45309; border-color: #facc15; }
+    .astro-meta-row { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-bottom: 1rem; }
+    .astro-meta-pill { font-size: 0.75rem; font-weight: 700; padding: 0.3rem 0.7rem; border-radius: 999px; background: var(--el-bg, #f3e8ff); color: var(--el-accent, #7e22ce); }
+    .astro-trait-text { font-size: 0.87rem; color: #364752; line-height: 1.65; margin-bottom: 0.9rem; }
+
+    .astro-pair-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+    .astro-pair-grid > .astro-card { margin-bottom: 0; }
+    @media (max-width: 900px) { .astro-pair-grid { grid-template-columns: 1fr; } }
+
+    .astro-two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+    @media (max-width: 700px) { .astro-two-col { grid-template-columns: 1fr; } }
+    .astro-list-head { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; }
+    .astro-list-head.dos { color: #059669; }
+    .astro-list-head.donts { color: #dc2626; }
+    .astro-list { list-style: none; display: flex; flex-direction: column; gap: 0.45rem; }
+    .astro-list li { font-size: 0.83rem; color: #364752; padding-left: 1.3rem; position: relative; line-height: 1.5; }
+    .astro-list.dos li::before { content: '✓'; position: absolute; left: 0; color: #059669; font-weight: 800; }
+    .astro-list.donts li::before { content: '✕'; position: absolute; left: 0; color: #dc2626; font-weight: 800; }
+    .astro-caution-block { border-left: 3px solid #f59e0b; background: #fffbeb; border-radius: 0 0.6rem 0.6rem 0; padding: 0.9rem 1.1rem; margin-bottom: 0.9rem; }
+    .astro-caution-block.nav { border-left-color: #6366f1; background: #eef2ff; }
+    .astro-caution-block:last-child { margin-bottom: 0; }
+    .astro-caution-label { font-size: 0.78rem; font-weight: 700; color: #b45309; margin-bottom: 0.4rem; }
+    .astro-caution-label.nav { color: #4338ca; }
+    .astro-caution-block .astro-trait-text { margin-bottom: 0; }
+
+    .disclaimer { font-size: 0.78rem; color: #94a3b8; line-height: 1.6; padding: 1rem 1.2rem; background: #f8fafc; border-radius: 0.75rem; margin-top: 1rem; }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a href="dashboard.html" class="sidebar-logo">
+        <div class="sidebar-logo-icon">💰</div>
+        <span>FinFlow</span>
+      </a>
+
+      <nav class="sidebar-nav">
+        <a href="dashboard.html">
+          <span class="nav-icon">▦</span>
+          <span class="nav-label">Dashboard</span>
+        </a>
+        <a href="fire-plan.html">
+          <span class="nav-icon">🧭</span>
+          <span class="nav-label">FIRE Plan</span>
+          <span class="nav-chevron">›</span>
+        </a>
+
+        <a href="net-worth.html">
+          <span class="nav-icon">📈</span>
+          <span class="nav-label">Networth</span>
+          <span class="nav-chevron">›</span>
+        </a>
+
+        <a href="money-required.html">
+          <span class="nav-icon">🪴</span>
+          <span class="nav-label">Expenses</span>
+          <span class="nav-chevron">›</span>
+        </a>
+
+        <a href="expense-quick-add.html">
+          <span class="nav-icon">⚡</span>
+          <span class="nav-label">Daily Expenses Tracker</span>
+        </a>
+        <a href="tax-planning.html">
+          <span class="nav-icon">🧾</span>
+          <span class="nav-label">Tax Planning</span>
+        </a>
+        <a href="insurance-tracker.html">
+          <span class="nav-icon">🛡️</span>
+          <span class="nav-label">Insurance Tracker</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="reminders.html">
+          <span class="nav-icon">🔔</span>
+          <span class="nav-label">Reminders</span>
+        </a>
+        <a href="vault-overview.html">
+          <span class="nav-icon">🔒</span>
+          <span class="nav-label">Document Vault</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="split/dashboard.html">
+          <span class="nav-icon">💸</span>
+          <span class="nav-label">SplitExpenses(SplitWise)</span>
+        </a>
+        <a href="life-expectancy.html">
+          <span class="nav-icon">❤️</span>
+          <span class="nav-label">Health</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="astrology.html" class="active">
+          <span class="nav-icon">🔮</span>
+          <span class="nav-label">Spiritual</span>
+        </a>
+        <a href="#">
+          <span class="nav-icon">⚙️</span>
+          <span class="nav-label">Settings</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-spacer"></div>
+
+      <div class="feedback-card">
+        <div class="fc-icon">💬</div>
+        <strong>Got feedback?</strong>
+        <p>Have an idea or found a bug? We read every message.</p>
+        <a href="mailto:hello@finflow.app">✉ Contact Us</a>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <h1>Spiritual</h1>
+        <div class="topbar-right">
+          <div class="language-selector">🌐 English ▾</div>
+          <details class="user-menu">
+            <summary>👤</summary>
+            <div class="user-menu-panel">
+              <a href="#">Settings</a>
+              <a href="#" onclick="signOutAndRedirect('index.html'); return false;">Log Out</a>
+            </div>
+          </details>
+        </div>
+      </div>
+
+      <div class="usage-banner">
+        <span class="ub-icon">🧭</span>
+        <div>
+          <strong>A compass for uncertain days, not a plan for your life.</strong>
+          <ul class="usage-banner-list">
+            <li><strong>Not a substitute for planning.</strong> Don't base your health or financial decisions on your Rashi, Nakshatra or Lagna.</li>
+            <li><strong>Your effort comes first.</strong> Your own habits, effort and planning are what actually shape your health and wealth.</li>
+            <li><strong>For the uncertain moments.</strong> Turn to this when you're genuinely unsure which way to go, when things aren't going your way, or your own planning feels stuck.</li>
+            <li><strong>A last resort, not a first stop.</strong> Use it for comfort and reflection, only after your own planning, never before it.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="page-head">
+        <h2>Rashi, Nakshatra &amp; Lagna Finder</h2>
+        <p>Rooted in tradition, meant purely for fun. Enter your birth details to see your Moon sign, birth star and ascendant, plus traditional do's and don'ts.</p>
+      </div>
+
+      <div class="tone-banner">
+        <span class="tb-icon">🔮</span>
+        <span>For fun and tradition, not a scientific prediction. Your Rashi and Nakshatra are calculated from the Moon's real astronomical position at your birth moment (using the Lahiri ayanamsa), and Lagna from your birth time and place. Treat this as a cultural reference, not medical, financial or life advice.</span>
+      </div>
+
+      <div class="astro-input-card">
+        <div class="astro-input-card-head">✨ Cast Your Chart</div>
+        <div class="astro-input-grid">
+          <div>
+            <div class="astro-field-label">📅 Date of birth</div>
+            <input type="date" class="astro-input" id="dobInput">
+          </div>
+          <div>
+            <div class="astro-field-label">🕐 Time of birth</div>
+            <input type="time" class="astro-input" id="birthTimeInput">
+            <div class="astro-field-note">Don't know the exact time? Rashi &amp; Nakshatra are usually fine with an estimate, but Lagna is more sensitive to it.</div>
+          </div>
+          <div>
+            <div class="astro-field-label">📍 Birth place</div>
+            <input type="text" class="astro-input" id="cityInput" list="cityDatalist" placeholder="Start typing a city...">
+            <datalist id="cityDatalist"></datalist>
+            <div class="astro-field-note" id="cityNote">Can't find your exact town? Pick the nearest major city.</div>
+          </div>
+        </div>
+        <button type="button" class="astro-calc-btn" id="calcBtn">✨ Reveal My Rashi, Nakshatra &amp; Lagna</button>
+        <div class="astro-calc-error" id="calcError"></div>
+      </div>
+
+      <div class="astro-hero" id="astroHero">
+        <div class="zodiac-ring-wrap" id="zodiacRingWrap"></div>
+        <div class="astro-hero-inner">
+          <div class="astro-hero-placeholder" id="astroPlaceholder">✨ Enter your birth date, time and place above to reveal your Rashi, Nakshatra &amp; Lagna.</div>
+          <div class="astro-hero-stats" id="astroStats" style="display:none;">
+            <div class="astro-hero-stat">
+              <div class="astro-result-badge" id="rashiBadge">♈</div>
+              <div class="astro-hero-label">Rashi (Moon Sign)</div>
+              <div class="astro-hero-value" id="rashiValue">-</div>
+              <div class="astro-hero-sub" id="rashiSub">-</div>
+            </div>
+            <div class="astro-hero-stat">
+              <div class="astro-result-badge nakshatra">⭐</div>
+              <div class="astro-hero-label">Nakshatra</div>
+              <div class="astro-hero-value" id="nakshatraValue">-</div>
+              <div class="astro-hero-sub" id="nakshatraSub">-</div>
+            </div>
+            <div class="astro-hero-stat">
+              <div class="astro-result-badge" id="lagnaBadge">♈</div>
+              <div class="astro-hero-label">Lagna (Ascendant)</div>
+              <div class="astro-hero-value" id="lagnaValue">-</div>
+              <div class="astro-hero-sub" id="lagnaSub">-</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="resultsWrap" style="display:none;">
+        <div class="astro-card">
+          <div class="astro-card-head">
+            <div class="astro-card-badge" id="rashiCardBadge">♈</div>
+            <div>
+              <h3 id="rashiCardTitle">Your Rashi</h3>
+              <div class="ach-sub">Traditional traits for your Moon sign</div>
+            </div>
+          </div>
+          <div class="astro-meta-row" id="rashiMetaRow"></div>
+          <div class="astro-trait-text" id="rashiTraits"></div>
+        </div>
+
+        <div class="astro-pair-grid">
+          <div class="astro-card">
+            <div class="astro-card-head">
+              <div>
+                <h3>🩺 Health Guidance</h3>
+                <div class="ach-sub">Do's and don'ts for <span id="healthCardRashiName">your Rashi</span></div>
+              </div>
+            </div>
+            <div class="astro-two-col">
+              <div>
+                <div class="astro-list-head dos">Do's</div>
+                <ul class="astro-list dos" id="healthDos"></ul>
+              </div>
+              <div>
+                <div class="astro-list-head donts">Don'ts</div>
+                <ul class="astro-list donts" id="healthDonts"></ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="astro-card">
+            <div class="astro-card-head">
+              <div>
+                <h3>💰 Wealth Guidance</h3>
+                <div class="ach-sub">Do's and don'ts for <span id="wealthCardRashiName">your Rashi</span></div>
+              </div>
+            </div>
+            <div class="astro-two-col">
+              <div>
+                <div class="astro-list-head dos">Do's</div>
+                <ul class="astro-list dos" id="wealthDos"></ul>
+              </div>
+              <div>
+                <div class="astro-list-head donts">Don'ts</div>
+                <ul class="astro-list donts" id="wealthDonts"></ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="astro-card">
+          <div class="astro-card-head">
+            <div>
+              <h3>🧭 Cautions &amp; Navigating Tough Times</h3>
+              <div class="ach-sub">What to watch for, and how to steady yourself when things feel hard</div>
+            </div>
+          </div>
+          <div class="astro-caution-block">
+            <div class="astro-caution-label">⚠️ Be careful about</div>
+            <p class="astro-trait-text" id="rashiCaution"></p>
+          </div>
+          <div class="astro-caution-block nav">
+            <div class="astro-caution-label nav">🧭 Navigating tough times</div>
+            <p class="astro-trait-text" id="rashiNavigate"></p>
+          </div>
+        </div>
+
+        <div class="astro-pair-grid">
+          <div class="astro-card">
+            <div class="astro-card-head">
+              <div class="astro-card-badge nakshatra">⭐</div>
+              <div>
+                <h3 id="nakshatraCardTitle">Your Nakshatra</h3>
+                <div class="ach-sub">Your birth star and its traditional character</div>
+              </div>
+            </div>
+            <div class="astro-meta-row" id="nakshatraMetaRow"></div>
+            <div class="astro-trait-text" id="nakshatraTraits"></div>
+          </div>
+
+          <div class="astro-card">
+            <div class="astro-card-head">
+              <div class="astro-card-badge" id="lagnaCardBadge">♈</div>
+              <div>
+                <h3 id="lagnaCardTitle">Your Lagna</h3>
+                <div class="ach-sub">The sign rising on the horizon at your birth moment</div>
+              </div>
+            </div>
+            <div class="astro-trait-text" id="lagnaTraits"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="disclaimer">🔮 This feature is offered as a cultural and entertainment tool, based on traditional Vedic astrology concepts and real astronomical calculations (Lahiri ayanamsa). It is not a scientific prediction of your health, wealth or life outcomes, and results may differ slightly from a professional astrologer's chart, especially near sign boundaries or without an exact birth time. Please don't use this as the basis for medical, financial or major life decisions.</div>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-client.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/astronomy-engine@2.1.19/astronomy.browser.js"></script>
+  <script>
+    /* ── Indian cities lat/long database (birth place lookup) ─────────── */
+    var CITIES = [
+      { name: 'Agartala', state: 'Tripura', lat: 23.8315, lon: 91.2868 },
+      { name: 'Agra', state: 'Uttar Pradesh', lat: 27.1767, lon: 78.0081 },
+      { name: 'Ahmedabad', state: 'Gujarat', lat: 23.0225, lon: 72.5714 },
+      { name: 'Aizawl', state: 'Mizoram', lat: 23.7271, lon: 92.7176 },
+      { name: 'Ajmer', state: 'Rajasthan', lat: 26.4499, lon: 74.6399 },
+      { name: 'Aligarh', state: 'Uttar Pradesh', lat: 27.8974, lon: 78.0880 },
+      { name: 'Alwar', state: 'Rajasthan', lat: 27.5530, lon: 76.6346 },
+      { name: 'Amaravati', state: 'Andhra Pradesh', lat: 16.5062, lon: 80.6480 },
+      { name: 'Amritsar', state: 'Punjab', lat: 31.6340, lon: 74.8723 },
+      { name: 'Aurangabad', state: 'Maharashtra', lat: 19.8762, lon: 75.3433 },
+      { name: 'Ayodhya', state: 'Uttar Pradesh', lat: 26.7922, lon: 82.1998 },
+      { name: 'Bareilly', state: 'Uttar Pradesh', lat: 28.3670, lon: 79.4304 },
+      { name: 'Bengaluru', state: 'Karnataka', lat: 12.9716, lon: 77.5946 },
+      { name: 'Bhagalpur', state: 'Bihar', lat: 25.2425, lon: 87.0079 },
+      { name: 'Bhavnagar', state: 'Gujarat', lat: 21.7645, lon: 72.1519 },
+      { name: 'Bhilai', state: 'Chhattisgarh', lat: 21.2094, lon: 81.4285 },
+      { name: 'Bhilwara', state: 'Rajasthan', lat: 25.3463, lon: 74.6364 },
+      { name: 'Bhopal', state: 'Madhya Pradesh', lat: 23.2599, lon: 77.4126 },
+      { name: 'Bhubaneswar', state: 'Odisha', lat: 20.2961, lon: 85.8245 },
+      { name: 'Bikaner', state: 'Rajasthan', lat: 28.0229, lon: 73.3119 },
+      { name: 'Bilaspur', state: 'Chhattisgarh', lat: 22.0797, lon: 82.1409 },
+      { name: 'Chandigarh', state: 'Chandigarh', lat: 30.7333, lon: 76.7794 },
+      { name: 'Chennai', state: 'Tamil Nadu', lat: 13.0827, lon: 80.2707 },
+      { name: 'Coimbatore', state: 'Tamil Nadu', lat: 11.0168, lon: 76.9558 },
+      { name: 'Cuttack', state: 'Odisha', lat: 20.4625, lon: 85.8828 },
+      { name: 'Darbhanga', state: 'Bihar', lat: 26.1542, lon: 85.8918 },
+      { name: 'Dehradun', state: 'Uttarakhand', lat: 30.3165, lon: 78.0322 },
+      { name: 'Delhi', state: 'Delhi', lat: 28.7041, lon: 77.1025 },
+      { name: 'Dhanbad', state: 'Jharkhand', lat: 23.7957, lon: 86.4304 },
+      { name: 'Dibrugarh', state: 'Assam', lat: 27.4728, lon: 94.9120 },
+      { name: 'Dispur', state: 'Assam', lat: 26.1433, lon: 91.7898 },
+      { name: 'Durgapur', state: 'West Bengal', lat: 23.5204, lon: 87.3119 },
+      { name: 'Erode', state: 'Tamil Nadu', lat: 11.3410, lon: 77.7172 },
+      { name: 'Faridabad', state: 'Haryana', lat: 28.4089, lon: 77.3178 },
+      { name: 'Firozabad', state: 'Uttar Pradesh', lat: 27.1592, lon: 78.3957 },
+      { name: 'Gandhinagar', state: 'Gujarat', lat: 23.2156, lon: 72.6369 },
+      { name: 'Gangtok', state: 'Sikkim', lat: 27.3389, lon: 88.6065 },
+      { name: 'Gaya', state: 'Bihar', lat: 24.7955, lon: 84.9994 },
+      { name: 'Ghaziabad', state: 'Uttar Pradesh', lat: 28.6692, lon: 77.4538 },
+      { name: 'Gorakhpur', state: 'Uttar Pradesh', lat: 26.7606, lon: 83.3732 },
+      { name: 'Guntur', state: 'Andhra Pradesh', lat: 16.3067, lon: 80.4365 },
+      { name: 'Gurugram', state: 'Haryana', lat: 28.4595, lon: 77.0266 },
+      { name: 'Guwahati', state: 'Assam', lat: 26.1445, lon: 91.7362 },
+      { name: 'Gwalior', state: 'Madhya Pradesh', lat: 26.2183, lon: 78.1828 },
+      { name: 'Hisar', state: 'Haryana', lat: 29.1492, lon: 75.7217 },
+      { name: 'Howrah', state: 'West Bengal', lat: 22.5958, lon: 88.2636 },
+      { name: 'Hubli', state: 'Karnataka', lat: 15.3647, lon: 75.1240 },
+      { name: 'Hyderabad', state: 'Telangana', lat: 17.3850, lon: 78.4867 },
+      { name: 'Imphal', state: 'Manipur', lat: 24.8170, lon: 93.9368 },
+      { name: 'Indore', state: 'Madhya Pradesh', lat: 22.7196, lon: 75.8577 },
+      { name: 'Itanagar', state: 'Arunachal Pradesh', lat: 27.0844, lon: 93.6053 },
+      { name: 'Jabalpur', state: 'Madhya Pradesh', lat: 23.1815, lon: 79.9864 },
+      { name: 'Jaipur', state: 'Rajasthan', lat: 26.9124, lon: 75.7873 },
+      { name: 'Jalandhar', state: 'Punjab', lat: 31.3260, lon: 75.5762 },
+      { name: 'Jalgaon', state: 'Maharashtra', lat: 21.0077, lon: 75.5626 },
+      { name: 'Jammu', state: 'Jammu and Kashmir', lat: 32.7266, lon: 74.8570 },
+      { name: 'Jamnagar', state: 'Gujarat', lat: 22.4707, lon: 70.0577 },
+      { name: 'Jamshedpur', state: 'Jharkhand', lat: 22.8046, lon: 86.2029 },
+      { name: 'Jhansi', state: 'Uttar Pradesh', lat: 25.4484, lon: 78.5685 },
+      { name: 'Jodhpur', state: 'Rajasthan', lat: 26.2389, lon: 73.0243 },
+      { name: 'Kakinada', state: 'Andhra Pradesh', lat: 16.9891, lon: 82.2475 },
+      { name: 'Kanpur', state: 'Uttar Pradesh', lat: 26.4499, lon: 80.3319 },
+      { name: 'Karnal', state: 'Haryana', lat: 29.6857, lon: 76.9905 },
+      { name: 'Kavaratti', state: 'Lakshadweep', lat: 10.5669, lon: 72.6420 },
+      { name: 'Kochi', state: 'Kerala', lat: 9.9312, lon: 76.2673 },
+      { name: 'Kohima', state: 'Nagaland', lat: 25.6751, lon: 94.1086 },
+      { name: 'Kolar', state: 'Karnataka', lat: 13.1372, lon: 78.1298 },
+      { name: 'Kolhapur', state: 'Maharashtra', lat: 16.7050, lon: 74.2433 },
+      { name: 'Kolkata', state: 'West Bengal', lat: 22.5726, lon: 88.3639 },
+      { name: 'Kollam', state: 'Kerala', lat: 8.8932, lon: 76.6141 },
+      { name: 'Kota', state: 'Rajasthan', lat: 25.2138, lon: 75.8648 },
+      { name: 'Kozhikode', state: 'Kerala', lat: 11.2588, lon: 75.7804 },
+      { name: 'Kurnool', state: 'Andhra Pradesh', lat: 15.8281, lon: 78.0373 },
+      { name: 'Latur', state: 'Maharashtra', lat: 18.4088, lon: 76.5604 },
+      { name: 'Lucknow', state: 'Uttar Pradesh', lat: 26.8467, lon: 80.9462 },
+      { name: 'Ludhiana', state: 'Punjab', lat: 30.9010, lon: 75.8573 },
+      { name: 'Madurai', state: 'Tamil Nadu', lat: 9.9252, lon: 78.1198 },
+      { name: 'Mangaluru', state: 'Karnataka', lat: 12.9141, lon: 74.8560 },
+      { name: 'Mathura', state: 'Uttar Pradesh', lat: 27.4924, lon: 77.6737 },
+      { name: 'Meerut', state: 'Uttar Pradesh', lat: 28.9845, lon: 77.7064 },
+      { name: 'Moradabad', state: 'Uttar Pradesh', lat: 28.8386, lon: 78.7733 },
+      { name: 'Mumbai', state: 'Maharashtra', lat: 19.0760, lon: 72.8777 },
+      { name: 'Muzaffarpur', state: 'Bihar', lat: 26.1225, lon: 85.3906 },
+      { name: 'Mysuru', state: 'Karnataka', lat: 12.2958, lon: 76.6394 },
+      { name: 'Nagpur', state: 'Maharashtra', lat: 21.1458, lon: 79.0882 },
+      { name: 'Nanded', state: 'Maharashtra', lat: 19.1383, lon: 77.3210 },
+      { name: 'Nashik', state: 'Maharashtra', lat: 19.9975, lon: 73.7898 },
+      { name: 'Navi Mumbai', state: 'Maharashtra', lat: 19.0330, lon: 73.0297 },
+      { name: 'Nellore', state: 'Andhra Pradesh', lat: 14.4426, lon: 79.9865 },
+      { name: 'New Delhi', state: 'Delhi', lat: 28.6139, lon: 77.2090 },
+      { name: 'Nizamabad', state: 'Telangana', lat: 18.6725, lon: 78.0941 },
+      { name: 'Noida', state: 'Uttar Pradesh', lat: 28.5355, lon: 77.3910 },
+      { name: 'Pali', state: 'Rajasthan', lat: 25.7711, lon: 73.3234 },
+      { name: 'Panaji', state: 'Goa', lat: 15.4909, lon: 73.8278 },
+      { name: 'Panipat', state: 'Haryana', lat: 29.3909, lon: 76.9635 },
+      { name: 'Patiala', state: 'Punjab', lat: 30.3398, lon: 76.3869 },
+      { name: 'Patna', state: 'Bihar', lat: 25.5941, lon: 85.1376 },
+      { name: 'Pondicherry', state: 'Puducherry', lat: 11.9416, lon: 79.8083 },
+      { name: 'Port Blair', state: 'Andaman and Nicobar Islands', lat: 11.6234, lon: 92.7265 },
+      { name: 'Pune', state: 'Maharashtra', lat: 18.5204, lon: 73.8567 },
+      { name: 'Puri', state: 'Odisha', lat: 19.8135, lon: 85.8312 },
+      { name: 'Raipur', state: 'Chhattisgarh', lat: 21.2514, lon: 81.6296 },
+      { name: 'Rajahmundry', state: 'Andhra Pradesh', lat: 17.0005, lon: 81.8040 },
+      { name: 'Rajkot', state: 'Gujarat', lat: 22.3039, lon: 70.8022 },
+      { name: 'Ranchi', state: 'Jharkhand', lat: 23.3441, lon: 85.3096 },
+      { name: 'Rewa', state: 'Madhya Pradesh', lat: 24.5364, lon: 81.3037 },
+      { name: 'Rohtak', state: 'Haryana', lat: 28.8955, lon: 76.6066 },
+      { name: 'Rourkela', state: 'Odisha', lat: 22.2604, lon: 84.8536 },
+      { name: 'Sagar', state: 'Madhya Pradesh', lat: 23.8388, lon: 78.7378 },
+      { name: 'Saharanpur', state: 'Uttar Pradesh', lat: 29.9680, lon: 77.5460 },
+      { name: 'Salem', state: 'Tamil Nadu', lat: 11.6643, lon: 78.1460 },
+      { name: 'Sambalpur', state: 'Odisha', lat: 21.4669, lon: 83.9756 },
+      { name: 'Satna', state: 'Madhya Pradesh', lat: 24.6005, lon: 80.8322 },
+      { name: 'Shillong', state: 'Meghalaya', lat: 25.5788, lon: 91.8933 },
+      { name: 'Shimla', state: 'Himachal Pradesh', lat: 31.1048, lon: 77.1734 },
+      { name: 'Sikar', state: 'Rajasthan', lat: 27.6094, lon: 75.1399 },
+      { name: 'Silchar', state: 'Assam', lat: 24.8333, lon: 92.7789 },
+      { name: 'Siliguri', state: 'West Bengal', lat: 26.7271, lon: 88.3953 },
+      { name: 'Solapur', state: 'Maharashtra', lat: 17.6599, lon: 75.9064 },
+      { name: 'Sonipat', state: 'Haryana', lat: 28.9931, lon: 77.0151 },
+      { name: 'Srinagar', state: 'Jammu and Kashmir', lat: 34.0837, lon: 74.7973 },
+      { name: 'Surat', state: 'Gujarat', lat: 21.1702, lon: 72.8311 },
+      { name: 'Thane', state: 'Maharashtra', lat: 19.2183, lon: 72.9781 },
+      { name: 'Thiruvananthapuram', state: 'Kerala', lat: 8.5241, lon: 76.9366 },
+      { name: 'Thrissur', state: 'Kerala', lat: 10.5276, lon: 76.2144 },
+      { name: 'Tiruchirappalli', state: 'Tamil Nadu', lat: 10.7905, lon: 78.7047 },
+      { name: 'Tirupati', state: 'Andhra Pradesh', lat: 13.6288, lon: 79.4192 },
+      { name: 'Tumkur', state: 'Karnataka', lat: 13.3379, lon: 77.1173 },
+      { name: 'Udaipur', state: 'Rajasthan', lat: 24.5854, lon: 73.7125 },
+      { name: 'Ujjain', state: 'Madhya Pradesh', lat: 23.1765, lon: 75.7885 },
+      { name: 'Vadodara', state: 'Gujarat', lat: 22.3072, lon: 73.1812 },
+      { name: 'Varanasi', state: 'Uttar Pradesh', lat: 25.3176, lon: 82.9739 },
+      { name: 'Vellore', state: 'Tamil Nadu', lat: 12.9165, lon: 79.1325 },
+      { name: 'Vijayawada', state: 'Andhra Pradesh', lat: 16.5062, lon: 80.6480 },
+      { name: 'Visakhapatnam', state: 'Andhra Pradesh', lat: 17.6868, lon: 83.2185 },
+      { name: 'Warangal', state: 'Telangana', lat: 17.9689, lon: 79.5941 },
+      { name: 'Yamunanagar', state: 'Haryana', lat: 30.1290, lon: 77.2674 }
+    ];
+
+    var CITY_MAP = {};
+    CITIES.forEach(function (c) {
+      CITY_MAP[(c.name + ', ' + c.state).toLowerCase()] = c;
+    });
+
+    function findCity(inputValue) {
+      var v = (inputValue || '').trim().toLowerCase();
+      if (!v) return null;
+      if (CITY_MAP[v]) return CITY_MAP[v];
+      var nameMatches = CITIES.filter(function (c) { return c.name.toLowerCase() === v; });
+      if (nameMatches.length === 1) return nameMatches[0];
+      return null;
+    }
+
+    /* ── Element color theme, used to tint the hero and result cards to    ── */
+    /* ── match the user's own Rashi once it's known.                        ── */
+    var ELEMENT_COLORS = {
+      Fire: { accent: '#f97316', bg: 'rgba(249,115,22,0.14)' },
+      Earth: { accent: '#16a34a', bg: 'rgba(22,163,74,0.14)' },
+      Air: { accent: '#0ea5e9', bg: 'rgba(14,165,233,0.14)' },
+      Water: { accent: '#6366f1', bg: 'rgba(99,102,241,0.14)' }
+    };
+
+    /* ── Rashi (Moon sign) content library ─────────────────────────────── */
+    var RASHIS = [
+      { name: 'Mesha', english: 'Aries', symbol: '♈', lord: 'Mars', element: 'Fire',
+        traits: 'Bold, energetic and a natural starter. Mesha natives are said to lead with courage and impatience in equal measure.',
+        health: {
+          dos: ['Get your energy out through daily exercise or sport', 'Warm up properly before any physical activity', 'Get enough sleep even when you feel unstoppable', 'Address small injuries early instead of pushing through them'],
+          donts: ['Skip rest days just because you feel fine', 'Ignore headaches or blood pressure warning signs', 'Let anger and impatience spike your stress levels', 'Rush into intense workouts without preparation'] },
+        wealth: {
+          dos: ['Set a cooling-off period before big purchases', 'Keep an emergency fund for impulsive moments', 'Channel competitive drive into building a side income', 'Review your spending weekly, not just monthly'],
+          donts: ['Make investment decisions in the heat of the moment', 'Chase quick wins without a backup plan', 'Lend money impulsively to prove a point', 'Ignore the fine print because you\'re in a hurry'] },
+        caution: 'Mesha\'s biggest blind spot is impatience. Decisions made in a rush, whether about health or money, tend to need costly correction later. The instinct to act first and think later works well in emergencies, but rarely in planning.',
+        navigate: 'When things feel tough, Mesha natives do best by giving themselves a full day before reacting to setbacks. Physical movement, a run, a workout, a long walk, helps process frustration constructively rather than letting it drive impulsive choices.' },
+      { name: 'Vrishabha', english: 'Taurus', symbol: '♉', lord: 'Venus', element: 'Earth',
+        traits: 'Steady, patient and comfort-loving. Vrishabha natives value stability and the finer things in life.',
+        health: {
+          dos: ['Build a consistent daily routine', 'Balance comfort food with regular movement', 'Get regular throat and thyroid check-ups', 'Practice patience with your own body\'s pace of change'],
+          donts: ['Overindulge in rich or sugary food as a stress response', 'Stay sedentary for long stretches', 'Resist necessary lifestyle changes out of habit', 'Bottle up stress instead of addressing it'] },
+        wealth: {
+          dos: ['Automate savings into long-term instruments', 'Invest steadily in gold, property or index funds', 'Set clear long-term financial goals and revisit them yearly', 'Build financial security before comfort spending'],
+          donts: ['Let comfort spending quietly outpace saving', 'Hold onto a bad investment purely out of stubbornness', 'Avoid necessary financial conversations with family', 'Delay adapting your plan when circumstances change'] },
+        caution: 'Vrishabha\'s strength, steadiness, can tip into stubbornness. The reluctance to change course, even when the evidence says it\'s time, is the most common blind spot for this sign, both in health habits and financial decisions.',
+        navigate: 'During tough phases, Vrishabha natives find stability by returning to routine rather than abandoning it. Small, steady, tangible steps, one saved rupee, one healthy meal, rebuild confidence faster than big dramatic changes.' },
+      { name: 'Mithuna', english: 'Gemini', symbol: '♊', lord: 'Mercury', element: 'Air',
+        traits: 'Curious, communicative and quick-witted. Mithuna natives thrive on variety and conversation.',
+        health: {
+          dos: ['Keep a consistent sleep schedule despite a busy mind', 'Practice grounding routines like journaling or breathing exercises', 'Stay socially connected, it genuinely helps this sign', 'Take short breaks between tasks to avoid mental fatigue'],
+          donts: ['Let a racing mind rob you of proper sleep', 'Multitask through meals or rest periods', 'Ignore nervous tension building up over time', 'Overcommit socially until you\'re running on empty'] },
+        wealth: {
+          dos: ['Diversify income streams deliberately, not randomly', 'Track multiple accounts with a simple, consistent system', 'Finish one financial goal before starting the next', 'Learn continuously, but apply what you learn'],
+          donts: ['Jump between investment ideas without following through', 'Let curiosity turn into impulsive, unresearched bets', 'Overshare financial plans before they\'re finalised', 'Sign up for too many subscriptions or commitments at once'] },
+        caution: 'Mithuna\'s scattered energy is both a gift and a risk. New ideas come easily, but follow-through is the real challenge. The biggest blind spot is starting many things and finishing few, in health routines and in money matters alike.',
+        navigate: 'When life feels chaotic, Mithuna natives benefit from picking just one priority at a time instead of juggling everything. Writing things down, a journal, a budget sheet, a simple to-do list, turns mental noise into manageable steps.' },
+      { name: 'Karka', english: 'Cancer', symbol: '♋', lord: 'Moon', element: 'Water',
+        traits: 'Nurturing, emotional and deeply attached to home and family. Karka natives feel everything intensely.',
+        health: {
+          dos: ['Keep an eye on digestion, it often reflects emotional state', 'Build a calming bedtime routine', 'Talk through emotions instead of holding them in', 'Prioritise time with family and close friends'],
+          donts: ['Skip meals or overeat when stressed', 'Let mood swings disrupt your sleep', 'Isolate yourself when feeling low', 'Ignore physical symptoms that follow emotional stress'] },
+        wealth: {
+          dos: ['Build a strong emergency fund for family security', 'Save with a clear purpose, like home or family goals', 'Discuss money openly with people you trust', 'Balance generosity with your own financial safety net'],
+          donts: ['Let emotional decisions drive major financial choices', 'Overspend on family or loved ones beyond your means', 'Avoid checking your finances when you\'re anxious about them', 'Keep financial worries entirely to yourself'] },
+        caution: 'Karka feels everything deeply, and money and health decisions made in an emotional low point are rarely the best ones. The tendency to retreat inward during stress, rather than reach out, is this sign\'s biggest blind spot.',
+        navigate: 'During hard times, Karka natives recover best by leaning on family and close friends rather than withdrawing. A familiar routine, home-cooked food, a quiet evening with loved ones, restores emotional balance faster than facing things alone.' },
+      { name: 'Simha', english: 'Leo', symbol: '♌', lord: 'Sun', element: 'Fire',
+        traits: 'Confident, generous and a natural leader. Simha natives like to shine and be recognised.',
+        health: {
+          dos: ['Get regular heart health check-ups', 'Balance your active, high-energy lifestyle with proper rest', 'Take care of your back and spine as you age', 'Let yourself rest without feeling like you\'re falling behind'],
+          donts: ['Push through exhaustion to maintain appearances', 'Ignore early warning signs because you feel invincible', 'Let ego stop you from asking for medical help', 'Overexert yourself trying to prove a point'] },
+        wealth: {
+          dos: ['Invest in your own skills and visibility', 'Save a fixed portion before status spending', 'Negotiate confidently, it\'s a genuine strength', 'Celebrate wins with a budget in mind'],
+          donts: ['Overspend to maintain an image', 'Let pride prevent you from cutting losses', 'Avoid budgeting because it feels unglamorous', 'Take financial advice personally instead of practically'] },
+        caution: 'Simha\'s confidence is magnetic, but the need for recognition can quietly drive both health risks, like overexertion, and financial ones, like status spending. The blind spot here is mistaking appearance for actual security.',
+        navigate: 'In tough periods, Simha natives do best by stepping back from the spotlight rather than pushing harder to prove themselves. Quiet, private consistency, taking care of health and finances away from an audience, rebuilds strength more reliably than a dramatic comeback.' },
+      { name: 'Kanya', english: 'Virgo', symbol: '♍', lord: 'Mercury', element: 'Earth',
+        traits: 'Analytical, detail-oriented and practical. Kanya natives are natural planners and perfectionists.',
+        health: {
+          dos: ['Build a sustainable routine rather than a perfect one', 'Watch for stress-related digestive issues', 'Schedule rest as deliberately as you schedule work', 'Practice self-compassion, not just self-improvement'],
+          donts: ['Let perfectionism delay basic health decisions', 'Skip meals or sleep chasing productivity', 'Criticise yourself harshly for small setbacks', 'Ignore stress because it isn\'t "serious" yet'] },
+        wealth: {
+          dos: ['Keep a detailed, realistic budget', 'Automate the parts of saving you tend to overanalyse', 'Trust a good financial plan once it\'s made', 'Review, but don\'t obsessively re-check, your finances'],
+          donts: ['Delay decisions chasing the "perfect" option', 'Nitpick small expenses while missing bigger patterns', 'Take on too much financial responsibility for others', 'Let anxiety about money stop you from enjoying it'] },
+        caution: 'Kanya\'s attention to detail is a real strength, but it can tip into paralysis by analysis. The biggest blind spot is delaying action, on health or money, while waiting for a level of certainty that rarely arrives.',
+        navigate: 'When things go wrong, Kanya natives recover best by breaking the problem into small, concrete steps rather than trying to solve everything at once. A simple checklist, done imperfectly, beats a perfect plan that never starts.' },
+      { name: 'Tula', english: 'Libra', symbol: '♎', lord: 'Venus', element: 'Air',
+        traits: 'Diplomatic, fair-minded and relationship-focused. Tula natives seek balance in everything.',
+        health: {
+          dos: ['Keep a steady, balanced daily routine', 'Pay attention to kidney and lower-back health', 'Make health decisions with a deadline, not endlessly', 'Surround yourself with calm, supportive company'],
+          donts: ['Let indecision delay necessary check-ups or treatment', 'Avoid conflict even when it\'s affecting your wellbeing', 'Overcommit socially at the cost of rest', 'Neglect your own needs while balancing everyone else\'s'] },
+        wealth: {
+          dos: ['Choose financial partners and co-investors carefully', 'Set a firm deadline for financial decisions', 'Split shared expenses clearly and early', 'Invest in things that bring genuine, lasting balance'],
+          donts: ['Over-rely on a partner for financial decisions', 'Delay decisions trying to please everyone involved', 'Overspend on aesthetics or social appearances', 'Avoid difficult money conversations to keep the peace'] },
+        caution: 'Tula\'s search for balance can become indecision when it matters most. The biggest blind spot is avoiding a hard choice, about health or money, for so long that the decision gets made by default, often not in your favour.',
+        navigate: 'During tough times, Tula natives do best by seeking one trusted, honest opinion, rather than endless outside input. A single clear conversation, followed by a firm decision, works better than weighing every possible option forever.' },
+      { name: 'Vrishchika', english: 'Scorpio', symbol: '♏', lord: 'Mars', element: 'Water',
+        traits: 'Intense, resourceful and deeply private. Vrishchika natives pursue what they want with total focus.',
+        health: {
+          dos: ['Find a healthy outlet for intensity, sport, art or work', 'Get regular check-ups even when you feel in control', 'Talk about stress instead of internalising it', 'Watch for signs of burnout hidden behind focus'],
+          donts: ['Suppress stress until it shows up physically', 'Avoid medical advice out of a need for control', 'Isolate yourself when working through difficulty', 'Push your body past its limits to prove resilience'] },
+        wealth: {
+          dos: ['Research investments thoroughly before committing', 'Talk openly about money with family', 'Use your instinct for opportunity, but verify it', 'Build a private but honest financial plan'],
+          donts: ['Hide financial troubles instead of addressing them', 'Let suspicion damage useful financial relationships', 'Make secretive, high-risk moves without a backup plan', 'Hold onto old financial resentments that cloud judgement'] },
+        caution: 'Vrishchika\'s intensity and privacy are strengths, but secrecy about struggles, health or financial, tends to make problems worse before they\'re solved. The biggest blind spot is handling everything alone when support is available.',
+        navigate: 'In hard times, Vrishchika natives recover fastest by choosing one trusted person to be fully honest with, rather than carrying the weight alone. Once the intensity has an outlet, a conversation, a workout, focused work, clarity tends to follow.' },
+      { name: 'Dhanu', english: 'Sagittarius', symbol: '♐', lord: 'Jupiter', element: 'Fire',
+        traits: 'Optimistic, adventurous and philosophical. Dhanu natives are drawn to travel, learning and big ideas.',
+        health: {
+          dos: ['Stay active through movement you genuinely enjoy', 'Care for hip and joint mobility, especially with age', 'Set a realistic plan alongside your big goals', 'Get enough rest between adventures'],
+          donts: ['Ignore your body\'s limits chasing the next big thing', 'Ignore the fine print on health commitments or treatments', 'Let restlessness become chronic overcommitment', 'Skip follow-through on health routines once excitement fades'] },
+        wealth: {
+          dos: ['Set a travel and learning budget in advance', 'Balance optimism with a concrete financial plan', 'Follow through on financial commitments you\'ve made', 'Save before, not after, the next big adventure'],
+          donts: ['Over-promise financially and under-deliver', 'Ignore fine print on big commitments', 'Let big-picture optimism replace practical planning', 'Abandon a financial plan the moment it feels restrictive'] },
+        caution: 'Dhanu\'s optimism is genuinely valuable, but it can outpace planning, both for health and money. The biggest blind spot is assuming things will work out without putting a concrete plan behind that belief.',
+        navigate: 'When times get tough, Dhanu natives do best by picking one grounded, practical goal and seeing it through, rather than searching for the next big leap. A little structure, even briefly, restores the confidence to explore again later.' },
+      { name: 'Makara', english: 'Capricorn', symbol: '♑', lord: 'Saturn', element: 'Earth',
+        traits: 'Disciplined, ambitious and patient. Makara natives play the long game and rarely cut corners.',
+        health: {
+          dos: ['Take joint and bone health seriously, especially over time', 'Schedule deliberate rest, not just deserved rest', 'Balance ambition with regular health check-ups', 'Allow yourself to enjoy progress along the way, not just the end goal'],
+          donts: ['Overwork at the cost of basic health needs', 'Delay medical care because you\'re "too busy"', 'Treat rest as something you have to earn', 'Be overly hard on yourself for normal setbacks'] },
+        wealth: {
+          dos: ['Build long-term retirement and investment plans early', 'Let consistent saving do the heavy lifting over time', 'Reward yourself occasionally for earned progress', 'Review long-term plans periodically, not just once'],
+          donts: ['Delay enjoying earned success indefinitely', 'Equate self-worth purely with financial achievement', 'Be overly rigid with loved ones about money', 'Postpone necessary spending, like health care, to save more'] },
+        caution: 'Makara\'s discipline is a genuine strength, but it can tip into overwork and self-denial. The biggest blind spot is treating rest and enjoyment as rewards to be earned later, rather than as ongoing needs.',
+        navigate: 'During difficult periods, Makara natives do best by trusting the long-term plan they\'ve already built rather than working even harder in response to setbacks. Deliberate, scheduled downtime, not just powering through, is what actually restores capacity.' },
+      { name: 'Kumbha', english: 'Aquarius', symbol: '♒', lord: 'Saturn', element: 'Air',
+        traits: 'Independent, inventive and community-minded. Kumbha natives think differently and value causes over convention.',
+        health: {
+          dos: ['Keep a steady sleep-wake cycle despite an unconventional lifestyle', 'Stay connected to a community or support network', 'Care for circulation and nervous system health with regular movement', 'Balance independent thinking with practical routine'],
+          donts: ['Isolate yourself when stressed or overwhelmed', 'Let an unconventional schedule undermine basic rest', 'Dismiss practical health advice because it feels ordinary', 'Neglect routine check-ups in favour of bigger-picture thinking'] },
+        wealth: {
+          dos: ['Build a simple, consistent financial routine', 'Explore unconventional income ideas, but structure them', 'Stay connected to people who can offer practical financial advice', 'Track progress on ideas before scaling them up'],
+          donts: ['Chase every new trend without follow-through', 'Neglect practical planning for the sake of ideals', 'Avoid conventional financial tools purely on principle', 'Isolate yourself from financial advice that feels "too mainstream"'] },
+        caution: 'Kumbha\'s independent thinking is a real strength, but it can drift into avoiding structure altogether, in health routines and in money matters. The biggest blind spot is dismissing the ordinary and practical in favour of the different and exciting.',
+        navigate: 'In tough times, Kumbha natives do best by staying connected to their community rather than withdrawing into independence. A little borrowed structure, a friend\'s routine, a simple budgeting tool, can steady things until your own systems catch up.' },
+      { name: 'Meena', english: 'Pisces', symbol: '♓', lord: 'Jupiter', element: 'Water',
+        traits: 'Compassionate, imaginative and intuitive. Meena natives feel deeply and often put others first.',
+        health: {
+          dos: ['Prioritise enough sleep, it affects this sign deeply', 'Practice grounding activities like walking, music or art', 'Set clear boundaries around how much you give to others', 'Pay attention to early signs of stress or escapism'],
+          donts: ['Use escapism as a substitute for addressing stress', 'Neglect sleep when feeling overwhelmed', 'Absorb others\' stress as if it were your own', 'Ignore your own needs while caring for everyone else\'s'] },
+        wealth: {
+          dos: ['Automate savings so it doesn\'t rely on willpower alone', 'Set clear boundaries around lending and giving', 'Get a second opinion before big financial decisions', 'Keep finances simple and easy to track'],
+          donts: ['Lend or give beyond what you can afford', 'Avoid difficult financial conversations', 'Make financial decisions based on guilt or sympathy alone', 'Let vague, unclear finances create hidden stress'] },
+        caution: 'Meena\'s compassion is a genuine gift, but it often comes at the cost of personal boundaries, financial and emotional. The biggest blind spot is giving so much to others that your own health and financial security quietly suffer.',
+        navigate: 'During hard times, Meena natives recover best through gentle structure, a simple routine, a small automated saving habit, rather than relying on willpower alone. Creative or calming outlets, music, art, time near water, help process difficult emotions constructively.' }
+    ];
+
+    /* ── Nakshatra (birth star) content library ────────────────────────── */
+    var NAKSHATRAS = [
+      { name: 'Ashwini', lord: 'Ketu', deity: 'Ashwini Kumaras', trait: 'Quick, pioneering energy: natural healers and fast starters.' },
+      { name: 'Bharani', lord: 'Venus', deity: 'Yama', trait: 'Intense determination and a strong sense of responsibility.' },
+      { name: 'Krittika', lord: 'Sun', deity: 'Agni', trait: 'Sharp, purifying focus. Natives cut through confusion with clarity.' },
+      { name: 'Rohini', lord: 'Moon', deity: 'Brahma', trait: 'Charming and creative, with a deep appreciation for beauty and growth.' },
+      { name: 'Mrigashira', lord: 'Mars', deity: 'Soma', trait: 'Searching, curious energy, always seeking the next discovery.' },
+      { name: 'Ardra', lord: 'Rahu', deity: 'Rudra', trait: 'Transformative and intense: growth often follows a storm.' },
+      { name: 'Punarvasu', lord: 'Jupiter', deity: 'Aditi', trait: 'Renewal and optimism, with a natural ability to bounce back.' },
+      { name: 'Pushya', lord: 'Saturn', deity: 'Brihaspati', trait: 'Nurturing and disciplined, considered one of the most steady, supportive placements.' },
+      { name: 'Ashlesha', lord: 'Mercury', deity: 'Nagas', trait: 'Perceptive and strategic, with a magnetic, hard-to-read presence.' },
+      { name: 'Magha', lord: 'Ketu', deity: 'Pitrs', trait: 'A strong connection to heritage and legacy, with natural leadership instincts.' },
+      { name: 'Purva Phalguni', lord: 'Venus', deity: 'Bhaga', trait: 'Warm, pleasure-loving energy with a love for creativity and relaxation.' },
+      { name: 'Uttara Phalguni', lord: 'Sun', deity: 'Aryaman', trait: 'Dependable and generous. Natives make loyal partners and friends.' },
+      { name: 'Hasta', lord: 'Moon', deity: 'Savitar', trait: 'Skilled hands and a practical mind, natural at crafting and problem-solving.' },
+      { name: 'Chitra', lord: 'Mars', deity: 'Tvashtar', trait: 'A love of beauty and design. Natives often stand out visually.' },
+      { name: 'Swati', lord: 'Rahu', deity: 'Vayu', trait: 'Independent and adaptable, moving through life like the wind.' },
+      { name: 'Vishakha', lord: 'Jupiter', deity: 'Indra-Agni', trait: 'Goal-driven and determined, with a competitive streak.' },
+      { name: 'Anuradha', lord: 'Saturn', deity: 'Mitra', trait: 'Loyal and cooperative, building deep, lasting friendships.' },
+      { name: 'Jyeshtha', lord: 'Mercury', deity: 'Indra', trait: 'A natural protector, often carrying responsibility for others.' },
+      { name: 'Mula', lord: 'Ketu', deity: 'Nirriti', trait: 'Deep, investigative energy, drawn to root causes and hard truths.' },
+      { name: 'Purva Ashadha', lord: 'Venus', deity: 'Apas', trait: 'An invincible spirit and persuasive energy, hard to discourage once decided.' },
+      { name: 'Uttara Ashadha', lord: 'Sun', deity: 'Vishvadevas', trait: 'Steady, long-term achievers with quiet, lasting influence.' },
+      { name: 'Shravana', lord: 'Moon', deity: 'Vishnu', trait: 'A natural listener and learner, connecting well through communication.' },
+      { name: 'Dhanishta', lord: 'Mars', deity: 'Vasus', trait: 'Energetic and rhythmic, often drawn to music, wealth and group activities.' },
+      { name: 'Shatabhisha', lord: 'Rahu', deity: 'Varuna', trait: 'Independent healer energy, valuing solitude and unconventional solutions.' },
+      { name: 'Purva Bhadrapada', lord: 'Jupiter', deity: 'Aja Ekapada', trait: 'Intense idealism, passionate about transformation and depth.' },
+      { name: 'Uttara Bhadrapada', lord: 'Saturn', deity: 'Ahir Budhnya', trait: 'Calm depth and quiet wisdom, comfortable with life\'s slower rhythms.' },
+      { name: 'Revati', lord: 'Mercury', deity: 'Pushan', trait: 'Gentle, nurturing energy, like a natural guide who helps others reach their destination.' }
+    ];
+
+    var state = { dob: '', birthTime: '', city: null };
+
+    /* ── Astro calculation engine ──────────────────────────────────────── */
+    /* Uses the astronomy-engine library for real Sun/Moon/sidereal-time    */
+    /* positions, then applies the Lahiri ayanamsa (approximate, anchored   */
+    /* at J2000 ≈ 23.8537°, advancing at the general precession rate) to    */
+    /* convert to sidereal (Vedic) longitudes. The Ascendant uses the       */
+    /* standard tropical-to-Lagna formula from local sidereal time,         */
+    /* latitude and the ecliptic's true obliquity.                         */
+
+    function lahiriAyanamsa(utcDate) {
+      var msPerYear = 365.25 * 24 * 3600 * 1000;
+      var decimalYear = 2000.0 + (utcDate.getTime() - Date.UTC(2000, 0, 1, 12, 0, 0)) / msPerYear;
+      return 23.85370 + (decimalYear - 2000.0) * (50.2388475 / 3600);
+    }
+
+    function siderealLongitude(tropicalLon, ayanamsa) {
+      return ((tropicalLon - ayanamsa) % 360 + 360) % 360;
+    }
+
+    function rashiIndexFromLongitude(siderealLon) {
+      return Math.floor(siderealLon / 30) % 12;
+    }
+
+    function nakshatraFromLongitude(siderealLon) {
+      var span = 360 / 27;
+      var idx = Math.floor(siderealLon / span) % 27;
+      var within = siderealLon - idx * span;
+      var pada = Math.floor(within / (span / 4)) + 1;
+      return { index: idx, pada: pada };
+    }
+
+    /* The Ascendant is found numerically rather than via a hand-derived      */
+    /* trig formula: for a fixed birth moment, scan ecliptic longitude       */
+    /* around the full circle, convert each point to RA/Dec (a simple,       */
+    /* standard ecliptic-to-equatorial rotation) and feed it through         */
+    /* astronomy-engine's own tested Horizon() transform to get altitude/    */
+    /* azimuth. The Ascendant is the ecliptic point whose altitude crosses   */
+    /* zero on the eastern side of the sky (azimuth 0-180°) — that's the     */
+    /* literal definition of "rising on the horizon", so this sidesteps any  */
+    /* risk of a sign/quadrant error in a memorized closed-form formula.     */
+
+    function eclipticToEquatorialOfDate(lambdaDeg, obliquityDeg) {
+      var lambda = lambdaDeg * Math.PI / 180;
+      var eps = obliquityDeg * Math.PI / 180;
+      var raRad = Math.atan2(Math.sin(lambda) * Math.cos(eps), Math.cos(lambda));
+      var raDeg = (raRad * 180 / Math.PI + 360) % 360;
+      var decDeg = Math.asin(Math.sin(lambda) * Math.sin(eps)) * 180 / Math.PI;
+      return { raHours: raDeg / 15, decDeg: decDeg };
+    }
+
+    function horizonForEclipticLongitude(lambdaDeg, time, observer, obliquityDeg) {
+      var eq = eclipticToEquatorialOfDate(lambdaDeg, obliquityDeg);
+      return Astronomy.Horizon(time, observer, eq.raHours, eq.decDeg, 'normal');
+    }
+
+    function computeAscendantTropical(time, observer, obliquityDeg) {
+      var step = 2;
+      var crossings = [];
+      var prevLambda = 0;
+      var prevAlt = horizonForEclipticLongitude(0, time, observer, obliquityDeg).altitude;
+      for (var lam = step; lam <= 360; lam += step) {
+        var alt = horizonForEclipticLongitude(lam, time, observer, obliquityDeg).altitude;
+        if ((prevAlt < 0 && alt >= 0) || (prevAlt >= 0 && alt < 0)) {
+          var frac = (0 - prevAlt) / (alt - prevAlt);
+          var lamCross = prevLambda + frac * (lam - prevLambda);
+          crossings.push(((lamCross % 360) + 360) % 360);
+        }
+        prevAlt = alt;
+        prevLambda = lam;
+      }
+      for (var i = 0; i < crossings.length; i++) {
+        var hor = horizonForEclipticLongitude(crossings[i], time, observer, obliquityDeg);
+        if (hor.azimuth >= 0 && hor.azimuth < 180) {
+          return crossings[i];
+        }
+      }
+      return crossings.length ? crossings[0] : 0;
+    }
+
+    function computeAstroProfile(dob, timeStr, city) {
+      var parts = dob.split('-').map(Number);
+      var tparts = timeStr.split(':').map(Number);
+      var utcDate = new Date(Date.UTC(parts[0], parts[1] - 1, parts[2], tparts[0], tparts[1], 0));
+      utcDate = new Date(utcDate.getTime() - (5 * 60 + 30) * 60 * 1000); // IST -> UTC
+
+      var time = Astronomy.MakeTime(utcDate);
+      var moon = Astronomy.EclipticGeoMoon(time);
+      var ayanamsa = lahiriAyanamsa(utcDate);
+      var moonSidereal = siderealLongitude(moon.lon, ayanamsa);
+      var rashiIdx = rashiIndexFromLongitude(moonSidereal);
+      var nak = nakshatraFromLongitude(moonSidereal);
+
+      var observer = new Astronomy.Observer(city.lat, city.lon, 0);
+      var obliquity = Astronomy.e_tilt(time).tobl;
+      var ascTropical = computeAscendantTropical(time, observer, obliquity);
+      var ascSidereal = siderealLongitude(ascTropical, ayanamsa);
+      var lagnaIdx = rashiIndexFromLongitude(ascSidereal);
+
+      return { rashiIdx: rashiIdx, nakshatraIdx: nak.index, nakshatraPada: nak.pada, lagnaIdx: lagnaIdx };
+    }
+
+    /* ── UI wiring ──────────────────────────────────────────────────────── */
+
+    function populateCityList() {
+      var dl = document.getElementById('cityDatalist');
+      dl.innerHTML = CITIES.map(function (c) {
+        return '<option value="' + c.name + ', ' + c.state + '">';
+      }).join('');
+    }
+
+    function buildZodiacRing() {
+      var size = 280, r = 118, cx = size / 2, cy = size / 2;
+      var circle = '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="rgba(255,255,255,0.14)" stroke-width="1"/>';
+      var marks = RASHIS.map(function (rs, i) {
+        var angle = (i * 30 - 90) * Math.PI / 180;
+        var x = cx + r * Math.cos(angle);
+        var y = cy + r * Math.sin(angle);
+        return '<text id="zodiacSym-' + i + '" x="' + x + '" y="' + y + '" text-anchor="middle" dominant-baseline="central" font-size="15" fill="rgba(255,255,255,0.35)" style="transition: all 0.3s ease;">' + rs.symbol + '</text>';
+      }).join('');
+      document.getElementById('zodiacRingWrap').innerHTML =
+        '<svg viewBox="0 0 ' + size + ' ' + size + '" width="100%" height="100%">' + circle + marks + '</svg>';
+    }
+
+    function highlightZodiacSymbol(idx) {
+      Array.prototype.forEach.call(document.querySelectorAll('[id^="zodiacSym-"]'), function (el) {
+        el.setAttribute('fill', 'rgba(255,255,255,0.35)');
+        el.setAttribute('font-size', '15');
+      });
+      var target = document.getElementById('zodiacSym-' + idx);
+      if (target) {
+        target.setAttribute('fill', '#facc15');
+        target.setAttribute('font-size', '24');
+      }
+    }
+
+    function renderResults(profile) {
+      var rashi = RASHIS[profile.rashiIdx];
+      var nak = NAKSHATRAS[profile.nakshatraIdx];
+      var lagna = RASHIS[profile.lagnaIdx];
+      var rashiColors = ELEMENT_COLORS[rashi.element];
+      var lagnaColors = ELEMENT_COLORS[lagna.element];
+
+      document.getElementById('astroPlaceholder').style.display = 'none';
+      document.getElementById('astroStats').style.display = 'grid';
+      document.getElementById('resultsWrap').style.display = 'block';
+
+      var heroEl = document.getElementById('astroHero');
+      heroEl.classList.add('has-result');
+      heroEl.style.setProperty('--el-accent', rashiColors.accent);
+      var resultsEl = document.getElementById('resultsWrap');
+      resultsEl.style.setProperty('--el-accent', rashiColors.accent);
+      resultsEl.style.setProperty('--el-bg', rashiColors.bg);
+
+      highlightZodiacSymbol(profile.rashiIdx);
+
+      var rashiBadgeEl = document.getElementById('rashiBadge');
+      rashiBadgeEl.textContent = rashi.symbol;
+      rashiBadgeEl.style.setProperty('--badge-accent', rashiColors.accent);
+      rashiBadgeEl.style.setProperty('--badge-bg', rashiColors.bg);
+      document.getElementById('rashiValue').textContent = rashi.name;
+      document.getElementById('rashiSub').textContent = rashi.english;
+
+      document.getElementById('nakshatraValue').textContent = nak.name;
+      document.getElementById('nakshatraSub').textContent = 'Pada ' + profile.nakshatraPada;
+
+      var lagnaBadgeEl = document.getElementById('lagnaBadge');
+      lagnaBadgeEl.textContent = lagna.symbol;
+      lagnaBadgeEl.style.setProperty('--badge-accent', lagnaColors.accent);
+      lagnaBadgeEl.style.setProperty('--badge-bg', lagnaColors.bg);
+      document.getElementById('lagnaValue').textContent = lagna.name;
+      document.getElementById('lagnaSub').textContent = lagna.english;
+
+      document.getElementById('rashiCardBadge').textContent = rashi.symbol;
+      document.getElementById('rashiCardTitle').textContent = rashi.name + ' (' + rashi.english + ')';
+      document.getElementById('rashiMetaRow').innerHTML =
+        '<span class="astro-meta-pill">Lord: ' + rashi.lord + '</span>' +
+        '<span class="astro-meta-pill">Element: ' + rashi.element + '</span>';
+      document.getElementById('rashiTraits').textContent = rashi.traits;
+
+      document.getElementById('healthCardRashiName').textContent = rashi.name;
+      document.getElementById('healthDos').innerHTML = rashi.health.dos.map(function (d) { return '<li>' + d + '</li>'; }).join('');
+      document.getElementById('healthDonts').innerHTML = rashi.health.donts.map(function (d) { return '<li>' + d + '</li>'; }).join('');
+
+      document.getElementById('wealthCardRashiName').textContent = rashi.name;
+      document.getElementById('wealthDos').innerHTML = rashi.wealth.dos.map(function (d) { return '<li>' + d + '</li>'; }).join('');
+      document.getElementById('wealthDonts').innerHTML = rashi.wealth.donts.map(function (d) { return '<li>' + d + '</li>'; }).join('');
+
+      document.getElementById('rashiCaution').textContent = rashi.caution;
+      document.getElementById('rashiNavigate').textContent = rashi.navigate;
+
+      document.getElementById('nakshatraCardTitle').textContent = nak.name + ' (Pada ' + profile.nakshatraPada + ')';
+      document.getElementById('nakshatraMetaRow').innerHTML =
+        '<span class="astro-meta-pill">Lord: ' + nak.lord + '</span>' +
+        '<span class="astro-meta-pill">Deity: ' + nak.deity + '</span>';
+      document.getElementById('nakshatraTraits').textContent = nak.trait;
+
+      document.getElementById('lagnaCardBadge').textContent = lagna.symbol;
+      document.getElementById('lagnaCardTitle').textContent = 'Lagna: ' + lagna.name + ' (' + lagna.english + ')';
+      document.getElementById('lagnaTraits').textContent = 'Your Lagna is the sign that was rising on the eastern horizon at your exact birth moment and place. In tradition it\'s considered the lens through which your personality and life approach are expressed outwardly, carrying the same general traits as ' + lagna.name + ' (' + lagna.english + '), but applied to how you present yourself to the world rather than your inner emotional nature (that\'s your Rashi).';
+    }
+
+    function tryCalculate(showErrors) {
+      var errEl = document.getElementById('calcError');
+      var missing = [];
+      if (!state.dob) missing.push('date of birth');
+      if (!state.birthTime) missing.push('time of birth');
+      if (!state.city) missing.push('a valid birth city from the list');
+
+      if (missing.length) {
+        if (showErrors) errEl.textContent = 'Please provide: ' + missing.join(', ') + '.';
+        return;
+      }
+      errEl.textContent = '';
+
+      try {
+        var profile = computeAstroProfile(state.dob, state.birthTime, state.city);
+        renderResults(profile);
+        scheduleSave();
+      } catch (e) {
+        console.error('Could not compute astrology profile', e);
+        errEl.textContent = 'Something went wrong calculating your chart. Please double-check your inputs.';
+      }
+    }
+
+    function updateCityFromInput(showNote) {
+      var input = document.getElementById('cityInput');
+      var match = findCity(input.value);
+      var note = document.getElementById('cityNote');
+      if (match) {
+        state.city = match;
+        note.textContent = '✓ ' + match.name + ', ' + match.state + ' selected.';
+        note.style.color = '#059669';
+      } else {
+        state.city = null;
+        if (showNote) {
+          note.textContent = 'Can\'t find your exact town? Pick the nearest major city from the suggestions.';
+          note.style.color = '#94a3b8';
+        }
+      }
+    }
+
+    function wireInputs() {
+      document.getElementById('dobInput').addEventListener('change', function () {
+        state.dob = this.value;
+        tryCalculate(false);
+      });
+      document.getElementById('birthTimeInput').addEventListener('change', function () {
+        state.birthTime = this.value;
+        tryCalculate(false);
+      });
+      document.getElementById('cityInput').addEventListener('input', function () {
+        updateCityFromInput(true);
+        tryCalculate(false);
+      });
+      document.getElementById('calcBtn').addEventListener('click', function () {
+        updateCityFromInput(true);
+        tryCalculate(true);
+      });
+    }
+
+    /* ── Persistence, mirroring fire_plan_inputs / health_inputs ───────── */
+
+    async function loadSavedInputs() {
+      var { data, error } = await supabaseClient.from('astrology_inputs').select('*').maybeSingle();
+      if (error) { console.error('Could not load saved astrology inputs', error); return null; }
+      return data;
+    }
+
+    async function saveInputs() {
+      var payload = {
+        dob: state.dob || null,
+        birth_time: state.birthTime || null,
+        birth_city: state.city ? (state.city.name + ', ' + state.city.state) : null,
+        birth_lat: state.city ? state.city.lat : null,
+        birth_lon: state.city ? state.city.lon : null,
+        updated_at: new Date().toISOString()
+      };
+      var { error } = await supabaseClient.from('astrology_inputs').upsert(payload, { onConflict: 'user_id' });
+      if (error) console.error('Could not save astrology inputs', error);
+    }
+
+    var saveTimer = null;
+    function scheduleSave() {
+      if (saveTimer) clearTimeout(saveTimer);
+      saveTimer = setTimeout(saveInputs, 600);
+    }
+
+    function applySaved(saved) {
+      if (saved.dob) { state.dob = saved.dob; document.getElementById('dobInput').value = saved.dob; }
+      if (saved.birth_time) { state.birthTime = saved.birth_time.slice(0, 5); document.getElementById('birthTimeInput').value = state.birthTime; }
+      if (saved.birth_city && saved.birth_lat != null && saved.birth_lon != null) {
+        state.city = { name: saved.birth_city.split(',')[0].trim(), state: saved.birth_city.split(',').slice(1).join(',').trim(), lat: saved.birth_lat, lon: saved.birth_lon };
+        document.getElementById('cityInput').value = saved.birth_city;
+      }
+    }
+
+    (async function init() {
+      var user = await requireAuth('index.html#login');
+      if (!user) return;
+
+      populateCityList();
+      buildZodiacRing();
+      wireInputs();
+
+      var saved = await loadSavedInputs();
+      if (saved) applySaved(saved);
+
+      tryCalculate();
+    })();
+  </script>
+</body>
+</html>

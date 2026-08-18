@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reminders - FinFlow</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f8fafc;
+      color: #0f172a;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    a, button { color: inherit; text-decoration: none; font-family: inherit; }
+
+    .app-shell { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
+    @media (max-width: 860px) { .app-shell { grid-template-columns: 1fr; } .sidebar { display: none; } }
+
+    .sidebar { background: #ffffff; border-right: 1px solid #e2e8f0; display: flex; flex-direction: column; padding: 1.5rem 1.25rem; }
+    .sidebar-logo { display: flex; align-items: center; gap: 0.65rem; font-size: 1.1rem; font-weight: 800; margin-bottom: 2rem; padding: 0 0.25rem; }
+    .sidebar-logo-icon { width: 30px; height: 30px; background: linear-gradient(135deg, #0ea5e9, #10b981); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; flex-shrink: 0; }
+    .sidebar-nav { display: flex; flex-direction: column; gap: 0.25rem; }
+    .sidebar-nav a, .sidebar-nav .nav-group-head { display: flex; align-items: center; gap: 0.75rem; padding: 0.7rem 0.75rem; border-radius: 0.6rem; font-size: 0.9rem; font-weight: 500; color: #364752; }
+    .sidebar-nav a:hover, .sidebar-nav .nav-group-head:hover { background: #f1f5f9; }
+    .sidebar-nav a.active { background: #0f172a; color: #ffffff; font-weight: 600; }
+    .sidebar-nav .nav-group-head.open { background: #f1f5f9; font-weight: 700; }
+    .sidebar-nav .nav-group-head.active { background: #0f172a; color: #ffffff; font-weight: 600; }
+    .sidebar-nav .nav-group-head.active .nav-chevron { color: rgba(255,255,255,0.6); }
+    .sidebar-nav .nav-icon { font-size: 1rem; width: 20px; text-align: center; flex-shrink: 0; }
+    .sidebar-nav .nav-label { flex: 1; }
+    .sidebar-nav .nav-chevron { color: #94a3b8; font-size: 0.85rem; }
+    .sidebar-subnav { display: flex; flex-direction: column; gap: 0.2rem; padding-left: 1.6rem; margin: 0.15rem 0 0.3rem; }
+    .sidebar-subnav a { display: flex; align-items: center; gap: 0.6rem; padding: 0.55rem 0.6rem; border-radius: 0.5rem; font-size: 0.85rem; font-weight: 500; color: #364752; }
+    .sidebar-subnav a:hover { background: #f1f5f9; }
+    .sidebar-subnav a.active { background: #0f172a; color: #fff; font-weight: 600; }
+    .sidebar-spacer { flex: 1; }
+    .feedback-card { background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 0.9rem; padding: 1.1rem; margin-top: 1.5rem; }
+    .feedback-card .fc-icon { width: 32px; height: 32px; border-radius: 0.6rem; background: #eef2f7; display: flex; align-items: center; justify-content: center; font-size: 0.95rem; margin-bottom: 0.6rem; }
+    .feedback-card strong { display: block; font-size: 0.85rem; margin-bottom: 0.3rem; }
+    .feedback-card p { font-size: 0.78rem; color: #64748b; line-height: 1.5; margin-bottom: 0.85rem; }
+    .feedback-card a { display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; width: 100%; padding: 0.55rem; border: 1px solid #cbd5e1; border-radius: 0.5rem; font-size: 0.8rem; font-weight: 600; color: #364752; }
+    .feedback-card a:hover { border-color: #10b981; color: #10b981; }
+
+    .main { padding: 1.5rem 2.5rem 3rem; min-width: 0; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; padding-bottom: 1.25rem; border-bottom: 1px solid #e2e8f0; margin-bottom: 1.5rem; }
+    .topbar h1 { font-size: 1.4rem; font-weight: 700; }
+    .topbar-right { display: flex; align-items: center; gap: 0.85rem; }
+    .language-selector { display: flex; align-items: center; gap: 0.5rem; background: #ffffff; padding: 0.5rem 0.9rem; border-radius: 0.5rem; color: #51636f; border: 1px solid #e2e8f0; cursor: pointer; font-size: 0.85rem; }
+    .user-menu { position: relative; list-style: none; }
+    .user-menu > summary { cursor: pointer; list-style: none; width: 34px; height: 34px; border-radius: 50%; background: #eef2f7; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; font-size: 1rem; }
+    .user-menu > summary::-webkit-details-marker { display: none; }
+    .user-menu-panel { position: absolute; top: calc(100% + 0.6rem); right: 0; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 0.75rem; box-shadow: 0 10px 30px rgba(15,23,42,0.12); padding: 0.4rem; min-width: 150px; z-index: 20; }
+    .user-menu-panel a { display: block; padding: 0.55rem 0.7rem; border-radius: 0.5rem; font-size: 0.85rem; color: #364752; font-weight: 500; }
+    .user-menu-panel a:hover { background: #f1f5f9; color: #10b981; }
+
+    .page-head { margin-bottom: 1.5rem; max-width: 62ch; }
+    .page-head p { color: #64748b; font-size: 0.9rem; line-height: 1.55; }
+
+    /* Hero is asymmetric on purpose: an overdue reminder is not the same
+       kind of fact as "12 total tracked" and shouldn't share equal visual
+       weight with it. When anything is overdue, that dominates the hero;
+       everything else recedes into a smaller secondary row. When nothing
+       is overdue, the hero relaxes into one calm, quiet summary line. */
+    .hero-alert { background: linear-gradient(135deg, #7f1d1d, #b91c1c); border-radius: 1.25rem; padding: 1.4rem 1.9rem; color: #fff; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; flex-wrap: wrap; box-shadow: 0 10px 30px rgba(127,29,29,0.25); }
+    .hero-alert-left { display: flex; align-items: center; gap: 1rem; min-width: 0; }
+    .hero-alert-icon { width: 44px; height: 44px; border-radius: 0.85rem; background: rgba(255,255,255,0.14); display: flex; align-items: center; justify-content: center; font-size: 1.35rem; flex-shrink: 0; }
+    .hero-alert-title { font-size: 1.08rem; font-weight: 800; margin-bottom: 0.2rem; }
+    .hero-alert-sub { font-size: 0.82rem; color: rgba(255,255,255,0.72); }
+    .hero-alert-stats { display: flex; align-items: center; gap: 1.75rem; flex-shrink: 0; }
+    .hero-alert-stats::before { content: ''; align-self: stretch; width: 1px; background: rgba(255,255,255,0.18); margin-right: 0.15rem; }
+    .hero-alert-stat { text-align: center; min-width: 3rem; }
+    .hero-alert-stat-value { font-size: 1.3rem; font-weight: 800; font-variant-numeric: tabular-nums; }
+    .hero-alert-stat-label { font-size: 0.64rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: rgba(255,255,255,0.62); margin-top: 0.2rem; }
+
+    .hero-calm { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 1.25rem; padding: 1.2rem 1.75rem; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; flex-wrap: wrap; box-shadow: 0 4px 16px rgba(15,23,42,0.03); }
+    .hero-calm-left { display: flex; align-items: center; gap: 0.85rem; }
+    .hero-calm-icon { width: 44px; height: 44px; border-radius: 0.85rem; background: #ecfdf5; color: #059669; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; flex-shrink: 0; }
+    .hero-calm-title { font-size: 0.98rem; font-weight: 800; }
+    .hero-calm-sub { font-size: 0.8rem; color: #64748b; margin-top: 0.15rem; }
+    .hero-calm-stats { display: flex; align-items: center; gap: 1.75rem; }
+    .hero-calm-stats::before { content: ''; align-self: stretch; width: 1px; background: #e5e7eb; margin-right: 0.15rem; }
+    .hero-calm-stat { text-align: center; min-width: 3rem; }
+    .hero-calm-stat-value { font-size: 1.15rem; font-weight: 800; color: #0f172a; font-variant-numeric: tabular-nums; }
+    .hero-calm-stat-value.warn { color: #c2410c; }
+    .hero-calm-stat-label { font-size: 0.64rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: #94a3b8; margin-top: 0.2rem; }
+
+    .section-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.8rem; }
+    .section-head h3 { font-size: 1.05rem; font-weight: 800; }
+    .btn-primary { padding: 0.6rem 1.1rem; border: none; border-radius: 0.6rem; background: linear-gradient(135deg, #0ea5e9, #10b981); color: #fff; font-size: 0.85rem; font-weight: 700; cursor: pointer; }
+    .btn-primary:hover { opacity: 0.92; }
+    .btn-secondary { padding: 0.55rem 1rem; border: 1px solid #cbd5e1; border-radius: 0.6rem; background: #fff; color: #364752; font-size: 0.83rem; font-weight: 600; cursor: pointer; }
+    .btn-secondary:hover { border-color: #94a3b8; }
+    .btn-danger-text { color: #dc2626; font-size: 0.78rem; font-weight: 700; cursor: pointer; background: none; border: none; }
+
+    .filter-row { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1.25rem; }
+    .filter-pill { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.45rem 0.9rem; border: 1.5px solid #e2e8f0; border-radius: 999px; background: #fff; cursor: pointer; font-size: 0.8rem; font-weight: 600; color: #51636f; }
+    .filter-pill:hover { border-color: #94a3b8; }
+    .filter-pill.active { border-color: #0ea5e9; background: #eff6ff; color: #2563eb; }
+    .filter-pill-count { font-size: 0.7rem; font-weight: 700; color: #94a3b8; background: #f1f5f9; border-radius: 999px; padding: 0.05rem 0.4rem; }
+    .filter-pill.active .filter-pill-count { color: #2563eb; background: #dbeafe; }
+
+    .empty-state { background: #ffffff; border: 1px dashed #cbd5e1; border-radius: 1rem; padding: 3rem 1.5rem; text-align: center; margin-bottom: 1.5rem; }
+    .empty-state-icon { font-size: 1.8rem; margin-bottom: 0.75rem; }
+    .empty-state p { color: #64748b; font-size: 0.9rem; margin-bottom: 1.25rem; }
+
+    .ob-group { margin-bottom: 1.5rem; }
+    .ob-group:last-child { margin-bottom: 0; }
+    .ob-group-title { display: flex; align-items: center; gap: 0.5rem; font-size: 0.74rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; color: #94a3b8; margin: 0 0 0.65rem 0.2rem; }
+    .ob-group-title .dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .ob-group-title.overdue .dot { background: #dc2626; }
+    .ob-group-title.due_soon .dot { background: #d97706; }
+    .ob-group-title.upcoming .dot { background: #94a3b8; }
+
+    .ob-list { display: flex; flex-direction: column; gap: 0.6rem; }
+    .ob-row { display: flex; align-items: center; gap: 1rem; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 0.9rem; padding: 0.85rem 1.1rem; box-shadow: 0 2px 10px rgba(15,23,42,0.02); cursor: pointer; transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease; }
+    .ob-row:hover { border-color: #94a3b8; box-shadow: 0 8px 20px rgba(15,23,42,0.06); transform: translateY(-1px); }
+    @media (prefers-reduced-motion: reduce) { .ob-row { transition: none; } .ob-row:hover { transform: none; } }
+    .ob-icon { width: 42px; height: 42px; border-radius: 0.75rem; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; }
+    .ob-icon.overdue { background: #fef2f2; }
+    .ob-icon.due_soon { background: #fff7ed; }
+    .ob-icon.upcoming { background: #f1f5f9; }
+    .ob-main { flex: 1; min-width: 0; }
+    .ob-name { font-size: 0.92rem; font-weight: 700; color: #0f172a; margin-bottom: 0.3rem; }
+    .ob-due-row { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+    .ob-due-label { font-size: 0.72rem; font-weight: 700; padding: 0.18rem 0.55rem; border-radius: 999px; white-space: nowrap; }
+    .ob-due-label.overdue { color: #b91c1c; background: #fef2f2; }
+    .ob-due-label.due_soon { color: #c2410c; background: #fff7ed; }
+    .ob-due-label.upcoming { color: #64748b; background: #f1f5f9; }
+    .ob-linked { color: #94a3b8; font-weight: 500; font-size: 0.78rem; }
+    .ob-side { display: flex; flex-direction: column; align-items: flex-end; gap: 0.2rem; flex-shrink: 0; }
+    .ob-owner-tag { font-size: 0.7rem; color: #94a3b8; font-weight: 600; white-space: nowrap; }
+    .ob-amount { font-size: 0.92rem; font-weight: 800; color: #0f172a; white-space: nowrap; }
+
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.55); align-items: center; justify-content: center; z-index: 50; padding: 1rem; }
+    .modal-overlay.show { display: flex; }
+    .modal-box { background: #fff; border-radius: 1.1rem; padding: 1.6rem 1.75rem; width: 100%; max-width: 520px; max-height: 90vh; overflow-y: auto; }
+    .modal-box.wide { max-width: 640px; }
+    .modal-box h3 { font-size: 1.1rem; font-weight: 800; margin-bottom: 1.1rem; }
+    .field-label { font-size: 0.83rem; font-weight: 600; color: #0f172a; margin-bottom: 0.4rem; display: block; }
+    .field-hint { font-size: 0.74rem; color: #94a3b8; margin: -0.6rem 0 0.9rem; }
+    .field-input, .field-select {
+      width: 100%; padding: 0.6rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 0.55rem;
+      font-size: 0.88rem; font-family: inherit; color: #0f172a; margin-bottom: 0.9rem; background: #fff;
+    }
+    .field-input:focus, .field-select:focus { outline: none; border-color: #10b981; box-shadow: 0 0 0 2px rgba(16,185,129,0.15); }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+    .modal-actions { display: flex; gap: 0.7rem; margin-top: 0.5rem; }
+    .modal-actions button { flex: 1; }
+    .form-error { font-size: 0.8rem; color: #dc2626; font-weight: 600; margin-bottom: 0.7rem; }
+
+    .reminder-list { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 0.6rem; }
+    .reminder-row { display: flex; align-items: center; gap: 0.6rem; }
+    .reminder-row input { flex: 1; padding: 0.5rem 0.65rem; border: 1px solid #cbd5e1; border-radius: 0.5rem; font-size: 0.85rem; font-family: inherit; }
+    .reminder-row span { font-size: 0.8rem; color: #64748b; white-space: nowrap; }
+    .reminder-row .remove-reminder { color: #dc2626; background: none; border: none; cursor: pointer; font-size: 0.9rem; }
+    .add-reminder-btn { font-size: 0.8rem; font-weight: 600; color: #0ea5e9; background: none; border: none; cursor: pointer; margin-bottom: 0.9rem; }
+
+    /* Category rail + form (single-screen Add Reminder layout) */
+    .modal-box.two-col { max-width: 700px; padding: 0; overflow: hidden; }
+    .two-col-layout { display: flex; }
+    @media (max-width: 640px) { .two-col-layout { flex-direction: column; } }
+    .category-rail { width: 210px; flex-shrink: 0; background: #f8fafc; border-right: 1px solid #e2e8f0; padding: 1.5rem 0.75rem; display: flex; flex-direction: column; gap: 0.25rem; max-height: 80vh; overflow-y: auto; }
+    @media (max-width: 640px) { .category-rail { width: auto; flex-direction: row; flex-wrap: wrap; border-right: none; border-bottom: 1px solid #e2e8f0; max-height: none; } }
+    .category-rail-item { display: flex; align-items: center; gap: 0.6rem; padding: 0.65rem 0.75rem; border-radius: 0.6rem; cursor: pointer; font-size: 0.85rem; font-weight: 600; color: #51636f; background: none; border: none; font-family: inherit; text-align: left; }
+    .category-rail-item:hover { background: #f1f5f9; }
+    .category-rail-item.selected { background: #0f172a; color: #fff; }
+    .category-rail-icon { font-size: 1.05rem; width: 20px; text-align: center; flex-shrink: 0; }
+    .two-col-form { flex: 1; min-width: 0; padding: 1.6rem 1.75rem; max-height: 80vh; overflow-y: auto; }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a href="dashboard.html" class="sidebar-logo">
+        <div class="sidebar-logo-icon">💰</div>
+        <span>FinFlow</span>
+      </a>
+
+      <nav class="sidebar-nav">
+        <a href="dashboard.html">
+          <span class="nav-icon">▦</span>
+          <span class="nav-label">Dashboard</span>
+        </a>
+        <a href="fire-plan.html">
+          <span class="nav-icon">🧭</span>
+          <span class="nav-label">FIRE Plan</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="net-worth.html">
+          <span class="nav-icon">📈</span>
+          <span class="nav-label">Networth</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="money-required.html">
+          <span class="nav-icon">🪴</span>
+          <span class="nav-label">Expenses</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="expense-quick-add.html">
+          <span class="nav-icon">⚡</span>
+          <span class="nav-label">Daily Expenses Tracker</span>
+        </a>
+        <a href="tax-planning.html">
+          <span class="nav-icon">🧾</span>
+          <span class="nav-label">Tax Planning</span>
+        </a>
+        <a href="insurance-tracker.html">
+          <span class="nav-icon">🛡️</span>
+          <span class="nav-label">Insurance Tracker</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="reminders.html" class="active">
+          <span class="nav-icon">🔔</span>
+          <span class="nav-label">Reminders</span>
+        </a>
+        <a href="vault-overview.html">
+          <span class="nav-icon">🔒</span>
+          <span class="nav-label">Document Vault</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="split/dashboard.html">
+          <span class="nav-icon">💸</span>
+          <span class="nav-label">SplitExpenses(SplitWise)</span>
+        </a>
+        <a href="life-expectancy.html">
+          <span class="nav-icon">❤️</span>
+          <span class="nav-label">Health</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="astrology.html">
+          <span class="nav-icon">🔮</span>
+          <span class="nav-label">Spiritual</span>
+        </a>
+        <a href="calculator/free-calculators.html" target="_blank" rel="noopener noreferrer">
+          <span class="nav-icon">🧮</span>
+          <span class="nav-label">Financial Calculators</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="#">
+          <span class="nav-icon">⚙️</span>
+          <span class="nav-label">Settings</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-spacer"></div>
+
+      <div class="feedback-card">
+        <div class="fc-icon">💬</div>
+        <strong>Got feedback?</strong>
+        <p>Have an idea or found a bug? We read every message.</p>
+        <a href="mailto:hello@finflow.app">✉ Contact Us</a>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <h1>Reminders</h1>
+        <div class="topbar-right">
+          <div class="language-selector">🌐 English ▾</div>
+          <details class="user-menu">
+            <summary>👤</summary>
+            <div class="user-menu-panel">
+              <a href="#">Settings</a>
+              <a href="#" onclick="signOutAndRedirect('index.html'); return false;">Log Out</a>
+            </div>
+          </details>
+        </div>
+      </div>
+
+      <div class="page-head">
+        <p>Insurance renewals, tax filing, vehicle service, medical check-ups, subscriptions — everything with a due date, in one feed.</p>
+      </div>
+
+      <div id="heroSection"></div>
+
+      <div class="section-head">
+        <h3>All Reminders</h3>
+        <button type="button" class="btn-primary" id="addObligationBtn">+ New Reminder</button>
+      </div>
+
+      <div class="filter-row" id="categoryFilters"></div>
+
+      <div class="empty-state" id="emptyState" style="display:none;">
+        <div class="empty-state-icon">🔔</div>
+        <p>Nothing tracked yet. Add an insurance renewal, a tax filing date, or a vehicle service reminder to get started.</p>
+        <button type="button" class="btn-primary" id="emptyStateAddBtn">+ New Reminder</button>
+      </div>
+      <div class="ob-list" id="obList"></div>
+    </main>
+  </div>
+
+  <div class="modal-overlay" id="obModal">
+    <div class="modal-box two-col">
+      <div class="two-col-layout">
+        <div class="category-rail" id="categoryRail"></div>
+        <div class="two-col-form">
+          <h3>New Reminder</h3>
+          <div class="form-error" id="obFormError"></div>
+          <input type="hidden" id="obCategoryInput" value="other">
+
+          <label class="field-label">Name</label>
+          <input type="text" class="field-input" id="obNameInput" placeholder="e.g. Car insurance renewal, ITR filing">
+
+          <div class="field-row">
+            <div>
+              <label class="field-label">Due date</label>
+              <input type="date" class="field-input" id="obDueDateInput">
+            </div>
+            <div>
+              <label class="field-label">Amount (₹, optional)</label>
+              <input type="number" class="field-input" id="obAmountInput" min="0" step="100">
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div>
+              <label class="field-label">Owner</label>
+              <select class="field-select" id="obOwnerInput">
+                <option value="self" selected>Self</option>
+                <option value="spouse">Spouse</option>
+                <option value="joint">Joint</option>
+                <option value="child">Child</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            <div>
+              <label class="field-label">Recurrence</label>
+              <select class="field-select" id="obRecurrenceInput">
+                <option value="none">None (one-off)</option>
+                <option value="annual">Annual (same date each year)</option>
+                <option value="custom_interval_days">Custom interval</option>
+              </select>
+            </div>
+          </div>
+
+          <div id="obIntervalWrap" style="display:none;">
+            <label class="field-label">Interval (days)</label>
+            <input type="number" class="field-input" id="obIntervalInput" min="1" step="1">
+          </div>
+
+          <label class="field-label">Linked asset (optional)</label>
+          <select class="field-select" id="obLinkedAssetInput">
+            <option value="">None</option>
+          </select>
+
+          <label class="field-label">Reminder windows</label>
+          <div class="field-hint">How many days before the due date should this show as "due soon"?</div>
+          <div class="reminder-list" id="reminderList"></div>
+          <button type="button" class="add-reminder-btn" id="addReminderBtn">+ Add reminder window</button>
+
+          <div class="modal-actions">
+            <button type="button" class="btn-secondary" id="cancelObBtn">Cancel</button>
+            <button type="button" class="btn-primary" id="saveObBtn">Save Reminder</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-client.js"></script>
+  <script src="js/obligations-calc.js"></script>
+  <script src="js/goal-links.js"></script>
+  <script src="js/obligations-links.js"></script>
+  <script>
+    var CATEGORIES = [
+      { key: 'insurance', label: 'Insurance', icon: '🛡️' },
+      { key: 'tax', label: 'Tax', icon: '🧾' },
+      { key: 'maintenance', label: 'Maintenance', icon: '🔧' },
+      { key: 'medical', label: 'Medical', icon: '🩺' },
+      { key: 'warranty', label: 'Warranty', icon: '📄' },
+      { key: 'document_renewal', label: 'Document Renewal', icon: '📋' },
+      { key: 'subscription', label: 'Subscription', icon: '🔁' },
+      { key: 'other', label: 'Other', icon: '🔔' }
+    ];
+    var CATEGORY_BY_KEY = {};
+    CATEGORIES.forEach(function (c) { CATEGORY_BY_KEY[c.key] = c; });
+
+    var OWNER_LABEL = { self: 'Self', spouse: 'Spouse', joint: 'Joint', child: 'Child', other: 'Other' };
+    var STATUS_RANK = { overdue: 0, due_soon: 1, upcoming: 2 };
+
+    var obligations = [];
+    var reminderWindowsByObligation = {};
+    var linkableAssets = [];
+    var activeCategoryFilter = 'all';
+    var selectedFormCategory = 'other';
+
+    function escapeHtml(s) {
+      return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function formatRupees(amount) {
+      var n = Math.round(Number(amount) || 0);
+      return '₹' + n.toLocaleString('en-IN');
+    }
+
+    // "Overdue by 3 days" / "Due in 4 days" reads in a glance; a raw ISO
+    // date plus a separate status pill made you do the subtraction yourself.
+    function relativeDateLabel(dueDateStr, status) {
+      var due = new Date(dueDateStr + 'T00:00:00');
+      var today = new Date();
+      today.setHours(0, 0, 0, 0);
+      var diffDays = Math.round((due - today) / 86400000);
+
+      if (status === 'overdue') {
+        var overdueDays = Math.abs(diffDays);
+        return 'Overdue by ' + overdueDays + (overdueDays === 1 ? ' day' : ' days');
+      }
+      if (diffDays === 0) return 'Due today';
+      if (diffDays === 1) return 'Due tomorrow';
+      if (diffDays <= 20) return 'Due in ' + diffDays + ' days';
+      return 'Due ' + due.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+    }
+
+    /* ---- Reminder window sub-editor (advanced form) ---- */
+
+    function renderReminderList(days) {
+      var list = document.getElementById('reminderList');
+      list.innerHTML = days.map(function (d, i) {
+        return '<div class="reminder-row">' +
+          '<input type="number" min="1" step="1" value="' + d + '" data-idx="' + i + '">' +
+          '<span>days before</span>' +
+          '<button type="button" class="remove-reminder" data-remove="' + i + '">✕</button>' +
+        '</div>';
+      }).join('');
+
+      Array.prototype.forEach.call(list.querySelectorAll('[data-remove]'), function (btn) {
+        btn.addEventListener('click', function () {
+          var current = getReminderValues();
+          current.splice(Number(btn.dataset.remove), 1);
+          renderReminderList(current);
+        });
+      });
+    }
+
+    function getReminderValues() {
+      return Array.prototype.map.call(document.querySelectorAll('#reminderList input'), function (input) {
+        return Number(input.value) || 0;
+      }).filter(function (v) { return v > 0; });
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+      document.getElementById('addReminderBtn').addEventListener('click', function () {
+        var current = getReminderValues();
+        current.push(7);
+        renderReminderList(current);
+      });
+
+      document.getElementById('obRecurrenceInput').addEventListener('change', function () {
+        document.getElementById('obIntervalWrap').style.display = this.value === 'custom_interval_days' ? 'block' : 'none';
+      });
+    });
+
+    /* ---- Category rail (left side of the single Add Reminder form) ---- */
+
+    function renderCategoryRail() {
+      var rail = document.getElementById('categoryRail');
+      rail.innerHTML = CATEGORIES.map(function (c) {
+        return '<button type="button" class="category-rail-item' + (selectedFormCategory === c.key ? ' selected' : '') + '" data-cat="' + c.key + '">' +
+          '<span class="category-rail-icon">' + c.icon + '</span>' + c.label +
+        '</button>';
+      }).join('');
+      Array.prototype.forEach.call(rail.querySelectorAll('[data-cat]'), function (btn) {
+        btn.addEventListener('click', function () { selectFormCategory(btn.dataset.cat); });
+      });
+    }
+
+    function selectFormCategory(key) {
+      selectedFormCategory = key;
+      document.getElementById('obCategoryInput').value = key;
+      renderCategoryRail();
+      renderReminderList(ObligationsCalc.defaultReminderWindowsForCategory(key));
+    }
+
+    /* ---- Filters ---- */
+
+    function renderCategoryFilters() {
+      var row = document.getElementById('categoryFilters');
+      var chips = [{ key: 'all', label: 'All', icon: '📋' }].concat(CATEGORIES);
+      row.innerHTML = chips.map(function (c) {
+        var count = c.key === 'all' ? obligations.length : obligations.filter(function (ob) { return ob.category === c.key; }).length;
+        if (c.key !== 'all' && count === 0) return '';
+        return '<button type="button" class="filter-pill' + (activeCategoryFilter === c.key ? ' active' : '') + '" data-filter="' + c.key + '">' +
+          c.icon + ' ' + c.label + '<span class="filter-pill-count">' + count + '</span></button>';
+      }).join('');
+      Array.prototype.forEach.call(row.querySelectorAll('[data-filter]'), function (btn) {
+        btn.addEventListener('click', function () {
+          activeCategoryFilter = btn.dataset.filter;
+          renderCategoryFilters();
+          renderList();
+        });
+      });
+    }
+
+    /* ---- List ---- */
+
+    function statusFor(ob) {
+      var dueDate = new Date(ob.due_date + 'T00:00:00');
+      var windows = reminderWindowsByObligation[ob.id] || [];
+      return ObligationsCalc.computeObligationStatus(dueDate, windows, new Date());
+    }
+
+    function linkedAssetLabel(ob) {
+      if (!ob.linked_source_type || !ob.linked_source_id) return null;
+      var asset = ObligationsLinks.findAsset(linkableAssets, ob.linked_source_type, ob.linked_source_id);
+      return asset ? asset.name : null;
+    }
+
+    function renderHero() {
+      var overdueItems = [], dueSoon = 0;
+      obligations.forEach(function (ob) {
+        var s = statusFor(ob);
+        if (s === 'overdue') overdueItems.push(ob);
+        else if (s === 'due_soon') dueSoon++;
+      });
+      overdueItems.sort(function (a, b) { return a.due_date < b.due_date ? -1 : 1; });
+
+      var container = document.getElementById('heroSection');
+
+      if (overdueItems.length) {
+        var worst = overdueItems[0];
+        var extra = overdueItems.length - 1;
+        container.innerHTML =
+          '<div class="hero-alert">' +
+            '<div class="hero-alert-left">' +
+              '<span class="hero-alert-icon">⚠️</span>' +
+              '<div>' +
+                '<div class="hero-alert-title">' + escapeHtml(worst.name) + (extra > 0 ? ' + ' + extra + ' more overdue' : ' is overdue') + '</div>' +
+                '<div class="hero-alert-sub">' + relativeDateLabel(worst.due_date, 'overdue') + ' — clear these first</div>' +
+              '</div>' +
+            '</div>' +
+            '<div class="hero-alert-stats">' +
+              '<div class="hero-alert-stat"><div class="hero-alert-stat-value">' + overdueItems.length + '</div><div class="hero-alert-stat-label">Overdue</div></div>' +
+              '<div class="hero-alert-stat"><div class="hero-alert-stat-value">' + dueSoon + '</div><div class="hero-alert-stat-label">Due Soon</div></div>' +
+              '<div class="hero-alert-stat"><div class="hero-alert-stat-value">' + obligations.length + '</div><div class="hero-alert-stat-label">Tracked</div></div>' +
+            '</div>' +
+          '</div>';
+        return;
+      }
+
+      container.innerHTML =
+        '<div class="hero-calm">' +
+          '<div class="hero-calm-left">' +
+            '<span class="hero-calm-icon">✓</span>' +
+            '<div>' +
+              '<div class="hero-calm-title">Nothing overdue</div>' +
+              '<div class="hero-calm-sub">' + (dueSoon ? dueSoon + (dueSoon === 1 ? ' reminder is' : ' reminders are') + ' coming up soon' : "You're fully caught up") + '</div>' +
+            '</div>' +
+          '</div>' +
+          '<div class="hero-calm-stats">' +
+            '<div class="hero-calm-stat"><div class="hero-calm-stat-value' + (dueSoon ? ' warn' : '') + '">' + dueSoon + '</div><div class="hero-calm-stat-label">Due Soon</div></div>' +
+            '<div class="hero-calm-stat"><div class="hero-calm-stat-value">' + obligations.length + '</div><div class="hero-calm-stat-label">Tracked</div></div>' +
+          '</div>' +
+        '</div>';
+    }
+
+    var GROUP_LABEL = { overdue: 'Overdue', due_soon: 'Due Soon', upcoming: 'Upcoming' };
+
+    function renderObRow(entry) {
+      var ob = entry.ob;
+      var cat = CATEGORY_BY_KEY[ob.category] || CATEGORY_BY_KEY.other;
+      var linkedLabel = linkedAssetLabel(ob);
+
+      return '<div class="ob-row" data-id="' + ob.id + '">' +
+        '<div class="ob-icon ' + entry.status + '" title="' + escapeHtml(cat.label) + '">' + cat.icon + '</div>' +
+        '<div class="ob-main">' +
+          '<div class="ob-name">' + escapeHtml(ob.name) + '</div>' +
+          '<div class="ob-due-row">' +
+            '<span class="ob-due-label ' + entry.status + '">' + relativeDateLabel(ob.due_date, entry.status) + '</span>' +
+            (linkedLabel ? '<span class="ob-linked">' + escapeHtml(linkedLabel) + '</span>' : '') +
+          '</div>' +
+        '</div>' +
+        '<div class="ob-side">' +
+          (ob.amount ? '<div class="ob-amount">' + formatRupees(ob.amount) + '</div>' : '') +
+          '<div class="ob-owner-tag">' + OWNER_LABEL[ob.owner] + '</div>' +
+        '</div>' +
+      '</div>';
+    }
+
+    function renderList() {
+      var listEl = document.getElementById('obList');
+      var emptyEl = document.getElementById('emptyState');
+
+      var filtered = obligations.filter(function (ob) {
+        return activeCategoryFilter === 'all' || ob.category === activeCategoryFilter;
+      });
+
+      if (!filtered.length) {
+        listEl.innerHTML = '';
+        emptyEl.style.display = 'block';
+        return;
+      }
+      emptyEl.style.display = 'none';
+
+      var withStatus = filtered.map(function (ob) { return { ob: ob, status: statusFor(ob) }; });
+      withStatus.sort(function (a, b) {
+        var rankDiff = STATUS_RANK[a.status] - STATUS_RANK[b.status];
+        if (rankDiff !== 0) return rankDiff;
+        return a.ob.due_date < b.ob.due_date ? -1 : (a.ob.due_date > b.ob.due_date ? 1 : 0);
+      });
+
+      // Grouping by status makes each bucket scannable at a glance; skip the
+      // group headers when everything shares one status, since a single
+      // header would just repeat what the section title already says.
+      var presentStatuses = [];
+      withStatus.forEach(function (entry) {
+        if (presentStatuses.indexOf(entry.status) === -1) presentStatuses.push(entry.status);
+      });
+
+      if (presentStatuses.length <= 1) {
+        listEl.innerHTML = withStatus.map(renderObRow).join('');
+      } else {
+        listEl.innerHTML = presentStatuses.map(function (status) {
+          var rows = withStatus.filter(function (entry) { return entry.status === status; });
+          return '<div class="ob-group">' +
+            '<div class="ob-group-title ' + status + '"><span class="dot"></span>' + GROUP_LABEL[status] + ' (' + rows.length + ')</div>' +
+            '<div class="ob-list">' + rows.map(renderObRow).join('') + '</div>' +
+          '</div>';
+        }).join('');
+      }
+
+      Array.prototype.forEach.call(listEl.querySelectorAll('.ob-row'), function (row) {
+        row.addEventListener('click', function () { window.location.href = 'reminder-detail.html?id=' + row.dataset.id; });
+      });
+    }
+
+    /* ---- Client-side stand-in for the daily background job: this app has  ----
+       no server cron, so instead of a scheduled function flipping
+       reminder_windows.notified, we sweep once whenever the feed loads.
+       Purely bookkeeping for a future notification channel — never affects
+       the live status shown above, which is always recomputed from dates.   ---- */
+    async function syncReminderNotifications() {
+      var today = new Date();
+      var updates = [];
+      obligations.forEach(function (ob) {
+        var dueDate = new Date(ob.due_date + 'T00:00:00');
+        (reminderWindowsByObligation[ob.id] || []).forEach(function (w) {
+          if (!w.notified && ObligationsCalc.isWindowEntered(dueDate, w.days_before_due, today)) {
+            updates.push(w.id);
+          }
+        });
+      });
+      if (!updates.length) return;
+      await supabaseClient.from('reminder_windows').update({ notified: true }).in('id', updates);
+    }
+
+    /* ---- Add form (single screen: category rail on the left, fields on   ----
+       the right — a household adds very few of these a year, so a
+       recognizable category list beats a plain dropdown for the common
+       case, without needing a separate multi-step flow).                  ---- */
+
+    async function populateLinkedAssetOptions() {
+      linkableAssets = await ObligationsLinks.fetchAllLinkableAssets();
+      var select = document.getElementById('obLinkedAssetInput');
+      select.innerHTML = '<option value="">None</option>' + linkableAssets.map(function (a) {
+        return '<option value="' + a.source_type + '::' + a.source_id + '">' + escapeHtml(a.category_label) + ' — ' + escapeHtml(a.name) + '</option>';
+      }).join('');
+    }
+
+    function openAddModal() {
+      document.getElementById('obFormError').textContent = '';
+      document.getElementById('obNameInput').value = '';
+      selectedFormCategory = 'other';
+      document.getElementById('obCategoryInput').value = 'other';
+      renderCategoryRail();
+      document.getElementById('obOwnerInput').value = 'self';
+      document.getElementById('obDueDateInput').value = '';
+      document.getElementById('obAmountInput').value = '';
+      document.getElementById('obRecurrenceInput').value = 'none';
+      document.getElementById('obIntervalWrap').style.display = 'none';
+      document.getElementById('obIntervalInput').value = '';
+      document.getElementById('obLinkedAssetInput').value = '';
+      renderReminderList(ObligationsCalc.defaultReminderWindowsForCategory('other'));
+      document.getElementById('obModal').classList.add('show');
+    }
+
+    function closeModal() {
+      document.getElementById('obModal').classList.remove('show');
+    }
+
+    async function saveObligation() {
+      var errEl = document.getElementById('obFormError');
+      var name = document.getElementById('obNameInput').value.trim();
+      var category = document.getElementById('obCategoryInput').value;
+      var owner = document.getElementById('obOwnerInput').value;
+      var dueDate = document.getElementById('obDueDateInput').value;
+      var amountRaw = document.getElementById('obAmountInput').value;
+      var recurrence = document.getElementById('obRecurrenceInput').value;
+      var intervalRaw = document.getElementById('obIntervalInput').value;
+      var linkedRaw = document.getElementById('obLinkedAssetInput').value;
+
+      if (!name) { errEl.textContent = 'Please enter a name.'; return; }
+      if (!dueDate) { errEl.textContent = 'Please choose a due date.'; return; }
+      if (recurrence === 'custom_interval_days' && (!intervalRaw || Number(intervalRaw) <= 0)) {
+        errEl.textContent = 'Please enter an interval in days.'; return;
+      }
+      var reminderDays = getReminderValues();
+
+      var payload = {
+        name: name,
+        category: category,
+        owner: owner,
+        due_date: dueDate,
+        recurrence: recurrence,
+        recurrence_interval_days: recurrence === 'custom_interval_days' ? Number(intervalRaw) : null,
+        amount: amountRaw ? Number(amountRaw) : null,
+        linked_source_type: linkedRaw ? linkedRaw.split('::')[0] : null,
+        linked_source_id: linkedRaw ? linkedRaw.split('::')[1] : null,
+        updated_at: new Date().toISOString()
+      };
+
+      var { data, error } = await supabaseClient.from('obligations').insert(payload).select().single();
+      if (error) { errEl.textContent = 'Could not save reminder. Please try again.'; console.error(error); return; }
+
+      if (reminderDays.length) {
+        var windowRows = reminderDays.map(function (days) { return { obligation_id: data.id, days_before_due: days }; });
+        var { error: windowError } = await supabaseClient.from('reminder_windows').insert(windowRows);
+        if (windowError) console.error('Could not save reminder windows', windowError);
+      }
+
+      closeModal();
+      await loadAll();
+    }
+
+    /* ---- Data loading ---- */
+
+    async function loadAll() {
+      var { data: obData, error: obError } = await supabaseClient.from('obligations').select('*').order('due_date', { ascending: true });
+      if (obError) { console.error('Could not load reminders', obError); return; }
+      obligations = obData || [];
+
+      var { data: windowData, error: windowError } = await supabaseClient.from('reminder_windows').select('*');
+      if (windowError) { console.error('Could not load reminder windows', windowError); windowData = []; }
+
+      reminderWindowsByObligation = {};
+      (windowData || []).forEach(function (w) {
+        if (!reminderWindowsByObligation[w.obligation_id]) reminderWindowsByObligation[w.obligation_id] = [];
+        reminderWindowsByObligation[w.obligation_id].push(w);
+      });
+
+      if (!linkableAssets.length) linkableAssets = await ObligationsLinks.fetchAllLinkableAssets();
+
+      renderHero();
+      renderCategoryFilters();
+      renderList();
+
+      syncReminderNotifications();
+    }
+
+    (async function init() {
+      var user = await requireAuth('index.html#login');
+      if (!user) return;
+
+      renderCategoryFilters();
+
+      async function openAdd() {
+        openAddModal();
+        await populateLinkedAssetOptions();
+      }
+      document.getElementById('addObligationBtn').addEventListener('click', openAdd);
+      document.getElementById('emptyStateAddBtn').addEventListener('click', openAdd);
+      document.getElementById('cancelObBtn').addEventListener('click', closeModal);
+      document.getElementById('saveObBtn').addEventListener('click', saveObligation);
+      document.getElementById('obModal').addEventListener('click', function (e) { if (e.target === this) closeModal(); });
+
+      await loadAll();
+    })();
+  </script>
+</body>
+</html>

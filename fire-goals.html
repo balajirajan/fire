@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Goal Based Savings - FinFlow</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f8fafc;
+      color: #0f172a;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    a, button { color: inherit; text-decoration: none; font-family: inherit; }
+
+    .app-shell { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
+    @media (max-width: 860px) { .app-shell { grid-template-columns: 1fr; } .sidebar { display: none; } }
+
+    .sidebar { background: #ffffff; border-right: 1px solid #e2e8f0; display: flex; flex-direction: column; padding: 1.5rem 1.25rem; }
+    .sidebar-logo { display: flex; align-items: center; gap: 0.65rem; font-size: 1.1rem; font-weight: 800; margin-bottom: 2rem; padding: 0 0.25rem; }
+    .sidebar-logo-icon { width: 30px; height: 30px; background: linear-gradient(135deg, #0ea5e9, #10b981); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; flex-shrink: 0; }
+    .sidebar-nav { display: flex; flex-direction: column; gap: 0.25rem; }
+    .sidebar-nav a, .sidebar-nav .nav-group-head { display: flex; align-items: center; gap: 0.75rem; padding: 0.7rem 0.75rem; border-radius: 0.6rem; font-size: 0.9rem; font-weight: 500; color: #364752; }
+    .sidebar-nav a:hover, .sidebar-nav .nav-group-head:hover { background: #f1f5f9; }
+    .sidebar-nav a.active { background: #0f172a; color: #ffffff; font-weight: 600; }
+    .sidebar-nav .nav-group-head.open { background: #f1f5f9; font-weight: 700; }
+    .sidebar-nav .nav-group-head.active { background: #0f172a; color: #ffffff; font-weight: 600; }
+    .sidebar-nav .nav-group-head.active .nav-chevron { color: rgba(255,255,255,0.6); }
+    .sidebar-nav .nav-icon { font-size: 1rem; width: 20px; text-align: center; flex-shrink: 0; }
+    .sidebar-nav .nav-label { flex: 1; }
+    .sidebar-nav .nav-chevron { color: #94a3b8; font-size: 0.85rem; }
+    .sidebar-subnav { display: flex; flex-direction: column; gap: 0.2rem; padding-left: 1.6rem; margin: 0.15rem 0 0.3rem; }
+    .sidebar-subnav a { display: flex; align-items: center; gap: 0.6rem; padding: 0.55rem 0.6rem; border-radius: 0.5rem; font-size: 0.85rem; font-weight: 500; color: #364752; }
+    .sidebar-subnav a:hover { background: #f1f5f9; }
+    .sidebar-subnav a.active { background: #0f172a; color: #fff; font-weight: 600; }
+    .sidebar-spacer { flex: 1; }
+    .feedback-card { background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 0.9rem; padding: 1.1rem; margin-top: 1.5rem; }
+    .feedback-card .fc-icon { width: 32px; height: 32px; border-radius: 0.6rem; background: #eef2f7; display: flex; align-items: center; justify-content: center; font-size: 0.95rem; margin-bottom: 0.6rem; }
+    .feedback-card strong { display: block; font-size: 0.85rem; margin-bottom: 0.3rem; }
+    .feedback-card p { font-size: 0.78rem; color: #64748b; line-height: 1.5; margin-bottom: 0.85rem; }
+    .feedback-card a { display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; width: 100%; padding: 0.55rem; border: 1px solid #cbd5e1; border-radius: 0.5rem; font-size: 0.8rem; font-weight: 600; color: #364752; }
+    .feedback-card a:hover { border-color: #10b981; color: #10b981; }
+
+    .main { padding: 1.5rem 2.5rem 3rem; min-width: 0; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; padding-bottom: 1.25rem; border-bottom: 1px solid #e2e8f0; margin-bottom: 1.5rem; }
+    .topbar h1 { font-size: 1.4rem; font-weight: 700; }
+    .topbar-right { display: flex; align-items: center; gap: 0.85rem; }
+    .language-selector { display: flex; align-items: center; gap: 0.5rem; background: #ffffff; padding: 0.5rem 0.9rem; border-radius: 0.5rem; color: #51636f; border: 1px solid #e2e8f0; cursor: pointer; font-size: 0.85rem; }
+    .user-menu { position: relative; list-style: none; }
+    .user-menu > summary { cursor: pointer; list-style: none; width: 34px; height: 34px; border-radius: 50%; background: #eef2f7; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; font-size: 1rem; }
+    .user-menu > summary::-webkit-details-marker { display: none; }
+    .user-menu-panel { position: absolute; top: calc(100% + 0.6rem); right: 0; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 0.75rem; box-shadow: 0 10px 30px rgba(15,23,42,0.12); padding: 0.4rem; min-width: 150px; z-index: 20; }
+    .user-menu-panel a { display: block; padding: 0.55rem 0.7rem; border-radius: 0.5rem; font-size: 0.85rem; color: #364752; font-weight: 500; }
+    .user-menu-panel a:hover { background: #f1f5f9; color: #10b981; }
+
+    .page-head { margin-bottom: 1.5rem; }
+    .page-head h2 { font-size: 1.6rem; font-weight: 800; margin-bottom: 0.3rem; }
+    .page-head p { color: #64748b; font-size: 0.9rem; }
+    .back-link { font-size: 0.85rem; font-weight: 600; color: #0ea5e9; margin-bottom: 0.75rem; display: inline-block; }
+
+    .goals-hero { background: linear-gradient(135deg, #0f172a, #1e293b); border-radius: 1.25rem; padding: 1.75rem 2rem; color: #fff; margin-bottom: 1.5rem; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+    @media (max-width: 700px) { .goals-hero { grid-template-columns: 1fr; } }
+    .goals-hero-stat { text-align: center; }
+    .goals-hero-label { font-size: 0.75rem; color: #94a3b8; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.4rem; }
+    .goals-hero-value { font-size: 1.6rem; font-weight: 800; }
+
+    .section-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+    .section-head h3 { font-size: 1.05rem; font-weight: 800; }
+    .btn-primary { padding: 0.6rem 1.1rem; border: none; border-radius: 0.6rem; background: linear-gradient(135deg, #0ea5e9, #10b981); color: #fff; font-size: 0.85rem; font-weight: 700; cursor: pointer; }
+    .btn-primary:hover { opacity: 0.92; }
+    .btn-secondary { padding: 0.55rem 1rem; border: 1px solid #cbd5e1; border-radius: 0.6rem; background: #fff; color: #364752; font-size: 0.83rem; font-weight: 600; cursor: pointer; }
+    .btn-secondary:hover { border-color: #94a3b8; }
+    .btn-danger-text { color: #dc2626; font-size: 0.78rem; font-weight: 700; cursor: pointer; background: none; border: none; }
+
+    .empty-state { background: #ffffff; border: 1px dashed #cbd5e1; border-radius: 1rem; padding: 2.5rem 1.5rem; text-align: center; color: #94a3b8; font-size: 0.9rem; margin-bottom: 1.5rem; }
+
+    .goals-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 1.1rem; }
+    .goal-card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 1.1rem; padding: 1.4rem 1.5rem; box-shadow: 0 4px 16px rgba(15,23,42,0.03); }
+    .goal-card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 0.6rem; margin-bottom: 0.7rem; }
+    .goal-card-title { display: flex; align-items: center; gap: 0.55rem; }
+    .goal-card-icon { width: 34px; height: 34px; border-radius: 0.6rem; background: #f1f5f9; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; }
+    .goal-card-name { font-size: 1rem; font-weight: 800; }
+    .goal-card-date { font-size: 0.76rem; color: #94a3b8; margin-top: 0.15rem; }
+    .goal-tags { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 0.9rem; }
+    .goal-tag { font-size: 0.7rem; font-weight: 700; padding: 0.22rem 0.55rem; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.03em; }
+    .goal-tag.owner { background: #eef2ff; color: #4338ca; }
+    .goal-tag.priority-high { background: #fef2f2; color: #dc2626; }
+    .goal-tag.priority-medium { background: #fffbeb; color: #b45309; }
+    .goal-tag.priority-low { background: #f1f5f9; color: #64748b; }
+    .status-badge { font-size: 0.7rem; font-weight: 700; padding: 0.22rem 0.6rem; border-radius: 999px; white-space: nowrap; }
+    .status-badge.ahead { background: #ecfdf5; color: #059669; }
+    .status-badge.on_track { background: #eff6ff; color: #2563eb; }
+    .status-badge.behind { background: #fef2f2; color: #dc2626; }
+    .status-badge.not_enough_data { background: #f1f5f9; color: #64748b; }
+    .goal-progress-track { height: 10px; background: #f1f5f9; border-radius: 999px; overflow: hidden; margin-bottom: 0.4rem; }
+    .goal-progress-fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg, #0ea5e9, #10b981); }
+    .goal-progress-label { font-size: 0.76rem; color: #94a3b8; margin-bottom: 1rem; }
+    .goal-stat-row { display: flex; justify-content: space-between; padding: 0.5rem 0; border-top: 1px solid #f1f5f9; }
+    .goal-stat-row:first-of-type { border-top: none; }
+    .goal-stat-label { font-size: 0.82rem; color: #64748b; font-weight: 600; }
+    .goal-stat-value { font-size: 0.85rem; font-weight: 800; color: #0f172a; }
+    .goal-stat-value.sip { color: #059669; }
+    .goal-card-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 0.9rem; }
+    .goal-card-actions .btn-secondary { padding: 0.45rem 0.85rem; font-size: 0.78rem; }
+
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.55); align-items: center; justify-content: center; z-index: 50; padding: 1rem; }
+    .modal-overlay.show { display: flex; }
+    .modal-box { background: #fff; border-radius: 1.1rem; padding: 1.6rem 1.75rem; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; }
+    .modal-box h3 { font-size: 1.1rem; font-weight: 800; margin-bottom: 1.1rem; }
+    .field-label { font-size: 0.83rem; font-weight: 600; color: #0f172a; margin-bottom: 0.4rem; display: block; }
+    .field-hint { font-size: 0.74rem; color: #94a3b8; margin: -0.6rem 0 0.9rem; }
+    .field-input, .field-select {
+      width: 100%; padding: 0.6rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 0.55rem;
+      font-size: 0.88rem; font-family: inherit; color: #0f172a; margin-bottom: 0.9rem; background: #fff;
+    }
+    .field-input:focus, .field-select:focus { outline: none; border-color: #10b981; box-shadow: 0 0 0 2px rgba(16,185,129,0.15); }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+    .modal-actions { display: flex; gap: 0.7rem; margin-top: 0.5rem; }
+    .modal-actions button { flex: 1; }
+    .form-error { font-size: 0.8rem; color: #dc2626; font-weight: 600; margin-bottom: 0.7rem; }
+
+    /* Category rail + form (single-screen Add Goal layout) */
+    .modal-box.two-col { max-width: 700px; padding: 0; overflow: hidden; }
+    .two-col-layout { display: flex; }
+    @media (max-width: 640px) { .two-col-layout { flex-direction: column; } }
+    .category-rail { width: 210px; flex-shrink: 0; background: #f8fafc; border-right: 1px solid #e2e8f0; padding: 1.5rem 0.75rem; display: flex; flex-direction: column; gap: 0.25rem; max-height: 80vh; overflow-y: auto; }
+    @media (max-width: 640px) { .category-rail { width: auto; flex-direction: row; flex-wrap: wrap; border-right: none; border-bottom: 1px solid #e2e8f0; max-height: none; } }
+    .category-rail-item { display: flex; align-items: center; gap: 0.6rem; padding: 0.65rem 0.75rem; border-radius: 0.6rem; cursor: pointer; font-size: 0.85rem; font-weight: 600; color: #51636f; background: none; border: none; font-family: inherit; text-align: left; }
+    .category-rail-item:hover { background: #f1f5f9; }
+    .category-rail-item.selected { background: #0f172a; color: #fff; }
+    .category-rail-icon { font-size: 1.05rem; width: 20px; text-align: center; flex-shrink: 0; }
+    .two-col-form { flex: 1; min-width: 0; padding: 1.6rem 1.75rem; max-height: 80vh; overflow-y: auto; }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a href="dashboard.html" class="sidebar-logo">
+        <div class="sidebar-logo-icon">💰</div>
+        <span>FinFlow</span>
+      </a>
+
+      <nav class="sidebar-nav">
+        <a href="dashboard.html">
+          <span class="nav-icon">▦</span>
+          <span class="nav-label">Dashboard</span>
+        </a>
+
+        <a href="fire-plan.html" class="nav-group-head open active">
+          <span class="nav-icon">🧭</span>
+          <span class="nav-label">FIRE Plan</span>
+          <span class="nav-chevron">⌄</span>
+        </a>
+        <div class="sidebar-subnav">
+          <a href="fire-plan.html">
+            <span class="nav-icon">🧮</span>
+            <span class="nav-label">FIRE Calculation</span>
+          </a>
+          <a href="fire-goals.html" class="active">
+            <span class="nav-icon">🎯</span>
+            <span class="nav-label">Goal</span>
+          </a>
+        </div>
+
+        <a href="net-worth.html">
+          <span class="nav-icon">📈</span>
+          <span class="nav-label">Networth</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="money-required.html">
+          <span class="nav-icon">🪴</span>
+          <span class="nav-label">Expenses</span>
+          <span class="nav-chevron">›</span>
+        </a>
+
+        <a href="expense-quick-add.html">
+          <span class="nav-icon">⚡</span>
+          <span class="nav-label">Daily Expenses Tracker</span>
+        </a>
+        <a href="tax-planning.html">
+          <span class="nav-icon">🧾</span>
+          <span class="nav-label">Tax Planning</span>
+        </a>
+        <a href="insurance-tracker.html">
+          <span class="nav-icon">🛡️</span>
+          <span class="nav-label">Insurance Tracker</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="reminders.html">
+          <span class="nav-icon">🔔</span>
+          <span class="nav-label">Reminders</span>
+        </a>
+        <a href="vault-overview.html">
+          <span class="nav-icon">🔒</span>
+          <span class="nav-label">Document Vault</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="split/dashboard.html">
+          <span class="nav-icon">💸</span>
+          <span class="nav-label">SplitExpenses(SplitWise)</span>
+        </a>
+        <a href="life-expectancy.html">
+          <span class="nav-icon">❤️</span>
+          <span class="nav-label">Health</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="astrology.html">
+          <span class="nav-icon">🔮</span>
+          <span class="nav-label">Spiritual</span>
+        </a>
+        <a href="#">
+          <span class="nav-icon">⚙️</span>
+          <span class="nav-label">Settings</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-spacer"></div>
+
+      <div class="feedback-card">
+        <div class="fc-icon">💬</div>
+        <strong>Got feedback?</strong>
+        <p>Have an idea or found a bug? We read every message.</p>
+        <a href="mailto:hello@finflow.app">✉ Contact Us</a>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <h1>FIRE Plan</h1>
+        <div class="topbar-right">
+          <div class="language-selector">🌐 English ▾</div>
+          <details class="user-menu">
+            <summary>👤</summary>
+            <div class="user-menu-panel">
+              <a href="#">Settings</a>
+              <a href="#" onclick="signOutAndRedirect('index.html'); return false;">Log Out</a>
+            </div>
+          </details>
+        </div>
+      </div>
+
+      <a href="fire-plan.html" class="back-link">← FIRE Calculator</a>
+
+      <div class="page-head">
+        <h2>Goal Based Savings</h2>
+        <p>FIRE Plan covers retirement — this covers everything else: education, a wedding, a home down payment. Progress is tracked against each goal's own inflation-adjusted target.</p>
+      </div>
+
+      <div class="goals-hero">
+        <div class="goals-hero-stat">
+          <div class="goals-hero-label">Active Goals</div>
+          <div class="goals-hero-value" id="heroGoalCount">0</div>
+        </div>
+        <div class="goals-hero-stat">
+          <div class="goals-hero-label">Total Target (Today's ₹)</div>
+          <div class="goals-hero-value" id="heroTotalTarget">₹0</div>
+        </div>
+        <div class="goals-hero-stat">
+          <div class="goals-hero-label">Total Monthly Contribution Needed</div>
+          <div class="goals-hero-value" id="heroTotalSip">₹0</div>
+        </div>
+      </div>
+
+      <div class="section-head">
+        <h3>Your Goals</h3>
+        <button type="button" class="btn-primary" id="addGoalBtn">+ New Goal</button>
+      </div>
+
+      <div class="empty-state" id="emptyState" style="display:none;">No goals yet. Add one — a child's education, a wedding, a home down payment — and see the monthly contribution it needs.</div>
+      <div class="goals-grid" id="goalsGrid"></div>
+    </main>
+  </div>
+
+  <div class="modal-overlay" id="goalModal">
+    <div class="modal-box two-col">
+      <div class="two-col-layout">
+        <div class="category-rail" id="goalCategoryRail"></div>
+        <div class="two-col-form">
+          <h3 id="goalModalTitle">New Goal</h3>
+          <div class="form-error" id="goalFormError"></div>
+          <input type="hidden" id="goalCategoryInput" value="other">
+
+          <label class="field-label">Goal name</label>
+          <input type="text" class="field-input" id="goalNameInput" placeholder="e.g. Child's Education, Wedding, Home Down Payment">
+
+          <div class="field-row">
+            <div>
+              <label class="field-label">Target amount (₹, today's value)</label>
+              <input type="number" class="field-input" id="goalTargetInput" min="0" step="10000">
+            </div>
+            <div>
+              <label class="field-label">Target date</label>
+              <input type="date" class="field-input" id="goalDateInput">
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div>
+              <label class="field-label">Owner</label>
+              <select class="field-select" id="goalOwnerInput">
+                <option value="self" selected>Self</option>
+                <option value="spouse">Spouse</option>
+                <option value="joint">Joint</option>
+                <option value="child">Child</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            <div>
+              <label class="field-label">Priority</label>
+              <select class="field-select" id="goalPriorityInput">
+                <option value="high">High</option>
+                <option value="medium" selected>Medium</option>
+                <option value="low">Low</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div>
+              <label class="field-label">Expected return (% p.a.)</label>
+              <input type="number" class="field-input" id="goalReturnInput" min="0" max="30" step="0.5" value="10">
+            </div>
+            <div>
+              <label class="field-label">Goal inflation rate (% p.a.)</label>
+              <input type="number" class="field-input" id="goalInflationInput" min="0" max="20" step="0.5" value="6">
+            </div>
+          </div>
+          <div class="field-hint">Education and healthcare typically run 8–10%; general expenses 5–6%.</div>
+
+          <div class="modal-actions">
+            <button type="button" class="btn-secondary" id="cancelGoalBtn">Cancel</button>
+            <button type="button" class="btn-primary" id="saveGoalBtn">Save Goal</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-client.js"></script>
+  <script src="js/goals-calc.js"></script>
+  <script src="js/goal-links.js"></script>
+  <script>
+    var goals = [];
+    var editingGoalId = null;
+    var allGoalLinks = [];
+    var sourceMap = {};
+
+    var CATEGORY_ICON = { education: '🎓', house: '🏠', travel: '✈️', car: '🚗', wedding: '💍', emergency_fund: '🛟', other: '🎯' };
+    var CATEGORY_LABEL = { education: 'Education', house: 'House', travel: 'Travel', car: 'Car', wedding: 'Wedding', emergency_fund: 'Emergency Fund', other: 'Other' };
+    var OWNER_LABEL = { self: 'Self', spouse: 'Spouse', joint: 'Joint', child: 'Child', other: 'Other' };
+    var STATUS_LABEL = { ahead: 'Ahead of Schedule', on_track: 'On Track', behind: 'Behind Schedule', not_enough_data: 'Not Enough Data' };
+
+    function formatRupees(amount) {
+      var n = Math.round(Number(amount) || 0);
+      return '₹' + n.toLocaleString('en-IN');
+    }
+
+    function escapeHtml(s) {
+      return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function goalMetrics(g) {
+      var now = new Date();
+      var targetDate = new Date(g.target_date + 'T00:00:00');
+      var currentValue = GoalLinks.currentValueForGoal(g, allGoalLinks, sourceMap);
+      var futureValueNeeded = GoalsCalc.calcFutureValueNeeded(Number(g.target_amount), Number(g.goal_inflation_rate), now, targetDate);
+      var requiredMonthly = GoalsCalc.calcRequiredMonthlyContribution(currentValue, futureValueNeeded, Number(g.expected_annual_return), now, targetDate);
+      // No contribution history is loaded on the list screen (kept lightweight) — the
+      // projected-completion pace calculation runs on the goal detail screen instead.
+      var progressPct = futureValueNeeded > 0 ? Math.min(100, Math.round((currentValue / futureValueNeeded) * 100)) : 0;
+      return { currentValue: currentValue, futureValueNeeded: futureValueNeeded, requiredMonthly: requiredMonthly, progressPct: progressPct };
+    }
+
+    function renderGoals() {
+      var grid = document.getElementById('goalsGrid');
+      var empty = document.getElementById('emptyState');
+      if (!goals.length) { grid.innerHTML = ''; empty.style.display = 'block'; renderHero(); return; }
+      empty.style.display = 'none';
+
+      grid.innerHTML = goals.map(function (g) {
+        var m = goalMetrics(g);
+        var icon = CATEGORY_ICON[g.category] || '🎯';
+        var priorityClass = 'priority-' + g.priority;
+
+        return '<div class="goal-card" data-id="' + g.id + '">' +
+          '<div class="goal-card-head">' +
+            '<div class="goal-card-title">' +
+              '<div class="goal-card-icon">' + icon + '</div>' +
+              '<div><div class="goal-card-name">' + escapeHtml(g.name) + '</div><div class="goal-card-date">Target: ' + g.target_date + '</div></div>' +
+            '</div>' +
+          '</div>' +
+          '<div class="goal-tags">' +
+            '<span class="goal-tag owner">' + OWNER_LABEL[g.owner] + '</span>' +
+            '<span class="goal-tag ' + priorityClass + '">' + g.priority + ' priority</span>' +
+          '</div>' +
+          '<div class="goal-progress-track"><div class="goal-progress-fill" style="width:' + m.progressPct + '%;"></div></div>' +
+          '<div class="goal-progress-label">' + formatRupees(m.currentValue) + ' of ' + formatRupees(m.futureValueNeeded) + ' needed (' + m.progressPct + '%)</div>' +
+          '<div class="goal-stat-row"><span class="goal-stat-label">Required Monthly Contribution</span><span class="goal-stat-value sip">' + formatRupees(m.requiredMonthly) + '</span></div>' +
+          '<div class="goal-card-actions">' +
+            '<button type="button" class="btn-danger-text" data-delete="' + g.id + '">Delete</button>' +
+            '<a href="fire-goal-detail.html?id=' + g.id + '" class="btn-secondary">View Details →</a>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+
+      Array.prototype.forEach.call(grid.querySelectorAll('[data-delete]'), function (btn) {
+        btn.addEventListener('click', function (e) { e.preventDefault(); deleteGoal(btn.dataset.delete); });
+      });
+
+      renderHero();
+    }
+
+    function renderHero() {
+      document.getElementById('heroGoalCount').textContent = goals.length;
+      var totalTarget = goals.reduce(function (s, g) { return s + Number(g.target_amount); }, 0);
+      var totalSip = goals.reduce(function (s, g) { return s + goalMetrics(g).requiredMonthly; }, 0);
+      document.getElementById('heroTotalTarget').textContent = formatRupees(totalTarget);
+      document.getElementById('heroTotalSip').textContent = formatRupees(totalSip);
+    }
+
+    var GOAL_CATEGORIES = [
+      { key: 'education', label: 'Education', icon: '🎓' },
+      { key: 'house', label: 'House', icon: '🏠' },
+      { key: 'travel', label: 'Travel', icon: '✈️' },
+      { key: 'car', label: 'Car', icon: '🚗' },
+      { key: 'wedding', label: 'Wedding', icon: '💍' },
+      { key: 'emergency_fund', label: 'Emergency Fund', icon: '🛟' },
+      { key: 'other', label: 'Other', icon: '🎯' }
+    ];
+    var selectedGoalCategory = 'other';
+
+    function renderGoalCategoryRail() {
+      var rail = document.getElementById('goalCategoryRail');
+      rail.innerHTML = GOAL_CATEGORIES.map(function (c) {
+        return '<button type="button" class="category-rail-item' + (selectedGoalCategory === c.key ? ' selected' : '') + '" data-cat="' + c.key + '">' +
+          '<span class="category-rail-icon">' + c.icon + '</span>' + c.label +
+        '</button>';
+      }).join('');
+      Array.prototype.forEach.call(rail.querySelectorAll('[data-cat]'), function (btn) {
+        btn.addEventListener('click', function () { selectGoalCategory(btn.dataset.cat); });
+      });
+    }
+
+    function selectGoalCategory(key) {
+      selectedGoalCategory = key;
+      document.getElementById('goalCategoryInput').value = key;
+      renderGoalCategoryRail();
+    }
+
+    function openNewGoalModal() {
+      editingGoalId = null;
+      document.getElementById('goalModalTitle').textContent = 'New Goal';
+      document.getElementById('goalFormError').textContent = '';
+      document.getElementById('goalNameInput').value = '';
+      selectedGoalCategory = 'other';
+      document.getElementById('goalCategoryInput').value = 'other';
+      renderGoalCategoryRail();
+      document.getElementById('goalOwnerInput').value = 'self';
+      document.getElementById('goalTargetInput').value = '';
+      document.getElementById('goalDateInput').value = '';
+      document.getElementById('goalPriorityInput').value = 'medium';
+      document.getElementById('goalReturnInput').value = '10';
+      document.getElementById('goalInflationInput').value = '6';
+      document.getElementById('goalModal').classList.add('show');
+    }
+
+    function closeGoalModal() {
+      document.getElementById('goalModal').classList.remove('show');
+    }
+
+    async function saveGoal() {
+      var errEl = document.getElementById('goalFormError');
+      var name = document.getElementById('goalNameInput').value.trim();
+      var category = document.getElementById('goalCategoryInput').value;
+      var owner = document.getElementById('goalOwnerInput').value;
+      var target = Number(document.getElementById('goalTargetInput').value);
+      var date = document.getElementById('goalDateInput').value;
+      var priority = document.getElementById('goalPriorityInput').value;
+      var returnPct = Number(document.getElementById('goalReturnInput').value) || 0;
+      var inflationPct = Number(document.getElementById('goalInflationInput').value) || 0;
+
+      if (!name) { errEl.textContent = 'Please enter a goal name.'; return; }
+      if (!target || target <= 0) { errEl.textContent = 'Please enter a valid target amount.'; return; }
+      if (!date) { errEl.textContent = 'Please choose a target date.'; return; }
+      if (new Date(date) <= new Date()) { errEl.textContent = 'Target date must be in the future.'; return; }
+
+      var payload = {
+        name: name, category: category, owner: owner, target_amount: target, target_date: date,
+        priority: priority, expected_annual_return: returnPct, goal_inflation_rate: inflationPct,
+        updated_at: new Date().toISOString()
+      };
+
+      var { error } = await supabaseClient.from('goals').insert(payload);
+      if (error) { errEl.textContent = 'Could not save goal. Please try again.'; console.error(error); return; }
+
+      closeGoalModal();
+      await loadGoals();
+    }
+
+    async function deleteGoal(id) {
+      if (!confirm('Delete this goal? This also removes its contribution history.')) return;
+      var { error } = await supabaseClient.from('goals').delete().eq('id', id);
+      if (error) { console.error('Could not delete goal', error); return; }
+      await loadGoals();
+    }
+
+    async function loadLinkData() {
+      allGoalLinks = await GoalLinks.fetchAllGoalLinks();
+      var sources = await GoalLinks.fetchLinkableSources();
+      sourceMap = GoalLinks.buildSourceMap(sources);
+    }
+
+    async function loadGoals() {
+      var { data, error } = await supabaseClient.from('goals').select('*').order('target_date', { ascending: true });
+      if (error) { console.error('Could not load goals', error); return; }
+      goals = data || [];
+      await loadLinkData();
+      renderGoals();
+    }
+
+    (async function init() {
+      var user = await requireAuth('index.html#login');
+      if (!user) return;
+
+      document.getElementById('addGoalBtn').addEventListener('click', openNewGoalModal);
+      document.getElementById('cancelGoalBtn').addEventListener('click', closeGoalModal);
+      document.getElementById('saveGoalBtn').addEventListener('click', saveGoal);
+      document.getElementById('goalModal').addEventListener('click', function (e) { if (e.target === this) closeGoalModal(); });
+
+      await loadGoals();
+    })();
+  </script>
+</body>
+</html>

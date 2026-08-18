@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Group - SplitExpenses(SplitWise) - FinFlow</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f8fafc;
+      color: #0f172a;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    a, button { color: inherit; text-decoration: none; font-family: inherit; }
+
+    .app-shell { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
+    @media (max-width: 860px) { .app-shell { grid-template-columns: 1fr; } .sidebar { display: none; } }
+
+    .sidebar { background: #ffffff; border-right: 1px solid #e2e8f0; display: flex; flex-direction: column; padding: 1.5rem 1.25rem; }
+    .sidebar-logo { display: flex; align-items: center; gap: 0.65rem; font-size: 1.1rem; font-weight: 800; margin-bottom: 2rem; padding: 0 0.25rem; }
+    .sidebar-logo-icon { width: 30px; height: 30px; background: linear-gradient(135deg, #0ea5e9, #10b981); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; flex-shrink: 0; }
+    .sidebar-nav { display: flex; flex-direction: column; gap: 0.25rem; }
+    .sidebar-nav a, .sidebar-nav .nav-group-head { display: flex; align-items: center; gap: 0.75rem; padding: 0.7rem 0.75rem; border-radius: 0.6rem; font-size: 0.9rem; font-weight: 500; color: #364752; }
+    .sidebar-nav a:hover, .sidebar-nav .nav-group-head:hover { background: #f1f5f9; }
+    .sidebar-nav a.active { background: #0f172a; color: #ffffff; font-weight: 600; }
+    .sidebar-nav .nav-icon { font-size: 1rem; width: 20px; text-align: center; flex-shrink: 0; }
+    .sidebar-nav .nav-label { flex: 1; }
+    .sidebar-nav .nav-chevron { color: #94a3b8; font-size: 0.85rem; }
+    .sidebar-spacer { flex: 1; }
+    .feedback-card { background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 0.9rem; padding: 1.1rem; margin-top: 1.5rem; }
+    .feedback-card .fc-icon { width: 32px; height: 32px; border-radius: 0.6rem; background: #eef2f7; display: flex; align-items: center; justify-content: center; font-size: 0.95rem; margin-bottom: 0.6rem; }
+    .feedback-card strong { display: block; font-size: 0.85rem; margin-bottom: 0.3rem; }
+    .feedback-card p { font-size: 0.78rem; color: #64748b; line-height: 1.5; margin-bottom: 0.85rem; }
+    .feedback-card a { display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; width: 100%; padding: 0.55rem; border: 1px solid #cbd5e1; border-radius: 0.5rem; font-size: 0.8rem; font-weight: 600; color: #364752; }
+    .feedback-card a:hover { border-color: #10b981; color: #10b981; }
+
+    .main { padding: 1.5rem 2.5rem 3rem; min-width: 0; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; padding-bottom: 1.25rem; border-bottom: 1px solid #e2e8f0; margin-bottom: 1.5rem; }
+    .topbar h1 { font-size: 1.4rem; font-weight: 700; }
+    .topbar-right { display: flex; align-items: center; gap: 0.85rem; }
+    .language-selector { display: flex; align-items: center; gap: 0.5rem; background: #ffffff; padding: 0.5rem 0.9rem; border-radius: 0.5rem; color: #51636f; border: 1px solid #e2e8f0; cursor: pointer; font-size: 0.85rem; }
+    .back-link { font-size: 0.85rem; font-weight: 600; color: #0ea5e9; margin-bottom: 0.75rem; display: inline-block; }
+    .user-menu { position: relative; list-style: none; }
+    .user-menu > summary { cursor: pointer; list-style: none; width: 34px; height: 34px; border-radius: 50%; background: #eef2f7; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; font-size: 1rem; }
+    .user-menu > summary::-webkit-details-marker { display: none; }
+    .user-menu-panel { position: absolute; top: calc(100% + 0.6rem); right: 0; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 0.75rem; box-shadow: 0 10px 30px rgba(15,23,42,0.12); padding: 0.4rem; min-width: 150px; z-index: 20; }
+    .user-menu-panel a { display: block; padding: 0.55rem 0.7rem; border-radius: 0.5rem; font-size: 0.85rem; color: #364752; font-weight: 500; }
+    .user-menu-panel a:hover { background: #f1f5f9; color: #10b981; }
+
+    .group-head-card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 1.1rem; padding: 1.4rem 1.6rem; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; box-shadow: 0 4px 16px rgba(15,23,42,0.03); }
+    .group-head-name { font-size: 1.3rem; font-weight: 800; margin-bottom: 0.5rem; }
+    .group-head-members { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; }
+    .avatar { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 800; color: #fff; flex-shrink: 0; }
+    .member-chip { display: flex; align-items: center; gap: 0.4rem; background: #f8fafc; border-radius: 999px; padding: 0.25rem 0.7rem 0.25rem 0.25rem; font-size: 0.8rem; font-weight: 600; color: #364752; }
+
+    .split-hero { background: linear-gradient(135deg, #0f172a, #1e293b); border-radius: 1.25rem; padding: 1.75rem 2rem; color: #fff; margin-bottom: 1.5rem; }
+    .split-hero-label { font-size: 0.75rem; color: #94a3b8; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.4rem; }
+    .split-hero-value { font-size: 2rem; font-weight: 800; }
+    .split-hero-value.positive { color: #6ee7b7; }
+    .split-hero-value.negative { color: #fca5a5; }
+    .split-hero-sub { font-size: 0.82rem; color: #94a3b8; margin-top: 0.4rem; }
+
+    .two-col { display: grid; grid-template-columns: 1.4fr 1fr; gap: 1.5rem; align-items: start; }
+    @media (max-width: 900px) { .two-col { grid-template-columns: 1fr; } }
+
+    .card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 1.1rem; padding: 1.5rem 1.6rem; margin-bottom: 1.5rem; box-shadow: 0 4px 16px rgba(15,23,42,0.03); }
+    .card-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.1rem; }
+    .card-head h3 { font-size: 1rem; font-weight: 800; }
+    .btn-primary { padding: 0.55rem 1rem; border: none; border-radius: 0.6rem; background: linear-gradient(135deg, #0ea5e9, #10b981); color: #fff; font-size: 0.83rem; font-weight: 700; cursor: pointer; }
+    .btn-primary:hover { opacity: 0.92; }
+    .btn-secondary { padding: 0.55rem 1rem; border: 1px solid #cbd5e1; border-radius: 0.6rem; background: #fff; color: #364752; font-size: 0.83rem; font-weight: 600; cursor: pointer; }
+    .btn-secondary:hover { border-color: #94a3b8; }
+    .btn-small { padding: 0.35rem 0.75rem; font-size: 0.75rem; }
+
+    .empty-mini { color: #94a3b8; font-size: 0.85rem; padding: 1rem 0; text-align: center; }
+
+    .expense-row { display: flex; align-items: center; gap: 0.9rem; padding: 0.85rem 0; border-bottom: 1px solid #f1f5f9; }
+    .expense-row:last-child { border-bottom: none; }
+    .expense-icon { width: 40px; height: 40px; border-radius: 0.7rem; background: #f0fdfa; display: flex; align-items: center; justify-content: center; font-size: 1.15rem; flex-shrink: 0; }
+    .expense-info { flex: 1; min-width: 0; }
+    .expense-desc { font-size: 0.88rem; font-weight: 700; color: #0f172a; }
+    .expense-meta { font-size: 0.76rem; color: #94a3b8; margin-top: 0.15rem; }
+    .expense-amount { text-align: right; flex-shrink: 0; }
+    .expense-amount-total { font-size: 0.9rem; font-weight: 800; color: #0f172a; }
+    .expense-amount-share { font-size: 0.74rem; margin-top: 0.15rem; }
+    .expense-amount-share.positive { color: #059669; }
+    .expense-amount-share.negative { color: #dc2626; }
+
+    .balance-row { display: flex; align-items: center; justify-content: space-between; padding: 0.6rem 0; border-bottom: 1px solid #f1f5f9; }
+    .balance-row:last-child { border-bottom: none; }
+    .balance-row-name { display: flex; align-items: center; gap: 0.6rem; font-size: 0.85rem; font-weight: 600; color: #364752; }
+    .balance-row-value { font-size: 0.88rem; font-weight: 800; }
+    .balance-row-value.positive { color: #059669; }
+    .balance-row-value.negative { color: #dc2626; }
+    .balance-row-value.settled { color: #94a3b8; }
+
+    .settle-row { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; padding: 0.7rem 0; border-bottom: 1px solid #f1f5f9; font-size: 0.83rem; }
+    .settle-row:last-child { border-bottom: none; }
+    .settle-row-text b { color: #0f172a; }
+
+    /* Modals */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.55); align-items: center; justify-content: center; z-index: 50; padding: 1rem; }
+    .modal-overlay.show { display: flex; }
+    .modal-box { background: #fff; border-radius: 1.1rem; padding: 1.6rem 1.75rem; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; }
+    .modal-box h3 { font-size: 1.1rem; font-weight: 800; margin-bottom: 1.1rem; }
+    .field-label { font-size: 0.83rem; font-weight: 600; color: #0f172a; margin-bottom: 0.4rem; display: block; }
+    .field-input, .field-select {
+      width: 100%; padding: 0.6rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 0.55rem;
+      font-size: 0.88rem; font-family: inherit; color: #0f172a; margin-bottom: 0.9rem; background: #fff;
+    }
+    .field-input:focus, .field-select:focus { outline: none; border-color: #10b981; box-shadow: 0 0 0 2px rgba(16,185,129,0.15); }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+    .split-type-toggle { display: flex; gap: 0.5rem; margin-bottom: 0.9rem; }
+    .split-type-btn { flex: 1; padding: 0.55rem; border: 1.5px solid #e2e8f0; border-radius: 0.55rem; text-align: center; font-size: 0.83rem; font-weight: 600; cursor: pointer; }
+    .split-type-btn.selected { border-color: #10b981; background: #ecfdf5; color: #059669; }
+    .member-select-row { display: flex; align-items: center; gap: 0.6rem; padding: 0.5rem 0; border-bottom: 1px solid #f1f5f9; }
+    .member-select-row:last-child { border-bottom: none; }
+    .member-select-row label { flex: 1; font-size: 0.85rem; font-weight: 600; color: #364752; display: flex; align-items: center; gap: 0.5rem; }
+    .member-select-row .exact-amount-input { width: 90px; padding: 0.4rem 0.5rem; border: 1px solid #cbd5e1; border-radius: 0.45rem; font-size: 0.83rem; display: none; }
+    .member-select-row.exact .exact-amount-input { display: block; }
+    .member-row { display: flex; gap: 0.5rem; margin-bottom: 0.6rem; }
+    .member-row .field-input { margin-bottom: 0; flex: 1; }
+    .modal-actions { display: flex; gap: 0.7rem; margin-top: 0.5rem; }
+    .modal-actions button { flex: 1; }
+    .form-error { font-size: 0.8rem; color: #dc2626; font-weight: 600; margin-bottom: 0.7rem; }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a href="../dashboard.html" class="sidebar-logo">
+        <div class="sidebar-logo-icon">💰</div>
+        <span>FinFlow</span>
+      </a>
+
+      <nav class="sidebar-nav">
+        <a href="../dashboard.html">
+          <span class="nav-icon">▦</span>
+          <span class="nav-label">Dashboard</span>
+        </a>
+
+        <a href="../fire-plan.html" class="nav-group-head">
+          <span class="nav-icon">🧭</span>
+          <span class="nav-label">FIRE Plan</span>
+          <span class="nav-chevron">›</span>
+        </a>
+
+        <a href="../net-worth.html">
+          <span class="nav-icon">📈</span>
+          <span class="nav-label">Networth</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="../money-required.html">
+          <span class="nav-icon">🪴</span>
+          <span class="nav-label">Expenses</span>
+          <span class="nav-chevron">›</span>
+        </a>
+
+        <a href="../expense-quick-add.html">
+          <span class="nav-icon">⚡</span>
+          <span class="nav-label">Daily Expenses Tracker</span>
+        </a>
+        <a href="../tax-planning.html">
+          <span class="nav-icon">🧾</span>
+          <span class="nav-label">Tax Planning</span>
+        </a>
+        <a href="../insurance-tracker.html">
+          <span class="nav-icon">🛡️</span>
+          <span class="nav-label">Insurance Tracker</span>
+        </a>
+        <a href="../reminders.html">
+          <span class="nav-icon">🔔</span>
+          <span class="nav-label">Reminders</span>
+        </a>
+        <a href="../vault-overview.html">
+          <span class="nav-icon">🔒</span>
+          <span class="nav-label">Document Vault</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="dashboard.html" class="active">
+          <span class="nav-icon">💸</span>
+          <span class="nav-label">SplitExpenses(SplitWise)</span>
+        </a>
+        <a href="../life-expectancy.html">
+          <span class="nav-icon">❤️</span>
+          <span class="nav-label">Health</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="../astrology.html">
+          <span class="nav-icon">🔮</span>
+          <span class="nav-label">Spiritual</span>
+        </a>
+        <a href="#">
+          <span class="nav-icon">⚙️</span>
+          <span class="nav-label">Settings</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-spacer"></div>
+
+      <div class="feedback-card">
+        <div class="fc-icon">💬</div>
+        <strong>Got feedback?</strong>
+        <p>Have an idea or found a bug? We read every message.</p>
+        <a href="mailto:hello@finflow.app">✉ Contact Us</a>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <h1 id="pageTitle">Group</h1>
+        <div class="topbar-right">
+          <div class="language-selector">🌐 English ▾</div>
+          <details class="user-menu">
+            <summary>👤</summary>
+            <div class="user-menu-panel">
+              <a href="#">Settings</a>
+              <a href="#" onclick="signOutAndRedirect('../index.html'); return false;">Log Out</a>
+            </div>
+          </details>
+        </div>
+      </div>
+
+      <a href="dashboard.html" class="back-link">← All Groups</a>
+
+      <div class="group-head-card">
+        <div>
+          <div class="group-head-name" id="groupName">Loading…</div>
+          <div class="group-head-members" id="groupMembersChips"></div>
+        </div>
+        <button type="button" class="btn-secondary" id="addMemberBtn">+ Add Member</button>
+      </div>
+
+      <div class="split-hero">
+        <div class="split-hero-label">Your Balance in This Group</div>
+        <div class="split-hero-value" id="myBalanceValue">₹0</div>
+        <div class="split-hero-sub" id="myBalanceSub"></div>
+      </div>
+
+      <div class="two-col">
+        <div>
+          <div class="card">
+            <div class="card-head">
+              <h3>Expenses</h3>
+              <button type="button" class="btn-primary" id="addExpenseBtn">+ Add Expense</button>
+            </div>
+            <div id="expenseFeed"><div class="empty-mini">No expenses yet.</div></div>
+          </div>
+        </div>
+
+        <div>
+          <div class="card">
+            <div class="card-head"><h3>Balances</h3></div>
+            <div id="balancesList"></div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <h3>Settle Up</h3>
+              <button type="button" class="btn-secondary btn-small" id="recordSettlementBtn">Record Payment</button>
+            </div>
+            <div id="settleSuggestions"><div class="empty-mini">Everyone's settled up.</div></div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Add Expense modal -->
+  <div class="modal-overlay" id="expenseModal">
+    <div class="modal-box">
+      <h3>Add Expense</h3>
+      <div class="form-error" id="expenseFormError"></div>
+      <label class="field-label">Description</label>
+      <input type="text" class="field-input" id="expenseDescInput" placeholder="e.g. Dinner, Groceries, Cab">
+      <div class="field-row">
+        <div>
+          <label class="field-label">Amount (₹)</label>
+          <input type="number" class="field-input" id="expenseAmountInput" min="0" step="0.01">
+        </div>
+        <div>
+          <label class="field-label">Category</label>
+          <select class="field-select" id="expenseCategoryInput">
+            <option value="food">🍔 Food</option>
+            <option value="groceries">🛒 Groceries</option>
+            <option value="travel">✈️ Travel</option>
+            <option value="utilities">💡 Utilities</option>
+            <option value="rent">🏠 Rent</option>
+            <option value="entertainment">🎬 Entertainment</option>
+            <option value="shopping">🛍️ Shopping</option>
+            <option value="other">📦 Other</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-row">
+        <div>
+          <label class="field-label">Paid by</label>
+          <select class="field-select" id="expensePaidByInput"></select>
+        </div>
+        <div>
+          <label class="field-label">Date</label>
+          <input type="date" class="field-input" id="expenseDateInput">
+        </div>
+      </div>
+      <label class="field-label">Split</label>
+      <div class="split-type-toggle">
+        <div class="split-type-btn selected" data-type="equal">Equal</div>
+        <div class="split-type-btn" data-type="exact">Exact amounts</div>
+      </div>
+      <div id="expenseMemberList"></div>
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" id="cancelExpenseBtn">Cancel</button>
+        <button type="button" class="btn-primary" id="saveExpenseBtn">Save Expense</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Member modal -->
+  <div class="modal-overlay" id="addMemberModal">
+    <div class="modal-box">
+      <h3>Add Member</h3>
+      <div class="form-error" id="addMemberFormError"></div>
+      <div id="newMemberRows"></div>
+      <span class="add-member-link" id="addAnotherMemberLink" style="font-size:0.82rem;font-weight:700;color:#10b981;cursor:pointer;margin-bottom:1rem;display:inline-block;">+ Add another</span>
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" id="cancelAddMemberBtn">Cancel</button>
+        <button type="button" class="btn-primary" id="saveMembersBtn">Add to Group</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Record Settlement modal -->
+  <div class="modal-overlay" id="settlementModal">
+    <div class="modal-box">
+      <h3>Record a Payment</h3>
+      <div class="form-error" id="settlementFormError"></div>
+      <div class="field-row">
+        <div>
+          <label class="field-label">From</label>
+          <select class="field-select" id="settleFromInput"></select>
+        </div>
+        <div>
+          <label class="field-label">To</label>
+          <select class="field-select" id="settleToInput"></select>
+        </div>
+      </div>
+      <div class="field-row">
+        <div>
+          <label class="field-label">Amount (₹)</label>
+          <input type="number" class="field-input" id="settleAmountInput" min="0" step="0.01">
+        </div>
+        <div>
+          <label class="field-label">Date</label>
+          <input type="date" class="field-input" id="settleDateInput">
+        </div>
+      </div>
+      <label class="field-label">Note (optional)</label>
+      <input type="text" class="field-input" id="settleNoteInput" placeholder="e.g. Paid via UPI">
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" id="cancelSettlementBtn">Cancel</button>
+        <button type="button" class="btn-primary" id="saveSettlementBtn">Record Payment</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabase-client.js"></script>
+  <script src="shared.js"></script>
+  <script>
+    var CATEGORY_ICONS = { food: '🍔', groceries: '🛒', travel: '✈️', utilities: '💡', rent: '🏠', entertainment: '🎬', shopping: '🛍️', other: '📦' };
+
+    var currentUser = null;
+    var groupId = new URLSearchParams(window.location.search).get('id');
+    var state = { group: null, members: [], expenses: [], shares: [], settlements: [], balances: {}, expenseSplitType: 'equal' };
+
+    function todayStr() {
+      return new Date().toISOString().slice(0, 10);
+    }
+
+    /* ── Data loading ───────────────────────────────────────────────────── */
+
+    async function loadGroupData() {
+      var { data: group, error: groupErr } = await supabaseClient.from('split_groups').select('*').eq('id', groupId).single();
+      if (groupErr || !group) { document.getElementById('groupName').textContent = 'Group not found'; return false; }
+      state.group = group;
+
+      var { data: members } = await supabaseClient.from('split_group_members').select('*').eq('group_id', groupId).order('created_at', { ascending: true });
+      state.members = members || [];
+
+      var { data: expenses } = await supabaseClient.from('split_expenses').select('*').eq('group_id', groupId).order('expense_date', { ascending: false }).order('created_at', { ascending: false });
+      state.expenses = expenses || [];
+
+      var expenseIds = state.expenses.map(function (e) { return e.id; });
+      var { data: shares } = expenseIds.length ? await supabaseClient.from('split_expense_shares').select('*').in('expense_id', expenseIds) : { data: [] };
+      state.shares = shares || [];
+
+      var { data: settlements } = await supabaseClient.from('split_settlements').select('*').eq('group_id', groupId).order('settled_date', { ascending: false });
+      state.settlements = settlements || [];
+
+      state.balances = computeGroupBalances(state.members, state.expenses, state.shares, state.settlements);
+      return true;
+    }
+
+    /* ── Rendering ──────────────────────────────────────────────────────── */
+
+    function renderGroupHead() {
+      document.getElementById('pageTitle').textContent = state.group.name;
+      document.title = state.group.name + ' - SplitExpenses(SplitWise) - FinFlow';
+      document.getElementById('groupName').textContent = state.group.name;
+      document.getElementById('groupMembersChips').innerHTML = state.members.map(function (m) {
+        return '<span class="member-chip"><span class="avatar" style="background:' + colorForName(m.display_name) + ';width:22px;height:22px;font-size:0.6rem;">' + initialsForName(m.display_name) + '</span>' + escapeHtml(m.display_name) + '</span>';
+      }).join('');
+    }
+
+    function myMember() {
+      return state.members.filter(function (m) { return m.user_id === currentUser.id; })[0];
+    }
+
+    function renderHero() {
+      var me = myMember();
+      var myBalance = me ? (state.balances[me.id] || 0) : 0;
+      var el = document.getElementById('myBalanceValue');
+      var subEl = document.getElementById('myBalanceSub');
+      if (Math.abs(myBalance) < 0.5) {
+        el.textContent = '₹0';
+        el.className = 'split-hero-value';
+        subEl.textContent = "You're all settled up in this group.";
+      } else if (myBalance > 0) {
+        el.textContent = formatRupees(myBalance);
+        el.className = 'split-hero-value positive';
+        subEl.textContent = 'The group owes you overall.';
+      } else {
+        el.textContent = formatRupees(-myBalance);
+        el.className = 'split-hero-value negative';
+        subEl.textContent = 'You owe the group overall.';
+      }
+    }
+
+    function memberName(id) {
+      var m = state.members.filter(function (x) { return x.id === id; })[0];
+      return m ? m.display_name : 'Unknown';
+    }
+
+    function renderExpenseFeed() {
+      var feed = document.getElementById('expenseFeed');
+      if (!state.expenses.length) { feed.innerHTML = '<div class="empty-mini">No expenses yet.</div>'; return; }
+
+      var me = myMember();
+      feed.innerHTML = state.expenses.map(function (e) {
+        var myShare = me ? (state.shares.filter(function (s) { return s.expense_id === e.id && s.member_id === me.id; })[0] || null) : null;
+        var shareHtml = '';
+        if (myShare) {
+          if (e.paid_by_member_id === me.id) {
+            var netGain = Number(e.amount) - Number(myShare.share_amount);
+            shareHtml = netGain > 0.5 ? '<div class="expense-amount-share positive">you lent ' + formatRupees(netGain) + '</div>' : '';
+          } else {
+            shareHtml = '<div class="expense-amount-share negative">you owe ' + formatRupees(myShare.share_amount) + '</div>';
+          }
+        }
+        return '<div class="expense-row">' +
+          '<div class="expense-icon">' + (CATEGORY_ICONS[e.category] || '📦') + '</div>' +
+          '<div class="expense-info">' +
+            '<div class="expense-desc">' + escapeHtml(e.description) + '</div>' +
+            '<div class="expense-meta">Paid by ' + escapeHtml(memberName(e.paid_by_member_id)) + ' · ' + e.expense_date + '</div>' +
+          '</div>' +
+          '<div class="expense-amount">' +
+            '<div class="expense-amount-total">' + formatRupees(e.amount) + '</div>' +
+            shareHtml +
+          '</div>' +
+        '</div>';
+      }).join('');
+    }
+
+    function renderBalances() {
+      var list = document.getElementById('balancesList');
+      list.innerHTML = state.members.map(function (m) {
+        var bal = state.balances[m.id] || 0;
+        var cls = bal > 0.5 ? 'positive' : (bal < -0.5 ? 'negative' : 'settled');
+        var label = Math.abs(bal) < 0.5 ? 'settled up' : (bal > 0 ? 'gets back ' + formatRupees(bal) : 'owes ' + formatRupees(-bal));
+        return '<div class="balance-row">' +
+          '<div class="balance-row-name"><span class="avatar" style="background:' + colorForName(m.display_name) + ';width:26px;height:26px;font-size:0.65rem;">' + initialsForName(m.display_name) + '</span>' + escapeHtml(m.display_name) + '</div>' +
+          '<div class="balance-row-value ' + cls + '">' + label + '</div>' +
+        '</div>';
+      }).join('');
+    }
+
+    function renderSettleSuggestions() {
+      var wrap = document.getElementById('settleSuggestions');
+      var txns = simplifyDebts(state.balances, state.members);
+      if (!txns.length) { wrap.innerHTML = '<div class="empty-mini">Everyone\'s settled up.</div>'; return; }
+      wrap.innerHTML = txns.map(function (t, i) {
+        return '<div class="settle-row">' +
+          '<span class="settle-row-text"><b>' + escapeHtml(t.from) + '</b> pays <b>' + escapeHtml(t.to) + '</b></span>' +
+          '<span><b>' + formatRupees(t.amount) + '</b></span>' +
+          '<button type="button" class="btn-secondary btn-small" data-from="' + t.fromId + '" data-to="' + t.toId + '" data-amount="' + t.amount + '">Record</button>' +
+        '</div>';
+      }).join('');
+      Array.prototype.forEach.call(wrap.querySelectorAll('button[data-from]'), function (btn) {
+        btn.addEventListener('click', function () {
+          openSettlementModal(btn.dataset.from, btn.dataset.to, btn.dataset.amount);
+        });
+      });
+    }
+
+    function renderAll() {
+      renderGroupHead();
+      renderHero();
+      renderExpenseFeed();
+      renderBalances();
+      renderSettleSuggestions();
+    }
+
+    /* ── Add Expense modal ─────────────────────────────────────────────── */
+
+    function renderExpenseMemberList() {
+      var amount = Number(document.getElementById('expenseAmountInput').value) || 0;
+      var wrap = document.getElementById('expenseMemberList');
+      var isExact = state.expenseSplitType === 'exact';
+
+      wrap.innerHTML = state.members.map(function (m) {
+        return '<div class="member-select-row' + (isExact ? ' exact' : '') + '" data-member-id="' + m.id + '">' +
+          '<label><input type="checkbox" class="expense-member-check" checked> ' + escapeHtml(m.display_name) + '</label>' +
+          '<input type="number" class="exact-amount-input" min="0" step="0.01" placeholder="₹0">' +
+        '</div>';
+      }).join('');
+
+      if (isExact) {
+        var checkedIds = state.members.map(function (m) { return m.id; });
+        var equalGuess = computeEqualShares(amount, checkedIds);
+        Array.prototype.forEach.call(wrap.querySelectorAll('.member-select-row'), function (row, i) {
+          row.querySelector('.exact-amount-input').value = equalGuess[i];
+        });
+      }
+    }
+
+    function openExpenseModal() {
+      document.getElementById('expenseFormError').textContent = '';
+      document.getElementById('expenseDescInput').value = '';
+      document.getElementById('expenseAmountInput').value = '';
+      document.getElementById('expenseCategoryInput').value = 'other';
+      document.getElementById('expenseDateInput').value = todayStr();
+      state.expenseSplitType = 'equal';
+      Array.prototype.forEach.call(document.querySelectorAll('.split-type-btn'), function (b) {
+        b.classList.toggle('selected', b.dataset.type === 'equal');
+      });
+
+      var paidBySelect = document.getElementById('expensePaidByInput');
+      paidBySelect.innerHTML = state.members.map(function (m) { return '<option value="' + m.id + '">' + escapeHtml(m.display_name) + '</option>'; }).join('');
+
+      renderExpenseMemberList();
+      document.getElementById('expenseModal').classList.add('show');
+    }
+
+    function closeExpenseModal() {
+      document.getElementById('expenseModal').classList.remove('show');
+    }
+
+    async function saveExpense() {
+      var errEl = document.getElementById('expenseFormError');
+      var description = document.getElementById('expenseDescInput').value.trim();
+      var amount = Number(document.getElementById('expenseAmountInput').value);
+      var category = document.getElementById('expenseCategoryInput').value;
+      var paidBy = document.getElementById('expensePaidByInput').value;
+      var date = document.getElementById('expenseDateInput').value || todayStr();
+
+      if (!description) { errEl.textContent = 'Please enter a description.'; return; }
+      if (!amount || amount <= 0) { errEl.textContent = 'Please enter a valid amount.'; return; }
+
+      var rows = Array.prototype.filter.call(document.querySelectorAll('.member-select-row'), function (row) {
+        return row.querySelector('.expense-member-check').checked;
+      });
+      if (!rows.length) { errEl.textContent = 'Select at least one member to split with.'; return; }
+
+      var memberIds = rows.map(function (row) { return row.dataset.memberId; });
+      var shareAmounts;
+
+      if (state.expenseSplitType === 'equal') {
+        shareAmounts = computeEqualShares(amount, memberIds);
+      } else {
+        shareAmounts = rows.map(function (row) { return Number(row.querySelector('.exact-amount-input').value) || 0; });
+        var sum = Math.round(shareAmounts.reduce(function (s, v) { return s + v; }, 0) * 100) / 100;
+        if (Math.abs(sum - amount) > 0.5) { errEl.textContent = 'Exact amounts (₹' + sum + ') must add up to the total (₹' + amount + ').'; return; }
+      }
+
+      var { data: expense, error: expErr } = await supabaseClient.from('split_expenses').insert({
+        group_id: groupId, description: description, amount: amount, category: category,
+        paid_by_member_id: paidBy, split_type: state.expenseSplitType, expense_date: date, created_by: currentUser.id
+      }).select().single();
+      if (expErr) { errEl.textContent = 'Could not save expense. Please try again.'; console.error(expErr); return; }
+
+      var shareRows = memberIds.map(function (id, i) { return { expense_id: expense.id, member_id: id, share_amount: shareAmounts[i] }; });
+      var { error: shareErr } = await supabaseClient.from('split_expense_shares').insert(shareRows);
+      if (shareErr) { errEl.textContent = 'Expense saved, but splitting shares failed.'; console.error(shareErr); return; }
+
+      closeExpenseModal();
+      await loadGroupData();
+      renderAll();
+    }
+
+    /* ── Add Member modal ──────────────────────────────────────────────── */
+
+    function renderNewMemberRow(container) {
+      var row = document.createElement('div');
+      row.className = 'member-row';
+      row.innerHTML =
+        '<input type="text" class="field-input new-member-name" placeholder="Name">' +
+        '<input type="email" class="field-input new-member-email" placeholder="Email (optional)" style="max-width:170px;">';
+      container.appendChild(row);
+    }
+
+    function openAddMemberModal() {
+      document.getElementById('addMemberFormError').textContent = '';
+      var rows = document.getElementById('newMemberRows');
+      rows.innerHTML = '';
+      renderNewMemberRow(rows);
+      document.getElementById('addMemberModal').classList.add('show');
+    }
+
+    function closeAddMemberModal() {
+      document.getElementById('addMemberModal').classList.remove('show');
+    }
+
+    async function saveNewMembers() {
+      var errEl = document.getElementById('addMemberFormError');
+      var inputs = Array.prototype.map.call(document.querySelectorAll('#newMemberRows .member-row'), function (row) {
+        return { name: row.querySelector('.new-member-name').value.trim(), email: row.querySelector('.new-member-email').value.trim() };
+      }).filter(function (m) { return m.name; });
+
+      if (!inputs.length) { errEl.textContent = 'Please enter at least one name.'; return; }
+
+      var rows = inputs.map(function (m) { return { group_id: groupId, display_name: m.name, email: m.email || null, is_shadow: true, added_by: currentUser.id }; });
+      var { error } = await supabaseClient.from('split_group_members').insert(rows);
+      if (error) { errEl.textContent = 'Could not add members. Please try again.'; console.error(error); return; }
+
+      closeAddMemberModal();
+      await loadGroupData();
+      renderAll();
+    }
+
+    /* ── Settlement modal ──────────────────────────────────────────────── */
+
+    function openSettlementModal(prefillFromId, prefillToId, prefillAmount) {
+      document.getElementById('settlementFormError').textContent = '';
+      var fromSelect = document.getElementById('settleFromInput');
+      var toSelect = document.getElementById('settleToInput');
+      var optionsHtml = state.members.map(function (m) { return '<option value="' + m.id + '">' + escapeHtml(m.display_name) + '</option>'; }).join('');
+      fromSelect.innerHTML = optionsHtml;
+      toSelect.innerHTML = optionsHtml;
+      if (prefillFromId) fromSelect.value = prefillFromId;
+      if (prefillToId) toSelect.value = prefillToId;
+      document.getElementById('settleAmountInput').value = prefillAmount || '';
+      document.getElementById('settleDateInput').value = todayStr();
+      document.getElementById('settleNoteInput').value = '';
+      document.getElementById('settlementModal').classList.add('show');
+    }
+
+    function closeSettlementModal() {
+      document.getElementById('settlementModal').classList.remove('show');
+    }
+
+    async function saveSettlement() {
+      var errEl = document.getElementById('settlementFormError');
+      var fromId = document.getElementById('settleFromInput').value;
+      var toId = document.getElementById('settleToInput').value;
+      var amount = Number(document.getElementById('settleAmountInput').value);
+      var date = document.getElementById('settleDateInput').value || todayStr();
+      var note = document.getElementById('settleNoteInput').value.trim();
+
+      if (fromId === toId) { errEl.textContent = 'From and To must be different members.'; return; }
+      if (!amount || amount <= 0) { errEl.textContent = 'Please enter a valid amount.'; return; }
+
+      var { error } = await supabaseClient.from('split_settlements').insert({
+        group_id: groupId, from_member_id: fromId, to_member_id: toId, amount: amount, settled_date: date, note: note || null, created_by: currentUser.id
+      });
+      if (error) { errEl.textContent = 'Could not record payment. Please try again.'; console.error(error); return; }
+
+      closeSettlementModal();
+      await loadGroupData();
+      renderAll();
+    }
+
+    /* ── Init ───────────────────────────────────────────────────────────── */
+
+    (async function init() {
+      currentUser = await requireAuth('../index.html#login');
+      if (!currentUser) return;
+
+      if (!groupId) { document.getElementById('groupName').textContent = 'No group selected'; return; }
+
+      var ok = await loadGroupData();
+      if (!ok) return;
+      renderAll();
+
+      document.getElementById('addExpenseBtn').addEventListener('click', openExpenseModal);
+      document.getElementById('cancelExpenseBtn').addEventListener('click', closeExpenseModal);
+      document.getElementById('saveExpenseBtn').addEventListener('click', saveExpense);
+      document.getElementById('expenseAmountInput').addEventListener('input', renderExpenseMemberList);
+      document.getElementById('expenseModal').addEventListener('click', function (e) { if (e.target === this) closeExpenseModal(); });
+      Array.prototype.forEach.call(document.querySelectorAll('.split-type-btn'), function (btn) {
+        btn.addEventListener('click', function () {
+          state.expenseSplitType = btn.dataset.type;
+          Array.prototype.forEach.call(document.querySelectorAll('.split-type-btn'), function (b) { b.classList.toggle('selected', b === btn); });
+          renderExpenseMemberList();
+        });
+      });
+
+      document.getElementById('addMemberBtn').addEventListener('click', openAddMemberModal);
+      document.getElementById('cancelAddMemberBtn').addEventListener('click', closeAddMemberModal);
+      document.getElementById('saveMembersBtn').addEventListener('click', saveNewMembers);
+      document.getElementById('addAnotherMemberLink').addEventListener('click', function () { renderNewMemberRow(document.getElementById('newMemberRows')); });
+      document.getElementById('addMemberModal').addEventListener('click', function (e) { if (e.target === this) closeAddMemberModal(); });
+
+      document.getElementById('recordSettlementBtn').addEventListener('click', function () { openSettlementModal(); });
+      document.getElementById('cancelSettlementBtn').addEventListener('click', closeSettlementModal);
+      document.getElementById('saveSettlementBtn').addEventListener('click', saveSettlement);
+      document.getElementById('settlementModal').addEventListener('click', function (e) { if (e.target === this) closeSettlementModal(); });
+    })();
+  </script>
+</body>
+</html>

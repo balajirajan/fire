@@ -1,0 +1,1176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkup Reports - FinFlow</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f8fafc;
+      color: #0f172a;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    a, button { color: inherit; text-decoration: none; font-family: inherit; }
+
+    .app-shell { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
+    @media (max-width: 860px) { .app-shell { grid-template-columns: 1fr; } .sidebar { display: none; } }
+
+    .sidebar { background: #ffffff; border-right: 1px solid #e2e8f0; display: flex; flex-direction: column; padding: 1.5rem 1.25rem; }
+    .sidebar-logo { display: flex; align-items: center; gap: 0.65rem; font-size: 1.1rem; font-weight: 800; margin-bottom: 2rem; padding: 0 0.25rem; }
+    .sidebar-logo-icon { width: 30px; height: 30px; background: linear-gradient(135deg, #0ea5e9, #10b981); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; flex-shrink: 0; }
+    .sidebar-nav { display: flex; flex-direction: column; gap: 0.25rem; }
+    .sidebar-nav a, .sidebar-nav .nav-group-head { display: flex; align-items: center; gap: 0.75rem; padding: 0.7rem 0.75rem; border-radius: 0.6rem; font-size: 0.9rem; font-weight: 500; color: #364752; }
+    .sidebar-nav a:hover, .sidebar-nav .nav-group-head:hover { background: #f1f5f9; }
+    .sidebar-nav a.active { background: #0f172a; color: #ffffff; font-weight: 600; }
+    .sidebar-nav .nav-group-head.open { background: #f1f5f9; font-weight: 700; }
+    .sidebar-nav .nav-group-head.active { background: #0f172a; color: #ffffff; font-weight: 600; }
+    .sidebar-nav .nav-group-head.active .nav-chevron { color: rgba(255,255,255,0.6); }
+    .sidebar-nav .nav-icon { font-size: 1rem; width: 20px; text-align: center; flex-shrink: 0; }
+    .sidebar-nav .nav-label { flex: 1; }
+    .sidebar-nav .nav-chevron { color: #94a3b8; font-size: 0.85rem; }
+    .sidebar-subnav { display: flex; flex-direction: column; gap: 0.2rem; padding-left: 1.6rem; margin: 0.15rem 0 0.3rem; }
+    .sidebar-subnav a { display: flex; align-items: center; gap: 0.6rem; padding: 0.55rem 0.6rem; border-radius: 0.5rem; font-size: 0.85rem; font-weight: 500; color: #364752; }
+    .sidebar-subnav a:hover { background: #f1f5f9; }
+    .sidebar-subnav a.active { background: #0f172a; color: #fff; font-weight: 600; }
+    .sidebar-spacer { flex: 1; }
+    .feedback-card { background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 0.9rem; padding: 1.1rem; margin-top: 1.5rem; }
+    .feedback-card .fc-icon { width: 32px; height: 32px; border-radius: 0.6rem; background: #eef2f7; display: flex; align-items: center; justify-content: center; font-size: 0.95rem; margin-bottom: 0.6rem; }
+    .feedback-card strong { display: block; font-size: 0.85rem; margin-bottom: 0.3rem; }
+    .feedback-card p { font-size: 0.78rem; color: #64748b; line-height: 1.5; margin-bottom: 0.85rem; }
+    .feedback-card a { display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; width: 100%; padding: 0.55rem; border: 1px solid #cbd5e1; border-radius: 0.5rem; font-size: 0.8rem; font-weight: 600; color: #364752; }
+    .feedback-card a:hover { border-color: #10b981; color: #10b981; }
+
+    .main { padding: 1.5rem 2.5rem 3rem; min-width: 0; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; padding-bottom: 1.25rem; border-bottom: 1px solid #e2e8f0; margin-bottom: 1.5rem; }
+    .topbar h1 { font-size: 1.4rem; font-weight: 700; }
+    .topbar-right { display: flex; align-items: center; gap: 0.85rem; }
+    .language-selector { display: flex; align-items: center; gap: 0.5rem; background: #ffffff; padding: 0.5rem 0.9rem; border-radius: 0.5rem; color: #51636f; border: 1px solid #e2e8f0; cursor: pointer; font-size: 0.85rem; }
+    .user-menu { position: relative; list-style: none; }
+    .user-menu > summary { cursor: pointer; list-style: none; width: 34px; height: 34px; border-radius: 50%; background: #eef2f7; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; font-size: 1rem; }
+    .user-menu > summary::-webkit-details-marker { display: none; }
+    .user-menu-panel { position: absolute; top: calc(100% + 0.6rem); right: 0; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 0.75rem; box-shadow: 0 10px 30px rgba(15,23,42,0.12); padding: 0.4rem; min-width: 150px; z-index: 20; }
+    .user-menu-panel a { display: block; padding: 0.55rem 0.7rem; border-radius: 0.5rem; font-size: 0.85rem; color: #364752; font-weight: 500; }
+    .user-menu-panel a:hover { background: #f1f5f9; color: #10b981; }
+
+    .page-head { margin-bottom: 1.5rem; max-width: 62ch; }
+    .page-head h2 { font-size: 1.6rem; font-weight: 800; margin-bottom: 0.3rem; }
+    .page-head p { color: #64748b; font-size: 0.9rem; line-height: 1.55; }
+
+    .btn-primary { padding: 0.6rem 1.1rem; border: none; border-radius: 0.6rem; background: linear-gradient(135deg, #0ea5e9, #10b981); color: #fff; font-size: 0.85rem; font-weight: 700; cursor: pointer; white-space: nowrap; }
+    .btn-primary:hover { opacity: 0.92; }
+    .btn-primary:disabled { opacity: 0.6; cursor: default; }
+    .btn-secondary { padding: 0.55rem 1rem; border: 1px solid #cbd5e1; border-radius: 0.6rem; background: #fff; color: #364752; font-size: 0.83rem; font-weight: 600; cursor: pointer; white-space: nowrap; }
+    .btn-secondary:hover { border-color: #94a3b8; }
+    .btn-danger-text { color: #dc2626; font-size: 0.78rem; font-weight: 700; cursor: pointer; background: none; border: none; }
+    .btn-edit-text { color: #0284c7; font-size: 0.78rem; font-weight: 700; cursor: pointer; background: none; border: none; }
+
+    .controls-row { display: flex; gap: 1rem; align-items: flex-end; margin-bottom: 1.5rem; flex-wrap: wrap; }
+    .member-select-wrap { min-width: 200px; }
+    .control-label { font-size: 0.76rem; font-weight: 700; color: #64748b; margin-bottom: 0.4rem; display: block; text-transform: uppercase; letter-spacing: 0.04em; }
+    .field-select, .num-input {
+      width: 100%; padding: 0.65rem 0.8rem; border: 1px solid #cbd5e1; border-radius: 0.55rem;
+      font-size: 0.9rem; font-family: inherit; color: #0f172a; background: #fff;
+    }
+    .field-select:focus, .num-input:focus { outline: none; border-color: #10b981; box-shadow: 0 0 0 2px rgba(16,185,129,0.15); }
+    .controls-spacer { flex: 1; }
+    .field-hint { font-size: 0.74rem; color: #94a3b8; margin-top: 0.35rem; line-height: 1.5; }
+
+    .empty-state { background: #ffffff; border: 1px dashed #cbd5e1; border-radius: 1rem; padding: 2.5rem 1.5rem; text-align: center; color: #94a3b8; font-size: 0.9rem; }
+
+    /* Overall Health Summary hero — same asymmetric alert/calm language as
+       Reminders and the Insurance Coverage Calculator, plus a third amber
+       "attention" tier in between (this page has 3 status levels, not 2). */
+    .hero-alert, .hero-warn { border-radius: 1.25rem; padding: 1.4rem 1.9rem; color: #fff; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; flex-wrap: wrap; }
+    .hero-alert { background: linear-gradient(135deg, #7f1d1d, #b91c1c); box-shadow: 0 10px 30px rgba(127,29,29,0.25); }
+    .hero-warn { background: linear-gradient(135deg, #78350f, #b45309); box-shadow: 0 10px 30px rgba(120,53,15,0.25); }
+    .hero-alert-left { display: flex; align-items: center; gap: 1rem; min-width: 0; }
+    .hero-alert-icon { width: 44px; height: 44px; border-radius: 0.85rem; background: rgba(255,255,255,0.14); display: flex; align-items: center; justify-content: center; font-size: 1.35rem; flex-shrink: 0; }
+    .hero-alert-title { font-size: 1.08rem; font-weight: 800; margin-bottom: 0.2rem; }
+    .hero-alert-sub { font-size: 0.82rem; color: rgba(255,255,255,0.72); }
+    .hero-alert-stats { display: flex; align-items: center; gap: 1.75rem; flex-shrink: 0; }
+    .hero-alert-stats::before { content: ''; align-self: stretch; width: 1px; background: rgba(255,255,255,0.18); margin-right: 0.15rem; }
+    .hero-alert-stat { text-align: center; min-width: 5.5rem; }
+    .hero-alert-stat-value { font-size: 1.3rem; font-weight: 800; font-variant-numeric: tabular-nums; }
+    .hero-alert-stat-label { font-size: 0.64rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: rgba(255,255,255,0.62); margin-top: 0.2rem; }
+
+    .hero-calm { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 1.25rem; padding: 1.2rem 1.75rem; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; flex-wrap: wrap; box-shadow: 0 4px 16px rgba(15,23,42,0.03); }
+    .hero-calm-left { display: flex; align-items: center; gap: 0.85rem; }
+    .hero-calm-icon { width: 44px; height: 44px; border-radius: 0.85rem; background: #ecfdf5; color: #059669; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; flex-shrink: 0; }
+    .hero-calm-title { font-size: 0.98rem; font-weight: 800; }
+    .hero-calm-sub { font-size: 0.8rem; color: #64748b; margin-top: 0.15rem; }
+    .hero-calm-stats { display: flex; align-items: center; gap: 1.75rem; }
+    .hero-calm-stats::before { content: ''; align-self: stretch; width: 1px; background: #e5e7eb; margin-right: 0.15rem; }
+    .hero-calm-stat { text-align: center; min-width: 5.5rem; }
+    .hero-calm-stat-value { font-size: 1.15rem; font-weight: 800; color: #0f172a; font-variant-numeric: tabular-nums; }
+    .hero-calm-stat-label { font-size: 0.64rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #94a3b8; margin-top: 0.2rem; }
+
+    /* Reports table, same single-line shape as My Policies / schedules */
+    .sched-table-card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 1.1rem; box-shadow: 0 4px 16px rgba(15,23,42,0.03); overflow: hidden; }
+    .sched-table-scroll { overflow-x: auto; }
+    table.sched-table { border-collapse: collapse; width: 100%; min-width: 680px; }
+    table.sched-table th, table.sched-table td { padding: 0.75rem 1rem; font-size: 0.85rem; white-space: nowrap; border-bottom: 1px solid #f1f5f9; text-align: left; vertical-align: middle; }
+    table.sched-table thead th { font-size: 0.68rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.04em; background: #f8fafc; border-bottom: 1px solid #e2e8f0; }
+    table.sched-table tbody tr:last-child td { border-bottom: none; }
+    table.sched-table tbody tr:hover td { background: #f8fafc; }
+    td.sc-name { font-weight: 700; }
+    td.sc-dosage { color: #94a3b8; font-weight: 400; }
+    td.sc-actions { text-align: right; }
+    .status-pill { font-size: 0.72rem; font-weight: 700; padding: 0.25rem 0.6rem; border-radius: 999px; }
+    .status-pill.good { background: rgba(16,185,129,0.12); color: #047857; }
+    .status-pill.attention { background: rgba(245,158,11,0.12); color: #b45309; }
+    .status-pill.concern { background: rgba(220,38,38,0.12); color: #b91c1c; }
+
+    /* Modals */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.55); align-items: center; justify-content: center; z-index: 50; padding: 1rem; }
+    .modal-overlay.show { display: flex; }
+    .modal-box { background: #fff; border-radius: 1.1rem; padding: 1.6rem 1.75rem; width: 100%; max-width: 640px; max-height: 90vh; overflow-y: auto; }
+    .modal-box h3 { font-size: 1.1rem; font-weight: 800; margin-bottom: 1.1rem; }
+    .modal-actions { display: flex; align-items: center; justify-content: space-between; gap: 0.7rem; margin-top: 1rem; }
+    .modal-actions-right { display: flex; gap: 0.7rem; flex: 1; }
+    .modal-actions-right button { flex: 1; }
+    .form-error { font-size: 0.8rem; color: #dc2626; font-weight: 600; margin-bottom: 0.7rem; }
+    .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.1rem; }
+    @media (max-width: 620px) { .field-grid { grid-template-columns: 1fr; } }
+    .field-item { margin-bottom: 1.1rem; }
+    .field-label { font-size: 0.83rem; font-weight: 600; color: #0f172a; margin-bottom: 0.5rem; display: block; }
+    .field-sub-label { font-size: 0.83rem; font-weight: 600; color: #0f172a; margin: 1.2rem 0 0.6rem; display: block; }
+    .existing-file-info { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 0.55rem; padding: 0.65rem 0.8rem; font-size: 0.85rem; }
+
+    /* Lab-value groups inside the edit modal */
+    .metric-group { margin-bottom: 1.3rem; }
+    .metric-group-head { font-size: 0.72rem; font-weight: 800; color: #10b981; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.8rem; padding-bottom: 0.5rem; border-bottom: 1px solid #e2e8f0; }
+    .metric-row-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
+    .metric-row { display: flex; flex-direction: column; gap: 0.35rem; }
+    .metric-label { font-size: 0.8rem; font-weight: 600; color: #0f172a; }
+    .metric-unit { font-weight: 400; color: #94a3b8; }
+    .metric-range-hint { font-size: 0.68rem; color: #94a3b8; }
+
+    .custom-metric-row { display: grid; grid-template-columns: 1.2fr 1fr 0.8fr auto; gap: 0.6rem; margin-bottom: 0.6rem; align-items: center; }
+    @media (max-width: 620px) { .custom-metric-row { grid-template-columns: 1fr; } }
+    .row-remove-btn { width: 34px; height: 34px; border-radius: 0.5rem; border: 1px solid #fecaca; background: #fef2f2; color: #dc2626; font-size: 1rem; cursor: pointer; flex-shrink: 0; line-height: 1; }
+    .row-remove-btn:hover { background: #fee2e2; border-color: #dc2626; }
+
+    /* Read-only report summary ("more representable way" of showing scanned results) */
+    .view-header-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; margin-bottom: 0.2rem; }
+    .view-header-row h3 { margin-bottom: 0; }
+    .view-date { font-size: 0.78rem; color: #94a3b8; font-weight: 600; margin-bottom: 1rem; }
+    .view-status-card { border-radius: 0.75rem; padding: 0.9rem 1.1rem; margin-bottom: 1.3rem; font-size: 0.85rem; line-height: 1.6; }
+    .view-status-card.good { background: #ecfdf5; color: #065f46; }
+    .view-status-card.attention { background: #fffbeb; color: #78350f; }
+    .view-status-card.concern { background: #fef2f2; color: #7f1d1d; }
+    .view-status-card p { margin-top: 0.4rem; }
+    .view-metric-group { margin-bottom: 1.1rem; }
+    .view-metric-group:last-child { margin-bottom: 0; }
+    .view-metric-group-head { font-size: 0.7rem; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.4rem; }
+    .view-metric-row { display: flex; align-items: baseline; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px dashed #e2e8f0; font-size: 0.85rem; }
+    .view-metric-row:last-child { border-bottom: none; }
+    .view-metric-name { font-weight: 600; color: #364752; }
+    .view-metric-value { font-weight: 700; color: #0f172a; font-variant-numeric: tabular-nums; }
+    .flag-pill { font-size: 0.66rem; font-weight: 700; padding: 0.12rem 0.45rem; border-radius: 999px; margin-left: 0.5rem; text-transform: capitalize; }
+    .flag-pill.normal { background: rgba(16,185,129,0.12); color: #047857; }
+    .flag-pill.low { background: rgba(59,130,246,0.12); color: #1d4ed8; }
+    .flag-pill.high { background: rgba(220,38,38,0.12); color: #b91c1c; }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a href="dashboard.html" class="sidebar-logo">
+        <div class="sidebar-logo-icon">💰</div>
+        <span>FinFlow</span>
+      </a>
+
+      <nav class="sidebar-nav">
+        <a href="dashboard.html">
+          <span class="nav-icon">▦</span>
+          <span class="nav-label">Dashboard</span>
+        </a>
+        <a href="fire-plan.html">
+          <span class="nav-icon">🧭</span>
+          <span class="nav-label">FIRE Plan</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="net-worth.html">
+          <span class="nav-icon">📈</span>
+          <span class="nav-label">Networth</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="money-required.html">
+          <span class="nav-icon">🪴</span>
+          <span class="nav-label">Expenses</span>
+          <span class="nav-chevron">›</span>
+        </a>
+
+        <a href="expense-quick-add.html">
+          <span class="nav-icon">⚡</span>
+          <span class="nav-label">Daily Expenses Tracker</span>
+        </a>
+        <a href="tax-planning.html">
+          <span class="nav-icon">🧾</span>
+          <span class="nav-label">Tax Planning</span>
+        </a>
+        <a href="insurance-tracker.html">
+          <span class="nav-icon">🛡️</span>
+          <span class="nav-label">Insurance Tracker</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="reminders.html">
+          <span class="nav-icon">🔔</span>
+          <span class="nav-label">Reminders</span>
+        </a>
+        <a href="vault-overview.html">
+          <span class="nav-icon">🔒</span>
+          <span class="nav-label">Document Vault</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="split/dashboard.html">
+          <span class="nav-icon">💸</span>
+          <span class="nav-label">SplitExpenses(SplitWise)</span>
+        </a>
+
+        <a href="life-expectancy.html" class="nav-group-head open active">
+          <span class="nav-icon">❤️</span>
+          <span class="nav-label">Health</span>
+          <span class="nav-chevron">⌄</span>
+        </a>
+        <div class="sidebar-subnav">
+          <a href="life-expectancy.html">
+            <span class="nav-icon">📉</span>
+            <span class="nav-label">Life Expectancy</span>
+          </a>
+          <a href="health-medicine-tracker.html">
+            <span class="nav-icon">💊</span>
+            <span class="nav-label">Medicine Tracker</span>
+          </a>
+          <a href="health-checkup-reports.html" class="active">
+            <span class="nav-icon">🩺</span>
+            <span class="nav-label">Checkup Reports</span>
+          </a>
+        </div>
+
+        <a href="astrology.html">
+          <span class="nav-icon">🔮</span>
+          <span class="nav-label">Spiritual</span>
+        </a>
+        <a href="#">
+          <span class="nav-icon">⚙️</span>
+          <span class="nav-label">Settings</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-spacer"></div>
+
+      <div class="feedback-card">
+        <div class="fc-icon">💬</div>
+        <strong>Got feedback?</strong>
+        <p>Have an idea or found a bug? We read every message.</p>
+        <a href="mailto:hello@finflow.app">✉ Contact Us</a>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <h1>Health</h1>
+        <div class="topbar-right">
+          <div class="language-selector">🌐 English ▾</div>
+          <details class="user-menu">
+            <summary>👤</summary>
+            <div class="user-menu-panel">
+              <a href="#">Settings</a>
+              <a href="#" onclick="signOutAndRedirect('index.html'); return false;">Log Out</a>
+            </div>
+          </details>
+        </div>
+      </div>
+
+      <div class="page-head">
+        <h2>Checkup Reports</h2>
+        <p>Upload a full-body or medical checkup PDF for anyone in your family — we'll scan it and pull out the test results into a clear summary.</p>
+      </div>
+
+      <div id="noMembersState" class="empty-state" style="display:none;">
+        No family members added yet. <a href="#" id="addFirstMemberLink" style="color:#0ea5e9; font-weight:600;">Add one</a> to get started.
+      </div>
+
+      <div id="pageBody" style="display:none;">
+        <div class="controls-row">
+          <div class="member-select-wrap">
+            <label class="control-label">Family Member</label>
+            <select class="field-select" id="memberSelect"></select>
+          </div>
+          <div class="controls-spacer"></div>
+          <button type="button" class="btn-secondary" id="addMemberBtn">+ Family Member</button>
+        </div>
+
+        <div id="heroSection"></div>
+
+        <div class="controls-row" style="justify-content:flex-end;">
+          <button type="button" class="btn-primary" id="addReportBtn">+ Upload Report</button>
+        </div>
+
+        <div class="empty-state" id="reportsEmptyState" style="display:none;">No checkup reports uploaded yet for this family member.</div>
+        <div class="sched-table-card" id="reportsTableCard">
+          <div class="sched-table-scroll">
+            <table class="sched-table">
+              <thead><tr><th>Date</th><th>Report</th><th>Status</th><th>File</th><th></th></tr></thead>
+              <tbody id="reportsList"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Upload Report — deliberately just the file, nothing else. Scanning
+       and building the readable summary happens automatically after. -->
+  <div class="modal-overlay" id="uploadModal">
+    <div class="modal-box" style="max-width: 440px;">
+      <h3>Upload Report</h3>
+      <div class="form-error" id="uploadFormError"></div>
+      <div class="field-hint" id="uploadForMemberNote" style="margin-bottom:0.9rem;"></div>
+      <div class="field-item">
+        <label class="field-label">Report file (PDF, max 8 MB)</label>
+        <input type="file" class="num-input" id="uploadFileInput" accept="application/pdf">
+        <div class="field-hint">We'll scan this PDF and pull out the test results automatically — you'll see the summary right after.</div>
+      </div>
+      <div class="modal-actions">
+        <div class="modal-actions-right">
+          <button type="button" class="btn-secondary" id="cancelUploadBtn">Cancel</button>
+          <button type="button" class="btn-primary" id="submitUploadBtn">Upload &amp; Scan</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- View Report — the readable summary shown right after a scan, and -->
+  <!-- whenever a report row is clicked afterward. -->
+  <div class="modal-overlay" id="viewModal">
+    <div class="modal-box">
+      <div class="view-header-row">
+        <h3 id="viewModalTitle">Checkup Report</h3>
+        <button type="button" class="btn-secondary" id="viewDownloadBtn">⬇ Download</button>
+      </div>
+      <div class="view-date" id="viewModalDate"></div>
+      <div id="viewModalStatus"></div>
+      <div id="viewModalMetrics"></div>
+      <div class="modal-actions">
+        <button type="button" class="btn-danger-text" id="viewDeleteBtn">Delete Report</button>
+        <div class="modal-actions-right">
+          <button type="button" class="btn-secondary" id="closeViewBtn">Close</button>
+          <button type="button" class="btn-primary" id="viewEditBtn">Edit Values</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Report — reached from "Edit Values" above, for correcting a scan. -->
+  <div class="modal-overlay" id="reportModal">
+    <div class="modal-box">
+      <h3>Edit Report</h3>
+      <div class="form-error" id="reportFormError"></div>
+
+      <div class="field-grid">
+        <div class="field-item">
+          <label class="field-label">Family member</label>
+          <select class="field-select" id="reportMemberInput"></select>
+        </div>
+        <div class="field-item">
+          <label class="field-label">Report date</label>
+          <input type="date" class="num-input" id="reportDateInput">
+        </div>
+        <div class="field-item" style="grid-column: 1 / -1;">
+          <label class="field-label">Report label</label>
+          <input type="text" class="num-input" id="reportLabelInput" placeholder="e.g. Annual Full Body Checkup">
+        </div>
+      </div>
+
+      <div class="field-item">
+        <label class="field-label">Report file</label>
+        <div class="existing-file-info">
+          <span id="existingFileName"></span>
+          <button type="button" class="btn-secondary" id="downloadReportBtn">⬇ Download</button>
+        </div>
+      </div>
+
+      <div class="field-item">
+        <label class="field-label">Notes</label>
+        <input type="text" class="num-input" id="reportNotesInput" placeholder="Optional">
+      </div>
+
+      <label class="field-sub-label" style="margin-top:0.5rem;">Lab Values</label>
+
+      <div class="metric-group">
+        <div class="metric-group-head">General</div>
+        <div class="metric-row-grid">
+          <div class="metric-row">
+            <label class="metric-label">Height <span class="metric-unit">(cm)</span></label>
+            <input type="number" step="0.1" class="num-input" data-metric-key="height_cm">
+          </div>
+          <div class="metric-row">
+            <label class="metric-label">Weight <span class="metric-unit">(kg)</span></label>
+            <input type="number" step="0.1" class="num-input" data-metric-key="weight_kg">
+          </div>
+          <div class="metric-row">
+            <label class="metric-label">BMI <span class="metric-unit">(kg/m²)</span></label>
+            <input type="number" step="0.1" class="num-input" data-metric-key="bmi">
+            <span class="metric-range-hint">Normal: 18.5–24.9</span>
+          </div>
+          <div class="metric-row">
+            <label class="metric-label">Blood Pressure <span class="metric-unit">(mmHg)</span></label>
+            <input type="text" class="num-input" data-metric-key="blood_pressure" placeholder="e.g. 120/80">
+            <span class="metric-range-hint">Format: systolic/diastolic</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="metric-group">
+        <div class="metric-group-head">Blood Sugar</div>
+        <div class="metric-row-grid">
+          <div class="metric-row">
+            <label class="metric-label">Fasting <span class="metric-unit">(mg/dL)</span></label>
+            <input type="number" step="0.1" class="num-input" data-metric-key="blood_sugar_fasting">
+            <span class="metric-range-hint">Normal: 70–100</span>
+          </div>
+          <div class="metric-row">
+            <label class="metric-label">Post-Prandial <span class="metric-unit">(mg/dL)</span></label>
+            <input type="number" step="0.1" class="num-input" data-metric-key="blood_sugar_pp">
+            <span class="metric-range-hint">Normal: 70–140</span>
+          </div>
+          <div class="metric-row">
+            <label class="metric-label">HbA1c <span class="metric-unit">(%)</span></label>
+            <input type="number" step="0.1" class="num-input" data-metric-key="hba1c">
+            <span class="metric-range-hint">Normal: 4–5.6</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="metric-group">
+        <div class="metric-group-head">Lipid Profile</div>
+        <div class="metric-row-grid">
+          <div class="metric-row">
+            <label class="metric-label">Total Cholesterol <span class="metric-unit">(mg/dL)</span></label>
+            <input type="number" step="0.1" class="num-input" data-metric-key="total_cholesterol">
+            <span class="metric-range-hint">Normal: under 200</span>
+          </div>
+          <div class="metric-row">
+            <label class="metric-label">HDL <span class="metric-unit">(mg/dL)</span></label>
+            <input type="number" step="0.1" class="num-input" data-metric-key="hdl_cholesterol">
+            <span class="metric-range-hint">Normal: 40–60</span>
+          </div>
+          <div class="metric-row">
+            <label class="metric-label">LDL <span class="metric-unit">(mg/dL)</span></label>
+            <input type="number" step="0.1" class="num-input" data-metric-key="ldl_cholesterol">
+            <span class="metric-range-hint">Normal: under 100</span>
+          </div>
+          <div class="metric-row">
+            <label class="metric-label">Triglycerides <span class="metric-unit">(mg/dL)</span></label>
+            <input type="number" step="0.1" class="num-input" data-metric-key="triglycerides">
+            <span class="metric-range-hint">Normal: under 150</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="metric-group">
+        <div class="metric-group-head">Thyroid</div>
+        <div class="metric-row-grid">
+          <div class="metric-row">
+            <label class="metric-label">TSH <span class="metric-unit">(µIU/mL)</span></label>
+            <input type="number" step="0.01" class="num-input" data-metric-key="tsh">
+            <span class="metric-range-hint">Normal: 0.4–4.0</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="metric-group">
+        <div class="metric-group-head">Kidney</div>
+        <div class="metric-row-grid">
+          <div class="metric-row">
+            <label class="metric-label">Creatinine <span class="metric-unit">(mg/dL)</span></label>
+            <input type="number" step="0.01" class="num-input" data-metric-key="creatinine">
+            <span class="metric-range-hint">Normal: 0.6–1.3</span>
+          </div>
+          <div class="metric-row">
+            <label class="metric-label">Blood Urea <span class="metric-unit">(mg/dL)</span></label>
+            <input type="number" step="0.1" class="num-input" data-metric-key="urea">
+            <span class="metric-range-hint">Normal: 15–40</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="metric-group">
+        <div class="metric-group-head">Liver</div>
+        <div class="metric-row-grid">
+          <div class="metric-row">
+            <label class="metric-label">SGOT / AST <span class="metric-unit">(U/L)</span></label>
+            <input type="number" step="0.1" class="num-input" data-metric-key="sgot">
+            <span class="metric-range-hint">Normal: under 40</span>
+          </div>
+          <div class="metric-row">
+            <label class="metric-label">SGPT / ALT <span class="metric-unit">(U/L)</span></label>
+            <input type="number" step="0.1" class="num-input" data-metric-key="sgpt">
+            <span class="metric-range-hint">Normal: under 40</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="metric-group">
+        <div class="metric-group-head">Blood Count</div>
+        <div class="metric-row-grid">
+          <div class="metric-row">
+            <label class="metric-label">Hemoglobin <span class="metric-unit">(g/dL)</span></label>
+            <input type="number" step="0.1" class="num-input" data-metric-key="hemoglobin">
+            <span class="metric-range-hint">Normal: 13–17</span>
+          </div>
+          <div class="metric-row">
+            <label class="metric-label">WBC Count <span class="metric-unit">(/µL)</span></label>
+            <input type="number" step="1" class="num-input" data-metric-key="wbc_count">
+            <span class="metric-range-hint">Normal: 4,000–11,000</span>
+          </div>
+          <div class="metric-row">
+            <label class="metric-label">Platelet Count <span class="metric-unit">(/µL)</span></label>
+            <input type="number" step="1" class="num-input" data-metric-key="platelet_count">
+            <span class="metric-range-hint">Normal: 150,000–450,000</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="metric-group">
+        <div class="metric-group-head">Vitamins</div>
+        <div class="metric-row-grid">
+          <div class="metric-row">
+            <label class="metric-label">Vitamin D <span class="metric-unit">(ng/mL)</span></label>
+            <input type="number" step="0.1" class="num-input" data-metric-key="vitamin_d">
+            <span class="metric-range-hint">Normal: 30–100</span>
+          </div>
+          <div class="metric-row">
+            <label class="metric-label">Vitamin B12 <span class="metric-unit">(pg/mL)</span></label>
+            <input type="number" step="0.1" class="num-input" data-metric-key="vitamin_b12">
+            <span class="metric-range-hint">Normal: 200–900</span>
+          </div>
+        </div>
+      </div>
+
+      <label class="field-sub-label">Other Values (optional)</label>
+      <div id="customMetricRows"></div>
+      <button type="button" class="btn-secondary" id="addCustomMetricBtn">+ Add Custom Value</button>
+
+      <div class="modal-actions">
+        <button type="button" class="btn-danger-text" id="deleteReportBtn">Delete Report</button>
+        <div class="modal-actions-right">
+          <button type="button" class="btn-secondary" id="cancelReportBtn">Cancel</button>
+          <button type="button" class="btn-primary" id="saveReportBtn">Save Changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Family Member -->
+  <div class="modal-overlay" id="memberModal">
+    <div class="modal-box" style="max-width: 420px;">
+      <h3>Add Family Member</h3>
+      <div class="form-error" id="memberFormError"></div>
+      <div class="field-item">
+        <label class="field-label">Name</label>
+        <input type="text" class="num-input" id="memberNameInput" placeholder="e.g. child's name">
+      </div>
+      <div class="field-item">
+        <label class="field-label">Relation</label>
+        <select class="field-select" id="memberRelationInput">
+          <option value="self">Self</option>
+          <option value="spouse">Spouse</option>
+          <option value="child" selected>Child</option>
+          <option value="other">Other (e.g. parent)</option>
+        </select>
+      </div>
+      <div class="modal-actions">
+        <div class="modal-actions-right">
+          <button type="button" class="btn-secondary" id="cancelMemberBtn">Cancel</button>
+          <button type="button" class="btn-primary" id="saveMemberBtn">Add Member</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-client.js"></script>
+  <script src="js/health-log/health-log-api.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script src="js/health-log/report-extraction.js"></script>
+  <script>
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+    var currentUser = null;
+    var members = [];
+    var currentMemberId = null;
+    var reports = [];
+    var editingReportId = null;
+    var editingExistingFile = null; // { file_name, storage_path } while editing
+    var viewingReportId = null;
+
+    var MAX_FILE_BYTES = 8 * 1024 * 1024;
+
+    function escapeHtml(s) {
+      return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function todayStr() {
+      return new Date().toISOString().slice(0, 10);
+    }
+
+    function formatDate(dateStr) {
+      if (!dateStr) return '';
+      var d = new Date(dateStr + 'T00:00:00');
+      return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+    }
+
+    function findMetricDef(key) {
+      var allDefs = ReportExtraction.METRIC_DEFS.concat([ReportExtraction.BP_DEF]);
+      return allDefs.find(function (d) { return d.key === key; }) || null;
+    }
+
+    /* ---- Members ---- */
+
+    async function loadMembers(selectId) {
+      members = await HealthLog.listMembers();
+      var noMembers = document.getElementById('noMembersState');
+      var body = document.getElementById('pageBody');
+
+      if (!members.length) {
+        noMembers.style.display = 'block';
+        body.style.display = 'none';
+        currentMemberId = null;
+        return;
+      }
+      noMembers.style.display = 'none';
+      body.style.display = 'block';
+
+      if (selectId && members.some(function (m) { return m.id === selectId; })) {
+        currentMemberId = selectId;
+      } else if (!currentMemberId || !members.some(function (m) { return m.id === currentMemberId; })) {
+        currentMemberId = members[0].id;
+      }
+
+      renderMemberOptions();
+      await loadReports();
+    }
+
+    function renderMemberOptions() {
+      var options = members.map(function (m) {
+        return '<option value="' + m.id + '">' + escapeHtml(m.name) + '</option>';
+      }).join('');
+      document.getElementById('memberSelect').innerHTML = options;
+      document.getElementById('memberSelect').value = currentMemberId;
+      document.getElementById('reportMemberInput').innerHTML = options;
+    }
+
+    function openMemberModal() {
+      document.getElementById('memberFormError').textContent = '';
+      document.getElementById('memberNameInput').value = '';
+      document.getElementById('memberRelationInput').value = 'child';
+      document.getElementById('memberModal').classList.add('show');
+    }
+
+    function closeMemberModal() {
+      document.getElementById('memberModal').classList.remove('show');
+    }
+
+    async function saveMember() {
+      var errEl = document.getElementById('memberFormError');
+      var name = document.getElementById('memberNameInput').value.trim();
+      if (!name) { errEl.textContent = 'Please enter a name.'; return; }
+
+      var member = await HealthLog.addMember({
+        name: name,
+        relation: document.getElementById('memberRelationInput').value
+      });
+
+      closeMemberModal();
+      await loadMembers(member.id);
+    }
+
+    /* ---- Overall Health Summary hero ---- */
+
+    function renderSummaryHero() {
+      var container = document.getElementById('heroSection');
+
+      if (!reports.length) {
+        container.innerHTML =
+          '<div class="hero-calm">' +
+            '<div class="hero-calm-left">' +
+              '<span class="hero-calm-icon">🩺</span>' +
+              '<div>' +
+                '<div class="hero-calm-title">No checkup reports yet</div>' +
+                '<div class="hero-calm-sub">Upload one below to see an overall health summary here.</div>' +
+              '</div>' +
+            '</div>' +
+          '</div>';
+        return;
+      }
+
+      var latest = reports[0];
+      var metrics = latest.medical_report_metrics || [];
+      var concerning = metrics.filter(function (m) { return m.flag === 'high' || m.flag === 'low'; });
+      var subLabel = escapeHtml(latest.report_label) + ' — ' + formatDate(latest.report_date);
+
+      if (latest.overall_status === 'concern') {
+        container.innerHTML =
+          '<div class="hero-alert">' +
+            '<div class="hero-alert-left">' +
+              '<span class="hero-alert-icon">⚠️</span>' +
+              '<div><div class="hero-alert-title">' + concerning.length + ' value(s) need attention</div><div class="hero-alert-sub">' + subLabel + '</div></div>' +
+            '</div>' +
+            '<div class="hero-alert-stats">' +
+              '<div class="hero-alert-stat"><div class="hero-alert-stat-value">' + metrics.length + '</div><div class="hero-alert-stat-label">Values Logged</div></div>' +
+              '<div class="hero-alert-stat"><div class="hero-alert-stat-value">' + concerning.length + '</div><div class="hero-alert-stat-label">Out of Range</div></div>' +
+            '</div>' +
+          '</div>';
+      } else if (latest.overall_status === 'attention') {
+        container.innerHTML =
+          '<div class="hero-warn">' +
+            '<div class="hero-alert-left">' +
+              '<span class="hero-alert-icon">🔎</span>' +
+              '<div><div class="hero-alert-title">' + concerning.length + ' value(s) worth watching</div><div class="hero-alert-sub">' + subLabel + '</div></div>' +
+            '</div>' +
+            '<div class="hero-alert-stats">' +
+              '<div class="hero-alert-stat"><div class="hero-alert-stat-value">' + metrics.length + '</div><div class="hero-alert-stat-label">Values Logged</div></div>' +
+              '<div class="hero-alert-stat"><div class="hero-alert-stat-value">' + concerning.length + '</div><div class="hero-alert-stat-label">Out of Range</div></div>' +
+            '</div>' +
+          '</div>';
+      } else {
+        container.innerHTML =
+          '<div class="hero-calm">' +
+            '<div class="hero-calm-left">' +
+              '<span class="hero-calm-icon">✅</span>' +
+              '<div><div class="hero-calm-title">Looking good</div><div class="hero-calm-sub">' + subLabel + '</div></div>' +
+            '</div>' +
+            '<div class="hero-calm-stats">' +
+              '<div class="hero-calm-stat"><div class="hero-calm-stat-value">' + metrics.length + '</div><div class="hero-calm-stat-label">Values Logged</div></div>' +
+            '</div>' +
+          '</div>';
+      }
+    }
+
+    /* ---- Reports list ---- */
+
+    async function loadReports() {
+      if (!currentMemberId) { reports = []; renderSummaryHero(); renderReports(); return; }
+      reports = await HealthLog.listReports(currentMemberId);
+      renderSummaryHero();
+      renderReports();
+    }
+
+    function renderReports() {
+      var empty = document.getElementById('reportsEmptyState');
+      var card = document.getElementById('reportsTableCard');
+      var list = document.getElementById('reportsList');
+
+      if (!reports.length) {
+        list.innerHTML = '';
+        empty.style.display = 'block';
+        card.style.display = 'none';
+        return;
+      }
+      empty.style.display = 'none';
+      card.style.display = 'block';
+
+      list.innerHTML = reports.map(function (r) {
+        var statusHtml = r.overall_status
+          ? '<span class="status-pill ' + r.overall_status + '">' + r.overall_status.charAt(0).toUpperCase() + r.overall_status.slice(1) + '</span>'
+          : '<span class="status-pill">No values logged</span>';
+        return '<tr data-id="' + r.id + '">' +
+          '<td>' + formatDate(r.report_date) + '</td>' +
+          '<td class="sc-name">' + escapeHtml(r.report_label) + '</td>' +
+          '<td>' + statusHtml + '</td>' +
+          '<td class="sc-dosage">' + escapeHtml(r.file_name) + '</td>' +
+          '<td class="sc-actions"><button type="button" class="btn-edit-text" data-view-report="' + r.id + '">View</button></td>' +
+        '</tr>';
+      }).join('');
+
+      Array.prototype.forEach.call(list.querySelectorAll('[data-view-report]'), function (btn) {
+        btn.addEventListener('click', function () {
+          var report = reports.find(function (r) { return r.id === btn.dataset.viewReport; });
+          if (report) openViewReportModal(report);
+        });
+      });
+    }
+
+    /* ---- Shared: metrics + overall status ---- */
+
+    function computeOverallStatus(metrics) {
+      if (!metrics.length) return { status: null, summary: null };
+      var concerning = metrics.filter(function (m) { return m.flag === 'high' || m.flag === 'low'; });
+      if (!concerning.length) return { status: 'good', summary: 'All ' + metrics.length + ' recorded value(s) are within normal range.' };
+      var detail = concerning.map(function (m) {
+        return m.metric_label + ' (' + (m.value_text || m.value) + (m.unit ? ' ' + m.unit : '') + ', ' + m.flag + ')';
+      }).join(', ');
+      if (concerning.length <= 2) return { status: 'attention', summary: concerning.length + ' value(s) outside normal range: ' + detail + '.' };
+      return { status: 'concern', summary: concerning.length + ' values outside normal range — worth discussing with a doctor: ' + detail + '.' };
+    }
+
+    function buildMetricsFromDetected(found) {
+      var allDefs = ReportExtraction.METRIC_DEFS.concat([ReportExtraction.BP_DEF]);
+      var metrics = [];
+      allDefs.forEach(function (def) {
+        if (!(def.key in found)) return;
+        var raw = found[def.key];
+        if (def.key === ReportExtraction.BP_DEF.key) {
+          metrics.push({
+            metric_key: def.key, metric_label: def.label, value: null, value_text: String(raw), unit: def.unit,
+            normal_low: null, normal_high: null, flag: ReportExtraction.flagForBloodPressure(String(raw))
+          });
+        } else {
+          metrics.push({
+            metric_key: def.key, metric_label: def.label, value: raw, value_text: null, unit: def.unit,
+            normal_low: def.low === undefined ? null : def.low, normal_high: def.high === undefined ? null : def.high,
+            flag: ReportExtraction.flagForValue(def, raw)
+          });
+        }
+      });
+      return metrics;
+    }
+
+    /* ---- Upload Report (file only — scanning happens automatically) ---- */
+
+    function openUploadModal() {
+      document.getElementById('uploadFormError').textContent = '';
+      document.getElementById('uploadFileInput').value = '';
+      var member = members.find(function (m) { return m.id === currentMemberId; });
+      document.getElementById('uploadForMemberNote').textContent = member ? 'Uploading for ' + member.name + '.' : '';
+      document.getElementById('submitUploadBtn').disabled = false;
+      document.getElementById('submitUploadBtn').textContent = 'Upload & Scan';
+      document.getElementById('uploadModal').classList.add('show');
+    }
+
+    function closeUploadModal() {
+      document.getElementById('uploadModal').classList.remove('show');
+    }
+
+    async function submitUpload() {
+      var errEl = document.getElementById('uploadFormError');
+      var file = document.getElementById('uploadFileInput').files[0];
+      if (!file) { errEl.textContent = 'Please choose a PDF file.'; return; }
+      if (file.type !== 'application/pdf') { errEl.textContent = 'Please choose a PDF file.'; return; }
+      if (file.size > MAX_FILE_BYTES) { errEl.textContent = 'File is too large (max 8 MB).'; return; }
+      errEl.textContent = '';
+
+      var submitBtn = document.getElementById('submitUploadBtn');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Scanning…';
+
+      var extractionStatus = 'manual';
+      var metrics = [];
+      try {
+        var text = await ReportExtraction.extractTextFromPdf(file);
+        var found = ReportExtraction.parseMetricsFromText(text);
+        metrics = buildMetricsFromDetected(found);
+        extractionStatus = 'parsed';
+      } catch (err) {
+        console.error('PDF extraction failed', err);
+        extractionStatus = 'failed';
+      }
+
+      var computed = computeOverallStatus(metrics);
+
+      try {
+        var storagePath = await HealthLog.uploadReportFile(file, currentUser.id);
+        var payload = {
+          member_id: currentMemberId,
+          report_date: todayStr(),
+          report_label: 'Checkup Report — ' + formatDate(todayStr()),
+          file_name: file.name,
+          storage_path: storagePath,
+          extraction_status: extractionStatus,
+          overall_status: computed.status,
+          overall_summary: computed.summary,
+          notes: null
+        };
+        var saved = await HealthLog.addReport(payload, metrics);
+        closeUploadModal();
+        await loadReports();
+        var full = reports.find(function (r) { return r.id === saved.id; });
+        openViewReportModal(full || Object.assign({}, saved, { medical_report_metrics: metrics }));
+      } catch (err) {
+        console.error('Could not save report', err);
+        errEl.textContent = 'Could not save this report. Please try again.';
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Upload & Scan';
+      }
+    }
+
+    /* ---- View Report (the readable summary) ---- */
+
+    function openViewReportModal(report) {
+      viewingReportId = report.id;
+      document.getElementById('viewModalTitle').textContent = report.report_label;
+      document.getElementById('viewModalDate').textContent = formatDate(report.report_date);
+
+      var metrics = report.medical_report_metrics || [];
+      var statusEl = document.getElementById('viewModalStatus');
+      if (report.overall_status) {
+        statusEl.innerHTML = '<div class="view-status-card ' + report.overall_status + '">' +
+          '<span class="status-pill ' + report.overall_status + '">' + report.overall_status.charAt(0).toUpperCase() + report.overall_status.slice(1) + '</span>' +
+          '<p>' + escapeHtml(report.overall_summary || '') + '</p>' +
+        '</div>';
+      } else {
+        statusEl.innerHTML = '';
+      }
+
+      var metricsEl = document.getElementById('viewModalMetrics');
+      if (!metrics.length) {
+        metricsEl.innerHTML = '<div class="empty-state">No values detected in this scan — use Edit Values to add them manually.</div>';
+      } else {
+        var groups = {};
+        var order = [];
+        metrics.forEach(function (m) {
+          var def = findMetricDef(m.metric_key);
+          var groupName = def ? def.group : 'Other Values';
+          if (!groups[groupName]) { groups[groupName] = []; order.push(groupName); }
+          groups[groupName].push(m);
+        });
+        metricsEl.innerHTML = order.map(function (g) {
+          return '<div class="view-metric-group">' +
+            '<div class="view-metric-group-head">' + escapeHtml(g) + '</div>' +
+            groups[g].map(function (m) {
+              var val = m.value_text != null ? m.value_text : m.value;
+              return '<div class="view-metric-row">' +
+                '<span class="view-metric-name">' + escapeHtml(m.metric_label) + '</span>' +
+                '<span>' +
+                  '<span class="view-metric-value">' + escapeHtml(String(val)) + (m.unit ? ' ' + escapeHtml(m.unit) : '') + '</span>' +
+                  (m.flag ? '<span class="flag-pill ' + m.flag + '">' + m.flag + '</span>' : '') +
+                '</span>' +
+              '</div>';
+            }).join('') +
+          '</div>';
+        }).join('');
+      }
+
+      document.getElementById('viewModal').classList.add('show');
+    }
+
+    function closeViewModal() {
+      document.getElementById('viewModal').classList.remove('show');
+    }
+
+    async function downloadViewedFile() {
+      var report = reports.find(function (r) { return r.id === viewingReportId; });
+      if (!report) return;
+      var blob = await HealthLog.downloadReportFile(report);
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = report.file_name;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    async function deleteViewedReport() {
+      if (!viewingReportId) return;
+      if (!confirm('Delete this report and its uploaded file? This can\'t be undone.')) return;
+      var report = reports.find(function (r) { return r.id === viewingReportId; });
+      if (report) await HealthLog.deleteReport(report);
+      closeViewModal();
+      await loadReports();
+    }
+
+    /* ---- Edit Report (correcting a scan) ---- */
+
+    function customMetricRowHtml(m) {
+      m = m || {};
+      return '<div class="custom-metric-row">' +
+        '<input type="text" class="num-input" placeholder="Value name" data-field="label" value="' + escapeHtml(m.metric_label || '') + '">' +
+        '<input type="text" class="num-input" placeholder="Value" data-field="value" value="' + escapeHtml(m.value_text || (m.value != null ? m.value : '') || '') + '">' +
+        '<input type="text" class="num-input" placeholder="Unit" data-field="unit" value="' + escapeHtml(m.unit || '') + '">' +
+        '<button type="button" class="row-remove-btn" aria-label="Remove value">×</button>' +
+      '</div>';
+    }
+
+    function addCustomMetricRow(m) {
+      var container = document.getElementById('customMetricRows');
+      var wrap = document.createElement('div');
+      wrap.innerHTML = customMetricRowHtml(m);
+      var row = wrap.firstChild;
+      row.querySelector('.row-remove-btn').addEventListener('click', function () { row.remove(); });
+      container.appendChild(row);
+    }
+
+    function clearMetricFields() {
+      Array.prototype.forEach.call(document.querySelectorAll('[data-metric-key]'), function (input) { input.value = ''; });
+      document.getElementById('customMetricRows').innerHTML = '';
+    }
+
+    function populateMetricFieldsFromSaved(metricRows) {
+      var allDefKeys = ReportExtraction.METRIC_DEFS.map(function (d) { return d.key; }).concat([ReportExtraction.BP_DEF.key]);
+      (metricRows || []).forEach(function (m) {
+        if (allDefKeys.indexOf(m.metric_key) !== -1) {
+          var input = document.querySelector('[data-metric-key="' + m.metric_key + '"]');
+          if (input) input.value = m.value_text != null ? m.value_text : (m.value != null ? m.value : '');
+        } else {
+          addCustomMetricRow(m);
+        }
+      });
+    }
+
+    function collectMetrics() {
+      var metrics = [];
+      var allDefs = ReportExtraction.METRIC_DEFS.concat([ReportExtraction.BP_DEF]);
+
+      allDefs.forEach(function (def) {
+        var input = document.querySelector('[data-metric-key="' + def.key + '"]');
+        if (!input) return;
+        var raw = input.value.trim();
+        if (!raw) return;
+
+        if (def.key === ReportExtraction.BP_DEF.key) {
+          metrics.push({
+            metric_key: def.key, metric_label: def.label, value: null, value_text: raw, unit: def.unit,
+            normal_low: null, normal_high: null, flag: ReportExtraction.flagForBloodPressure(raw)
+          });
+        } else {
+          var num = parseFloat(raw);
+          metrics.push({
+            metric_key: def.key, metric_label: def.label,
+            value: isNaN(num) ? null : num, value_text: isNaN(num) ? raw : null, unit: def.unit,
+            normal_low: def.low === undefined ? null : def.low, normal_high: def.high === undefined ? null : def.high,
+            flag: isNaN(num) ? null : ReportExtraction.flagForValue(def, num)
+          });
+        }
+      });
+
+      Array.prototype.forEach.call(document.querySelectorAll('#customMetricRows .custom-metric-row'), function (row) {
+        var label = row.querySelector('[data-field="label"]').value.trim();
+        var value = row.querySelector('[data-field="value"]').value.trim();
+        var unit = row.querySelector('[data-field="unit"]').value.trim();
+        if (!label || !value) return;
+        var num = parseFloat(value);
+        metrics.push({
+          metric_key: 'custom_' + label.toLowerCase().replace(/[^a-z0-9]+/g, '_'),
+          metric_label: label, value: isNaN(num) ? null : num, value_text: isNaN(num) ? value : null,
+          unit: unit || null, normal_low: null, normal_high: null, flag: null
+        });
+      });
+
+      return metrics;
+    }
+
+    function openEditReportModal(report) {
+      editingReportId = report.id;
+      editingExistingFile = { file_name: report.file_name, storage_path: report.storage_path };
+
+      document.getElementById('reportFormError').textContent = '';
+      document.getElementById('reportMemberInput').value = report.member_id;
+      document.getElementById('reportDateInput').value = report.report_date;
+      document.getElementById('reportLabelInput').value = report.report_label || '';
+      document.getElementById('reportNotesInput').value = report.notes || '';
+      document.getElementById('existingFileName').textContent = '📎 ' + report.file_name;
+      clearMetricFields();
+      populateMetricFieldsFromSaved(report.medical_report_metrics);
+      document.getElementById('reportModal').classList.add('show');
+    }
+
+    function closeReportModal() {
+      document.getElementById('reportModal').classList.remove('show');
+    }
+
+    async function saveReport() {
+      var errEl = document.getElementById('reportFormError');
+      var memberId = document.getElementById('reportMemberInput').value;
+      var reportDate = document.getElementById('reportDateInput').value;
+      var label = document.getElementById('reportLabelInput').value.trim() || 'Checkup Report';
+      if (!reportDate) { errEl.textContent = 'Please enter a report date.'; return; }
+
+      var metrics = collectMetrics();
+      var computed = computeOverallStatus(metrics);
+
+      var payload = {
+        member_id: memberId,
+        report_date: reportDate,
+        report_label: label,
+        notes: document.getElementById('reportNotesInput').value.trim() || null,
+        overall_status: computed.status,
+        overall_summary: computed.summary
+      };
+
+      try {
+        await HealthLog.updateReport(editingReportId, payload, metrics);
+      } catch (err) {
+        console.error('Could not save report', err);
+        errEl.textContent = 'Could not save this report. Please try again.';
+        return;
+      }
+
+      closeReportModal();
+      await loadMembers(payload.member_id);
+    }
+
+    async function deleteReport() {
+      if (!editingReportId) return;
+      if (!confirm('Delete this report and its uploaded file? This can\'t be undone.')) return;
+      var report = reports.find(function (r) { return r.id === editingReportId; });
+      if (report) await HealthLog.deleteReport(report);
+      closeReportModal();
+      await loadReports();
+    }
+
+    async function downloadExistingFile() {
+      if (!editingExistingFile) return;
+      var blob = await HealthLog.downloadReportFile(editingExistingFile);
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = editingExistingFile.file_name;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    (async function init() {
+      currentUser = await requireAuth('index.html#login');
+      if (!currentUser) return;
+
+      document.getElementById('memberSelect').addEventListener('change', function () {
+        currentMemberId = this.value;
+        loadReports();
+      });
+
+      document.getElementById('addMemberBtn').addEventListener('click', openMemberModal);
+      document.getElementById('addFirstMemberLink').addEventListener('click', function (e) { e.preventDefault(); openMemberModal(); });
+      document.getElementById('cancelMemberBtn').addEventListener('click', closeMemberModal);
+      document.getElementById('saveMemberBtn').addEventListener('click', saveMember);
+      document.getElementById('memberModal').addEventListener('click', function (e) { if (e.target === this) closeMemberModal(); });
+
+      document.getElementById('addReportBtn').addEventListener('click', openUploadModal);
+      document.getElementById('cancelUploadBtn').addEventListener('click', closeUploadModal);
+      document.getElementById('submitUploadBtn').addEventListener('click', submitUpload);
+      document.getElementById('uploadModal').addEventListener('click', function (e) { if (e.target === this) closeUploadModal(); });
+
+      document.getElementById('closeViewBtn').addEventListener('click', closeViewModal);
+      document.getElementById('viewDownloadBtn').addEventListener('click', downloadViewedFile);
+      document.getElementById('viewDeleteBtn').addEventListener('click', deleteViewedReport);
+      document.getElementById('viewEditBtn').addEventListener('click', function () {
+        var report = reports.find(function (r) { return r.id === viewingReportId; });
+        closeViewModal();
+        if (report) openEditReportModal(report);
+      });
+      document.getElementById('viewModal').addEventListener('click', function (e) { if (e.target === this) closeViewModal(); });
+
+      document.getElementById('addCustomMetricBtn').addEventListener('click', function () { addCustomMetricRow(); });
+      document.getElementById('cancelReportBtn').addEventListener('click', closeReportModal);
+      document.getElementById('saveReportBtn').addEventListener('click', saveReport);
+      document.getElementById('deleteReportBtn').addEventListener('click', deleteReport);
+      document.getElementById('downloadReportBtn').addEventListener('click', downloadExistingFile);
+      document.getElementById('reportModal').addEventListener('click', function (e) { if (e.target === this) closeReportModal(); });
+
+      await loadMembers();
+    })();
+  </script>
+</body>
+</html>

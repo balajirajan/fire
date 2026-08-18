@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Monthly Overview - FinFlow</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f8fafc;
+      color: #0f172a;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    a, button { color: inherit; text-decoration: none; font-family: inherit; }
+
+    .app-shell { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
+    @media (max-width: 860px) { .app-shell { grid-template-columns: 1fr; } .sidebar { display: none; } }
+
+    /* Sidebar */
+    .sidebar { background: #ffffff; border-right: 1px solid #e2e8f0; display: flex; flex-direction: column; padding: 1.5rem 1.25rem; }
+    .sidebar-logo { display: flex; align-items: center; gap: 0.65rem; font-size: 1.1rem; font-weight: 800; margin-bottom: 2rem; padding: 0 0.25rem; }
+    .sidebar-logo-icon { width: 30px; height: 30px; background: linear-gradient(135deg, #0ea5e9, #10b981); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; flex-shrink: 0; }
+    .sidebar-nav { display: flex; flex-direction: column; gap: 0.25rem; }
+    .sidebar-nav a, .sidebar-nav .nav-group-head { display: flex; align-items: center; gap: 0.75rem; padding: 0.7rem 0.75rem; border-radius: 0.6rem; font-size: 0.9rem; font-weight: 500; color: #364752; }
+    .sidebar-nav a:hover, .sidebar-nav .nav-group-head:hover { background: #f1f5f9; }
+    .sidebar-nav a.active { background: #0f172a; color: #ffffff; font-weight: 600; }
+    .sidebar-nav a.active .nav-chevron { color: rgba(255,255,255,0.6); }
+    .sidebar-nav .nav-group-head.open { background: #f1f5f9; font-weight: 700; }
+    .sidebar-nav .nav-group-head.active { background: #0f172a; color: #ffffff; font-weight: 600; }
+    .sidebar-nav .nav-group-head.active .nav-chevron { color: rgba(255,255,255,0.6); }
+    .sidebar-nav .nav-icon { font-size: 1rem; width: 20px; text-align: center; flex-shrink: 0; }
+    .sidebar-nav .nav-label { flex: 1; }
+    .sidebar-nav .nav-chevron { color: #94a3b8; font-size: 0.85rem; }
+    .sidebar-subnav { display: flex; flex-direction: column; gap: 0.2rem; padding-left: 1.6rem; margin: 0.15rem 0 0.3rem; }
+    .sidebar-subnav a { display: flex; align-items: center; gap: 0.6rem; padding: 0.55rem 0.6rem; border-radius: 0.5rem; font-size: 0.85rem; font-weight: 500; color: #364752; }
+    .sidebar-subnav a:hover { background: #f1f5f9; }
+    .sidebar-subnav a.active { background: #0f172a; color: #fff; font-weight: 600; }
+    .sidebar-subnav a.disabled { color: #cbd5e1; cursor: default; pointer-events: none; display: flex; justify-content: space-between; }
+    .soon-pill { font-size: 0.62rem; font-weight: 700; color: #8b5cf6; background: rgba(139,92,246,0.12); padding: 0.15rem 0.5rem; border-radius: 999px; }
+    .sidebar-spacer { flex: 1; }
+    .feedback-card { background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 0.9rem; padding: 1.1rem; margin-top: 1.5rem; }
+    .feedback-card .fc-icon { width: 32px; height: 32px; border-radius: 0.6rem; background: #eef2f7; display: flex; align-items: center; justify-content: center; font-size: 0.95rem; margin-bottom: 0.6rem; }
+    .feedback-card strong { display: block; font-size: 0.85rem; margin-bottom: 0.3rem; }
+    .feedback-card p { font-size: 0.78rem; color: #64748b; line-height: 1.5; margin-bottom: 0.85rem; }
+    .feedback-card a { display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; width: 100%; padding: 0.55rem; border: 1px solid #cbd5e1; border-radius: 0.5rem; font-size: 0.8rem; font-weight: 600; color: #364752; }
+    .feedback-card a:hover { border-color: #10b981; color: #10b981; }
+
+    /* Main */
+    .main { padding: 1.5rem 2.5rem 3rem; min-width: 0; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; padding-bottom: 1.25rem; border-bottom: 1px solid #e2e8f0; margin-bottom: 1.5rem; }
+    .topbar h1 { font-size: 1.4rem; font-weight: 700; }
+    .topbar-right { display: flex; align-items: center; gap: 0.85rem; }
+    .language-selector { display: flex; align-items: center; gap: 0.5rem; background: #ffffff; padding: 0.5rem 0.9rem; border-radius: 0.5rem; color: #51636f; border: 1px solid #e2e8f0; cursor: pointer; font-size: 0.85rem; }
+    .user-menu { position: relative; list-style: none; }
+    .user-menu > summary { cursor: pointer; list-style: none; width: 34px; height: 34px; border-radius: 50%; background: #eef2f7; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; font-size: 1rem; }
+    .user-menu > summary::-webkit-details-marker { display: none; }
+    .user-menu-panel { position: absolute; top: calc(100% + 0.6rem); right: 0; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 0.75rem; box-shadow: 0 10px 30px rgba(15,23,42,0.12); padding: 0.4rem; min-width: 150px; z-index: 20; }
+    .user-menu-panel a { display: block; padding: 0.55rem 0.7rem; border-radius: 0.5rem; font-size: 0.85rem; color: #364752; font-weight: 500; }
+    .user-menu-panel a:hover { background: #f1f5f9; color: #10b981; }
+
+    .page-head { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem; }
+    .page-head h2 { font-size: 1.6rem; font-weight: 800; margin-bottom: 0.3rem; }
+    .page-head p { color: #64748b; font-size: 0.9rem; }
+
+    .month-nav { display: flex; align-items: center; gap: 0.75rem; }
+    .month-nav button { width: 32px; height: 32px; border-radius: 0.5rem; border: 1px solid #cbd5e1; background: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; }
+    .month-nav button:hover { border-color: #10b981; color: #10b981; }
+    .month-nav .month-label { font-size: 1.05rem; font-weight: 700; min-width: 110px; text-align: center; }
+
+    .load-error { display: none; padding: 0.85rem 1.3rem; font-size: 0.8rem; color: #991b1b; background: #fef2f2; border: 1px solid #fecaca; border-radius: 0.75rem; margin-bottom: 1rem; }
+    .load-error.show { display: block; }
+
+    /* Hero */
+    .hero-card {
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      border-radius: 1.25rem;
+      padding: 1.75rem 2rem;
+      color: #fff;
+      margin-bottom: 1.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.25rem;
+    }
+    .hero-label { font-size: 0.85rem; color: #94a3b8; font-weight: 600; margin-bottom: 0.4rem; }
+    .hero-value { font-size: 2.4rem; font-weight: 800; }
+    .hero-badge { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.6rem 1.1rem; border-radius: 0.7rem; font-size: 0.88rem; font-weight: 700; }
+    .hero-badge.ok { background: rgba(16,185,129,0.18); color: #6ee7b7; }
+    .hero-badge.short { background: rgba(239,68,68,0.18); color: #fca5a5; }
+    .hero-badge-sub { font-size: 0.75rem; font-weight: 500; opacity: 0.85; margin-top: 0.3rem; }
+
+    /* Metric cards */
+    .metric-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
+    @media (max-width: 900px) { .metric-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 600px) { .metric-grid { grid-template-columns: 1fr; } }
+    .metric-card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 1rem; padding: 1.1rem 1.3rem; box-shadow: 0 4px 16px rgba(15,23,42,0.03); }
+    .metric-icon { font-size: 1.1rem; margin-bottom: 0.5rem; }
+    .metric-label { font-size: 0.78rem; font-weight: 600; color: #64748b; margin-bottom: 0.3rem; }
+    .metric-value { font-size: 1.35rem; font-weight: 800; }
+    .metric-sub { font-size: 0.75rem; color: #94a3b8; margin-top: 0.3rem; }
+    .metric-sub.pos { color: #059669; font-weight: 700; }
+    .metric-sub.neg { color: #dc2626; font-weight: 700; }
+
+    /* Charts */
+    .chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
+    @media (max-width: 900px) { .chart-grid { grid-template-columns: 1fr; } }
+    .chart-card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 1.1rem; padding: 1.5rem; box-shadow: 0 4px 16px rgba(15,23,42,0.03); }
+    .chart-card.full { grid-column: 1 / -1; }
+    .chart-title { font-size: 0.95rem; font-weight: 700; margin-bottom: 1.1rem; }
+    .chart-empty { text-align: center; color: #94a3b8; font-size: 0.85rem; padding: 2rem 0; }
+
+    .donut-row { display: flex; align-items: center; gap: 1.75rem; flex-wrap: wrap; }
+    .donut-svg { width: 160px; height: 160px; flex-shrink: 0; }
+    .donut-legend { flex: 1; min-width: 180px; display: flex; flex-direction: column; gap: 0.55rem; }
+    .donut-legend-row { display: flex; align-items: center; justify-content: space-between; font-size: 0.82rem; gap: 0.75rem; }
+    .donut-legend-name { display: flex; align-items: center; gap: 0.5rem; color: #364752; }
+    .donut-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+    .donut-legend-val { font-weight: 700; color: #0f172a; white-space: nowrap; }
+
+    .bar-chart { display: flex; flex-direction: column; gap: 1rem; }
+    .bar-row-label { display: flex; justify-content: space-between; font-size: 0.83rem; font-weight: 600; color: #364752; margin-bottom: 0.4rem; }
+    .bar-track { height: 14px; border-radius: 999px; background: #f1f5f9; overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: 999px; }
+
+    .invest-compare { display: flex; flex-direction: column; gap: 1.1rem; }
+    .invest-row-label { display: flex; justify-content: space-between; font-size: 0.83rem; font-weight: 600; color: #364752; margin-bottom: 0.4rem; }
+
+    .toast { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(20px); background: #0f172a; color: #fff; padding: 0.75rem 1.25rem; border-radius: 0.6rem; font-size: 0.85rem; opacity: 0; pointer-events: none; transition: opacity 0.2s, transform 0.2s; z-index: 200; }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a href="dashboard.html" class="sidebar-logo">
+        <div class="sidebar-logo-icon">💰</div>
+        <span>FinFlow</span>
+      </a>
+
+      <nav class="sidebar-nav">
+        <a href="dashboard.html">
+          <span class="nav-icon">▦</span>
+          <span class="nav-label">Dashboard</span>
+        </a>
+        <a href="fire-plan.html">
+          <span class="nav-icon">🧭</span>
+          <span class="nav-label">FIRE Plan</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="net-worth.html">
+          <span class="nav-icon">📈</span>
+          <span class="nav-label">Networth</span>
+          <span class="nav-chevron">›</span>
+        </a>
+
+        <a href="money-required.html" class="nav-group-head open active">
+          <span class="nav-icon">🪴</span>
+          <span class="nav-label">Expenses</span>
+          <span class="nav-chevron">⌄</span>
+        </a>
+        <div class="sidebar-subnav">
+          <a href="expenses.html">
+            <span class="nav-icon">🧮</span>
+            <span class="nav-label">Monthly Expenses</span>
+          </a>
+          <a href="income.html">
+            <span class="nav-icon">💵</span>
+            <span class="nav-label">Income</span>
+          </a>
+          <a href="loans.html">
+            <span class="nav-icon">📉</span>
+            <span class="nav-label">Loan / EMI</span>
+          </a>
+          <a href="bank-balances.html">
+            <span class="nav-icon">🏦</span>
+            <span class="nav-label">Bank Balances</span>
+          </a>
+        </div>
+
+        <a href="expense-quick-add.html">
+          <span class="nav-icon">⚡</span>
+          <span class="nav-label">Daily Expenses Tracker</span>
+        </a>
+
+        <a href="tax-planning.html">
+          <span class="nav-icon">🧾</span>
+          <span class="nav-label">Tax Planning</span>
+        </a>
+        <a href="insurance-tracker.html">
+          <span class="nav-icon">🛡️</span>
+          <span class="nav-label">Insurance Tracker</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="reminders.html">
+          <span class="nav-icon">🔔</span>
+          <span class="nav-label">Reminders</span>
+        </a>
+        <a href="vault-overview.html">
+          <span class="nav-icon">🔒</span>
+          <span class="nav-label">Document Vault</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="split/dashboard.html">
+          <span class="nav-icon">💸</span>
+          <span class="nav-label">SplitExpenses(SplitWise)</span>
+        </a>
+        <a href="life-expectancy.html">
+          <span class="nav-icon">❤️</span>
+          <span class="nav-label">Health</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="astrology.html">
+          <span class="nav-icon">🔮</span>
+          <span class="nav-label">Spiritual</span>
+        </a>
+        <a href="#">
+          <span class="nav-icon">⚙️</span>
+          <span class="nav-label">Settings</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-spacer"></div>
+
+      <div class="feedback-card">
+        <div class="fc-icon">💬</div>
+        <strong>Got feedback?</strong>
+        <p>Have an idea or found a bug? We read every message.</p>
+        <a href="mailto:hello@finflow.app">✉ Contact Us</a>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <h1>Monthly Overview</h1>
+        <div class="topbar-right">
+          <div class="language-selector">🌐 English ▾</div>
+          <details class="user-menu">
+            <summary>👤</summary>
+            <div class="user-menu-panel">
+              <a href="#">Settings</a>
+              <a href="#" onclick="signOutAndRedirect('index.html'); return false;">Log Out</a>
+            </div>
+          </details>
+        </div>
+      </div>
+
+      <div class="page-head">
+        <div>
+          <h2>Monthly Overview</h2>
+          <p>A live snapshot pulled from Expenses, Income, Loan/EMI, Bank Balances and Investments.</p>
+        </div>
+        <div class="month-nav">
+          <button type="button" onclick="shiftMonth(-1)" aria-label="Previous month">‹</button>
+          <span class="month-label" id="monthLabel">Aug 2026</span>
+          <button type="button" onclick="shiftMonth(1)" aria-label="Next month">›</button>
+        </div>
+      </div>
+
+      <p class="load-error" id="loadError"></p>
+
+      <div class="hero-card">
+        <div>
+          <div class="hero-label">💡 Money Required This Month</div>
+          <div class="hero-value" id="heroRequired">₹0</div>
+          <div class="hero-badge-sub">Total Expenses + Loan/EMI liability for the month</div>
+        </div>
+        <div class="hero-badge ok" id="heroBadge">✅ Covered</div>
+      </div>
+
+      <div class="metric-grid">
+        <div class="metric-card">
+          <div class="metric-icon">🧾</div>
+          <div class="metric-label">Total Expenses This Month</div>
+          <div class="metric-value" id="mExpenses">₹0</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-icon">📉</div>
+          <div class="metric-label">Liability (EMI) This Month</div>
+          <div class="metric-value" id="mLoans">₹0</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-icon">💵</div>
+          <div class="metric-label">Income This Month</div>
+          <div class="metric-value" id="mIncome">₹0</div>
+          <div class="metric-sub" id="mIncomeSub">—</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-icon">🏦</div>
+          <div class="metric-label">Total Cash in Bank</div>
+          <div class="metric-value" id="mBank">₹0</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-icon">📊</div>
+          <div class="metric-label">Total Investment</div>
+          <div class="metric-value" id="mInvestCurrent">₹0</div>
+          <div class="metric-sub" id="mInvestSub">Invested ₹0</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-icon">🎯</div>
+          <div class="metric-label">Net Position This Month</div>
+          <div class="metric-value" id="mNet">₹0</div>
+          <div class="metric-sub" id="mNetSub">Income − Money Required</div>
+        </div>
+      </div>
+
+      <div class="chart-grid">
+        <div class="chart-card">
+          <div class="chart-title">📂 Expense Breakdown by Category</div>
+          <div id="expenseChartWrap"><p class="chart-empty">No expenses entered for this month yet.</p></div>
+        </div>
+
+        <div class="chart-card">
+          <div class="chart-title">⚖️ Income vs Expenses vs Liability</div>
+          <div class="bar-chart" id="flowChartWrap"></div>
+        </div>
+
+        <div class="chart-card full">
+          <div class="chart-title">📊 Investments: Invested vs Current Value</div>
+          <div class="invest-compare" id="investChartWrap"></div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-client.js"></script>
+  <script>
+    var monthLabels = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    var currentYear = 2026;
+    var currentMonthIdx = 7; // August
+
+    var CATEGORY_COLORS = ['#f59e0b', '#0ea5e9', '#10b981', '#8b5cf6', '#ef4444', '#f472b6', '#14b8a6', '#eab308', '#6366f1', '#84cc16'];
+
+    function fmtRupee(n, compact) {
+      var amount = Math.round(Number(n) || 0);
+      if (compact) {
+        var abs = Math.abs(amount);
+        if (abs >= 10000000) return '₹' + Number((abs / 10000000).toFixed(2)).toString() + ' Cr';
+        if (abs >= 100000) return '₹' + Number((abs / 100000).toFixed(2)).toString() + ' L';
+      }
+      var digits = String(Math.abs(amount));
+      var last3 = digits.slice(-3);
+      var rest = digits.slice(0, -3);
+      var restFormatted = rest.replace(/\B(?=(\d{2})+(?!\d))/g, ',');
+      var out = rest ? restFormatted + ',' + last3 : last3;
+      return (amount < 0 ? '-' : '') + '₹' + out;
+    }
+
+    function fmtPct(n) {
+      if (n === null || !isFinite(n)) return '—';
+      return (n > 0 ? '+' : '') + n.toFixed(2) + '%';
+    }
+
+    function escapeHtml(s) {
+      return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function showLoadError(prefix, error) {
+      console.error(prefix, error);
+      var el = document.getElementById('loadError');
+      if (!el) return;
+      el.textContent = '⚠️ ' + prefix + ': ' + (error && error.message ? error.message : String(error)) +
+        (error && error.code ? ' (code ' + error.code + ')' : '');
+      el.classList.add('show');
+    }
+
+    function clearLoadError() {
+      var el = document.getElementById('loadError');
+      if (el) { el.textContent = ''; el.classList.remove('show'); }
+    }
+
+    var toastTimer = null;
+    function showToast(msg) {
+      var toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(function () { toast.classList.remove('show'); }, 2600);
+    }
+
+    /* ---- Data loading — pulls this month's rows across every Budgeting
+       section (expenses/income/loans/bank/portfolio/crypto) plus the flat
+       Other Investments table, then buckets them client-side. ---- */
+
+    async function loadMonthData() {
+      var monthKey = currentYear + '-' + String(currentMonthIdx + 1).padStart(2, '0');
+
+      var { data: groupRows, error: gErr } = await supabaseClient.from('expense_groups').select('id, section, name');
+      if (gErr) { showLoadError('Could not load categories', gErr); return null; }
+
+      var { data: itemRows, error: iErr } = await supabaseClient.from('expense_items').select('id, group_id');
+      if (iErr) { showLoadError('Could not load line items', iErr); return null; }
+
+      var { data: gridRows, error: amErr } = await supabaseClient.from('expense_grid').select('item_id, amount, current_value').eq('month', monthKey);
+      if (amErr) { showLoadError('Could not load amounts', amErr); return null; }
+
+      clearLoadError();
+
+      var groupById = {};
+      (groupRows || []).forEach(function (g) { groupById[g.id] = g; });
+      var itemById = {};
+      (itemRows || []).forEach(function (it) { itemById[it.id] = it; });
+
+      var totals = { expenses: 0, loans: 0, income: 0, bank: 0, invested: 0, current: 0 };
+      var expenseByGroup = {};
+
+      (gridRows || []).forEach(function (row) {
+        var item = itemById[row.item_id];
+        if (!item) return;
+        var group = groupById[item.group_id];
+        if (!group) return;
+        var amt = Number(row.amount) || 0;
+        var cur = Number(row.current_value) || 0;
+
+        if (group.section === 'expenses') {
+          totals.expenses += amt;
+          expenseByGroup[group.name] = (expenseByGroup[group.name] || 0) + amt;
+        } else if (group.section === 'loans') {
+          totals.loans += amt;
+        } else if (group.section === 'income') {
+          totals.income += amt;
+        } else if (group.section === 'bank') {
+          totals.bank += amt;
+        } else if (group.section === 'portfolio' || group.section === 'crypto') {
+          totals.invested += amt;
+          totals.current += cur;
+        }
+      });
+
+      var { data: otherInv, error: oErr } = await supabaseClient.from('other_investments').select('invested, current_value');
+      if (oErr) { showLoadError('Could not load other investments', oErr); return null; }
+      (otherInv || []).forEach(function (row) {
+        totals.invested += Number(row.invested) || 0;
+        totals.current += Number(row.current_value) || 0;
+      });
+
+      return { totals: totals, expenseByGroup: expenseByGroup };
+    }
+
+    /* ---- Chart builders ---- */
+
+    function buildDonutSvg(segments, size, strokeW) {
+      var total = segments.reduce(function (s, d) { return s + d.value; }, 0);
+      var r = (size - strokeW) / 2;
+      var cx = size / 2, cy = size / 2;
+      var circumference = 2 * Math.PI * r;
+      var offset = 0;
+
+      var svg = '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="#f1f5f9" stroke-width="' + strokeW + '"/>';
+      segments.forEach(function (d) {
+        if (!d.value) return;
+        var frac = total ? d.value / total : 0;
+        var len = circumference * frac;
+        svg += '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="' + d.color + '" stroke-width="' + strokeW + '" ' +
+          'stroke-dasharray="' + len + ' ' + circumference + '" stroke-dashoffset="' + (-offset) + '" transform="rotate(-90 ' + cx + ' ' + cy + ')"/>';
+        offset += len;
+      });
+      return '<svg viewBox="0 0 ' + size + ' ' + size + '" class="donut-svg">' + svg + '</svg>';
+    }
+
+    function renderExpenseChart(expenseByGroup) {
+      var wrap = document.getElementById('expenseChartWrap');
+      var names = Object.keys(expenseByGroup).sort(function (a, b) { return expenseByGroup[b] - expenseByGroup[a]; });
+
+      if (names.length === 0) {
+        wrap.innerHTML = '<p class="chart-empty">No expenses entered for this month yet.</p>';
+        return;
+      }
+
+      var segments = names.map(function (name, i) {
+        return { label: name, value: expenseByGroup[name], color: CATEGORY_COLORS[i % CATEGORY_COLORS.length] };
+      });
+      var total = segments.reduce(function (s, d) { return s + d.value; }, 0);
+
+      var legend = segments.map(function (d) {
+        var pct = total ? Math.round(d.value / total * 100) : 0;
+        return '<div class="donut-legend-row">' +
+          '<span class="donut-legend-name"><span class="donut-dot" style="background:' + d.color + ';"></span>' + escapeHtml(d.label) + '</span>' +
+          '<span class="donut-legend-val">' + fmtRupee(d.value, true) + ' (' + pct + '%)</span>' +
+          '</div>';
+      }).join('');
+
+      wrap.innerHTML = '<div class="donut-row">' + buildDonutSvg(segments, 160, 26) + '<div class="donut-legend">' + legend + '</div></div>';
+    }
+
+    function renderFlowChart(totals) {
+      var wrap = document.getElementById('flowChartWrap');
+      var rows = [
+        { label: 'Income', value: totals.income, color: '#10b981' },
+        { label: 'Expenses', value: totals.expenses, color: '#f59e0b' },
+        { label: 'Liability (EMI)', value: totals.loans, color: '#ef4444' }
+      ];
+      var max = Math.max(totals.income, totals.expenses, totals.loans, 1);
+
+      wrap.innerHTML = rows.map(function (r) {
+        var pct = Math.max(Math.round(r.value / max * 100), r.value > 0 ? 3 : 0);
+        return '<div>' +
+          '<div class="bar-row-label"><span>' + r.label + '</span><span>' + fmtRupee(r.value, true) + '</span></div>' +
+          '<div class="bar-track"><div class="bar-fill" style="width:' + pct + '%;background:' + r.color + ';"></div></div>' +
+          '</div>';
+      }).join('');
+    }
+
+    function renderInvestChart(totals) {
+      var wrap = document.getElementById('investChartWrap');
+      if (!totals.invested && !totals.current) {
+        wrap.innerHTML = '<p class="chart-empty">No investment data entered for this month yet.</p>';
+        return;
+      }
+      var max = Math.max(totals.invested, totals.current, 1);
+      var gainPct = totals.invested ? (totals.current - totals.invested) / totals.invested * 100 : null;
+      var gainColor = gainPct === null ? '#94a3b8' : (gainPct >= 0 ? '#10b981' : '#ef4444');
+
+      var investedPct = Math.max(Math.round(totals.invested / max * 100), totals.invested > 0 ? 3 : 0);
+      var currentPct = Math.max(Math.round(totals.current / max * 100), totals.current > 0 ? 3 : 0);
+
+      wrap.innerHTML =
+        '<div>' +
+          '<div class="invest-row-label"><span>Invested</span><span>' + fmtRupee(totals.invested, true) + '</span></div>' +
+          '<div class="bar-track"><div class="bar-fill" style="width:' + investedPct + '%;background:#94a3b8;"></div></div>' +
+        '</div>' +
+        '<div>' +
+          '<div class="invest-row-label"><span>Current Value</span><span>' + fmtRupee(totals.current, true) + ' <span style="color:' + gainColor + ';">(' + fmtPct(gainPct) + ')</span></span></div>' +
+          '<div class="bar-track"><div class="bar-fill" style="width:' + currentPct + '%;background:' + gainColor + ';"></div></div>' +
+        '</div>';
+    }
+
+    /* ---- Main render ---- */
+
+    async function render() {
+      document.getElementById('monthLabel').textContent = monthLabels[currentMonthIdx] + ' ' + currentYear;
+
+      var data = await loadMonthData();
+      if (!data) return;
+
+      var totals = data.totals;
+      var moneyRequired = totals.expenses + totals.loans;
+      var net = totals.income - moneyRequired;
+      var investGainPct = totals.invested ? (totals.current - totals.invested) / totals.invested * 100 : null;
+
+      document.getElementById('heroRequired').textContent = fmtRupee(moneyRequired);
+      var badge = document.getElementById('heroBadge');
+      if (net >= 0) {
+        badge.className = 'hero-badge ok';
+        badge.textContent = '✅ Covered — ' + fmtRupee(net, true) + ' surplus';
+      } else {
+        badge.className = 'hero-badge short';
+        badge.textContent = '⚠️ Shortfall of ' + fmtRupee(Math.abs(net), true);
+      }
+
+      document.getElementById('mExpenses').textContent = fmtRupee(totals.expenses, true);
+      document.getElementById('mLoans').textContent = fmtRupee(totals.loans, true);
+      document.getElementById('mIncome').textContent = fmtRupee(totals.income, true);
+      document.getElementById('mIncomeSub').textContent = totals.income >= moneyRequired
+        ? 'Covers this month\'s requirement'
+        : 'Short by ' + fmtRupee(moneyRequired - totals.income, true);
+      document.getElementById('mIncomeSub').className = 'metric-sub ' + (totals.income >= moneyRequired ? 'pos' : 'neg');
+
+      document.getElementById('mBank').textContent = fmtRupee(totals.bank, true);
+
+      document.getElementById('mInvestCurrent').textContent = fmtRupee(totals.current, true);
+      document.getElementById('mInvestSub').textContent = 'Invested ' + fmtRupee(totals.invested, true) + ' · ' + fmtPct(investGainPct);
+      document.getElementById('mInvestSub').className = 'metric-sub ' + (investGainPct === null ? '' : (investGainPct >= 0 ? 'pos' : 'neg'));
+
+      document.getElementById('mNet').textContent = fmtRupee(net, true);
+      document.getElementById('mNet').style.color = net >= 0 ? '#059669' : '#dc2626';
+
+      renderExpenseChart(data.expenseByGroup);
+      renderFlowChart(totals);
+      renderInvestChart(totals);
+    }
+
+    function shiftMonth(delta) {
+      currentMonthIdx += delta;
+      if (currentMonthIdx > 11) { currentMonthIdx = 0; currentYear++; }
+      if (currentMonthIdx < 0) { currentMonthIdx = 11; currentYear--; }
+      render();
+    }
+
+    (async function init() {
+      var user = await requireAuth('index.html#login');
+      if (!user) return;
+      await render();
+    })();
+  </script>
+</body>
+</html>
