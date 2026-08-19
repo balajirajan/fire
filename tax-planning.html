@@ -69,29 +69,91 @@
 
     /* Input card */
     .q-card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 1.1rem; padding: 1.6rem 1.75rem; margin-bottom: 1.25rem; box-shadow: 0 4px 16px rgba(15,23,42,0.03); }
-    .q-card-eyebrow { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #10b981; margin-bottom: 1.1rem; padding-bottom: 0.75rem; border-bottom: 1px solid #e2e8f0; }
     .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.1rem; }
     @media (max-width: 700px) { .field-grid { grid-template-columns: 1fr; } }
     .field-label { font-size: 0.83rem; font-weight: 600; color: #0f172a; margin-bottom: 0.5rem; display: block; }
     .field-note { font-size: 0.73rem; color: #94a3b8; margin-top: 0.35rem; }
-    .num-input {
+    .num-input, .select-input {
       width: 100%; padding: 0.65rem 0.8rem; border: 1px solid #cbd5e1; border-radius: 0.55rem;
-      font-size: 0.9rem; font-family: inherit; color: #0f172a;
+      font-size: 0.9rem; font-family: inherit; color: #0f172a; background: #fff;
     }
-    .num-input:focus { outline: none; border-color: #10b981; box-shadow: 0 0 0 2px rgba(16,185,129,0.15); }
+    .num-input:focus, .select-input:focus { outline: none; border-color: #10b981; box-shadow: 0 0 0 2px rgba(16,185,129,0.15); }
     .field-item { margin-bottom: 1.1rem; }
-    .checkbox-field { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.4rem; }
+    .checkbox-field { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem; }
 
-    /* Hero */
-    .tax-hero { background: linear-gradient(135deg, #0f172a, #1e293b); border-radius: 1.25rem; padding: 1.75rem 2rem; color: #fff; margin-bottom: 1.5rem; }
-    .tax-hero-compare { display: grid; grid-template-columns: 1fr auto 1fr; gap: 1.5rem; align-items: center; margin-bottom: 1.25rem; }
-    @media (max-width: 700px) { .tax-hero-compare { grid-template-columns: 1fr; } }
-    .tax-hero-regime { text-align: center; padding: 1rem; border-radius: 1rem; }
-    .tax-hero-regime.winner { background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.4); }
-    .tax-hero-regime-label { font-size: 0.75rem; color: #94a3b8; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.5rem; }
-    .tax-hero-regime-value { font-size: 1.7rem; font-weight: 800; }
-    .tax-hero-vs { font-size: 0.85rem; color: #64748b; font-weight: 700; text-align: center; }
-    .tax-hero-verdict { text-align: center; font-size: 0.95rem; font-weight: 700; color: #4ade80; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.12); }
+    .info-dot { display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; border-radius: 50%; border: 1.4px solid #94a3b8; color: #94a3b8; font-size: 0.62rem; font-weight: 700; flex-shrink: 0; cursor: help; }
+
+    /* Accordion */
+    .accordion-card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 1rem; margin-bottom: 0.75rem; box-shadow: 0 4px 16px rgba(15,23,42,0.03); overflow: hidden; }
+    .accordion-head { display: flex; align-items: center; justify-content: space-between; padding: 0.9rem 1.3rem; cursor: pointer; font-size: 0.92rem; font-weight: 800; color: #0f172a; }
+    .accordion-chevron { color: #94a3b8; font-size: 0.78rem; transition: transform 0.2s; }
+    .accordion-card.collapsed .accordion-chevron { transform: rotate(180deg); }
+    .accordion-body { padding: 0.75rem 1.3rem 1rem; border-top: 1px solid #f1f5f9; }
+    .accordion-card.collapsed .accordion-body { display: none; }
+    .accordion-body-grid { display: grid; grid-template-columns: 1fr 1fr; column-gap: 1.5rem; }
+    @media (max-width: 560px) { .accordion-body-grid { grid-template-columns: 1fr; } }
+    .accordion-body-grid .field-note { grid-column: 1 / -1; margin-top: 0.2rem; }
+
+    .arow { display: flex; align-items: center; justify-content: space-between; gap: 0.85rem; padding: 0.4rem 0; }
+    .arow-label { font-size: 0.78rem; color: #364752; flex: 1; line-height: 1.3; }
+    .arow-input-wrap { flex-shrink: 0; }
+    .arow-input { width: 100px; padding: 0.4rem 0.55rem; border: none; border-radius: 0.45rem; background: #ecfdf5; color: #059669; font-weight: 700; font-size: 0.82rem; text-align: right; font-family: inherit; }
+    .arow-input:focus { outline: 2px solid #10b981; outline-offset: -1px; background: #d1fae5; }
+    .arow-select { padding: 0.4rem 0.55rem; border: 1px solid #e2e8f0; border-radius: 0.45rem; font-size: 0.78rem; font-family: inherit; background: #fff; color: #364752; min-width: 84px; }
+
+    .calc-btn-row { display: flex; justify-content: flex-start; margin: 0.5rem 0 1.5rem; }
+    .calc-btn { background: #10b981; color: #fff; border: none; padding: 0.75rem 2.1rem; border-radius: 0.6rem; font-weight: 800; font-size: 0.8rem; letter-spacing: 0.04em; cursor: pointer; text-transform: uppercase; }
+    .calc-btn:hover { background: #0da271; }
+
+    /* Slab tables */
+    .slab-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin: 1.5rem 0 0.5rem; }
+    @media (max-width: 700px) { .slab-grid { grid-template-columns: 1fr; } }
+    .slab-grid h4 { text-align: center; font-size: 0.85rem; font-weight: 800; margin-bottom: 0.75rem; }
+    table.slab-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+    table.slab-table th { text-align: left; padding: 0.5rem 0.65rem; background: #f8fafc; font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.04em; color: #94a3b8; border: 1px solid #e2e8f0; }
+    table.slab-table td { padding: 0.5rem 0.65rem; border: 1px solid #e2e8f0; color: #364752; }
+
+    /* Page layout: inputs left, summary right */
+    .tax-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 1.75rem; align-items: start; }
+    @media (max-width: 1100px) { .tax-layout { grid-template-columns: 1fr; } }
+    .tax-layout > * { min-width: 0; }
+
+    /* Summary */
+    .summary-head { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.25rem; }
+    .summary-title-row { display: flex; align-items: center; gap: 0.55rem; }
+    .summary-title-row h2 { font-size: 1.35rem; font-weight: 800; }
+    .summary-actions { display: flex; align-items: center; gap: 1.25rem; }
+    .file-now-btn { padding: 0.6rem 1.3rem; border-radius: 0.6rem; background: #0ea5e9; color: #fff; border: none; font-weight: 700; font-size: 0.85rem; cursor: not-allowed; opacity: 0.55; }
+    .recalc-link { display: inline-flex; align-items: center; gap: 0.35rem; color: #0ea5e9; font-weight: 700; font-size: 0.85rem; background: none; border: none; cursor: pointer; }
+    .recalc-link:hover { text-decoration: underline; }
+
+    .regime-tabs { display: flex; gap: 1.75rem; border-bottom: 1px solid #e2e8f0; margin-bottom: 1.5rem; }
+    .regime-tab { display: flex; align-items: center; gap: 0.5rem; padding: 0 0 0.85rem; font-size: 0.92rem; font-weight: 700; color: #94a3b8; border-bottom: 2px solid transparent; margin-bottom: -1px; cursor: pointer; background: none; border-left: none; border-right: none; border-top: none; }
+    .regime-tab.active { color: #0f172a; border-bottom-color: #0ea5e9; }
+    .regime-tab .rec-pill { font-size: 0.63rem; font-weight: 700; color: #059669; background: #ecfdf5; border: 1px solid #a7f3d0; padding: 0.15rem 0.5rem; border-radius: 999px; }
+
+    .summary-grid { display: grid; grid-template-columns: 1fr; gap: 1.25rem; align-items: start; }
+
+    .chart-card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 1.1rem; padding: 1.5rem 1.6rem; box-shadow: 0 4px 16px rgba(15,23,42,0.03); }
+    .bar-chart { display: flex; align-items: stretch; height: 230px; }
+    .bar-chart-yaxis { display: flex; flex-direction: column; justify-content: space-between; padding-right: 0.75rem; font-size: 0.66rem; color: #94a3b8; text-align: right; flex-shrink: 0; width: 58px; }
+    .bar-chart-plot { flex: 1; position: relative; border-left: 1px solid #e2e8f0; }
+    .bar-chart-gridline { position: absolute; left: 0; right: 0; border-top: 1px solid #f1f5f9; }
+    .bar-chart-bars { position: absolute; inset: 0; display: flex; align-items: flex-end; justify-content: space-evenly; padding: 0 0.5rem; }
+    .bar-col { display: flex; flex-direction: column; align-items: center; width: 60px; }
+    .bar-col-value { font-size: 0.66rem; font-weight: 700; color: #364752; margin-bottom: 0.3rem; white-space: nowrap; }
+    .bar-col-fill { width: 34px; border-radius: 0.3rem 0.3rem 0 0; min-height: 2px; }
+    .chart-legend { display: flex; flex-wrap: wrap; gap: 1.25rem; margin-top: 1.4rem; padding-top: 1.1rem; border-top: 1px solid #f1f5f9; }
+    .legend-item { display: flex; align-items: center; gap: 0.45rem; font-size: 0.78rem; color: #364752; font-weight: 600; }
+    .legend-dot { width: 12px; height: 12px; border-radius: 0.25rem; flex-shrink: 0; }
+
+    .stat-stack { display: flex; flex-direction: column; gap: 1.25rem; }
+    .stat-box { background: #f8fafc; border-radius: 1.1rem; padding: 1.4rem 1.5rem; }
+    .stat-box-label { font-size: 0.85rem; font-weight: 700; color: #364752; text-align: center; margin-bottom: 0.4rem; }
+    .stat-box-value { font-size: 1.6rem; font-weight: 800; color: #0f172a; text-align: center; font-variant-numeric: tabular-nums; }
+    .stat-box-divider { border: none; border-top: 1px solid #e2e8f0; margin: 1.1rem 0; }
+    .stat-sub-row { display: flex; align-items: center; justify-content: space-between; padding: 0.4rem 0; font-size: 0.83rem; color: #51636f; }
+    .stat-sub-row .v { font-weight: 700; color: #364752; font-variant-numeric: tabular-nums; }
 
     .savings-card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 1.1rem; padding: 1.5rem 1.6rem; margin-bottom: 1.5rem; box-shadow: 0 4px 16px rgba(15,23,42,0.03); }
     .savings-card h3 { font-size: 1rem; font-weight: 800; margin-bottom: 0.3rem; }
@@ -104,11 +166,6 @@
     .headroom-amount { font-size: 0.9rem; font-weight: 800; color: #059669; }
     .headroom-tax-save { font-size: 0.72rem; color: #94a3b8; }
     .headroom-maxed { font-size: 0.85rem; font-weight: 700; color: #94a3b8; }
-
-    .breakdown-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
-    .breakdown-table th { text-align: left; padding: 0.6rem 0.75rem; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; color: #94a3b8; border-bottom: 1px solid #e2e8f0; }
-    .breakdown-table td { padding: 0.6rem 0.75rem; border-bottom: 1px solid #f1f5f9; color: #364752; font-weight: 600; }
-    .breakdown-table td.num { text-align: right; }
 
     .disclaimer { font-size: 0.78rem; color: #94a3b8; line-height: 1.6; padding: 1rem 1.2rem; background: #f8fafc; border-radius: 0.75rem; margin-top: 1rem; }
   </style>
@@ -142,12 +199,12 @@
         <div class="nav-section-label">Cash Flow</div>
         <a href="money-required.html">
           <span class="nav-icon">🪴</span>
-          <span class="nav-label">Expenses</span>
+          <span class="nav-label">Monthly CashFlow</span>
           <span class="nav-chevron">›</span>
         </a>
-        <a href="expense-quick-add.html">
-          <span class="nav-icon">⚡</span>
-          <span class="nav-label">Daily Expenses Tracker</span>
+        <a href="income.html">
+          <span class="nav-icon">💵</span>
+          <span class="nav-label">Income</span>
         </a>
         <a href="tax-planning.html" class="active">
           <span class="nav-icon">🧾</span>
@@ -173,7 +230,7 @@
         <div class="nav-section-label">Family &amp; Health</div>
         <a href="life-expectancy.html">
           <span class="nav-icon">❤️</span>
-          <span class="nav-label">Health</span>
+          <span class="nav-label">Health(is wealth)</span>
           <span class="nav-chevron">›</span>
         </a>
 
@@ -220,92 +277,199 @@
 
       <div class="page-head">
         <h2>Tax Planning</h2>
-        <p>Compare the Old and New tax regimes, track your deductions, and see exactly how much more you could save.</p>
+        <p>Walk through your income and deductions, then compare the Old and New tax regimes side by side.</p>
       </div>
 
       <div class="disclaimer-banner">🧾 Uses FY 2025-26 (AY 2026-27) slabs — an educational estimate, not a substitute for a CA or the official IT department calculator. Rules and limits change; always verify before filing.</div>
 
-      <div class="q-card">
-        <div class="q-card-eyebrow">Your Income</div>
-        <div class="field-grid">
-          <div class="field-item">
-            <label class="field-label">Annual gross salary / taxable income (₹)</label>
-            <input type="number" class="num-input" id="grossIncomeInput" min="0" step="1000" value="1200000">
-            <div class="field-note">Before any deductions — your CTC minus employer PF contribution is a reasonable estimate.</div>
+      <div class="tax-layout">
+      <div class="wizard-shell" id="wizardShell">
+        <div class="accordion-card" id="accBasic">
+          <div class="accordion-head" onclick="toggleAccordion('accBasic')">
+            <span>Basic details</span>
+            <span class="accordion-chevron">▲</span>
           </div>
-        </div>
-      </div>
-
-      <div class="q-card">
-        <div class="q-card-eyebrow">Deductions (Old Regime Only)</div>
-        <div class="field-grid">
-          <div class="field-item">
-            <label class="field-label">Section 80C (PPF, ELSS, EPF, life insurance, etc.)</label>
-            <input type="number" class="num-input" id="deduction80cInput" min="0" max="150000" step="1000" value="0">
-            <div class="field-note">Max ₹1,50,000</div>
-          </div>
-          <div class="field-item">
-            <label class="field-label">Section 80D (health insurance premium)</label>
-            <input type="number" class="num-input" id="deduction80dInput" min="0" step="1000" value="0">
-            <div class="field-note" id="deduction80dNote">Max ₹25,000 (self &amp; family)</div>
-            <div class="checkbox-field">
-              <input type="checkbox" id="seniorParentsCheck">
-              <label for="seniorParentsCheck" style="font-size:0.8rem;color:#364752;">Also paying premium for senior citizen parents (+₹50,000 limit)</label>
+          <div class="accordion-body">
+            <div class="field-grid">
+              <div class="field-item">
+                <label class="field-label">Financial year</label>
+                <select class="select-input" id="fySelect">
+                  <option value="fy2025_26">FY 2025-2026 (AY 2026-2027)</option>
+                </select>
+              </div>
+              <div class="field-item">
+                <label class="field-label">Age group</label>
+                <select class="select-input" id="ageGroupSelect">
+                  <option value="0-60">0 - 60</option>
+                  <option value="60-80">60 - 80 (Senior citizen)</option>
+                  <option value="80+">80+ (Super senior citizen)</option>
+                </select>
+              </div>
             </div>
           </div>
-          <div class="field-item">
-            <label class="field-label">NPS — Section 80CCD(1B)</label>
-            <input type="number" class="num-input" id="deductionNpsInput" min="0" max="50000" step="1000" value="0">
-            <div class="field-note">Max ₹50,000, over and above 80C</div>
+        </div>
+
+        <div class="accordion-card" id="accIncomeSalary">
+          <div class="accordion-head" onclick="toggleAccordion('accIncomeSalary')">
+            <span>Income from gross salary</span>
+            <span class="accordion-chevron">▲</span>
           </div>
-          <div class="field-item">
-            <label class="field-label">Home loan interest — Section 24(b)</label>
-            <input type="number" class="num-input" id="deductionHomeLoanInput" min="0" max="200000" step="1000" value="0">
-            <div class="field-note">Max ₹2,00,000 (self-occupied property)</div>
+          <div class="accordion-body accordion-body-grid">
+            <div class="arow"><label class="arow-label" for="incSalary">Gross salary income</label><div class="arow-input-wrap"><input type="number" class="arow-input" id="incSalary" min="0" step="1000" value="0"></div></div>
           </div>
-          <div class="field-item">
-            <label class="field-label">HRA exemption claimed</label>
-            <input type="number" class="num-input" id="deductionHraInput" min="0" step="1000" value="0">
-            <div class="field-note">Enter the exempt portion — this calculator doesn't derive it from rent/basic/city</div>
+        </div>
+
+        <div class="accordion-card" id="accIncomeOther">
+          <div class="accordion-head" onclick="toggleAccordion('accIncomeOther')">
+            <span>Income from other sources (Interest on FD and let-out property)</span>
+            <span class="accordion-chevron">▲</span>
           </div>
-          <div class="field-item">
-            <label class="field-label">Other deductions (80E, 80G, 80TTA, etc.)</label>
-            <input type="number" class="num-input" id="deductionOtherInput" min="0" step="1000" value="0">
+          <div class="accordion-body accordion-body-grid">
+            <div class="arow"><label class="arow-label" for="incOther">Annual income from other sources</label><div class="arow-input-wrap"><input type="number" class="arow-input" id="incOther" min="0" step="1000" value="0"></div></div>
+            <div class="arow"><label class="arow-label" for="incInterest">Annual income from interest</label><div class="arow-input-wrap"><input type="number" class="arow-input" id="incInterest" min="0" step="1000" value="0"></div></div>
+            <div class="arow"><label class="arow-label" for="incRental">Annual income from let-out house property (rental income)</label><div class="arow-input-wrap"><input type="number" class="arow-input" id="incRental" min="0" step="1000" value="0"></div></div>
+            <div class="arow"><label class="arow-label" for="incHomeLoanSelf">Annual interest paid on home loan (self-occupied)</label><div class="arow-input-wrap"><input type="number" class="arow-input" id="incHomeLoanSelf" min="0" step="1000" value="0"></div></div>
+            <div class="arow"><label class="arow-label" for="incHomeLoanLetout">Annual interest paid on home loan (let-out)</label><div class="arow-input-wrap"><input type="number" class="arow-input" id="incHomeLoanLetout" min="0" step="1000" value="0"></div></div>
+            <div class="arow"><label class="arow-label" for="incDigital">Annual income from digital assets (crypto / VDA)</label><div class="arow-input-wrap"><input type="number" class="arow-input" id="incDigital" min="0" step="1000" value="0"></div></div>
           </div>
+        </div>
+
+        <div class="accordion-card" id="accDeductions">
+          <div class="accordion-head" onclick="toggleAccordion('accDeductions')">
+            <span>Deductions</span>
+            <span class="accordion-chevron">▲</span>
+          </div>
+          <div class="accordion-body accordion-body-grid">
+            <div class="arow"><label class="arow-label" for="ded80c">Basic deductions u/s 80C</label><div class="arow-input-wrap"><input type="number" class="arow-input" id="ded80c" min="0" step="1000" value="0"></div></div>
+            <div class="arow"><label class="arow-label" for="dedNps">Contribution to NPS u/s 80CCD(1B)</label><div class="arow-input-wrap"><input type="number" class="arow-input" id="dedNps" min="0" step="1000" value="0"></div></div>
+            <div class="arow" style="align-items:flex-start;">
+              <div>
+                <label class="arow-label" for="ded80d" style="display:block;">Medical Insurance Premium u/s 80D</label>
+                <div class="checkbox-field" style="margin-top:0.4rem;">
+                  <input type="checkbox" id="seniorParentsCheck">
+                  <label for="seniorParentsCheck" style="font-size:0.76rem;color:#94a3b8;">Also paying premium for senior citizen parents (+₹50,000 limit)</label>
+                </div>
+              </div>
+              <div class="arow-input-wrap"><input type="number" class="arow-input" id="ded80d" min="0" step="1000" value="0"></div>
+            </div>
+            <div class="arow"><label class="arow-label" for="ded80g">Donation to charity u/s 80G</label><div class="arow-input-wrap"><input type="number" class="arow-input" id="ded80g" min="0" step="1000" value="0"></div></div>
+            <div class="arow"><label class="arow-label" for="ded80e">Interest on Educational Loan u/s 80E</label><div class="arow-input-wrap"><input type="number" class="arow-input" id="ded80e" min="0" step="1000" value="0"></div></div>
+            <div class="arow"><label class="arow-label" for="ded80tta">Interest on deposits in saving account u/s 80TTA/TTB</label><div class="arow-input-wrap"><input type="number" class="arow-input" id="ded80tta" min="0" step="1000" value="0"></div></div>
+            <div class="arow"><label class="arow-label" for="ded80eea">Interest on housing loan u/s 80EEA</label><div class="arow-input-wrap"><input type="number" class="arow-input" id="ded80eea" min="0" step="1000" value="0"></div></div>
+            <div class="arow"><label class="arow-label" for="ded80ccd2">Employer's contribution to NPS u/s 80CCD(2)</label><div class="arow-input-wrap"><input type="number" class="arow-input" id="ded80ccd2" min="0" step="1000" value="0"></div></div>
+            <div class="arow"><label class="arow-label" for="dedOther">Any other deduction</label><div class="arow-input-wrap"><input type="number" class="arow-input" id="dedOther" min="0" step="1000" value="0"></div></div>
+          </div>
+        </div>
+
+        <div class="accordion-card" id="accHra">
+          <div class="accordion-head" onclick="toggleAccordion('accHra')">
+            <span>HRA Exemption</span>
+            <span class="accordion-chevron">▲</span>
+          </div>
+          <div class="accordion-body accordion-body-grid">
+            <div class="arow"><label class="arow-label" for="hraBasic">Basic salary received per annum</label><div class="arow-input-wrap"><input type="number" class="arow-input" id="hraBasic" min="0" step="1000" value="0"></div></div>
+            <div class="arow"><label class="arow-label" for="hraDa">Dearness allowance (DA) received per annum</label><div class="arow-input-wrap"><input type="number" class="arow-input" id="hraDa" min="0" step="1000" value="0"></div></div>
+            <div class="arow"><label class="arow-label" for="hraReceived">HRA received per annum</label><div class="arow-input-wrap"><input type="number" class="arow-input" id="hraReceived" min="0" step="1000" value="0"></div></div>
+            <div class="arow"><label class="arow-label" for="hraRentPaid">Total rent paid per annum</label><div class="arow-input-wrap"><input type="number" class="arow-input" id="hraRentPaid" min="0" step="1000" value="0"></div></div>
+            <div class="arow"><label class="arow-label" for="hraMetro">Do you live in a metro city?</label><div class="arow-input-wrap"><select class="arow-select" id="hraMetro"><option value="yes">Yes</option><option value="no">No</option></select></div></div>
+            <div class="field-note" style="margin-top:0.5rem;">HRA exemption is computed from these values and used as your "Exempt allowances" — Old Regime only. Full amount received is still taxable in the New Regime.</div>
+          </div>
+        </div>
+
+        <div class="calc-btn-row">
+          <button type="button" class="calc-btn" onclick="jumpToSummary()">Calculate</button>
         </div>
       </div>
 
-      <div class="tax-hero" id="taxHero">
-        <div class="tax-hero-compare">
-          <div class="tax-hero-regime" id="oldRegimeCard">
-            <div class="tax-hero-regime-label">Old Regime</div>
-            <div class="tax-hero-regime-value" id="oldRegimeTax">₹0</div>
+      <div id="summarySection">
+        <div class="summary-head">
+          <div class="summary-title-row">
+            <h2 id="summaryTitle">Summary - FY 2025-2026 (AY 2026-2027)</h2>
+            <span class="info-dot" title="Educational estimate only, using simplified rules and FY 2025-26 (AY 2026-27) slabs. Always verify with a CA or the official Income Tax e-filing portal before filing.">i</span>
           </div>
-          <div class="tax-hero-vs">VS</div>
-          <div class="tax-hero-regime" id="newRegimeCard">
-            <div class="tax-hero-regime-label">New Regime</div>
-            <div class="tax-hero-regime-value" id="newRegimeTax">₹0</div>
+          <div class="summary-actions">
+            <button type="button" class="file-now-btn" disabled title="FinFlow is an estimator, not an e-filing tool — file directly on the Income Tax e-filing portal.">File now</button>
+            <button type="button" class="recalc-link" onclick="document.getElementById('wizardShell').scrollIntoView({behavior:'smooth',block:'start'})">↺ Recalculate</button>
           </div>
         </div>
-        <div class="tax-hero-verdict" id="taxVerdict">—</div>
+
+        <div class="regime-tabs">
+          <button type="button" class="regime-tab active" id="regimeTabNew" onclick="setRegimeTab(true)">New regime</button>
+          <button type="button" class="regime-tab" id="regimeTabOld" onclick="setRegimeTab(false)">
+            Old regime <span class="rec-pill" id="oldRecPill" style="display:none;">Recommended</span>
+          </button>
+        </div>
+
+        <div class="summary-grid">
+          <div class="chart-card">
+            <div class="bar-chart">
+              <div class="bar-chart-yaxis" id="chartYAxis"></div>
+              <div class="bar-chart-plot">
+                <div id="chartGridlines"></div>
+                <div class="bar-chart-bars" id="chartBars"></div>
+              </div>
+            </div>
+            <div class="chart-legend">
+              <div class="legend-item"><span class="legend-dot" style="background:#bfdbfe;"></span>Total income</div>
+              <div class="legend-item"><span class="legend-dot" style="background:#60a5fa;"></span>Taxable income</div>
+              <div class="legend-item"><span class="legend-dot" style="background:#1e3a8a;"></span>Deduction</div>
+              <div class="legend-item"><span class="legend-dot" style="background:#10b981;"></span>Tax payable</div>
+            </div>
+          </div>
+
+          <div class="stat-stack">
+            <div class="stat-box">
+              <div class="stat-box-label">Total income</div>
+              <div class="stat-box-value" id="statTotalIncome">₹0</div>
+              <hr class="stat-box-divider">
+              <div class="stat-box-label">Exemption and deduction</div>
+              <div class="stat-box-value" id="statExemptionDeduction">₹0</div>
+              <hr class="stat-box-divider">
+              <div class="stat-sub-row"><span>Exempt Allowances</span><span class="v" id="statExemptAllow">₹0</span></div>
+              <div class="stat-sub-row"><span>Standard Deductions</span><span class="v" id="statStdDeduction">₹0</span></div>
+              <div class="stat-sub-row"><span>Chapter VI A Deductions</span><span class="v" id="statChapterVia">₹0</span></div>
+            </div>
+
+            <div class="stat-box">
+              <div class="stat-box-label">Taxable income</div>
+              <div class="stat-box-value" id="statTaxableIncome">₹0</div>
+            </div>
+
+            <div class="stat-box">
+              <div class="stat-box-label">Tax payable</div>
+              <div class="stat-box-value" id="statTaxPayable">₹0</div>
+              <hr class="stat-box-divider">
+              <div class="stat-sub-row"><span>Income tax</span><span class="v" id="statIncomeTax">₹0</span></div>
+              <div class="stat-sub-row"><span>Surcharge</span><span class="v" id="statSurcharge">₹0</span></div>
+              <div class="stat-sub-row"><span>Health and education cess</span><span class="v" id="statCess">₹0</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="savings-card" style="margin-top:1.5rem;">
+          <h3>💡 How Much More You Could Save</h3>
+          <div class="sc-sub">Unused headroom in your Old Regime deductions, and what maxing it out would be worth in tax</div>
+          <div id="headroomList"></div>
+        </div>
+
+        <div class="disclaimer">⚠️ This is an educational estimate based on publicly available FY 2025-26 slab rates and simplified rules — home-loan and rental deductions are grouped together with Chapter VI-A for display, surcharge marginal relief is approximated, and digital asset income is taxed flat at 30% assuming no 87A rebate. It doesn't account for every real-world nuance. Please verify with a qualified CA or the official Income Tax e-filing portal before making filing decisions.</div>
+      </div>
       </div>
 
-      <div class="savings-card">
-        <h3>💡 How Much More You Could Save</h3>
-        <div class="sc-sub">Unused headroom in your Old Regime deductions, and what maxing it out would be worth in tax</div>
-        <div id="headroomList"></div>
+      <div class="q-card" style="margin-top:1.5rem;">
+        <h3 style="text-align:center;font-size:0.95rem;font-weight:800;">Income Tax Slab Rates</h3>
+        <div class="slab-grid">
+          <div>
+            <h4>New Regime Slab Rates</h4>
+            <table class="slab-table" id="newSlabTable"></table>
+          </div>
+          <div>
+            <h4>Old Regime Slab Rates</h4>
+            <table class="slab-table" id="oldSlabTable"></table>
+          </div>
+        </div>
+        <div class="field-note" style="text-align:center;">* Old Regime slabs above already reflect the age group selected on Basic details. Slab rates vary for resident senior and super senior citizens.</div>
       </div>
-
-      <div class="savings-card">
-        <h3>Tax Breakdown</h3>
-        <div class="sc-sub">Taxable income and total tax (incl. 4% cess) under each regime</div>
-        <table class="breakdown-table">
-          <thead><tr><th>Regime</th><th class="num">Taxable Income</th><th class="num">Tax + Cess</th></tr></thead>
-          <tbody id="breakdownBody"></tbody>
-        </table>
-      </div>
-
-      <div class="disclaimer">⚠️ This is an educational estimate based on publicly available FY 2025-26 slab rates. It doesn't account for every deduction, surcharge on very high incomes, or your exact HRA calculation. Please verify with a qualified CA or the official Income Tax e-filing portal before making filing decisions.</div>
     </main>
   </div>
 
@@ -321,23 +485,107 @@
       { from: 2000000, to: 2400000, rate: 0.25 },
       { from: 2400000, to: null, rate: 0.30 }
     ];
-    var OLD_REGIME_SLABS = [
-      { from: 0, to: 250000, rate: 0 },
-      { from: 250000, to: 500000, rate: 0.05 },
-      { from: 500000, to: 1000000, rate: 0.20 },
-      { from: 1000000, to: null, rate: 0.30 }
-    ];
+    var OLD_REGIME_SLABS_BY_AGE = {
+      '0-60': [
+        { from: 0, to: 250000, rate: 0 },
+        { from: 250000, to: 500000, rate: 0.05 },
+        { from: 500000, to: 1000000, rate: 0.20 },
+        { from: 1000000, to: null, rate: 0.30 }
+      ],
+      '60-80': [
+        { from: 0, to: 300000, rate: 0 },
+        { from: 300000, to: 500000, rate: 0.05 },
+        { from: 500000, to: 1000000, rate: 0.20 },
+        { from: 1000000, to: null, rate: 0.30 }
+      ],
+      '80+': [
+        { from: 0, to: 500000, rate: 0 },
+        { from: 500000, to: 1000000, rate: 0.20 },
+        { from: 1000000, to: null, rate: 0.30 }
+      ]
+    };
     var NEW_STD_DEDUCTION = 75000;
     var OLD_STD_DEDUCTION = 50000;
     var NEW_REBATE_THRESHOLD = 1200000;
     var OLD_REBATE_THRESHOLD = 500000;
     var CESS_RATE = 0.04;
+    var SURCHARGE_BANDS = [
+      { threshold: 5000000, rate: 0.10 },
+      { threshold: 10000000, rate: 0.15 },
+      { threshold: 20000000, rate: 0.25 },
+      { threshold: 50000000, rate: 0.37 }
+    ];
 
     var state = {
-      grossIncome: 1200000,
-      d80c: 0, d80d: 0, dNps: 0, dHomeLoan: 0, dHra: 0, dOther: 0,
-      seniorParents: false
+      ageGroup: '0-60',
+      incSalary: 0, incInterest: 0, incHomeLoanSelf: 0,
+      incRental: 0, incHomeLoanLetout: 0, incDigital: 0, incOther: 0,
+      ded80c: 0, ded80tta: 0, ded80d: 0, ded80g: 0, ded80eea: 0, ded80e: 0,
+      dedNps: 0, ded80ccd2: 0, dedOther: 0,
+      seniorParents: false,
+      hraBasic: 0, hraDa: 0, hraReceived: 0, hraRentPaid: 0, hraMetro: true
     };
+    var showingNewRegime = true;
+    var lastOld = null, lastNew = null;
+
+    function formatRupees(amount) {
+      var n = Math.round(Number(amount) || 0);
+      return '₹' + n.toLocaleString('en-IN');
+    }
+
+    function formatRupeesCompact(amount) {
+      var n = Math.round(Number(amount) || 0);
+      var abs = Math.abs(n);
+      if (abs >= 10000000) return '₹' + Number((n / 10000000).toFixed(1)) + 'Cr';
+      if (abs >= 100000) return '₹' + Number((n / 100000).toFixed(1)) + 'L';
+      if (abs >= 1000) return '₹' + Number((n / 1000).toFixed(1)) + 'k';
+      return '₹' + n;
+    }
+
+    /* ---- Accordion ---- */
+
+    function toggleAccordion(id) {
+      document.getElementById(id).classList.toggle('collapsed');
+    }
+
+    function jumpToSummary() {
+      readInputsFromForm();
+      recalculate();
+      scheduleSave();
+      document.getElementById('summarySection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function onInputsChanged() {
+      readInputsFromForm();
+      recalculate();
+      scheduleSave();
+    }
+
+    function setRegimeTab(isNew) {
+      showingNewRegime = isNew;
+      document.getElementById('regimeTabNew').classList.toggle('active', isNew);
+      document.getElementById('regimeTabOld').classList.toggle('active', !isNew);
+      renderSummaryForActiveTab();
+    }
+
+    /* ---- Slab table rendering ---- */
+
+    function renderSlabTable(elId, slabs) {
+      var rows = slabs.map(function (s) {
+        var label = s.to === null ? 'Above ' + formatRupeesCompact(s.from) : (s.from === 0 ? 'Up to ' + formatRupeesCompact(s.to) : formatRupeesCompact(s.from) + ' to ' + formatRupeesCompact(s.to));
+        var rate = s.rate === 0 ? 'Nil' : Math.round(s.rate * 100) + '%';
+        return '<tr><td>' + label + '</td><td>' + rate + '</td></tr>';
+      }).join('');
+      document.getElementById(elId).innerHTML =
+        '<thead><tr><th>Income Tax Slabs</th><th>Income Tax Rates</th></tr></thead><tbody>' + rows + '</tbody>';
+    }
+
+    function renderSlabTables() {
+      renderSlabTable('newSlabTable', NEW_REGIME_SLABS);
+      renderSlabTable('oldSlabTable', OLD_REGIME_SLABS_BY_AGE[state.ageGroup]);
+    }
+
+    /* ---- Tax engine ---- */
 
     function calcSlabTax(taxableIncome, slabs) {
       var tax = 0;
@@ -351,48 +599,183 @@
       return tax;
     }
 
-    function applyMarginalRelief(tax, taxableIncome, threshold) {
+    function applyRebateRelief(tax, taxableIncome, threshold) {
       if (taxableIncome <= threshold) return 0;
       var excess = taxableIncome - threshold;
       return tax > excess ? excess : tax;
     }
 
-    function formatRupees(amount) {
-      var n = Math.round(Number(amount) || 0);
-      return '₹' + n.toLocaleString('en-IN');
+    function surchargeMarginalRelief(taxableIncomeTotal, taxBeforeSurcharge, slabs, isNew) {
+      var rate = 0;
+      for (var i = 0; i < SURCHARGE_BANDS.length; i++) {
+        if (taxableIncomeTotal > SURCHARGE_BANDS[i].threshold) rate = SURCHARGE_BANDS[i].rate;
+      }
+      if (isNew && rate > 0.25) rate = 0.25; // New Regime surcharge is capped at 25% (no 37% band)
+      if (rate === 0) return 0;
+
+      var raw = taxBeforeSurcharge * rate;
+
+      var band = null;
+      for (var b = SURCHARGE_BANDS.length - 1; b >= 0; b--) {
+        if (taxableIncomeTotal > SURCHARGE_BANDS[b].threshold) { band = SURCHARGE_BANDS[b]; break; }
+      }
+      if (!band) return raw;
+
+      var priorRate = 0;
+      var idx = SURCHARGE_BANDS.indexOf(band);
+      if (idx > 0) priorRate = SURCHARGE_BANDS[idx - 1].rate;
+      if (isNew && priorRate > 0.25) priorRate = 0.25;
+
+      var taxAtThreshold = calcSlabTax(band.threshold, slabs);
+      var surchargeAtThreshold = taxAtThreshold * priorRate;
+      var maxAllowed = (taxAtThreshold + surchargeAtThreshold) + (taxableIncomeTotal - band.threshold);
+      var totalNow = taxBeforeSurcharge + raw;
+      if (totalNow > maxAllowed) return Math.max(0, maxAllowed - taxBeforeSurcharge);
+      return raw;
     }
 
-    function computeOldRegimeTaxableIncome() {
-      var totalDeductions = OLD_STD_DEDUCTION + state.d80c + state.d80d + state.dNps + state.dHomeLoan + state.dHra + state.dOther;
-      return Math.max(0, state.grossIncome - totalDeductions);
+    function computeHraExemption() {
+      var basicPlusDa = state.hraBasic + state.hraDa;
+      var rentMinusTenPct = state.hraRentPaid - basicPlusDa * 0.10;
+      var cityLimit = basicPlusDa * (state.hraMetro ? 0.50 : 0.40);
+      return Math.max(0, Math.min(state.hraReceived, rentMinusTenPct, cityLimit));
     }
 
-    function computeNewRegimeTaxableIncome() {
-      return Math.max(0, state.grossIncome - NEW_STD_DEDUCTION);
+    function computeRegime(isNew) {
+      var stdDeduction = isNew ? NEW_STD_DEDUCTION : OLD_STD_DEDUCTION;
+      var slabs = isNew ? NEW_REGIME_SLABS : OLD_REGIME_SLABS_BY_AGE[state.ageGroup];
+      var rebateThreshold = isNew ? NEW_REBATE_THRESHOLD : OLD_REBATE_THRESHOLD;
+
+      var exemptAllowances = isNew ? 0 : computeHraExemption();
+
+      // House property: 30% standard deduction (Sec 24(a)) applies in both regimes.
+      // Self-occupied interest (Sec 24(b), capped 2L) is Old Regime only. Let-out
+      // interest has no cap on its own, but a resulting loss can only offset other
+      // income up to 2L under the Old Regime, and not at all under the New Regime
+      // (it's carried forward instead) — `housePropertyDeduction` below is however
+      // much of gross rental ends up subtracted out to reach that allowed net.
+      var selfOccupiedInterest = isNew ? 0 : Math.min(state.incHomeLoanSelf, 200000);
+      var rentalStdDeduction = state.incRental * 0.30;
+      var rawHousePropertyNet = state.incRental - rentalStdDeduction - state.incHomeLoanLetout - selfOccupiedInterest;
+      var allowedHousePropertyNet = isNew ? Math.max(0, rawHousePropertyNet) : Math.max(rawHousePropertyNet, -200000);
+      var housePropertyDeduction = state.incRental - allowedHousePropertyNet;
+
+      var ttaCap = state.ageGroup === '0-60' ? 10000 : 50000;
+      var interestDeduction = isNew ? 0 : Math.min(state.ded80tta, Math.min(state.incInterest, ttaCap));
+
+      var d80c = isNew ? 0 : Math.min(state.ded80c, 150000);
+      var d80dCap = (state.ageGroup === '0-60' ? 25000 : 50000) + (state.seniorParents ? 50000 : 0);
+      var d80d = isNew ? 0 : Math.min(state.ded80d, d80dCap);
+      var d80g = isNew ? 0 : state.ded80g;
+      var d80eea = isNew ? 0 : Math.min(state.ded80eea, 150000);
+      var dNps1b = isNew ? 0 : Math.min(state.dedNps, 50000);
+      var dCcd2 = Math.min(state.ded80ccd2, state.incSalary * 0.10);
+      var dOther = isNew ? 0 : state.dedOther;
+      var d80e = isNew ? 0 : state.ded80e;
+
+      // Section 24 house-property deductions are folded into the "Chapter VI A"
+      // display bucket for simplicity (they're technically a separate head-of-income
+      // adjustment) — called out in the page disclaimer.
+      var chapterVIA = d80c + d80d + d80g + d80eea + d80e + dNps1b + dCcd2 + dOther + interestDeduction + housePropertyDeduction;
+
+      var totalIncome = state.incSalary + state.incRental + state.incInterest + state.incDigital + state.incOther;
+
+      var exemptionAndDeduction = exemptAllowances + stdDeduction + chapterVIA;
+      var digitalIncome = state.incDigital;
+      var otherTaxableIncome = Math.max(0, (totalIncome - digitalIncome) - exemptionAndDeduction);
+      var taxableIncomeTotal = otherTaxableIncome + digitalIncome;
+
+      var slabTax = calcSlabTax(otherTaxableIncome, slabs);
+      var slabTaxAfterRebate = applyRebateRelief(slabTax, otherTaxableIncome, rebateThreshold);
+      var digitalTax = digitalIncome * 0.30;
+      var taxBeforeSurcharge = slabTaxAfterRebate + digitalTax;
+
+      var surcharge = surchargeMarginalRelief(taxableIncomeTotal, taxBeforeSurcharge, slabs, isNew);
+      var cess = (taxBeforeSurcharge + surcharge) * CESS_RATE;
+      var totalTax = taxBeforeSurcharge + surcharge + cess;
+
+      return {
+        totalIncome: totalIncome,
+        taxableIncome: taxableIncomeTotal,
+        exemptAllowances: exemptAllowances,
+        stdDeduction: stdDeduction,
+        chapterVIA: chapterVIA,
+        exemptionAndDeduction: exemptionAndDeduction,
+        incomeTax: taxBeforeSurcharge,
+        surcharge: surcharge,
+        cess: cess,
+        totalTax: totalTax
+      };
     }
 
-    function computeRegimeTax(taxableIncome, slabs, threshold) {
-      var rawTax = calcSlabTax(taxableIncome, slabs);
-      var tax = applyMarginalRelief(rawTax, taxableIncome, threshold);
-      var cess = tax * CESS_RATE;
-      return { taxableIncome: taxableIncome, tax: tax, cess: cess, total: tax + cess };
+    /* ---- Chart + summary rendering ---- */
+
+    function renderChart(result) {
+      var metrics = [
+        { label: 'Total income', value: result.totalIncome, color: '#bfdbfe' },
+        { label: 'Taxable income', value: result.taxableIncome, color: '#60a5fa' },
+        { label: 'Deduction', value: result.exemptionAndDeduction, color: '#1e3a8a' },
+        { label: 'Tax payable', value: result.totalTax, color: '#10b981' }
+      ];
+      var maxVal = Math.max(1, metrics[0].value, metrics[1].value, metrics[2].value, metrics[3].value);
+
+      var yAxisSteps = 4;
+      var yHtml = '';
+      for (var i = yAxisSteps; i >= 0; i--) {
+        yHtml += '<div>' + (i === 0 ? '₹0' : formatRupeesCompact(maxVal * i / yAxisSteps)) + '</div>';
+      }
+      document.getElementById('chartYAxis').innerHTML = yHtml;
+
+      var gridHtml = '';
+      for (var g = 1; g <= yAxisSteps; g++) {
+        gridHtml += '<div class="bar-chart-gridline" style="bottom:' + (g * 100 / yAxisSteps) + '%;"></div>';
+      }
+      document.getElementById('chartGridlines').innerHTML = gridHtml;
+
+      document.getElementById('chartBars').innerHTML = metrics.map(function (m) {
+        var pct = Math.max(1, (m.value / maxVal) * 100);
+        return '<div class="bar-col">' +
+          '<div class="bar-col-value">' + formatRupeesCompact(m.value) + '</div>' +
+          '<div class="bar-col-fill" style="height:' + pct + '%;background:' + m.color + ';"></div>' +
+          '</div>';
+      }).join('');
     }
 
-    function renderHeadroom(oldResult) {
+    function renderSummaryForActiveTab() {
+      var result = showingNewRegime ? lastNew : lastOld;
+      if (!result) return;
+
+      document.getElementById('statTotalIncome').textContent = formatRupees(result.totalIncome);
+      document.getElementById('statExemptionDeduction').textContent = formatRupees(result.exemptionAndDeduction);
+      document.getElementById('statExemptAllow').textContent = formatRupees(result.exemptAllowances);
+      document.getElementById('statStdDeduction').textContent = formatRupees(result.stdDeduction);
+      document.getElementById('statChapterVia').textContent = formatRupees(result.chapterVIA);
+      document.getElementById('statTaxableIncome').textContent = formatRupees(result.taxableIncome);
+      document.getElementById('statTaxPayable').textContent = formatRupees(result.totalTax);
+      document.getElementById('statIncomeTax').textContent = formatRupees(result.incomeTax);
+      document.getElementById('statSurcharge').textContent = formatRupees(result.surcharge);
+      document.getElementById('statCess').textContent = formatRupees(result.cess);
+
+      renderChart(result);
+    }
+
+    function renderHeadroom() {
       var d80cMax = 150000;
-      var d80dMax = state.seniorParents ? 75000 : 25000;
+      var d80dMax = (state.ageGroup === '0-60' ? 25000 : 50000) + (state.seniorParents ? 50000 : 0);
       var npsMax = 50000;
 
+      var oldTaxable = lastOld.taxableIncome;
+      var slabs = OLD_REGIME_SLABS_BY_AGE[state.ageGroup];
       var marginalRate = 0;
-      for (var i = OLD_REGIME_SLABS.length - 1; i >= 0; i--) {
-        if (oldResult.taxableIncome > OLD_REGIME_SLABS[i].from) { marginalRate = OLD_REGIME_SLABS[i].rate; break; }
+      for (var i = slabs.length - 1; i >= 0; i--) {
+        if (oldTaxable > slabs[i].from) { marginalRate = slabs[i].rate; break; }
       }
       var effectiveRate = marginalRate * (1 + CESS_RATE);
 
       var items = [
-        { name: 'Section 80C', current: state.d80c, max: d80cMax },
-        { name: 'Section 80D', current: state.d80d, max: d80dMax },
-        { name: 'NPS 80CCD(1B)', current: state.dNps, max: npsMax }
+        { name: 'Section 80C', current: state.ded80c, max: d80cMax },
+        { name: 'Section 80D', current: state.ded80d, max: d80dMax },
+        { name: 'NPS 80CCD(1B)', current: state.dedNps, max: npsMax }
       ];
 
       document.getElementById('headroomList').innerHTML = items.map(function (it) {
@@ -409,52 +792,72 @@
     }
 
     function recalculate() {
-      var oldTaxable = computeOldRegimeTaxableIncome();
-      var newTaxable = computeNewRegimeTaxableIncome();
-      var oldResult = computeRegimeTax(oldTaxable, OLD_REGIME_SLABS, OLD_REBATE_THRESHOLD);
-      var newResult = computeRegimeTax(newTaxable, NEW_REGIME_SLABS, NEW_REBATE_THRESHOLD);
+      renderSlabTables();
+      lastOld = computeRegime(false);
+      lastNew = computeRegime(true);
 
-      document.getElementById('oldRegimeTax').textContent = formatRupees(oldResult.total);
-      document.getElementById('newRegimeTax').textContent = formatRupees(newResult.total);
+      var oldRecPill = document.getElementById('oldRecPill');
+      oldRecPill.style.display = lastOld.totalTax < lastNew.totalTax ? 'inline-block' : 'none';
 
-      var oldCard = document.getElementById('oldRegimeCard');
-      var newCard = document.getElementById('newRegimeCard');
-      var verdict = document.getElementById('taxVerdict');
-      oldCard.className = 'tax-hero-regime';
-      newCard.className = 'tax-hero-regime';
-
-      if (Math.abs(oldResult.total - newResult.total) < 1) {
-        verdict.textContent = 'Both regimes work out about the same for you.';
-      } else if (oldResult.total < newResult.total) {
-        oldCard.className = 'tax-hero-regime winner';
-        verdict.textContent = 'Old Regime saves you ' + formatRupees(newResult.total - oldResult.total) + ' this year.';
-      } else {
-        newCard.className = 'tax-hero-regime winner';
-        verdict.textContent = 'New Regime saves you ' + formatRupees(oldResult.total - newResult.total) + ' this year.';
-      }
-
-      document.getElementById('breakdownBody').innerHTML =
-        '<tr><td>Old Regime</td><td class="num">' + formatRupees(oldResult.taxableIncome) + '</td><td class="num">' + formatRupees(oldResult.total) + '</td></tr>' +
-        '<tr><td>New Regime</td><td class="num">' + formatRupees(newResult.taxableIncome) + '</td><td class="num">' + formatRupees(newResult.total) + '</td></tr>';
-
-      renderHeadroom(oldResult);
-      scheduleSave();
+      renderSummaryForActiveTab();
+      renderHeadroom();
     }
 
-    function wireNumberInput(inputId, stateKey, callback) {
-      document.getElementById(inputId).addEventListener('input', function () {
-        state[stateKey] = Number(this.value) || 0;
-        if (callback) callback();
-        recalculate();
-      });
+    /* ---- Form <-> state ---- */
+
+    function readInputsFromForm() {
+      state.ageGroup = document.getElementById('ageGroupSelect').value;
+      state.incSalary = Number(document.getElementById('incSalary').value) || 0;
+      state.incInterest = Number(document.getElementById('incInterest').value) || 0;
+      state.incHomeLoanSelf = Number(document.getElementById('incHomeLoanSelf').value) || 0;
+      state.incRental = Number(document.getElementById('incRental').value) || 0;
+      state.incHomeLoanLetout = Number(document.getElementById('incHomeLoanLetout').value) || 0;
+      state.incDigital = Number(document.getElementById('incDigital').value) || 0;
+      state.incOther = Number(document.getElementById('incOther').value) || 0;
+      state.ded80c = Number(document.getElementById('ded80c').value) || 0;
+      state.ded80tta = Number(document.getElementById('ded80tta').value) || 0;
+      state.ded80d = Number(document.getElementById('ded80d').value) || 0;
+      state.ded80g = Number(document.getElementById('ded80g').value) || 0;
+      state.ded80eea = Number(document.getElementById('ded80eea').value) || 0;
+      state.ded80e = Number(document.getElementById('ded80e').value) || 0;
+      state.dedNps = Number(document.getElementById('dedNps').value) || 0;
+      state.ded80ccd2 = Number(document.getElementById('ded80ccd2').value) || 0;
+      state.dedOther = Number(document.getElementById('dedOther').value) || 0;
+      state.seniorParents = document.getElementById('seniorParentsCheck').checked;
+      state.hraBasic = Number(document.getElementById('hraBasic').value) || 0;
+      state.hraDa = Number(document.getElementById('hraDa').value) || 0;
+      state.hraReceived = Number(document.getElementById('hraReceived').value) || 0;
+      state.hraRentPaid = Number(document.getElementById('hraRentPaid').value) || 0;
+      state.hraMetro = document.getElementById('hraMetro').value === 'yes';
     }
 
-    function updateD80dNote() {
-      document.getElementById('deduction80dNote').textContent = state.seniorParents ? 'Max ₹75,000 (self, family + senior citizen parents)' : 'Max ₹25,000 (self & family)';
-      document.getElementById('deduction80dInput').max = state.seniorParents ? 75000 : 25000;
+    function writeStateToForm() {
+      document.getElementById('ageGroupSelect').value = state.ageGroup;
+      document.getElementById('incSalary').value = state.incSalary;
+      document.getElementById('incInterest').value = state.incInterest;
+      document.getElementById('incHomeLoanSelf').value = state.incHomeLoanSelf;
+      document.getElementById('incRental').value = state.incRental;
+      document.getElementById('incHomeLoanLetout').value = state.incHomeLoanLetout;
+      document.getElementById('incDigital').value = state.incDigital;
+      document.getElementById('incOther').value = state.incOther;
+      document.getElementById('ded80c').value = state.ded80c;
+      document.getElementById('ded80tta').value = state.ded80tta;
+      document.getElementById('ded80d').value = state.ded80d;
+      document.getElementById('ded80g').value = state.ded80g;
+      document.getElementById('ded80eea').value = state.ded80eea;
+      document.getElementById('ded80e').value = state.ded80e;
+      document.getElementById('dedNps').value = state.dedNps;
+      document.getElementById('ded80ccd2').value = state.ded80ccd2;
+      document.getElementById('dedOther').value = state.dedOther;
+      document.getElementById('seniorParentsCheck').checked = state.seniorParents;
+      document.getElementById('hraBasic').value = state.hraBasic;
+      document.getElementById('hraDa').value = state.hraDa;
+      document.getElementById('hraReceived').value = state.hraReceived;
+      document.getElementById('hraRentPaid').value = state.hraRentPaid;
+      document.getElementById('hraMetro').value = state.hraMetro ? 'yes' : 'no';
     }
 
-    /* ---- Persistence, mirroring fire_plan_inputs / health_inputs ---- */
+    /* ---- Persistence ---- */
 
     async function loadSavedInputs() {
       var { data, error } = await supabaseClient.from('tax_planning_inputs').select('*').maybeSingle();
@@ -464,10 +867,30 @@
 
     async function saveInputs() {
       var payload = {
-        gross_income: state.grossIncome,
-        deduction_80c: state.d80c, deduction_80d: state.d80d, deduction_nps: state.dNps,
-        home_loan_interest: state.dHomeLoan, hra_exemption: state.dHra, other_deductions: state.dOther,
+        age_group: state.ageGroup,
+        income_salary: state.incSalary,
+        exempt_allowances: computeHraExemption(),
+        income_interest: state.incInterest,
+        home_loan_interest: state.incHomeLoanSelf,
+        rental_income: state.incRental,
+        home_loan_interest_letout: state.incHomeLoanLetout,
+        income_digital_assets: state.incDigital,
+        other_income: state.incOther,
+        deduction_80c: state.ded80c,
+        deduction_80tta: state.ded80tta,
+        deduction_80d: state.ded80d,
+        deduction_80g: state.ded80g,
+        deduction_80eea: state.ded80eea,
+        deduction_80e: state.ded80e,
+        deduction_nps: state.dedNps,
+        deduction_80ccd2: state.ded80ccd2,
+        other_deductions: state.dedOther,
         senior_citizen_parents: state.seniorParents,
+        hra_basic_salary: state.hraBasic,
+        hra_da: state.hraDa,
+        hra_received: state.hraReceived,
+        hra_rent_paid: state.hraRentPaid,
+        hra_metro: state.hraMetro,
         updated_at: new Date().toISOString()
       };
       var { error } = await supabaseClient.from('tax_planning_inputs').upsert(payload, { onConflict: 'user_id' });
@@ -481,20 +904,30 @@
     }
 
     function applySaved(saved) {
-      state.grossIncome = saved.gross_income;
-      state.d80c = saved.deduction_80c; state.d80d = saved.deduction_80d; state.dNps = saved.deduction_nps;
-      state.dHomeLoan = saved.home_loan_interest; state.dHra = saved.hra_exemption; state.dOther = saved.other_deductions;
-      state.seniorParents = saved.senior_citizen_parents;
-
-      document.getElementById('grossIncomeInput').value = state.grossIncome;
-      document.getElementById('deduction80cInput').value = state.d80c;
-      document.getElementById('deduction80dInput').value = state.d80d;
-      document.getElementById('deductionNpsInput').value = state.dNps;
-      document.getElementById('deductionHomeLoanInput').value = state.dHomeLoan;
-      document.getElementById('deductionHraInput').value = state.dHra;
-      document.getElementById('deductionOtherInput').value = state.dOther;
-      document.getElementById('seniorParentsCheck').checked = state.seniorParents;
-      updateD80dNote();
+      state.ageGroup = saved.age_group || '0-60';
+      state.incSalary = saved.income_salary || 0;
+      state.incInterest = saved.income_interest || 0;
+      state.incHomeLoanSelf = saved.home_loan_interest || 0;
+      state.incRental = saved.rental_income || 0;
+      state.incHomeLoanLetout = saved.home_loan_interest_letout || 0;
+      state.incDigital = saved.income_digital_assets || 0;
+      state.incOther = saved.other_income || 0;
+      state.ded80c = saved.deduction_80c || 0;
+      state.ded80tta = saved.deduction_80tta || 0;
+      state.ded80d = saved.deduction_80d || 0;
+      state.ded80g = saved.deduction_80g || 0;
+      state.ded80eea = saved.deduction_80eea || 0;
+      state.ded80e = saved.deduction_80e || 0;
+      state.dedNps = saved.deduction_nps || 0;
+      state.ded80ccd2 = saved.deduction_80ccd2 || 0;
+      state.dedOther = saved.other_deductions || 0;
+      state.seniorParents = !!saved.senior_citizen_parents;
+      state.hraBasic = saved.hra_basic_salary || 0;
+      state.hraDa = saved.hra_da || 0;
+      state.hraReceived = saved.hra_received || 0;
+      state.hraRentPaid = saved.hra_rent_paid || 0;
+      state.hraMetro = saved.hra_metro === undefined || saved.hra_metro === null ? true : !!saved.hra_metro;
+      writeStateToForm();
     }
 
     (async function init() {
@@ -504,19 +937,21 @@
       var saved = await loadSavedInputs();
       if (saved) applySaved(saved);
 
-      wireNumberInput('grossIncomeInput', 'grossIncome');
-      wireNumberInput('deduction80cInput', 'd80c');
-      wireNumberInput('deduction80dInput', 'd80d');
-      wireNumberInput('deductionNpsInput', 'dNps');
-      wireNumberInput('deductionHomeLoanInput', 'dHomeLoan');
-      wireNumberInput('deductionHraInput', 'dHra');
-      wireNumberInput('deductionOtherInput', 'dOther');
-      document.getElementById('seniorParentsCheck').addEventListener('change', function () {
-        state.seniorParents = this.checked;
-        updateD80dNote();
-        recalculate();
-      });
+      renderSlabTables();
 
+      var liveFieldIds = [
+        'incSalary', 'incInterest', 'incHomeLoanSelf', 'incRental', 'incHomeLoanLetout', 'incDigital', 'incOther',
+        'ded80c', 'ded80tta', 'ded80d', 'ded80g', 'ded80eea', 'ded80e', 'dedNps', 'ded80ccd2', 'dedOther',
+        'hraBasic', 'hraDa', 'hraReceived', 'hraRentPaid'
+      ];
+      liveFieldIds.forEach(function (id) {
+        document.getElementById(id).addEventListener('input', onInputsChanged);
+      });
+      document.getElementById('ageGroupSelect').addEventListener('change', onInputsChanged);
+      document.getElementById('seniorParentsCheck').addEventListener('change', onInputsChanged);
+      document.getElementById('hraMetro').addEventListener('change', onInputsChanged);
+
+      readInputsFromForm();
       recalculate();
       if (!saved) await saveInputs();
     })();

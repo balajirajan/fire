@@ -705,6 +705,29 @@ create table if not exists tax_planning_inputs (
   updated_at timestamptz not null default now()
 );
 
+-- Rebuilt as a 3-step wizard (Basic details / Income details / Deduction) —
+-- these carry the new per-head income and deduction fields. gross_income
+-- and hra_exemption stay for backward compatibility but are no longer
+-- written to; home_loan_interest and other_deductions are reused as-is.
+alter table tax_planning_inputs add column if not exists age_group text not null default '0-60' check (age_group in ('0-60','60-80','80+'));
+alter table tax_planning_inputs add column if not exists income_salary numeric not null default 0;
+alter table tax_planning_inputs add column if not exists exempt_allowances numeric not null default 0;
+alter table tax_planning_inputs add column if not exists income_interest numeric not null default 0;
+alter table tax_planning_inputs add column if not exists rental_income numeric not null default 0;
+alter table tax_planning_inputs add column if not exists home_loan_interest_letout numeric not null default 0;
+alter table tax_planning_inputs add column if not exists income_digital_assets numeric not null default 0;
+alter table tax_planning_inputs add column if not exists other_income numeric not null default 0;
+alter table tax_planning_inputs add column if not exists deduction_80tta numeric not null default 0;
+alter table tax_planning_inputs add column if not exists deduction_80g numeric not null default 0;
+alter table tax_planning_inputs add column if not exists deduction_80eea numeric not null default 0;
+alter table tax_planning_inputs add column if not exists deduction_80ccd2 numeric not null default 0;
+alter table tax_planning_inputs add column if not exists deduction_80e numeric not null default 0;
+alter table tax_planning_inputs add column if not exists hra_basic_salary numeric not null default 0;
+alter table tax_planning_inputs add column if not exists hra_da numeric not null default 0;
+alter table tax_planning_inputs add column if not exists hra_received numeric not null default 0;
+alter table tax_planning_inputs add column if not exists hra_rent_paid numeric not null default 0;
+alter table tax_planning_inputs add column if not exists hra_metro boolean not null default true;
+
 alter table tax_planning_inputs enable row level security;
 
 drop policy if exists "tax_planning_inputs_select_own" on tax_planning_inputs;
