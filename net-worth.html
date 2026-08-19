@@ -81,22 +81,21 @@
       display: flex;
       flex-wrap: wrap;
       align-items: center;
-      justify-content: space-between;
-      gap: 1.75rem;
+      justify-content: center;
+      gap: 0.5rem;
     }
-    .net-hero-stats { display: flex; flex-wrap: wrap; gap: 2.25rem; flex: 1; min-width: 280px; }
-    .net-hero-stat { min-width: 150px; }
-    .net-hero-icon { font-size: 1.1rem; margin-bottom: 0.4rem; opacity: 0.9; }
-    .net-hero-label { font-size: 0.78rem; color: #94a3b8; font-weight: 600; margin-bottom: 0.3rem; }
-    .net-hero-value { font-size: 1.75rem; font-weight: 800; }
-    .net-hero-value.negative { color: #f87171; }
-    .net-hero-sub { font-size: 0.72rem; color: #94a3b8; margin-top: 0.3rem; }
-    .net-hero-progress { display: flex; flex-direction: column; align-items: center; }
-    .net-hero-donut-wrap { position: relative; width: 110px; height: 110px; flex-shrink: 0; }
-    .net-hero-donut-wrap svg { width: 110px; height: 110px; display: block; }
-    .net-hero-progress-label { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-    .net-hero-progress-pct { font-size: 1.3rem; font-weight: 800; }
-    .net-hero-progress-sub { font-size: 0.6rem; color: #94a3b8; text-align: center; line-height: 1.3; margin-top: 0.15rem; }
+    /* Net Worth pictured as a literal equation across six categories —
+       ring diameter scales with each term's rupee value (bigger number,
+       bigger circle), read left to right with operator glyphs between
+       them, instead of a uniform grid of stats. */
+    .net-hero-equation { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 0.5rem; width: 100%; }
+    .net-hero-op { font-size: 1.5rem; font-weight: 800; color: rgba(255,255,255,0.4); flex-shrink: 0; }
+    .net-hero-ring-wrap { position: relative; flex-shrink: 0; }
+    .net-hero-ring-wrap svg { width: 100%; height: 100%; display: block; }
+    .net-hero-ring-value-wrap { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 0 0.4rem; }
+    .net-hero-ring-value { font-weight: 800; line-height: 1.15; }
+    .net-hero-ring-value.negative { color: #f87171; }
+    .net-hero-ring-label { font-size: 0.68rem; color: #94a3b8; font-weight: 600; margin-top: 0.2rem; }
 
     /* Chart card */
     .chart-card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 1.1rem; padding: 1.5rem 1.4rem 1.1rem; margin-bottom: 1.5rem; box-shadow: 0 4px 16px rgba(15,23,42,0.03); }
@@ -107,6 +106,13 @@
     .charts-row { display: grid; grid-template-columns: 1.3fr 1fr; gap: 1.5rem; align-items: stretch; }
     @media (max-width: 900px) { .charts-row { grid-template-columns: 1fr; } }
 
+    .category-charts-head { margin: 0.5rem 0 1rem; }
+    .category-charts-head h3 { font-size: 1.05rem; font-weight: 700; }
+    .category-charts-head p { font-size: 0.82rem; color: #94a3b8; margin-top: 0.15rem; }
+    .category-charts-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 1.5rem; }
+    @media (max-width: 1100px) { .category-charts-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 700px) { .category-charts-grid { grid-template-columns: 1fr; } }
+
     .donut-row { display: flex; align-items: center; gap: 1.75rem; flex-wrap: wrap; }
     .donut-svg { width: 150px; height: 150px; flex-shrink: 0; }
     .donut-legend { flex: 1; min-width: 180px; display: flex; flex-direction: column; gap: 0.55rem; }
@@ -114,14 +120,6 @@
     .donut-legend-name { display: flex; align-items: center; gap: 0.5rem; color: #364752; font-weight: 600; }
     .donut-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
     .donut-legend-val { color: #64748b; font-weight: 700; white-space: nowrap; }
-
-    .liability-list { display: flex; flex-direction: column; gap: 0.6rem; }
-    .liability-row { display: flex; align-items: center; justify-content: space-between; padding: 0.7rem 0.85rem; background: #fef2f2; border: 1px solid #fecaca; border-radius: 0.65rem; font-size: 0.85rem; }
-    .liability-row .lr-name { font-weight: 600; color: #364752; }
-    .liability-row .lr-val { font-weight: 800; color: #dc2626; }
-    .liability-total-row { display: flex; align-items: center; justify-content: space-between; padding: 0.7rem 0.85rem; margin-top: 0.3rem; border-top: 2px solid #f1f5f9; font-size: 0.88rem; }
-    .liability-total-row .lr-name { font-weight: 700; }
-    .liability-total-row .lr-val { font-weight: 800; color: #dc2626; }
 
     /* Account groups */
     .accounts-section { margin-bottom: 1.5rem; }
@@ -226,17 +224,25 @@
             <span class="nav-icon">🔄</span>
             <span class="nav-label">Personal Debt & Receivable</span>
           </a>
+          <a href="loans.html">
+            <span class="nav-icon">📉</span>
+            <span class="nav-label">Loan / EMI</span>
+          </a>
+          <a href="bank-balances.html">
+            <span class="nav-icon">🏦</span>
+            <span class="nav-label">Bank Balances</span>
+          </a>
         </div>
 
         <div class="nav-section-label">Cash Flow</div>
         <a href="money-required.html">
           <span class="nav-icon">🪴</span>
-          <span class="nav-label">Expenses</span>
+          <span class="nav-label">Monthly CashFlow</span>
           <span class="nav-chevron">›</span>
         </a>
-        <a href="expense-quick-add.html">
-          <span class="nav-icon">⚡</span>
-          <span class="nav-label">Daily Expenses Tracker</span>
+        <a href="income.html">
+          <span class="nav-icon">💵</span>
+          <span class="nav-label">Income</span>
         </a>
         <a href="tax-planning.html">
           <span class="nav-icon">🧾</span>
@@ -262,7 +268,7 @@
         <div class="nav-section-label">Family &amp; Health</div>
         <a href="life-expectancy.html">
           <span class="nav-icon">❤️</span>
-          <span class="nav-label">Health</span>
+          <span class="nav-label">Health(is wealth)</span>
           <span class="nav-chevron">›</span>
         </a>
 
@@ -310,39 +316,13 @@
       <div class="page-head">
         <div>
           <h2>Net Worth</h2>
-          <p>Calculated automatically from every Networth section — Stocks/MF, Gold + Commodities, Government Scheme, Properties and Personal Debt & Receivable — plus anything else you add below.</p>
+          <p>Calculated automatically from Bank Balances, Stocks/MF, Gold + Commodities, Government Scheme, Properties, Loan/EMI, Personal Debt & Receivable — plus anything else you add below.</p>
         </div>
         <button type="button" class="pbtn" onclick="openAccountModal()">+ Add Other Account</button>
       </div>
 
       <div class="net-hero" id="netHero">
-        <div class="net-hero-stats">
-          <div class="net-hero-stat">
-            <div class="net-hero-icon">💰</div>
-            <div class="net-hero-label">Total Net Worth</div>
-            <div class="net-hero-value" id="heroNetWorth">₹0</div>
-            <div class="net-hero-sub">Assets − Liabilities, across every section</div>
-          </div>
-          <div class="net-hero-stat">
-            <div class="net-hero-icon">📈</div>
-            <div class="net-hero-label">Total Assets</div>
-            <div class="net-hero-value" id="heroAssets">₹0</div>
-          </div>
-          <div class="net-hero-stat">
-            <div class="net-hero-icon">💳</div>
-            <div class="net-hero-label">Total Liabilities</div>
-            <div class="net-hero-value" id="heroLiabilities">₹0</div>
-          </div>
-        </div>
-        <div class="net-hero-progress">
-          <div class="net-hero-donut-wrap">
-            <div id="heroDonutSvgHolder"></div>
-            <div class="net-hero-progress-label">
-              <div class="net-hero-progress-pct" id="heroInvestedPct">0%</div>
-              <div class="net-hero-progress-sub">of Assets<br>Invested</div>
-            </div>
-          </div>
-        </div>
+        <div class="net-hero-equation" id="netHeroEquation"></div>
       </div>
 
       <div id="liveWrap" class="hidden">
@@ -356,6 +336,38 @@
             <h3>Liabilities</h3>
             <p class="chart-sub">What's working against your net worth.</p>
             <div id="liabilitiesWrap"></div>
+          </div>
+        </div>
+
+        <div class="category-charts-head">
+          <h3>By Category</h3>
+          <p>Every named holding within each category — the boxes above show the big picture, these show what's actually in each slice.</p>
+        </div>
+        <div class="category-charts-grid">
+          <div class="chart-card">
+            <h3>Liquid Cash</h3>
+            <p class="chart-sub">Savings, current accounts, FDs/RDs and cash.</p>
+            <div id="liquidChartWrap"></div>
+          </div>
+          <div class="chart-card">
+            <h3>Investments</h3>
+            <p class="chart-sub">Stocks/MF and Government Scheme (also where EPF/PPF/NPS get logged).</p>
+            <div id="investmentsChartWrap"></div>
+          </div>
+          <div class="chart-card">
+            <h3>Real Estate</h3>
+            <p class="chart-sub">Every property, by current value.</p>
+            <div id="realEstateChartWrap"></div>
+          </div>
+          <div class="chart-card">
+            <h3>Physical Assets</h3>
+            <p class="chart-sub">Gold/Commodities and other manual assets (vehicles, collectibles).</p>
+            <div id="physicalChartWrap"></div>
+          </div>
+          <div class="chart-card">
+            <h3>Receivables</h3>
+            <p class="chart-sub">Money owed to you, by who owes it.</p>
+            <div id="receivablesChartWrap"></div>
           </div>
         </div>
 
@@ -439,7 +451,7 @@
     var selectedType = 'asset';
     var editingId = null;
 
-    var ALLOC_COLORS = { portfolio: '#0ea5e9', gold: '#f59e0b', gov: '#8b5cf6', properties: '#10b981', receivable: '#06b6d4', other: '#64748b' };
+    var ALLOC_COLORS = { bank: '#14b8a6', portfolio: '#0ea5e9', gold: '#f59e0b', gov: '#8b5cf6', properties: '#10b981', receivable: '#06b6d4', other: '#64748b' };
 
     function fmtRupee(n, compact) {
       var amount = Math.round(Number(n) || 0);
@@ -457,54 +469,175 @@
       return (amount < 0 ? '-' : '') + '₹' + out;
     }
 
-    /* ---- Live data pulled from every Networth section ---- */
+    // Whole-number rounding hides genuinely non-zero small shares as "0%"
+    // (e.g. a ₹57,000 slice of a ₹3.7 Cr total rounds to 0). Only switch to
+    // one decimal place when that would otherwise happen — everything
+    // meaningfully above 1% stays a plain whole number.
+    function fmtPct(value, total) {
+      if (!total) return '0%';
+      var pct = (value / total) * 100;
+      if (pct > 0 && Math.round(pct) === 0) return pct.toFixed(1) + '%';
+      return Math.round(pct) + '%';
+    }
 
-    async function loadPortfolioValue() {
+    /* ---- Live data pulled from every Networth section ----                ----
+       Each "Breakdown" function returns [{name, value}, ...] per named item
+       (used by the per-category donut boxes); the matching total-only
+       function is a thin wrapper that sums it (used by the equation rings),
+       so there's exactly one query path per data source, not two. ---- */
+
+    async function loadPortfolioBreakdown() {
       var { data: groups } = await supabaseClient.from('expense_groups').select('id').eq('section', 'portfolio');
       var groupIds = (groups || []).map(function (g) { return g.id; });
-      if (!groupIds.length) return 0;
-      var { data: items } = await supabaseClient.from('expense_items').select('id').in('group_id', groupIds);
-      var itemIds = (items || []).map(function (i) { return i.id; });
-      if (!itemIds.length) return 0;
-      var { data: grid } = await supabaseClient.from('expense_grid').select('month, current_value').in('item_id', itemIds);
-      if (!grid || !grid.length) return 0;
+      if (!groupIds.length) return [];
+      var { data: items } = await supabaseClient.from('expense_items').select('id, name').in('group_id', groupIds);
+      if (!items || !items.length) return [];
+      var itemIds = items.map(function (i) { return i.id; });
+      var { data: grid } = await supabaseClient.from('expense_grid').select('item_id, month, current_value').in('item_id', itemIds);
+      if (!grid || !grid.length) return [];
       var maxMonth = grid.reduce(function (m, r) { return r.month > m ? r.month : m; }, grid[0].month);
-      return grid.filter(function (r) { return r.month === maxMonth; }).reduce(function (s, r) { return s + (Number(r.current_value) || 0); }, 0);
+      var latestByItem = {};
+      grid.filter(function (r) { return r.month === maxMonth; }).forEach(function (r) {
+        latestByItem[r.item_id] = (latestByItem[r.item_id] || 0) + (Number(r.current_value) || 0);
+      });
+      return items.map(function (it) { return { name: it.name, value: latestByItem[it.id] || 0 }; }).filter(function (x) { return x.value > 0; });
+    }
+
+    async function loadPortfolioValue() {
+      return (await loadPortfolioBreakdown()).reduce(function (s, r) { return s + r.value; }, 0);
+    }
+
+    async function loadGoldBreakdown() {
+      var { data, error } = await supabaseClient.from('gold_holdings').select('name, grams, current_rate_per_gram');
+      if (error || !data) return [];
+      return data.map(function (r) {
+        var value = r.current_rate_per_gram !== null ? Number(r.grams) * Number(r.current_rate_per_gram) : 0;
+        return { name: r.name, value: value };
+      }).filter(function (x) { return x.value > 0; });
     }
 
     async function loadGoldValue() {
-      var { data, error } = await supabaseClient.from('gold_holdings').select('grams, current_rate_per_gram');
-      if (error || !data) return 0;
-      return data.reduce(function (s, r) {
-        return s + (r.current_rate_per_gram !== null ? Number(r.grams) * Number(r.current_rate_per_gram) : 0);
-      }, 0);
+      return (await loadGoldBreakdown()).reduce(function (s, r) { return s + r.value; }, 0);
+    }
+
+    async function loadGovSchemeBreakdown() {
+      var { data, error } = await supabaseClient.from('other_investments').select('name, current_value').eq('category', 'Government Scheme');
+      if (error || !data) return [];
+      return data.map(function (r) { return { name: r.name, value: Number(r.current_value || 0) }; }).filter(function (x) { return x.value > 0; });
     }
 
     async function loadGovSchemeValue() {
-      var { data, error } = await supabaseClient.from('other_investments').select('current_value').eq('category', 'Government Scheme');
-      if (error || !data) return 0;
-      return data.reduce(function (s, r) { return s + Number(r.current_value || 0); }, 0);
+      return (await loadGovSchemeBreakdown()).reduce(function (s, r) { return s + r.value; }, 0);
     }
 
-    async function loadPropertiesBreakdown() {
-      var { data, error } = await supabaseClient.from('properties').select('current_value, has_mortgage, mortgage_balance');
-      if (error || !data) return { gross: 0, mortgage: 0 };
-      var gross = 0, mortgage = 0;
-      data.forEach(function (p) {
-        gross += Number(p.current_value || 0);
-        if (p.has_mortgage) mortgage += Number(p.mortgage_balance || 0);
-      });
-      return { gross: gross, mortgage: mortgage };
+    // Raw list, not just a {gross, mortgage} total — render() derives both
+    // the aggregate figures AND the per-property / per-mortgage breakdowns
+    // from this same query.
+    async function loadProperties() {
+      var { data, error } = await supabaseClient.from('properties').select('name, current_value, has_mortgage, mortgage_balance');
+      if (error || !data) return [];
+      return data;
     }
 
-    async function loadPersonalIouBreakdown() {
-      var { data, error } = await supabaseClient.from('personal_ious').select('direction, balance');
-      if (error || !data) return { owedToMe: 0, iOwe: 0 };
-      var owedToMe = 0, iOwe = 0;
-      data.forEach(function (r) {
-        if (r.direction === 'owed_to_me') owedToMe += Number(r.balance || 0); else iOwe += Number(r.balance || 0);
+    // Raw list, not just an {owedToMe, iOwe} total — same reasoning as
+    // loadProperties() above.
+    async function loadPersonalIous() {
+      var { data, error } = await supabaseClient.from('personal_ious').select('name, direction, balance');
+      if (error || !data) return [];
+      return data;
+    }
+
+    // Bank Balances (savings/current/FD/RD/cash) was never previously
+    // pulled into Net Worth at all — same latest-month-total pattern as
+    // loadPortfolioBreakdown, just section 'bank' and the plain `amount`
+    // column instead of `current_value` (bank items don't track a
+    // separate invested-vs-current distinction).
+    async function loadBankBalancesBreakdown() {
+      var { data: groups } = await supabaseClient.from('expense_groups').select('id').eq('section', 'bank');
+      var groupIds = (groups || []).map(function (g) { return g.id; });
+      if (!groupIds.length) return [];
+      var { data: items } = await supabaseClient.from('expense_items').select('id, name').in('group_id', groupIds);
+      if (!items || !items.length) return [];
+      var itemIds = items.map(function (i) { return i.id; });
+      var { data: grid } = await supabaseClient.from('expense_grid').select('item_id, month, amount').in('item_id', itemIds);
+      if (!grid || !grid.length) return [];
+      var maxMonth = grid.reduce(function (m, r) { return r.month > m ? r.month : m; }, grid[0].month);
+      var latestByItem = {};
+      grid.filter(function (r) { return r.month === maxMonth; }).forEach(function (r) {
+        latestByItem[r.item_id] = (latestByItem[r.item_id] || 0) + (Number(r.amount) || 0);
       });
-      return { owedToMe: owedToMe, iOwe: iOwe };
+      return items.map(function (it) { return { name: it.name, value: latestByItem[it.id] || 0 }; }).filter(function (x) { return x.value > 0; });
+    }
+
+    async function loadBankBalancesValue() {
+      return (await loadBankBalancesBreakdown()).reduce(function (s, r) { return s + r.value; }, 0);
+    }
+
+    function todayMonthKey() {
+      var d = new Date();
+      return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+    }
+
+    // Standard reducing-balance amortization — identical math to
+    // loanRemainingPrincipal() on loans.html, duplicated here (not shared,
+    // per this app's no-shared-template convention).
+    function loanRemainingPrincipal(principal, monthlyRate, emi, months) {
+      var bal = principal;
+      for (var i = 0; i < months && bal > 0; i++) {
+        var interest = bal * monthlyRate;
+        bal -= (emi - interest);
+      }
+      return Math.max(0, bal);
+    }
+
+    // Loan/EMI items (car loans, personal loans, LAP, credit card...) were
+    // never previously pulled into Net Worth's Liabilities either — only
+    // property mortgages and manually-entered "Other Accounts" liabilities
+    // were counted. This computes the same outstanding-balance figure
+    // loans.html shows per loan, named per loan item.
+    async function loadLoanOutstandingBreakdown() {
+      var { data: groups } = await supabaseClient.from('expense_groups').select('id').eq('section', 'loans');
+      var groupIds = (groups || []).map(function (g) { return g.id; });
+      if (!groupIds.length) return [];
+
+      var { data: items } = await supabaseClient.from('expense_items').select('id, name').in('group_id', groupIds);
+      if (!items || !items.length) return [];
+      var itemIds = items.map(function (i) { return i.id; });
+      var itemNameById = {};
+      items.forEach(function (it) { itemNameById[it.id] = it.name; });
+
+      var { data: loanDetailRows } = await supabaseClient.from('loan_details').select('*').in('item_id', itemIds);
+      if (!loanDetailRows || !loanDetailRows.length) return [];
+
+      var { data: gridRows } = await supabaseClient.from('expense_grid').select('item_id, month, amount').in('item_id', itemIds);
+      var { data: prepayRows } = await supabaseClient.from('loan_prepayments').select('item_id, amount').in('item_id', itemIds);
+
+      var prepaidByItem = {};
+      (prepayRows || []).forEach(function (r) {
+        prepaidByItem[r.item_id] = (prepaidByItem[r.item_id] || 0) + (Number(r.amount) || 0);
+      });
+
+      var cutoff = todayMonthKey();
+      var paidMonthsByItem = {};
+      (gridRows || []).forEach(function (r) {
+        if (r.month <= cutoff && Number(r.amount) > 0) {
+          paidMonthsByItem[r.item_id] = (paidMonthsByItem[r.item_id] || 0) + 1;
+        }
+      });
+
+      return loanDetailRows.map(function (row) {
+        var principal = Number(row.principal);
+        var monthlyRate = Number(row.rate_pct) / 12 / 100;
+        var emi = Number(row.monthly_emi);
+        var paidMonths = paidMonthsByItem[row.item_id] || 0;
+        var principalAfterEmis = loanRemainingPrincipal(principal, monthlyRate, emi, paidMonths);
+        var prepaid = prepaidByItem[row.item_id] || 0;
+        return { name: itemNameById[row.item_id] || 'Loan', value: Math.max(0, principalAfterEmis - prepaid) };
+      }).filter(function (x) { return x.value > 0; });
+    }
+
+    async function loadLoanOutstandingTotal() {
+      return (await loadLoanOutstandingBreakdown()).reduce(function (s, r) { return s + r.value; }, 0);
     }
 
     /* ---- "Other" accounts — manual catch-all for anything not covered   ----
@@ -641,6 +774,59 @@
         '</svg>';
     }
 
+    /* Net Worth as a literal equation of size-scaled rings. The SVG
+       viewBox stays fixed (150) for consistent stroke proportions; the
+       wrapper div's own width/height (set inline per ring) is what
+       actually varies — the svg's width:100%/height:100% (see CSS)
+       scales it to fit. */
+    function buildEquationRing(value, label, color, size, isNegative) {
+      var svg = buildProgressDonutSvg(100, 150, 14, color);
+      var valueFontRem = Math.max(1.02, Math.min(2.02, size / 132)).toFixed(2);
+      return '<div class="net-hero-ring-wrap" style="width:' + size + 'px; height:' + size + 'px;">' +
+        svg +
+        '<div class="net-hero-ring-value-wrap">' +
+          '<div class="net-hero-ring-value' + (isNegative ? ' negative' : '') + '" style="font-size:' + valueFontRem + 'rem;">' + fmtRupee(value, true) + '</div>' +
+          '<div class="net-hero-ring-label">' + label + '</div>' +
+        '</div>' +
+      '</div>';
+    }
+
+    // Net Worth = Liquid Cash + Investments + Real Estate + Physical Assets
+    // + Receivables − Liabilities. Every term here is one of the six
+    // categories from the user's own taxonomy; nothing tracked elsewhere
+    // in the app is left out of this sum (see render() for how each
+    // category maps to its underlying data sources).
+    function renderNetWorthEquation(netWorth, liquidVal, investmentsVal, realEstateVal, physicalVal, receivablesVal, liabilitiesVal) {
+      var netWorthTerm = { value: netWorth, label: 'Net Worth', color: '#0ea5e9', negative: netWorth < 0 };
+      var liabilitiesTerm = { value: liabilitiesVal, label: 'Liabilities', color: '#dc2626' };
+      var middleTerms = [
+        { value: liquidVal, label: 'Liquid Cash', color: '#06b6d4' },
+        { value: investmentsVal, label: 'Investments', color: '#8b5cf6' },
+        { value: realEstateVal, label: 'Real Estate', color: '#10b981' },
+        { value: physicalVal, label: 'Physical Assets', color: '#f59e0b' },
+        { value: receivablesVal, label: 'Receivables', color: '#ec4899' }
+      ];
+      // Net Worth always leftmost, Liabilities always rightmost — only the
+      // five middle terms reorder themselves, biggest value first.
+      middleTerms.sort(function (a, b) { return Math.abs(b.value) - Math.abs(a.value); });
+
+      var terms = [netWorthTerm].concat(middleTerms, [liabilitiesTerm]);
+      var ops = ['=', '+', '+', '+', '+', '−'];
+      var MIN_SIZE = 102, MAX_SIZE = 225; // 1.5x the original 68–150 range
+      var maxAbs = Math.max.apply(null, terms.map(function (t) { return Math.abs(t.value); }).concat([1]));
+      terms.forEach(function (t) {
+        t.size = Math.round(MIN_SIZE + (MAX_SIZE - MIN_SIZE) * (Math.abs(t.value) / maxAbs));
+      });
+
+      var html = buildEquationRing(terms[0].value, terms[0].label, terms[0].color, terms[0].size, terms[0].negative);
+      for (var i = 1; i < terms.length; i++) {
+        html += '<span class="net-hero-op">' + ops[i - 1] + '</span>' +
+          buildEquationRing(terms[i].value, terms[i].label, terms[i].color, terms[i].size);
+      }
+
+      document.getElementById('netHeroEquation').innerHTML = html;
+    }
+
     function buildDonutSvg(segments, size, strokeW) {
       var total = segments.reduce(function (s, d) { return s + d.value; }, 0);
       var r = (size - strokeW) / 2;
@@ -660,38 +846,33 @@
       return '<svg viewBox="0 0 ' + size + ' ' + size + '" class="donut-svg">' + svg + '</svg>';
     }
 
-    function renderAllocationChart(segments) {
-      var wrap = document.getElementById('allocChartWrap');
+    // One shared renderer for every donut+legend box on this page — the
+    // macro "Asset Allocation" card, "Liabilities", and every per-category
+    // breakdown box below it all call this with their own segment list.
+    var CATEGORY_PALETTE = ['#0ea5e9', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4', '#14b8a6', '#f97316', '#84cc16', '#64748b'];
+
+    function renderCategoryDonut(containerId, segments, emptyMessage) {
+      var wrap = document.getElementById(containerId);
       var withValue = segments.filter(function (s) { return s.value > 0; });
       if (withValue.length === 0) {
-        wrap.innerHTML = '<div class="chart-empty">No assets yet — add a holding in any Networth section.</div>';
+        wrap.innerHTML = '<div class="chart-empty">' + emptyMessage + '</div>';
         return;
       }
       var total = withValue.reduce(function (s, d) { return s + d.value; }, 0);
       var legend = withValue.map(function (d) {
-        var pct = total ? Math.round(d.value / total * 100) : 0;
         return '<div class="donut-legend-row">' +
           '<span class="donut-legend-name"><span class="donut-dot" style="background:' + d.color + ';"></span>' + escapeHtml(d.label) + '</span>' +
-          '<span class="donut-legend-val">' + fmtRupee(d.value, true) + ' (' + pct + '%)</span>' +
+          '<span class="donut-legend-val">' + fmtRupee(d.value, true) + ' (' + fmtPct(d.value, total) + ')</span>' +
           '</div>';
       }).join('');
       wrap.innerHTML = '<div class="donut-row">' + buildDonutSvg(withValue, 150, 24) + '<div class="donut-legend">' + legend + '</div></div>';
     }
 
-    function renderLiabilities(items) {
-      var wrap = document.getElementById('liabilitiesWrap');
-      var withValue = items.filter(function (d) { return d.value > 0; });
-      if (withValue.length === 0) {
-        wrap.innerHTML = '<div class="chart-empty">No liabilities — nothing dragging your net worth down. 🎉</div>';
-        return;
-      }
-      var total = withValue.reduce(function (s, d) { return s + d.value; }, 0);
-      wrap.innerHTML = '<div class="liability-list">' +
-        withValue.map(function (d) {
-          return '<div class="liability-row"><span class="lr-name">' + escapeHtml(d.label) + '</span><span class="lr-val">' + fmtRupee(d.value) + '</span></div>';
-        }).join('') +
-        '<div class="liability-total-row"><span class="lr-name">Total Liabilities</span><span class="lr-val">' + fmtRupee(total) + '</span></div>' +
-        '</div>';
+    // Turns a [{name, value}, ...] breakdown (from any of the loadXBreakdown
+    // functions) into renderCategoryDonut's [{label, value, color}] shape,
+    // cycling through the shared palette per item.
+    function toCategorySegments(list) {
+      return list.map(function (r, i) { return { label: r.name, value: r.value, color: CATEGORY_PALETTE[i % CATEGORY_PALETTE.length] }; });
     }
 
     async function refresh() {
@@ -701,39 +882,81 @@
 
     async function render() {
       var results = await Promise.all([
-        loadPortfolioValue(), loadGoldValue(), loadGovSchemeValue(), loadPropertiesBreakdown(), loadPersonalIouBreakdown()
+        loadPortfolioBreakdown(), loadGoldBreakdown(), loadGovSchemeBreakdown(), loadProperties(), loadPersonalIous(),
+        loadBankBalancesBreakdown(), loadLoanOutstandingBreakdown()
       ]);
-      var portfolioValue = results[0], goldValue = results[1], govValue = results[2], propBreak = results[3], iouBreak = results[4];
+      var portfolioBreakdown = results[0], goldBreakdown = results[1], govBreakdown = results[2];
+      var properties = results[3], personalIous = results[4];
+      var liquidBreakdown = results[5], loanBreakdown = results[6];
+
+      function sumOf(list) { return list.reduce(function (s, r) { return s + r.value; }, 0); }
+
+      var portfolioValue = sumOf(portfolioBreakdown);
+      var goldValue = sumOf(goldBreakdown);
+      var govValue = sumOf(govBreakdown);
+      var liquidValue = sumOf(liquidBreakdown);
+      var loanOutstandingTotal = sumOf(loanBreakdown);
+
+      var propertiesBreakdown = properties.map(function (p) { return { name: p.name, value: Number(p.current_value || 0) }; }).filter(function (x) { return x.value > 0; });
+      var propGross = sumOf(propertiesBreakdown);
+      var propertyMortgageBreakdown = properties.filter(function (p) { return p.has_mortgage; })
+        .map(function (p) { return { name: p.name + ' (Mortgage)', value: Number(p.mortgage_balance || 0) }; })
+        .filter(function (x) { return x.value > 0; });
+      var propMortgageTotal = sumOf(propertyMortgageBreakdown);
+
+      var owedToMeBreakdown = personalIous.filter(function (r) { return r.direction === 'owed_to_me'; })
+        .map(function (r) { return { name: r.name, value: Number(r.balance || 0) }; }).filter(function (x) { return x.value > 0; });
+      var iOweBreakdown = personalIous.filter(function (r) { return r.direction === 'i_owe'; })
+        .map(function (r) { return { name: r.name, value: Number(r.balance || 0) }; }).filter(function (x) { return x.value > 0; });
+      var owedToMeTotal = sumOf(owedToMeBreakdown);
+      var iOweTotal = sumOf(iOweBreakdown);
 
       var otherAssets = groupTotal('asset');
       var otherLiabilities = groupTotal('liability');
+      var otherAssetsBreakdown = accounts.filter(function (a) { return a.type === 'asset'; })
+        .map(function (a) { return { name: a.name, value: Number(a.balance || 0) }; }).filter(function (x) { return x.value > 0; });
+      var otherLiabilitiesBreakdown = accounts.filter(function (a) { return a.type === 'liability'; })
+        .map(function (a) { return { name: a.name, value: Number(a.balance || 0) }; }).filter(function (x) { return x.value > 0; });
 
-      var totalAssets = portfolioValue + goldValue + govValue + propBreak.gross + iouBreak.owedToMe + otherAssets;
-      var totalLiabilities = propBreak.mortgage + iouBreak.iOwe + otherLiabilities;
+      var totalAssets = liquidValue + portfolioValue + goldValue + govValue + propGross + owedToMeTotal + otherAssets;
+      var totalLiabilities = propMortgageTotal + loanOutstandingTotal + iOweTotal + otherLiabilities;
       var netWorth = totalAssets - totalLiabilities;
-      var investedPct = totalAssets ? Math.round((portfolioValue + goldValue + govValue) / totalAssets * 100) : 0;
 
-      document.getElementById('heroNetWorth').textContent = fmtRupee(netWorth, true);
-      document.getElementById('heroNetWorth').className = 'net-hero-value' + (netWorth < 0 ? ' negative' : '');
-      document.getElementById('heroAssets').textContent = fmtRupee(totalAssets, true);
-      document.getElementById('heroLiabilities').textContent = fmtRupee(totalLiabilities, true);
-      document.getElementById('heroInvestedPct').textContent = investedPct + '%';
-      document.getElementById('heroDonutSvgHolder').innerHTML = buildProgressDonutSvg(investedPct, 110, 14, '#0ea5e9');
+      // Six categories, each mapped to real tracked data — every term of
+      // totalAssets/totalLiabilities above lands in exactly one of these,
+      // so the pictured equation always equals the real Net Worth:
+      //   Investments  = Stocks/MF + Government Scheme (also where EPF/
+      //                  PPF/NPS/Superannuation get logged, since this app
+      //                  has no dedicated fields for those yet)
+      //   Physical     = Gold/Commodities + "Other Assets" manual accounts
+      //                  (Vehicles/Collectibles get logged there for now)
+      //   Liabilities  = Property mortgages + Loan/EMI outstanding
+      //                  (car/personal/LAP) + Personal debt I owe + Other
+      var investmentsValue = portfolioValue + govValue;
+      var physicalValue = goldValue + otherAssets;
+      renderNetWorthEquation(netWorth, liquidValue, investmentsValue, propGross, physicalValue, owedToMeTotal, totalLiabilities);
 
-      renderAllocationChart([
+      renderCategoryDonut('allocChartWrap', [
+        { label: 'Bank & Cash', value: liquidValue, color: ALLOC_COLORS.bank },
         { label: 'Stocks/MF', value: portfolioValue, color: ALLOC_COLORS.portfolio },
         { label: 'Gold + Commodities', value: goldValue, color: ALLOC_COLORS.gold },
         { label: 'Government Scheme', value: govValue, color: ALLOC_COLORS.gov },
-        { label: 'Properties', value: propBreak.gross, color: ALLOC_COLORS.properties },
-        { label: 'Receivable (Owed to Me)', value: iouBreak.owedToMe, color: ALLOC_COLORS.receivable },
+        { label: 'Properties', value: propGross, color: ALLOC_COLORS.properties },
+        { label: 'Receivable (Owed to Me)', value: owedToMeTotal, color: ALLOC_COLORS.receivable },
         { label: 'Other Assets', value: otherAssets, color: ALLOC_COLORS.other }
-      ]);
+      ], 'No assets yet — add a holding in any Networth section.');
 
-      renderLiabilities([
-        { label: 'Property Mortgages', value: propBreak.mortgage },
-        { label: 'Personal Debt (I Owe)', value: iouBreak.iOwe },
-        { label: 'Other Liabilities', value: otherLiabilities }
-      ]);
+      // Liabilities, itemized per named entry (each mortgage, each loan,
+      // each person you owe, each manual liability) — same granularity as
+      // the five category boxes below, not just the four coarse buckets.
+      var liabilitiesBreakdown = propertyMortgageBreakdown.concat(loanBreakdown, iOweBreakdown, otherLiabilitiesBreakdown);
+      renderCategoryDonut('liabilitiesWrap', toCategorySegments(liabilitiesBreakdown), 'No liabilities — nothing dragging your net worth down. 🎉');
+
+      renderCategoryDonut('liquidChartWrap', toCategorySegments(liquidBreakdown), 'No bank or cash balances yet — add one on Bank Balances.');
+      renderCategoryDonut('investmentsChartWrap', toCategorySegments(portfolioBreakdown.concat(govBreakdown)), 'No investments yet — add a holding under Stocks/MF or Government Scheme.');
+      renderCategoryDonut('realEstateChartWrap', toCategorySegments(propertiesBreakdown), 'No properties yet — add one on the Properties page.');
+      renderCategoryDonut('physicalChartWrap', toCategorySegments(goldBreakdown.concat(otherAssetsBreakdown)), 'No physical assets yet — add gold or another manual asset.');
+      renderCategoryDonut('receivablesChartWrap', toCategorySegments(owedToMeBreakdown), 'Nobody owes you anything tracked yet.');
 
       document.getElementById('assetGroupTotal').textContent = fmtRupee(otherAssets);
       document.getElementById('liabilityGroupTotal').textContent = '-' + fmtRupee(otherLiabilities);
