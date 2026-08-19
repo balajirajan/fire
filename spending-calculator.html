@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Expenses Calculator - FinFlow</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f8fafc;
+      color: #0f172a;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    a, button { color: inherit; text-decoration: none; font-family: inherit; }
+
+    .app-shell { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
+    @media (max-width: 860px) { .app-shell { grid-template-columns: 1fr; } .sidebar { display: none; } }
+
+    /* Sidebar */
+    .sidebar { background: #ffffff; border-right: 1px solid #e2e8f0; display: flex; flex-direction: column; padding: 1.5rem 1.25rem; }
+    .sidebar-logo { display: flex; align-items: center; gap: 0.65rem; font-size: 1.1rem; font-weight: 800; margin-bottom: 2rem; padding: 0 0.25rem; }
+    .sidebar-logo-icon { width: 30px; height: 30px; background: linear-gradient(135deg, #0ea5e9, #10b981); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; flex-shrink: 0; }
+    .sidebar-nav { display: flex; flex-direction: column; gap: 0.25rem; }
+    .sidebar-nav a, .sidebar-nav .nav-group-head { display: flex; align-items: center; gap: 0.75rem; padding: 0.7rem 0.75rem; border-radius: 0.6rem; font-size: 0.9rem; font-weight: 500; color: #364752; }
+    .sidebar-nav a:hover, .sidebar-nav .nav-group-head:hover { background: #f1f5f9; }
+    .sidebar-nav a.active { background: #0f172a; color: #ffffff; font-weight: 600; }
+    .sidebar-nav a.active .nav-chevron { color: rgba(255,255,255,0.6); }
+    .sidebar-nav .nav-group-head.open { background: #f1f5f9; font-weight: 700; }
+    .sidebar-nav .nav-group-head.active { background: #0f172a; color: #ffffff; font-weight: 600; }
+    .sidebar-nav .nav-group-head.active .nav-chevron { color: rgba(255,255,255,0.6); }
+    .sidebar-nav .nav-icon { font-size: 1rem; width: 20px; text-align: center; flex-shrink: 0; }
+    .sidebar-nav .nav-label { flex: 1; }
+    .sidebar-nav .nav-chevron { color: #94a3b8; font-size: 0.85rem; }
+    .sidebar-nav .nav-section-label { font-size: 0.66rem; font-weight: 800; letter-spacing: 0.07em; text-transform: uppercase; color: #94a3b8; padding: 0.9rem 0.75rem 0.35rem; }
+    .sidebar-nav .nav-section-label:first-of-type { padding-top: 0.2rem; }
+    .sidebar-subnav { display: flex; flex-direction: column; gap: 0.2rem; padding-left: 1.6rem; margin: 0.15rem 0 0.3rem; }
+    .sidebar-subnav a { display: flex; align-items: center; gap: 0.6rem; padding: 0.55rem 0.6rem; border-radius: 0.5rem; font-size: 0.85rem; font-weight: 500; color: #364752; }
+    .sidebar-subnav a:hover { background: #f1f5f9; }
+    .sidebar-subnav a.active { background: #0f172a; color: #fff; font-weight: 600; }
+    .sidebar-spacer { flex: 1; }
+    .feedback-card { background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 0.9rem; padding: 1.1rem; margin-top: 1.5rem; }
+    .feedback-card .fc-icon { width: 32px; height: 32px; border-radius: 0.6rem; background: #eef2f7; display: flex; align-items: center; justify-content: center; font-size: 0.95rem; margin-bottom: 0.6rem; }
+    .feedback-card strong { display: block; font-size: 0.85rem; margin-bottom: 0.3rem; }
+    .feedback-card p { font-size: 0.78rem; color: #64748b; line-height: 1.5; margin-bottom: 0.85rem; }
+    .feedback-card a { display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; width: 100%; padding: 0.55rem; border: 1px solid #cbd5e1; border-radius: 0.5rem; font-size: 0.8rem; font-weight: 600; color: #364752; }
+    .feedback-card a:hover { border-color: #10b981; color: #10b981; }
+
+    /* Main */
+    .main { padding: 1.5rem 2.5rem 3rem; min-width: 0; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; padding-bottom: 1.25rem; border-bottom: 1px solid #e2e8f0; margin-bottom: 1.5rem; }
+    .topbar h1 { font-size: 1.4rem; font-weight: 700; }
+    .topbar-right { display: flex; align-items: center; gap: 0.85rem; }
+    .language-selector { display: flex; align-items: center; gap: 0.5rem; background: #ffffff; padding: 0.5rem 0.9rem; border-radius: 0.5rem; color: #51636f; border: 1px solid #e2e8f0; cursor: pointer; font-size: 0.85rem; }
+    .user-menu { position: relative; list-style: none; }
+    .user-menu > summary { cursor: pointer; list-style: none; width: 34px; height: 34px; border-radius: 50%; background: #eef2f7; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; font-size: 1rem; }
+    .user-menu > summary::-webkit-details-marker { display: none; }
+    .user-menu-panel { position: absolute; top: calc(100% + 0.6rem); right: 0; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 0.75rem; box-shadow: 0 10px 30px rgba(15,23,42,0.12); padding: 0.4rem; min-width: 150px; z-index: 20; }
+    .user-menu-panel a { display: block; padding: 0.55rem 0.7rem; border-radius: 0.5rem; font-size: 0.85rem; color: #364752; font-weight: 500; }
+    .user-menu-panel a:hover { background: #f1f5f9; color: #10b981; }
+
+    .page-head { margin-bottom: 1.5rem; max-width: 66ch; }
+    .page-head h2 { font-size: 1.6rem; font-weight: 800; margin-bottom: 0.3rem; }
+    .page-head p { color: #64748b; font-size: 0.9rem; line-height: 1.55; }
+
+    /* Calculator layout */
+    .sc-grid { display: grid; grid-template-columns: 1fr 380px; gap: 1.5rem; align-items: start; }
+    @media (max-width: 980px) { .sc-grid { grid-template-columns: 1fr; } }
+
+    .sc-card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 1.1rem; padding: 1.5rem 1.75rem; box-shadow: 0 4px 16px rgba(15,23,42,0.03); }
+
+    .sc-group-head { display: flex; align-items: center; justify-content: space-between; margin: 1.75rem 0 1rem; }
+    .sc-group-head:first-child { margin-top: 0; }
+    .sc-group-title { display: flex; align-items: center; gap: 0.5rem; font-size: 0.78rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: #059669; }
+    .sc-add-btn { width: 26px; height: 26px; border-radius: 50%; border: 1.5px solid #e2e8f0; background: #fff; color: #10b981; font-size: 15px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .sc-add-btn:hover { border-color: #10b981; background: #f0fdf7; }
+
+    .sc-add-form { display: none; gap: 0.5rem; margin-bottom: 0.85rem; flex-wrap: wrap; }
+    .sc-add-form.show { display: flex; }
+    .sc-add-form input[type="text"] { flex: 1; min-width: 140px; }
+    .sc-add-form input { font-size: 0.82rem; padding: 0.5rem 0.65rem; border-radius: 0.5rem; border: 1px solid #e2e8f0; font-family: inherit; }
+    .sc-add-form input[type="number"] { width: 90px; }
+    .sc-add-form button { background: #10b981; color: #fff; border: none; border-radius: 0.5rem; font-size: 0.82rem; font-weight: 700; padding: 0.5rem 1rem; cursor: pointer; }
+
+    .sc-row { display: flex; align-items: center; gap: 0.7rem; margin-bottom: 0.85rem; }
+    .sc-row-icon { font-size: 1.05rem; width: 22px; text-align: center; flex-shrink: 0; }
+    .sc-row-label { font-size: 0.83rem; color: #364752; min-width: 128px; flex-shrink: 0; }
+    .sc-row-slider { flex: 1; accent-color: #10b981; height: 4px; cursor: pointer; }
+    .sc-row-val { font-size: 0.83rem; font-weight: 700; color: #0f172a; min-width: 66px; text-align: right; font-variant-numeric: tabular-nums; }
+    .sc-row-remove { background: none; border: none; color: #94a3b8; cursor: pointer; font-size: 0.85rem; padding: 0 0.15rem; flex-shrink: 0; }
+    .sc-row-remove:hover { color: #dc2626; }
+    .sc-sub-add-btn { width: 20px; height: 20px; border-radius: 50%; border: 1.5px solid #e2e8f0; background: #fff; color: #10b981; font-size: 12px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .sc-sub-add-btn:hover { border-color: #10b981; background: #f0fdf7; }
+
+    .sc-subitem-list { margin: 0 0 0.4rem 2.4rem; }
+    .sc-subitem-entry { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; padding: 0.3rem 0.6rem; background: #f8fafc; border-radius: 0.4rem; margin-bottom: 0.3rem; font-size: 0.78rem; }
+    .sc-subitem-entry .name { color: #364752; font-weight: 600; }
+    .sc-subitem-entry .price { color: #94a3b8; margin-left: auto; margin-right: 0.4rem; }
+
+    .sc-group-total { display: flex; justify-content: space-between; align-items: baseline; background: #f8fafc; border-radius: 0.6rem; padding: 0.5rem 0.75rem; margin: 0.5rem 0 0; font-size: 0.8rem; }
+    .sc-group-total b { color: #0f172a; }
+    .sc-group-total .pct { color: #94a3b8; font-weight: 500; }
+
+    /* Results panel */
+    .sc-summary { text-align: center; margin-bottom: 1.25rem; }
+    .sc-toggle { display: inline-flex; background: #f1f5f9; border-radius: 0.7rem; padding: 3px; gap: 3px; margin-bottom: 1.25rem; }
+    .sc-toggle button { padding: 0.5rem 1.1rem; border-radius: 0.5rem; border: none; background: transparent; font-size: 0.8rem; font-weight: 700; color: #64748b; cursor: pointer; font-family: inherit; }
+    .sc-toggle button.active { background: #ffffff; color: #0f172a; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+
+    .sc-total-num { font-size: 2.1rem; font-weight: 800; color: #0f172a; }
+    .sc-total-label { font-size: 0.82rem; color: #64748b; margin-top: 0.15rem; }
+    .sc-total-sub { font-size: 0.75rem; color: #94a3b8; margin-top: 0.2rem; }
+
+    .sc-bar { height: 10px; border-radius: 6px; overflow: hidden; display: flex; margin: 1.25rem 0 0.75rem; }
+    .sc-bar-seg { height: 100%; }
+    .sc-legend { display: flex; flex-direction: column; gap: 0.45rem; margin-bottom: 0.25rem; }
+    .sc-legend-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; color: #364752; }
+    .sc-legend-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 0.4rem; }
+
+    .sc-insight { background: #f0fdf7; border-left: 3px solid #10b981; border-radius: 0.6rem; padding: 0.85rem 1rem; font-size: 0.8rem; color: #065f46; line-height: 1.55; margin-top: 1rem; }
+    .sc-insight b { color: #047857; }
+
+    .sc-breakdown-title { font-size: 0.85rem; font-weight: 700; color: #0f172a; margin-bottom: 0.75rem; }
+    .sc-breakdown-group { font-size: 0.68rem; font-weight: 700; color: #059669; text-transform: uppercase; letter-spacing: 0.05em; margin: 0.85rem 0 0.35rem; }
+    .sc-breakdown-group:first-child { margin-top: 0; }
+    .sc-breakdown-line { display: flex; justify-content: space-between; font-size: 0.8rem; padding: 0.4rem 0; color: #364752; border-bottom: 1px solid #f1f5f9; }
+    .sc-breakdown-line span:last-child { font-weight: 700; color: #10b981; }
+    .sc-breakdown-line .pct { color: #94a3b8; font-weight: 500; margin-left: 0.3rem; }
+
+    .sc-track-link { display: block; margin-top: 1.25rem; text-align: center; font-size: 0.8rem; color: #64748b; }
+    .sc-track-link a { color: #10b981; font-weight: 700; }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a href="dashboard.html" class="sidebar-logo">
+        <div class="sidebar-logo-icon">💰</div>
+        <span>FinFlow</span>
+      </a>
+
+      <nav class="sidebar-nav">
+        <a href="dashboard.html">
+          <span class="nav-icon">▦</span>
+          <span class="nav-label">Dashboard</span>
+        </a>
+
+        <div class="nav-section-label">Wealth</div>
+        <a href="fire-plan.html">
+          <span class="nav-icon">🧭</span>
+          <span class="nav-label">FIRE Plan</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="net-worth.html">
+          <span class="nav-icon">📈</span>
+          <span class="nav-label">Networth</span>
+          <span class="nav-chevron">›</span>
+        </a>
+
+        <div class="nav-section-label">Cash Flow</div>
+        <a href="money-required.html" class="nav-group-head open">
+          <span class="nav-icon">🪴</span>
+          <span class="nav-label">Monthly CashFlow</span>
+          <span class="nav-chevron">⌄</span>
+        </a>
+        <div class="sidebar-subnav">
+          <a href="expenses.html">
+            <span class="nav-icon">🧮</span>
+            <span class="nav-label">Monthly Expenses</span>
+          </a>
+          <a href="expense-quick-add.html">
+            <span class="nav-icon">⚡</span>
+            <span class="nav-label">Expenses tracker(Daily Log)</span>
+          </a>
+          <a href="spending-calculator.html" class="active">
+            <span class="nav-icon">🎚️</span>
+            <span class="nav-label">Expenses Calculator</span>
+          </a>
+        </div>
+        <a href="income.html">
+          <span class="nav-icon">💵</span>
+          <span class="nav-label">Income</span>
+        </a>
+        <a href="tax-planning.html">
+          <span class="nav-icon">🧾</span>
+          <span class="nav-label">Tax Planning</span>
+        </a>
+
+        <div class="nav-section-label">Protection</div>
+        <a href="insurance-tracker.html">
+          <span class="nav-icon">🛡️</span>
+          <span class="nav-label">Insurance Tracker</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="reminders.html">
+          <span class="nav-icon">🔔</span>
+          <span class="nav-label">Reminders</span>
+        </a>
+        <a href="vault-overview.html">
+          <span class="nav-icon">🔒</span>
+          <span class="nav-label">Document Vault</span>
+          <span class="nav-chevron">›</span>
+        </a>
+
+        <div class="nav-section-label">Family &amp; Health</div>
+        <a href="life-expectancy.html">
+          <span class="nav-icon">❤️</span>
+          <span class="nav-label">Health(is wealth)</span>
+          <span class="nav-chevron">›</span>
+        </a>
+
+        <div class="nav-section-label">More</div>
+        <a href="split/dashboard.html">
+          <span class="nav-icon">💸</span>
+          <span class="nav-label">SplitExpenses(SplitWise)</span>
+        </a>
+        <a href="astrology.html">
+          <span class="nav-icon">🔮</span>
+          <span class="nav-label">Spiritual</span>
+        </a>
+
+        <a href="#">
+          <span class="nav-icon">⚙️</span>
+          <span class="nav-label">Settings</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-spacer"></div>
+
+      <div class="feedback-card">
+        <div class="fc-icon">💬</div>
+        <strong>Got feedback?</strong>
+        <p>Have an idea or found a bug? We read every message.</p>
+        <a href="mailto:hello@finflow.app">✉ Contact Us</a>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <h1>Expenses Calculator</h1>
+        <div class="topbar-right">
+          <div class="language-selector">🌐 English ▾</div>
+          <details class="user-menu">
+            <summary>👤</summary>
+            <div class="user-menu-panel">
+              <a href="#">Settings</a>
+              <a href="#" onclick="signOutAndRedirect('index.html'); return false;">Log Out</a>
+            </div>
+          </details>
+        </div>
+      </div>
+
+      <div class="page-head">
+        <h2>Monthly Expenses Calculator</h2>
+        <p>Move the sliders to match your real spending — groceries to subscriptions — and see exactly where your money goes every month. A quick estimate, no data saved.</p>
+      </div>
+
+      <div class="sc-grid">
+        <div class="sc-card" id="scInputCard">
+          <!-- Groups + rows are rendered here by JS -->
+        </div>
+
+        <div>
+          <div class="sc-card sc-summary">
+            <div class="sc-toggle" id="scPeriodToggle">
+              <button type="button" class="active" data-period="monthly" onclick="setScPeriod('monthly')">Monthly</button>
+              <button type="button" data-period="yearly" onclick="setScPeriod('yearly')">Yearly</button>
+            </div>
+            <div class="sc-total-num" id="scTotalNum">₹0</div>
+            <div class="sc-total-label">Total spending</div>
+            <div class="sc-total-sub" id="scTotalSub">≈ ₹0/year</div>
+
+            <div class="sc-bar" id="scBar"></div>
+            <div class="sc-legend" id="scLegend"></div>
+
+            <div class="sc-insight" id="scInsight"></div>
+
+            <div class="sc-track-link">Want to track real transactions? <a href="expenses.html">Go to Monthly Expenses →</a></div>
+          </div>
+
+          <div class="sc-card" style="margin-top: 1.25rem;">
+            <div class="sc-breakdown-title">Spending by category</div>
+            <div id="scBreakdown"></div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-client.js"></script>
+  <script>
+    var GROUPS = [
+      { key: 'offline', label: 'Everyday spending', icon: '🛍️' },
+      { key: 'online', label: 'Online &amp; travel', icon: '🌐' },
+      { key: 'utility', label: 'Utility bills', icon: '🧾' },
+      { key: 'subscriptions', label: 'Subscriptions', icon: '🔁' }
+    ];
+    var GROUP_COLORS = { offline: '#10b981', online: '#0ea5e9', utility: '#f59e0b', subscriptions: '#8b5cf6' };
+
+    var CATEGORIES = [
+      { key: 'grocery', label: 'Groceries', icon: '🛒', group: 'offline', def: 6000, max: 20000, step: 500 },
+      { key: 'dining', label: 'Dining out', icon: '🍽️', group: 'offline', def: 4000, max: 15000, step: 500 },
+      { key: 'cafe', label: 'Cafés', icon: '☕', group: 'offline', def: 1500, max: 8000, step: 200 },
+      { key: 'fashion', label: 'Fashion', icon: '👕', group: 'offline', def: 3000, max: 15000, step: 500 },
+      { key: 'footwear', label: 'Footwear', icon: '👟', group: 'offline', def: 1000, max: 8000, step: 500 },
+      { key: 'jewellery', label: 'Jewellery', icon: '💍', group: 'offline', def: 2000, max: 30000, step: 1000 },
+      { key: 'salon', label: 'Salon/Spa', icon: '💇', group: 'offline', def: 1500, max: 8000, step: 200 },
+      { key: 'fitness', label: 'Fitness/Gym', icon: '🏋️', group: 'offline', def: 2000, max: 8000, step: 500 },
+      { key: 'pharmacy', label: 'Pharmacy', icon: '💊', group: 'offline', def: 800, max: 5000, step: 200 },
+      { key: 'fuel', label: 'Fuel', icon: '⛽', group: 'offline', def: 4000, max: 15000, step: 500 },
+      { key: 'entertainment', label: 'Movies/Events', icon: '🎬', group: 'offline', def: 1500, max: 5000, step: 200 },
+      { key: 'medical', label: 'Medical bills', icon: '🩺', group: 'offline', def: 1500, max: 10000, step: 500 },
+      { key: 'gifts', label: 'Gifts', icon: '🎁', group: 'offline', def: 800, max: 5000, step: 200 },
+      { key: 'vehicle', label: 'Vehicle maintenance', icon: '🚗', group: 'offline', def: 1200, max: 8000, step: 200 },
+      { key: 'housemaint', label: 'House maintenance', icon: '🏠', group: 'offline', def: 1000, max: 6000, step: 200 },
+
+      { key: 'delivery', label: 'Food delivery', icon: '🛵', group: 'online', def: 3000, max: 10000, step: 500 },
+      { key: 'onlineshop', label: 'Online shopping', icon: '📦', group: 'online', def: 4000, max: 15000, step: 500 },
+      { key: 'electronics', label: 'Electronics', icon: '🔌', group: 'online', def: 2000, max: 15000, step: 500 },
+      { key: 'vacation', label: 'Vacation', icon: '🏖️', group: 'online', def: 3000, max: 20000, step: 1000 },
+      { key: 'shorttrip', label: 'Short trips', icon: '🧳', group: 'online', def: 1500, max: 8000, step: 500 },
+
+      { key: 'mobile', label: 'Mobile', icon: '📱', group: 'utility', def: 500, max: 2000, step: 50 },
+      { key: 'broadband', label: 'Broadband', icon: '📶', group: 'utility', def: 800, max: 2000, step: 100 },
+      { key: 'electricity', label: 'Electricity', icon: '💡', group: 'utility', def: 2000, max: 5000, step: 100 },
+      { key: 'gas', label: 'Gas', icon: '🔥', group: 'utility', def: 400, max: 1500, step: 50 },
+      { key: 'water', label: 'Water', icon: '🚰', group: 'utility', def: 200, max: 1000, step: 50 },
+      { key: 'dth', label: 'DTH/Cable', icon: '📺', group: 'utility', def: 400, max: 1000, step: 50 },
+      { key: 'insurance', label: 'Insurance', icon: '🛡️', group: 'utility', def: 1200, max: 5000, step: 200 },
+
+      { key: 'streaming', label: 'OTT/Streaming', icon: '📺', group: 'subscriptions', def: 650, max: 2000, step: 50, itemizable: true },
+      { key: 'fitnessapp', label: 'Fitness app', icon: '⌚', group: 'subscriptions', def: 800, max: 3000, step: 100, itemizable: true },
+      { key: 'ai', label: 'AI tools', icon: '🤖', group: 'subscriptions', def: 500, max: 3000, step: 100, itemizable: true },
+      { key: 'productivity', label: 'Productivity', icon: '🗂️', group: 'subscriptions', def: 500, max: 3000, step: 100, itemizable: true },
+      { key: 'cloud', label: 'Cloud storage', icon: '☁️', group: 'subscriptions', def: 150, max: 500, step: 25, itemizable: true }
+    ];
+
+    var period = 'monthly';
+    var subItems = {};
+    var subItemCounter = 0;
+    var customCounter = 0;
+
+    function fmt(n) { return '₹' + Math.round(n).toLocaleString('en-IN'); }
+
+    function escapeHtml(s) {
+      return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function buildInputs() {
+      var card = document.getElementById('scInputCard');
+      var html = '';
+      GROUPS.forEach(function (g) {
+        html += '<div class="sc-group-head"><span class="sc-group-title">' + g.icon + ' ' + g.label + '</span>' +
+          '<button type="button" class="sc-add-btn" onclick="toggleAddForm(\'' + g.key + '\')" title="Add something not listed">+</button></div>';
+        html += '<div class="sc-add-form" id="addForm-' + g.key + '">' +
+          '<input type="text" id="addName-' + g.key + '" placeholder="e.g. something not listed">' +
+          '<input type="number" id="addPrice-' + g.key + '" placeholder="₹/mo" min="0">' +
+          '<button type="button" onclick="addCustomItem(\'' + g.key + '\')">Add</button></div>';
+        html += '<div id="rows-' + g.key + '"></div>';
+        html += '<div id="groupTotal-' + g.key + '" class="sc-group-total"></div>';
+      });
+      card.innerHTML = html;
+
+      CATEGORIES.forEach(function (cat) { appendRow(cat); });
+    }
+
+    function rowHtml(cat) {
+      var subBtn = cat.itemizable ? '<button type="button" class="sc-sub-add-btn" onclick="toggleSubForm(\'' + cat.key + '\')" title="Add a specific subscription">+</button>' : '';
+      var removeBtn = cat.custom ? '<button type="button" class="sc-row-remove" onclick="removeCustomItem(\'' + cat.key + '\',\'' + cat.group + '\')" title="Remove">✕</button>' : '';
+      var row = '<div class="sc-row" id="row-' + cat.key + '">' +
+        '<span class="sc-row-icon">' + cat.icon + '</span>' +
+        '<span class="sc-row-label">' + escapeHtml(cat.label) + '</span>' +
+        '<input type="range" class="sc-row-slider" id="slider-' + cat.key + '" min="0" max="' + cat.max + '" step="' + cat.step + '" value="' + cat.def + '" oninput="recalc()">' +
+        '<span class="sc-row-val" id="val-' + cat.key + '">' + fmt(cat.def) + '</span>' +
+        subBtn + removeBtn +
+        '</div>';
+      if (cat.itemizable) {
+        row += '<div class="sc-subitem-list" id="subitems-' + cat.key + '"></div>' +
+          '<div class="sc-add-form" id="subForm-' + cat.key + '">' +
+          '<input type="text" id="subName-' + cat.key + '" placeholder="e.g. Netflix, ChatGPT Plus">' +
+          '<input type="number" id="subPrice-' + cat.key + '" placeholder="₹/mo" min="0">' +
+          '<button type="button" onclick="addSubItem(\'' + cat.key + '\')">Add</button></div>';
+      }
+      return row;
+    }
+
+    function appendRow(cat) {
+      var container = document.getElementById('rows-' + cat.group);
+      container.insertAdjacentHTML('beforeend', rowHtml(cat));
+    }
+
+    function toggleAddForm(group) { document.getElementById('addForm-' + group).classList.toggle('show'); }
+    function toggleSubForm(cat) { document.getElementById('subForm-' + cat).classList.toggle('show'); }
+
+    function addCustomItem(group) {
+      var nameInput = document.getElementById('addName-' + group);
+      var priceInput = document.getElementById('addPrice-' + group);
+      var name = nameInput.value.trim();
+      var price = parseInt(priceInput.value, 10);
+      if (!name || !price || price <= 0) return;
+
+      customCounter++;
+      var key = 'custom' + customCounter;
+      var cat = { key: key, label: name, icon: '➕', group: group, def: price, max: Math.max(price * 3, 500), step: Math.max(Math.round(price / 20 / 10) * 10, 10), custom: true };
+      CATEGORIES.push(cat);
+      appendRow(cat);
+
+      nameInput.value = ''; priceInput.value = '';
+      document.getElementById('addForm-' + group).classList.remove('show');
+      recalc();
+    }
+
+    function removeCustomItem(key, group) {
+      var row = document.getElementById('row-' + key);
+      if (row) row.remove();
+      CATEGORIES = CATEGORIES.filter(function (c) { return c.key !== key; });
+      recalc();
+    }
+
+    function addSubItem(catKey) {
+      var nameInput = document.getElementById('subName-' + catKey);
+      var priceInput = document.getElementById('subPrice-' + catKey);
+      var name = nameInput.value.trim();
+      var price = parseInt(priceInput.value, 10);
+      if (!name || !price || price <= 0) return;
+
+      var slider = document.getElementById('slider-' + catKey);
+      slider.value = Math.min(parseInt(slider.value, 10) + price, parseInt(slider.max, 10));
+
+      subItemCounter++;
+      var id = 'sub' + subItemCounter;
+      subItems[id] = { cat: catKey, price: price };
+
+      var row = document.createElement('div');
+      row.className = 'sc-subitem-entry';
+      row.id = 'subrow-' + id;
+      row.innerHTML = '<span class="name">' + escapeHtml(name) + '</span><span class="price">' + fmt(price) + '/mo</span>' +
+        '<button type="button" class="sc-row-remove" onclick="removeSubItem(\'' + id + '\')" title="Remove">✕</button>';
+      document.getElementById('subitems-' + catKey).appendChild(row);
+
+      nameInput.value = ''; priceInput.value = '';
+      document.getElementById('subForm-' + catKey).classList.remove('show');
+      recalc();
+    }
+
+    function removeSubItem(id) {
+      var item = subItems[id];
+      if (!item) return;
+      var slider = document.getElementById('slider-' + item.cat);
+      slider.value = Math.max(0, parseInt(slider.value, 10) - item.price);
+      var row = document.getElementById('subrow-' + id);
+      if (row) row.remove();
+      delete subItems[id];
+      recalc();
+    }
+
+    function setScPeriod(p) {
+      period = p;
+      document.querySelectorAll('#scPeriodToggle button').forEach(function (b) {
+        b.classList.toggle('active', b.dataset.period === p);
+      });
+      recalc();
+    }
+
+    function recalc() {
+      var mult = period === 'yearly' ? 12 : 1;
+      var otherMult = period === 'yearly' ? 1 : 12;
+      var unit = period === 'yearly' ? '/yr' : '/mo';
+      var otherUnit = period === 'yearly' ? '/mo' : '/yr';
+
+      var groupTotals = { offline: 0, online: 0, utility: 0, subscriptions: 0 };
+      var rows = [];
+      var total = 0;
+
+      CATEGORIES.forEach(function (cat) {
+        var slider = document.getElementById('slider-' + cat.key);
+        if (!slider) return;
+        var v = parseInt(slider.value, 10);
+        document.getElementById('val-' + cat.key).textContent = fmt(v);
+        groupTotals[cat.group] += v;
+        total += v;
+        if (v > 0) rows.push({ label: cat.label, val: v, group: cat.group });
+      });
+
+      document.getElementById('scTotalNum').textContent = fmt(total * mult);
+      document.getElementById('scTotalSub').textContent = '≈ ' + fmt(total * otherMult) + otherUnit;
+
+      GROUPS.forEach(function (g) {
+        var el = document.getElementById('groupTotal-' + g.key);
+        var pct = total ? Math.round(groupTotals[g.key] / total * 100) : 0;
+        el.innerHTML = '<span>' + g.label + ' total</span><span><b>' + fmt(groupTotals[g.key] * mult) + '</b> <span class="pct">(' + pct + '%)</span></span>';
+      });
+
+      var bar = document.getElementById('scBar');
+      var legend = document.getElementById('scLegend');
+      bar.innerHTML = ''; legend.innerHTML = '';
+      GROUPS.forEach(function (g) {
+        var pct = total ? (groupTotals[g.key] / total * 100) : 0;
+        bar.innerHTML += '<div class="sc-bar-seg" style="width:' + pct + '%;background:' + GROUP_COLORS[g.key] + ';"></div>';
+        legend.innerHTML += '<div class="sc-legend-row"><span><span class="sc-legend-dot" style="background:' + GROUP_COLORS[g.key] + ';"></span>' + g.label + '</span><span>' + fmt(groupTotals[g.key] * mult) + '</span></div>';
+      });
+
+      rows.sort(function (a, b) { return b.val - a.val; });
+      var insight = document.getElementById('scInsight');
+      if (rows.length) {
+        var top = rows[0];
+        var topPct = total ? Math.round(top.val / total * 100) : 0;
+        insight.innerHTML = '💡 Your biggest category is <b>' + escapeHtml(top.label) + '</b> at ' + fmt(top.val * mult) + unit + ' (' + topPct + '% of total).';
+      } else {
+        insight.innerHTML = '';
+      }
+
+      var breakdownEl = document.getElementById('scBreakdown');
+      var html = '';
+      GROUPS.forEach(function (g) {
+        var groupRows = rows.filter(function (r) { return r.group === g.key; });
+        if (!groupRows.length) return;
+        html += '<div class="sc-breakdown-group">' + g.label + '</div>';
+        groupRows.forEach(function (r) {
+          var pct = total ? Math.round(r.val / total * 100) : 0;
+          html += '<div class="sc-breakdown-line"><span>' + escapeHtml(r.label) + '</span><span>' + fmt(r.val * mult) + unit + '<span class="pct">(' + pct + '%)</span></span></div>';
+        });
+      });
+      breakdownEl.innerHTML = html;
+    }
+
+    (async function init() {
+      var user = await requireAuth('index.html#login');
+      if (!user) return;
+      buildInputs();
+      recalc();
+    })();
+  </script>
+</body>
+</html>

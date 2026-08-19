@@ -278,7 +278,7 @@
         <div class="nav-section-label">Cash Flow</div>
         <a href="money-required.html" class="nav-group-head open">
           <span class="nav-icon">🪴</span>
-          <span class="nav-label">Expenses</span>
+          <span class="nav-label">Monthly CashFlow</span>
           <span class="nav-chevron">⌄</span>
         </a>
         <div class="sidebar-subnav">
@@ -286,22 +286,18 @@
             <span class="nav-icon">🧮</span>
             <span class="nav-label">Monthly Expenses</span>
           </a>
-          <a href="income.html">
-            <span class="nav-icon">💵</span>
-            <span class="nav-label">Income</span>
+          <a href="expense-quick-add.html">
+            <span class="nav-icon">⚡</span>
+            <span class="nav-label">Expenses tracker(Daily Log)</span>
           </a>
-          <a href="loans.html">
-            <span class="nav-icon">📉</span>
-            <span class="nav-label">Loan / EMI</span>
-          </a>
-          <a href="bank-balances.html">
-            <span class="nav-icon">🏦</span>
-            <span class="nav-label">Bank Balances</span>
+          <a href="spending-calculator.html">
+            <span class="nav-icon">🎚️</span>
+            <span class="nav-label">Expenses Calculator</span>
           </a>
         </div>
-        <a href="expense-quick-add.html">
-          <span class="nav-icon">⚡</span>
-          <span class="nav-label">Daily Expenses Tracker</span>
+        <a href="income.html">
+          <span class="nav-icon">💵</span>
+          <span class="nav-label">Income</span>
         </a>
         <a href="tax-planning.html">
           <span class="nav-icon">🧾</span>
@@ -327,7 +323,7 @@
         <div class="nav-section-label">Family &amp; Health</div>
         <a href="life-expectancy.html">
           <span class="nav-icon">❤️</span>
-          <span class="nav-label">Health</span>
+          <span class="nav-label">Health(is wealth)</span>
           <span class="nav-chevron">›</span>
         </a>
 
@@ -423,7 +419,7 @@
 
       <div class="grid-card">
         <p class="load-error" id="loadError"></p>
-        <p class="grid-hint">💡 Click a cell and type an amount — it saves automatically. Use ✎ to rename a master category or sub-category, ✕ to remove one, and + on a master category row to add a new sub-category under it.</p>
+        <p class="grid-hint">💡 Click a cell and type an amount — it saves automatically. Use ✎ to rename a master category or sub-category, ✕ to remove one, and + on a master category row to add a new sub-category under it. The <strong>⚡ Expenses Tracker (Daily Log)</strong> row is pulled in automatically from your daily quick-add entries — edit those on the Expenses Tracker page, not here.</p>
         <div class="grid-scroll" id="gridScrollWrap">
           <table class="expense-grid" id="gridTable">
             <thead>
@@ -474,6 +470,60 @@
       var restFormatted = rest.replace(/\B(?=(\d{2})+(?!\d))/g, ',');
       var out = rest ? restFormatted + ',' + last3 : last3;
       return (amount < 0 ? '-' : '') + '₹' + out;
+    }
+
+    /* ---- Expenses Tracker (daily quick-add) aggregation ----
+       expense-quick-add.html logs individual spends into the `transactions`
+       table, which is otherwise unrelated to this page's expense_grid data.
+       This pulls those rows in as a synthetic, read-only category group so
+       daily logging actually feeds this month's totals instead of just
+       sitting in its own separate table. */
+
+    var QUICK_ADD_CATEGORIES = [
+      { key: 'food', label: 'Food & Dining', icon: '🍔' },
+      { key: 'groceries', label: 'Groceries', icon: '🛒' },
+      { key: 'transport', label: 'Transport', icon: '🚗' },
+      { key: 'utilities', label: 'Utilities', icon: '💡' },
+      { key: 'rent', label: 'Rent', icon: '🏠' },
+      { key: 'shopping', label: 'Shopping', icon: '🛍️' },
+      { key: 'entertainment', label: 'Entertainment', icon: '🎬' },
+      { key: 'health', label: 'Health', icon: '💊' },
+      { key: 'bills', label: 'Bills & Recharges', icon: '📱' },
+      { key: 'travel', label: 'Travel', icon: '✈️' },
+      { key: 'education', label: 'Education', icon: '🎓' },
+      { key: 'other', label: 'Other', icon: '📦' }
+    ];
+    var QUICK_ADD_GROUP_ID = '__quickadd__';
+
+    async function loadQuickAddGroup() {
+      var { data, error } = await supabaseClient.from('transactions').select('category, amount, date').eq('type', 'expense');
+      if (error) { console.error('Could not load Expenses Tracker totals', error); return null; }
+      if (!data || !data.length) return null;
+
+      var byCategory = {};
+      data.forEach(function (t) {
+        var key = (t.date || '').slice(0, 7);
+        if (!key) return;
+        if (!byCategory[t.category]) byCategory[t.category] = {};
+        byCategory[t.category][key] = (byCategory[t.category][key] || 0) + (Number(t.amount) || 0);
+      });
+
+      var items = QUICK_ADD_CATEGORIES.filter(function (c) { return byCategory[c.key]; }).map(function (c) {
+        return { id: QUICK_ADD_GROUP_ID + ':' + c.key, name: c.icon + ' ' + c.label, amounts: byCategory[c.key], auto: true };
+      });
+      Object.keys(byCategory).forEach(function (key) {
+        if (!QUICK_ADD_CATEGORIES.some(function (c) { return c.key === key; })) {
+          items.push({ id: QUICK_ADD_GROUP_ID + ':' + key, name: '📦 ' + key, amounts: byCategory[key], auto: true });
+        }
+      });
+      if (!items.length) return null;
+
+      return { id: QUICK_ADD_GROUP_ID, name: '⚡ Expenses Tracker (Daily Log)', items: items, auto: true };
+    }
+
+    async function appendQuickAddGroup() {
+      var quickAddGroup = await loadQuickAddGroup();
+      if (quickAddGroup) groups.push(quickAddGroup);
     }
 
     /* ---- Data loading ---- */
@@ -842,6 +892,30 @@
 
       var html = '';
       groups.forEach(function (g) {
+        if (g.auto) {
+          html += '<tr class="group-row" data-group="' + g.id + '">' +
+            '<td><span class="row-name">' + escapeHtml(g.name) +
+              ' <span class="soon-pill" title="Totals from your Expenses Tracker daily log — edit them there, not here">Auto</span>' +
+            '</span></td>';
+          for (var am = 0; am < 12; am++) {
+            html += '<td id="groupCell-' + g.id + '-' + am + '">₹0</td>';
+          }
+          html += '<td class="row-total" id="groupTotal-' + g.id + '">₹0</td>';
+          html += '</tr>';
+
+          g.items.forEach(function (it) {
+            html += '<tr class="item-row" data-item="' + it.id + '">' +
+              '<td><span class="row-name">' + escapeHtml(it.name) + '</span></td>';
+            for (var ami = 0; ami < 12; ami++) {
+              var akey = monthKey(currentYear, ami);
+              html += '<td class="row-total">' + fmtRupee(it.amounts[akey] || 0) + '</td>';
+            }
+            html += '<td class="row-total" id="itemTotal-' + it.id + '">₹0</td>';
+            html += '</tr>';
+          });
+          return;
+        }
+
         html += '<tr class="group-row" data-group="' + g.id + '">' +
           '<td><span class="row-name">' + escapeHtml(g.name) +
             ' <button type="button" class="row-icon-btn edit-btn" data-id="' + g.id + '" data-name="' + escapeHtml(g.name) + '" onclick="renameGroup(this.dataset.id, this.dataset.name)" title="Rename master category">✎</button>' +
@@ -986,6 +1060,7 @@
 
     async function refresh() {
       await loadAll();
+      await appendQuickAddGroup();
       render();
       await renderExpenseHero();
     }
@@ -1015,6 +1090,7 @@
         var touched = await ensureDefaults();
         if (touched) await loadAll();
       }
+      await appendQuickAddGroup();
       render();
       await renderExpenseHero();
     })();
