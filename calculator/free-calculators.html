@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Free Financial Calculators &amp; Tools (No Sign-Up) - FinFlow</title>
+  <title>Free Financial Calculators &amp; Tools (No Sign-Up) - EnrichMe</title>
   <meta name="description" content="Free financial calculators for India: FIRE planning, SIP &amp; investing, EMI &amp; loans, income tax, retirement, NPS, and more. No sign-up, no email.">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -72,90 +72,13 @@
     .nav-links a:hover {
       color: #10b981;
     }
-
-    .dropdown-arrow {
-      font-size: 0.8rem;
-    }
-
-    .language-selector {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      background: #f1f5f9;
-      padding: 0.5rem 1rem;
-      border-radius: 0.5rem;
-      color: #51636f;
-      border: 1px solid #e2e8f0;
-      cursor: pointer;
-    }
-
-    .nav-menu {
-      position: relative;
-      list-style: none;
-    }
-
-    .nav-menu > summary {
-      cursor: pointer;
-      list-style: none;
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-      color: #51636f;
-      font-size: 0.95rem;
-    }
-
-    .nav-menu > summary::-webkit-details-marker {
-      display: none;
-    }
-
-    .nav-menu > summary:hover,
-    .nav-menu[open] > summary {
-      color: #10b981;
-    }
-
-    .nav-menu-panel {
-      position: absolute;
-      top: calc(100% + 0.75rem);
-      right: 0;
-      background: #ffffff;
-      border: 1px solid #e2e8f0;
-      border-radius: 0.75rem;
-      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.12);
-      padding: 0.5rem;
-      min-width: 170px;
-      display: flex;
-      flex-direction: column;
-      gap: 0.25rem;
-      z-index: 60;
-    }
-
-    .nav-menu-panel a {
-      padding: 0.6rem 0.75rem;
-      border-radius: 0.5rem;
-      color: #364752;
-      font-size: 0.9rem;
-      font-weight: 500;
-      text-decoration: none;
-      transition: background 0.2s, color 0.2s;
-    }
-
-    .nav-menu-panel a:hover {
-      background: #f1f5f9;
-      color: #10b981;
-    }
-
-    .nav-menu-panel a.menu-signup-btn {
-      background: linear-gradient(to right, #0ea5e9, #10b981);
-      color: #ffffff;
-      font-weight: 600;
-      text-align: center;
-    }
-
-    .nav-menu-panel a.menu-signup-btn:hover {
-      opacity: 0.9;
-      color: #ffffff;
-    }
-
+    .nav-toggle { display: none; background: none; border: 1px solid #e2e8f0; border-radius: 0.5rem; width: 40px; height: 40px; align-items: center; justify-content: center; font-size: 1.2rem; color: #364752; cursor: pointer; }
+    @media (max-width: 900px) {
+      nav { padding: 1.1rem 1.5rem; }
+      .nav-toggle { display: flex; }
+      .nav-links { display: none; position: absolute; top: 100%; left: 0; right: 0; flex-direction: column; align-items: stretch; gap: 0; background: #ffffff; border-bottom: 1px solid #e2e8f0; box-shadow: 0 16px 30px rgba(15, 23, 42, 0.1); padding: 0.5rem 1.5rem 1.5rem; }
+      .nav-links.open { display: flex; }
+      .nav-links a { padding: 0.9rem 0; border-bottom: 1px solid #f1f5f9; }    }
     /* Hero */
     .hero {
       position: relative;
@@ -463,36 +386,64 @@
       font-size: 0.8rem;
       border-top: 1px solid #e5e7eb;
     }
+  
+    .nav-signup-btn {
+      background: linear-gradient(to right, #0ea5e9, #10b981);
+      font-weight: 600;
+      padding: 0.5rem 1.1rem;
+      border-radius: 0.5rem;
+      transition: opacity 0.2s;
+    }
+
+    .nav-links a.nav-signup-btn,
+    .nav-links a.nav-signup-btn:hover {
+      color: #ffffff;
+    }
+
+    .nav-signup-btn:hover {
+      opacity: 0.9;
+    }
+
+    @media (max-width: 900px) {
+      .nav-links a.nav-signup-btn {
+        margin-top: 0.75rem;
+        border-bottom: none;
+        justify-content: center;
+      }
+    }
   </style>
 </head>
 <body>
   <nav>
     <a href="../index.html" class="logo">
       <div class="logo-icon">💰</div>
-      <span>FinFlow</span>
+      <span>EnrichMe</span>
     </a>
-    <div class="nav-links">
+    <button class="nav-toggle" id="navToggle" aria-label="Menu" aria-expanded="false" onclick="toggleMobileNav()">☰</button>
+    <div class="nav-links" id="navLinks">
       <a href="../index.html#features">Features</a>
       <a href="free-calculators.html">Tools</a>
-      <a href="../index.html#learn">Learn</a>
+      <a href="../pricing.html">Pricing</a>
+      <a href="../resources.html">Learn</a>
       <a href="../services.html">Services</a>
-      <details class="nav-menu">
-        <summary>Menu <span class="dropdown-arrow">▼</span></summary>
-        <div class="nav-menu-panel">
-          <a href="../index.html#login">Log In</a>
-          <a href="../index.html#login" class="menu-signup-btn">Sign Up</a>
-        </div>
-      </details>
-      <div class="language-selector">
-        🌐 English
-      </div>
+      <a href="../index.html#login" class="nav-signup-btn">Sign In</a>
     </div>
   </nav>
+
+  <script>
+    function toggleMobileNav() {
+      var links = document.getElementById('navLinks');
+      var btn = document.getElementById('navToggle');
+      var isOpen = links.classList.toggle('open');
+      btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      btn.textContent = isOpen ? '✕' : '☰';
+    }
+  </script>
 
   <section class="hero">
     <div class="hero-inner">
       <h1>Free Financial Calculators &amp; Tools</h1>
-      <p>FinFlow offers free financial calculators built for India — FIRE planning, SIP &amp; investing, EMI &amp; loans, income tax, retirement, NPS, and more. No sign-up, no email, no paywall.</p>
+      <p>EnrichMe offers free financial calculators built for India — FIRE planning, SIP &amp; investing, EMI &amp; loans, income tax, retirement, NPS, and more. No sign-up, no email, no paywall.</p>
       <div class="trust-badges">
         <span>✓ 100% free</span>
         <span>✓ No sign-up</span>
@@ -831,7 +782,7 @@
     <div class="faq-wrap">
       <details open>
         <summary>Are these financial calculators really free?</summary>
-        <p>Yes — every calculator on this page is completely free, with no paywall, no premium tier, and no usage limits. They're maintained as part of the free FinFlow app, so there's no catch hidden inside the tools.</p>
+        <p>Yes — every calculator on this page is completely free, with no paywall, no premium tier, and no usage limits. They're maintained as part of the free EnrichMe app, so there's no catch hidden inside the tools.</p>
       </details>
       <details>
         <summary>Do I need an account or email to use them?</summary>
@@ -847,7 +798,7 @@
       </details>
       <details>
         <summary>Can I save my results?</summary>
-        <p>The calculators themselves don't store anything — your inputs stay in your browser. If you want to go further, create a free FinFlow account to track your plan against your real numbers.</p>
+        <p>The calculators themselves don't store anything — your inputs stay in your browser. If you want to go further, create a free EnrichMe account to track your plan against your real numbers.</p>
       </details>
     </div>
   </section>
@@ -859,7 +810,7 @@
   </section>
 
   <footer>
-    &copy; 2026 FinFlow. All rights reserved.
+    &copy; 2026 EnrichMe. All rights reserved.
   </footer>
 
   <script>

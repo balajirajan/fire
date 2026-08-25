@@ -1,7 +1,7 @@
 // Checkup Report auto-detect — pattern-matches common lab values out of a
 // PDF's text layer client-side.
 //
-// This is NOT a true AI/LLM read of the report. FinFlow is a static site
+// This is NOT a true AI/LLM read of the report. EnrichMe is a static site
 // that talks directly to Supabase from the browser with no server-side
 // compute — safely calling a real AI API requires a secret key held on a
 // server, which would mean standing up a Supabase Edge Function first.

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tax Planning - FinFlow</title>
+  <title>Tax Planning - EnrichMe</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -18,7 +18,11 @@
     a, button { color: inherit; text-decoration: none; font-family: inherit; }
 
     .app-shell { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
-    @media (max-width: 860px) { .app-shell { grid-template-columns: 1fr; } .sidebar { display: none; } }
+
+    .sidebar-toggle { display: none; }
+    .sidebar-backdrop { display: none; }
+    .topbar-mobile-logo { display: none; }
+    .topbar-left { display: flex; align-items: center; gap: 0.65rem; }
 
     /* Sidebar */
     .sidebar { background: #ffffff; border-right: 1px solid #e2e8f0; display: flex; flex-direction: column; padding: 1.5rem 1.25rem; }
@@ -168,14 +172,72 @@
     .headroom-maxed { font-size: 0.85rem; font-weight: 700; color: #94a3b8; }
 
     .disclaimer { font-size: 0.78rem; color: #94a3b8; line-height: 1.6; padding: 1rem 1.2rem; background: #f8fafc; border-radius: 0.75rem; margin-top: 1rem; }
+    /* Mobile sidebar (kept last so it wins the cascade over the base rules above) */
+    @media (max-width: 860px) {
+      .app-shell { grid-template-columns: 1fr; }
+
+      .sidebar {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: 280px;
+        max-width: 84vw;
+        z-index: 100;
+        box-shadow: 12px 0 32px rgba(15, 23, 42, 0.18);
+        overflow-y: auto;
+      }
+
+      .sidebar.open { display: flex; }
+
+      .sidebar-backdrop.open {
+        display: block;
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.4);
+        z-index: 99;
+      }
+
+      .sidebar-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        flex-shrink: 0;
+        border: 1px solid #e2e8f0;
+        border-radius: 0.5rem;
+        background: #ffffff;
+        color: #364752;
+        font-size: 1.15rem;
+        cursor: pointer;
+      }
+
+      .topbar-mobile-logo {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 30px;
+        height: 30px;
+        background: linear-gradient(135deg, #0ea5e9, #10b981);
+        border-radius: 8px;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+      }
+
+      .topbar h1 { font-size: 1.15rem; }
+      .language-selector { display: none; }
+    }
   </style>
 </head>
 <body>
   <div class="app-shell">
-    <aside class="sidebar">
+    <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleSidebar()"></div>
+    <aside class="sidebar" id="sidebar">
       <a href="dashboard.html" class="sidebar-logo">
         <div class="sidebar-logo-icon">💰</div>
-        <span>FinFlow</span>
+        <span>EnrichMe</span>
       </a>
 
       <nav class="sidebar-nav">
@@ -256,13 +318,17 @@
         <div class="fc-icon">💬</div>
         <strong>Got feedback?</strong>
         <p>Have an idea or found a bug? We read every message.</p>
-        <a href="mailto:hello@finflow.app">✉ Contact Us</a>
+        <a href="mailto:hello@enrichme.app">✉ Contact Us</a>
       </div>
     </aside>
 
     <main class="main">
       <div class="topbar">
-        <h1>Tax Planning</h1>
+        <div class="topbar-left">
+          <button class="sidebar-toggle" aria-label="Menu" onclick="toggleSidebar()">☰</button>
+          <div class="topbar-mobile-logo">💰</div>
+          <h1>Tax Planning</h1>
+        </div>
         <div class="topbar-right">
           <div class="language-selector">🌐 English ▾</div>
           <details class="user-menu">
@@ -388,7 +454,7 @@
             <span class="info-dot" title="Educational estimate only, using simplified rules and FY 2025-26 (AY 2026-27) slabs. Always verify with a CA or the official Income Tax e-filing portal before filing.">i</span>
           </div>
           <div class="summary-actions">
-            <button type="button" class="file-now-btn" disabled title="FinFlow is an estimator, not an e-filing tool — file directly on the Income Tax e-filing portal.">File now</button>
+            <button type="button" class="file-now-btn" disabled title="EnrichMe is an estimator, not an e-filing tool — file directly on the Income Tax e-filing portal.">File now</button>
             <button type="button" class="recalc-link" onclick="document.getElementById('wizardShell').scrollIntoView({behavior:'smooth',block:'start'})">↺ Recalculate</button>
           </div>
         </div>
@@ -476,6 +542,13 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-client.js"></script>
   <script>
+    function toggleSidebar() {
+      var sidebar = document.getElementById('sidebar');
+      var backdrop = document.getElementById('sidebarBackdrop');
+      var isOpen = sidebar.classList.toggle('open');
+      backdrop.classList.toggle('open', isOpen);
+    }
+
     var NEW_REGIME_SLABS = [
       { from: 0, to: 400000, rate: 0 },
       { from: 400000, to: 800000, rate: 0.05 },

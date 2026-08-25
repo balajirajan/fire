@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resources - EnrichMe</title>
+  <meta name="description" content="Guides, help articles, community and financial terms to help you get the most out of EnrichMe.">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #ffffff;
+      color: #0f172a;
+      min-height: 100vh;
+    }
+
+    a { color: inherit; }
+    .container { max-width: 1180px; margin: 0 auto; padding: 0 2rem; }
+
+    /* Nav (shared header) */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5rem 3rem;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .logo { display: flex; align-items: center; gap: 0.75rem; font-size: 1.25rem; font-weight: bold; color: #0f172a; text-decoration: none; }
+    .logo-icon { width: 32px; height: 32px; background: linear-gradient(135deg, #0ea5e9, #10b981); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
+    .nav-links { display: flex; gap: 2rem; align-items: center; font-size: 0.95rem; }
+    .nav-links a { color: #51636f; text-decoration: none; transition: color 0.3s; display: flex; align-items: center; gap: 0.5rem; }
+    .nav-links a:hover { color: #10b981; }
+    .nav-links a.active { color: #10b981; font-weight: 600; }
+
+    .nav-toggle { display: none; background: none; border: 1px solid #e2e8f0; border-radius: 0.5rem; width: 40px; height: 40px; align-items: center; justify-content: center; font-size: 1.2rem; color: #364752; cursor: pointer; }
+    @media (max-width: 900px) {
+      nav { padding: 1.1rem 1.5rem; }
+      .nav-toggle { display: flex; }
+      .nav-links { display: none; position: absolute; top: 100%; left: 0; right: 0; flex-direction: column; align-items: stretch; gap: 0; background: #ffffff; border-bottom: 1px solid #e2e8f0; box-shadow: 0 16px 30px rgba(15, 23, 42, 0.1); padding: 0.5rem 1.5rem 1.5rem; }
+      .nav-links.open { display: flex; }
+      .nav-links a { padding: 0.9rem 0; border-bottom: 1px solid #f1f5f9; }
+    }
+
+    footer { text-align: center; padding: 2rem; color: #64748b; font-size: 0.8rem; border-top: 1px solid #e5e7eb; }
+
+    .soon-badge { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #d97706; background: rgba(217,119,6,0.1); padding: 0.22rem 0.6rem; border-radius: 999px; }
+
+    /* Hero */
+    .res-hero { background: linear-gradient(135deg, #f0f9ff 0%, #ecfdf5 60%, #f0f9ff 100%); padding: 4.5rem 0 3.5rem; text-align: center; }
+    .res-hero h1 { font-size: clamp(2rem, 4vw, 2.9rem); font-weight: 800; letter-spacing: -0.02em; margin-bottom: 1rem; }
+    .res-hero p { color: #51636f; max-width: 600px; margin: 0 auto; font-size: 1.05rem; line-height: 1.65; }
+
+    /* Resource grid */
+    .res-section { padding: 4.5rem 0 5rem; }
+    .resources-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem 3.5rem;
+      max-width: 980px;
+      margin: 0 auto;
+    }
+    @media (max-width: 720px) {
+      .resources-grid { grid-template-columns: 1fr; gap: 2rem; }
+    }
+
+    .resource-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 1.25rem;
+      text-decoration: none;
+      color: inherit;
+      padding: 0.75rem;
+      margin: -0.75rem;
+      border-radius: 0.9rem;
+      transition: background 0.2s ease, transform 0.2s ease;
+    }
+    .resource-item:hover {
+      background: #f8fafc;
+      transform: translateY(-2px);
+    }
+
+    .res-icon {
+      flex-shrink: 0;
+      width: 56px;
+      height: 56px;
+      border-radius: 0.85rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.55rem;
+    }
+    .res-icon.tone-slate { background: #f1f5f9; }
+    .res-icon.tone-violet { background: #ede9fe; }
+    .res-icon.tone-indigo { background: #e0e7ff; }
+    .res-icon.tone-emerald { background: #d1fae5; }
+    .res-icon.tone-sky { background: #e0f2fe; }
+    .res-icon.tone-amber { background: #fef3c7; }
+
+    .res-body h3 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 0.3rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .res-body p {
+      font-size: 0.9rem;
+      color: #51636f;
+      line-height: 1.55;
+    }
+
+    .res-cta-section { text-align: center; padding: 4rem 2rem; background: linear-gradient(135deg, #f0f9ff, #ecfdf5, #f0f9ff); }
+    .res-cta-section h2 { font-size: 1.6rem; margin-bottom: 0.6rem; }
+    .res-cta-section p { color: #51636f; margin-bottom: 1.75rem; max-width: 520px; margin-left: auto; margin-right: auto; }
+    .btn-primary { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.8rem 1.7rem; border-radius: 0.6rem; background: linear-gradient(to right, #0ea5e9, #10b981); color: white; font-weight: 600; font-size: 0.95rem; border: none; cursor: pointer; text-decoration: none; }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(16,185,129,0.25); }
+
+    .nav-signup-btn {
+      background: linear-gradient(to right, #0ea5e9, #10b981);
+      font-weight: 600;
+      padding: 0.5rem 1.1rem;
+      border-radius: 0.5rem;
+      transition: opacity 0.2s;
+    }
+
+    .nav-links a.nav-signup-btn,
+    .nav-links a.nav-signup-btn:hover {
+      color: #ffffff;
+    }
+
+    .nav-signup-btn:hover {
+      opacity: 0.9;
+    }
+
+    @media (max-width: 900px) {
+      .nav-links a.nav-signup-btn {
+        margin-top: 0.75rem;
+        border-bottom: none;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="index.html" class="logo">
+      <div class="logo-icon">💰</div>
+      <span>EnrichMe</span>
+    </a>
+    <button class="nav-toggle" id="navToggle" aria-label="Menu" aria-expanded="false" onclick="toggleMobileNav()">☰</button>
+    <div class="nav-links" id="navLinks">
+      <a href="index.html#features">Features</a>
+      <a href="calculator/free-calculators.html">Tools</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="resources.html" class="active">Learn</a>
+      <a href="services.html">Services</a>
+      <a href="index.html#login" class="nav-signup-btn">Sign In</a>
+    </div>
+  </nav>
+
+  <script>
+    function toggleMobileNav() {
+      var links = document.getElementById('navLinks');
+      var btn = document.getElementById('navToggle');
+      var isOpen = links.classList.toggle('open');
+      btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      btn.textContent = isOpen ? '✕' : '☰';
+    }
+  </script>
+
+  <section class="res-hero">
+    <div class="container">
+      <h1>Resources to help you get the most out of EnrichMe</h1>
+      <p>Guides, answers and people to talk to — everything outside the app that makes the app more useful.</p>
+    </div>
+  </section>
+
+  <section class="res-section">
+    <div class="container">
+      <div class="resources-grid">
+
+        <a href="services.html" class="resource-item">
+          <div class="res-icon tone-slate">📰</div>
+          <div class="res-body">
+            <h3>Blog <span class="soon-badge">🔜 Coming Soon</span></h3>
+            <p>Read the latest posts, product updates, and money tips.</p>
+          </div>
+        </a>
+
+        <a href="services.html#faq" class="resource-item">
+          <div class="res-icon tone-violet">💬</div>
+          <div class="res-body">
+            <h3>Help Center</h3>
+            <p>View frequently asked questions and helpful tips.</p>
+          </div>
+        </a>
+
+        <a href="services.html" class="resource-item">
+          <div class="res-icon tone-indigo">🎮</div>
+          <div class="res-body">
+            <h3>Discord Community <span class="soon-badge">🔜 Coming Soon</span></h3>
+            <p>Questions, discussion, early access features, and more.</p>
+          </div>
+        </a>
+
+        <a href="services.html" class="resource-item">
+          <div class="res-icon tone-emerald">📞</div>
+          <div class="res-body">
+            <h3>1-on-1 Session</h3>
+            <p>Book an educational session to walk through your setup.</p>
+          </div>
+        </a>
+
+        <a href="services.html" class="resource-item">
+          <div class="res-icon tone-sky">📖</div>
+          <div class="res-body">
+            <h3>Financial Terms <span class="soon-badge">🔜 Coming Soon</span></h3>
+            <p>EnrichMe's glossary of EPF, PPF, NPS, ELSS and more.</p>
+          </div>
+        </a>
+
+        <a href="services.html" class="resource-item">
+          <div class="res-icon tone-amber">🧑‍💼</div>
+          <div class="res-body">
+            <h3>Advisor Directory <span class="soon-badge">🔜 Coming Soon</span></h3>
+            <p>Find a SEBI-registered financial advisor who fits your goals.</p>
+          </div>
+        </a>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="res-cta-section">
+    <h2>Still have a question?</h2>
+    <p>Create a free EnrichMe account and reach out — we read every message.</p>
+    <a href="index.html#login" class="btn-primary">Start Tracking My Money →</a>
+  </section>
+
+  <footer>
+    &copy; 2026 EnrichMe. All rights reserved.
+  </footer>
+</body>
+</html>

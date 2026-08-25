@@ -1,4 +1,4 @@
-// Shared Supabase client for FinFlow.
+// Shared Supabase client for EnrichMe.
 // Loaded after the Supabase JS CDN script on every app page (index.html,
 // dashboard.html, net-worth.html, transactions.html, planner.html).
 //

@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Advisory Services (Coming Soon) - FinFlow</title>
-  <meta name="description" content="Guided financial planning, retirement, wealth management, tax, and estate services — coming soon to FinFlow, alongside the free calculators and trackers.">
+  <title>Advisory Services (Coming Soon) - EnrichMe</title>
+  <meta name="description" content="Guided financial planning, retirement, wealth management, tax, and estate services — coming soon to EnrichMe, alongside the free calculators and trackers.">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -35,19 +35,13 @@
     .logo-icon { width: 32px; height: 32px; background: linear-gradient(135deg, #0ea5e9, #10b981); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
     .nav-links { display: flex; gap: 2rem; align-items: center; font-size: 0.95rem; }
     .nav-links a { color: #51636f; text-decoration: none; transition: color 0.3s; display: flex; align-items: center; gap: 0.5rem; }
-    .nav-links a:hover { color: #10b981; }
-    .dropdown-arrow { font-size: 0.8rem; }
-    .language-selector { display: flex; align-items: center; gap: 0.5rem; background: #f1f5f9; padding: 0.5rem 1rem; border-radius: 0.5rem; color: #51636f; border: 1px solid #e2e8f0; cursor: pointer; }
-    .nav-menu { position: relative; list-style: none; }
-    .nav-menu > summary { cursor: pointer; list-style: none; display: flex; align-items: center; gap: 0.4rem; color: #51636f; font-size: 0.95rem; }
-    .nav-menu > summary::-webkit-details-marker { display: none; }
-    .nav-menu > summary:hover, .nav-menu[open] > summary { color: #10b981; }
-    .nav-menu-panel { position: absolute; top: calc(100% + 0.75rem); right: 0; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 0.75rem; box-shadow: 0 10px 30px rgba(15, 23, 42, 0.12); padding: 0.5rem; min-width: 170px; display: flex; flex-direction: column; gap: 0.25rem; z-index: 60; }
-    .nav-menu-panel a { padding: 0.6rem 0.75rem; border-radius: 0.5rem; color: #364752; font-size: 0.9rem; font-weight: 500; text-decoration: none; transition: background 0.2s, color 0.2s; }
-    .nav-menu-panel a:hover { background: #f1f5f9; color: #10b981; }
-    .nav-menu-panel a.menu-signup-btn { background: linear-gradient(to right, #0ea5e9, #10b981); color: #ffffff; font-weight: 600; text-align: center; }
-    .nav-menu-panel a.menu-signup-btn:hover { opacity: 0.9; color: #ffffff; }
-
+    .nav-links a:hover { color: #10b981; }    .nav-toggle { display: none; background: none; border: 1px solid #e2e8f0; border-radius: 0.5rem; width: 40px; height: 40px; align-items: center; justify-content: center; font-size: 1.2rem; color: #364752; cursor: pointer; }
+    @media (max-width: 900px) {
+      nav { padding: 1.1rem 1.5rem; }
+      .nav-toggle { display: flex; }
+      .nav-links { display: none; position: absolute; top: 100%; left: 0; right: 0; flex-direction: column; align-items: stretch; gap: 0; background: #ffffff; border-bottom: 1px solid #e2e8f0; box-shadow: 0 16px 30px rgba(15, 23, 42, 0.1); padding: 0.5rem 1.5rem 1.5rem; }
+      .nav-links.open { display: flex; }
+      .nav-links a { padding: 0.9rem 0; border-bottom: 1px solid #f1f5f9; }    }
     footer { text-align: center; padding: 2rem; color: #64748b; font-size: 0.8rem; border-top: 1px solid #e5e7eb; }
 
     .btn-primary { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.8rem 1.7rem; border-radius: 0.6rem; background: linear-gradient(to right, #0ea5e9, #10b981); color: white; font-weight: 600; font-size: 0.95rem; border: none; cursor: pointer; text-decoration: none; }
@@ -132,36 +126,64 @@
     .svc-cta-section p { color: #51636f; margin-bottom: 1.75rem; max-width: 560px; margin-left: auto; margin-right: auto; }
 
     .svc-disclaimer { font-size: 0.78rem; color: #94a3b8; line-height: 1.6; max-width: 780px; margin-top: 2rem; }
+  
+    .nav-signup-btn {
+      background: linear-gradient(to right, #0ea5e9, #10b981);
+      font-weight: 600;
+      padding: 0.5rem 1.1rem;
+      border-radius: 0.5rem;
+      transition: opacity 0.2s;
+    }
+
+    .nav-links a.nav-signup-btn,
+    .nav-links a.nav-signup-btn:hover {
+      color: #ffffff;
+    }
+
+    .nav-signup-btn:hover {
+      opacity: 0.9;
+    }
+
+    @media (max-width: 900px) {
+      .nav-links a.nav-signup-btn {
+        margin-top: 0.75rem;
+        border-bottom: none;
+        justify-content: center;
+      }
+    }
   </style>
 </head>
 <body>
   <nav>
     <a href="index.html" class="logo">
       <div class="logo-icon">💰</div>
-      <span>FinFlow</span>
+      <span>EnrichMe</span>
     </a>
-    <div class="nav-links">
+    <button class="nav-toggle" id="navToggle" aria-label="Menu" aria-expanded="false" onclick="toggleMobileNav()">☰</button>
+    <div class="nav-links" id="navLinks">
       <a href="index.html#features">Features</a>
       <a href="calculator/free-calculators.html">Tools</a>
-      <a href="index.html#learn">Learn</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="resources.html">Learn</a>
       <a href="services.html">Services</a>
-      <details class="nav-menu">
-        <summary>Menu <span class="dropdown-arrow">▼</span></summary>
-        <div class="nav-menu-panel">
-          <a href="index.html#login">Log In</a>
-          <a href="index.html#login" class="menu-signup-btn">Sign Up</a>
-        </div>
-      </details>
-      <div class="language-selector">
-        🌐 English
-      </div>
+      <a href="index.html#login" class="nav-signup-btn">Sign In</a>
     </div>
   </nav>
+
+  <script>
+    function toggleMobileNav() {
+      var links = document.getElementById('navLinks');
+      var btn = document.getElementById('navToggle');
+      var isOpen = links.classList.toggle('open');
+      btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      btn.textContent = isOpen ? '✕' : '☰';
+    }
+  </script>
 
   <section class="svc-hero">
     <div class="container">
       <span class="soon-badge">🔜 Coming Soon</span>
-      <h1>Guided Advisory, Coming to FinFlow</h1>
+      <h1>Guided Advisory, Coming to EnrichMe</h1>
       <p>Beyond the calculators and self-tracking tools, we're building guided support for the moments that need a second opinion — a full financial plan, a retirement number you can trust, or your first Will. Here's what's on the way.</p>
       <div class="svc-hero-cta">
         <a href="index.html#login" class="btn-primary">Notify me at launch →</a>
@@ -175,7 +197,7 @@
     <div class="container">
       <span class="svc-tag">Five Services</span>
       <h2>Everything We're Building, in <em>One Place</em></h2>
-      <p class="svc-intro">Each service is designed to work on its own or alongside your FinFlow data — none of it is live yet, so nothing below can be booked today.</p>
+      <p class="svc-intro">Each service is designed to work on its own or alongside your EnrichMe data — none of it is live yet, so nothing below can be booked today.</p>
 
       <div class="svc-tab-bar" role="tablist" aria-label="Planned advisory services">
         <button class="svc-tab active" role="tab" aria-selected="true" data-panel="fp">🎯 Financial Planning</button>
@@ -200,7 +222,7 @@
           <h4>How it will work</h4>
           <div class="svc-step"><span class="num">1</span><span class="label">Tell us where you're at</span></div>
           <div class="svc-step-arrow">↓</div>
-          <div class="svc-step"><span class="num">2</span><span class="label">We review your FinFlow data</span></div>
+          <div class="svc-step"><span class="num">2</span><span class="label">We review your EnrichMe data</span></div>
           <div class="svc-step-arrow">↓</div>
           <div class="svc-step"><span class="num">3</span><span class="label">Written plan, delivered</span></div>
           <div class="svc-step-arrow">↓</div>
@@ -384,26 +406,26 @@
       </div>
 
       <div class="svc-process-note">
-        This is the experience we're designing toward — not a live service yet. Nothing on this page can be booked today, and no payment is collected anywhere on FinFlow for advisory services.
+        This is the experience we're designing toward — not a live service yet. Nothing on this page can be booked today, and no payment is collected anywhere on EnrichMe for advisory services.
       </div>
     </div>
   </section>
 
-  <section class="svc-section alt">
+  <section class="svc-section alt" id="faq">
     <div class="container">
       <span class="svc-tag">FAQ</span>
       <h2>Questions You Might <em>Have</em></h2>
       <div class="faq-wrap">
         <details open>
           <summary>Is this available right now?</summary>
-          <p>Not yet. These advisory services are still in development. Today, FinFlow is self-serve — calculators, budgeting, and your Financial Fitness Score. Guided advisory is the next phase.</p>
+          <p>Not yet. These advisory services are still in development. Today, EnrichMe is self-serve — calculators, budgeting, and your Financial Fitness Score. Guided advisory is the next phase.</p>
         </details>
         <details>
           <summary>Will this cost extra?</summary>
-          <p>Pricing hasn't been finalized. We'll publish it here before anything launches, and it won't be charged to existing FinFlow users automatically.</p>
+          <p>Pricing hasn't been finalized. We'll publish it here before anything launches, and it won't be charged to existing EnrichMe users automatically.</p>
         </details>
         <details>
-          <summary>Will it use the data I've already tracked in FinFlow?</summary>
+          <summary>Will it use the data I've already tracked in EnrichMe?</summary>
           <p>If you opt in, a future advisory conversation could reference numbers you've already tracked — your budget, FIRE plan, or Fitness Score — so you're not starting from scratch. Nothing is shared without your consent.</p>
         </details>
         <details>
@@ -412,7 +434,7 @@
         </details>
         <details>
           <summary>Can I get notified when it launches?</summary>
-          <p>Yes — create a free FinFlow account and we'll let you know there first.</p>
+          <p>Yes — create a free EnrichMe account and we'll let you know there first.</p>
         </details>
         <details>
           <summary>Is anything on this page financial advice today?</summary>
@@ -424,17 +446,17 @@
 
   <section class="svc-cta-section">
     <h2>Want to be first in line?</h2>
-    <p>Create a free FinFlow account today — we'll email you the moment guided advisory opens up.</p>
+    <p>Create a free EnrichMe account today — we'll email you the moment guided advisory opens up.</p>
     <a href="index.html#login" class="btn-primary">Notify me at launch →</a>
     <p class="svc-disclaimer" style="margin-left:auto;margin-right:auto;">
-      FinFlow is a personal finance tracking app. The services on this page are planned and not yet operating —
+      EnrichMe is a personal finance tracking app. The services on this page are planned and not yet operating —
       nothing here is currently offered, licensed, or regulated, and nothing on this page should be treated as
       financial, tax, or legal advice.
     </p>
   </section>
 
   <footer>
-    &copy; 2026 FinFlow. All rights reserved.
+    &copy; 2026 EnrichMe. All rights reserved.
   </footer>
 
   <script>

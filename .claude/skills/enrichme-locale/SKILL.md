@@ -1,13 +1,13 @@
 ---
-name: finflow-locale
-description: Use whenever building, editing, or reviewing any FinFlow page, calculator, form, or copy in this repo — defines the current target market (India, INR) and what to defer (US and other countries) so new work doesn't silently drift toward US defaults.
+name: enrichme-locale
+description: Use whenever building, editing, or reviewing any EnrichMe page, calculator, form, or copy in this repo — defines the current target market (India, INR) and what to defer (US and other countries) so new work doesn't silently drift toward US defaults.
 ---
 
-# FinFlow locale targeting
+# EnrichMe locale targeting
 
 ## Current scope: India only
 
-FinFlow's initial target market is **India**. All currency, financial
+EnrichMe's initial target market is **India**. All currency, financial
 instruments, and defaults should assume an Indian user unless the user
 explicitly asks for another country.
 
@@ -62,7 +62,7 @@ in scope now.
 
 ## Visual theme
 
-FinFlow uses a **light theme** (white/soft cyan-to-emerald gradient
+EnrichMe uses a **light theme** (white/soft cyan-to-emerald gradient
 background, `#0f172a` near-black text, `#10b981` emerald as the
 primary accent, `#0ea5e9` cyan as the secondary accent in gradients).
 This replaced an earlier dark-navy theme. When adding new pages or
@@ -97,7 +97,7 @@ category pill without a reason.
   was deliberately trimmed to Tools / Learn / Services / Menu.
 - **Cross-calculator data flow (public tools only)**:
   `calculator/monthly-expense-calculator.html` writes its live monthly
-  total to `localStorage['finflow_monthly_expense']` on every recalc.
+  total to `localStorage['enrichme_monthly_expense']` on every recalc.
   `calculator/fire-calculator.html` reads that key on load to prefill
   its expenses input (clamped/snapped to its slider range), with a
   manual re-sync link and a status note. This `localStorage` pattern is
@@ -116,12 +116,14 @@ category pill without a reason.
 - **The nav's tools link is labeled "Tools"** (not "Our Free Tools")
   and points to `calculator/free-calculators.html`.
 - **Header and footer must stay the same across all pages.** Every
-  page in the site (`index.html` and everything under `calculator/`:
+  page in the site (`index.html`, `services.html`, `pricing.html`,
+  `resources.html`, and everything under `calculator/`:
   `free-calculators.html`, `fitness-score.html`, `fire-calculator.html`,
   `monthly-expense-calculator.html`) uses the identical nav and footer.
-  Current nav order: **Tools → Learn → Services → Menu (Log In / Sign
-  Up, native `<details>` dropdown) → 🌐 English**. Footer is always
-  `© 2026 FinFlow. All rights reserved.` When adding a new page, copy
+  Current nav order: **Features → Tools → Pricing → Learn → Services →
+  Menu (Log In / Sign Up, native `<details>` dropdown) → 🌐 English**.
+  Footer is always
+  `© 2026 EnrichMe. All rights reserved.` When adding a new page, copy
   the header/footer from an existing page rather than inventing a new
   one. When changing the header or footer, apply the change to every
   page, not just the one being edited — this list is the source of
@@ -135,27 +137,33 @@ category pill without a reason.
   - Non-home pages link the logo back to the home page (`../index.html`
     from one level deep) and point the `Tools` link at
     `free-calculators.html` (itself, when already on that page).
-    `Learn` links to a placeholder anchor on the home page
-    (`../index.html#learn`, no real destination yet). `Services` links
-    to the real `services.html` page (root-level, alongside
-    `index.html` — not under `calculator/`, since it isn't a
-    calculator). `Log In` / `Sign Up` both point at
-    `../index.html#login`, the id on the login box.
+    `Pricing` links to the real `pricing.html` page (three tiers:
+    Basic, Family, HNI). `Learn` links to the real `resources.html`
+    page (a resource hub: Blog, Help Center, Discord Community, 1-on-1
+    Session, Financial Terms, Advisor Directory — items without a real
+    destination yet carry a `🔜 Coming Soon` badge rather than pointing
+    nowhere). `Services` links to the real `services.html` page
+    (root-level, alongside `index.html` — not under `calculator/`,
+    since it isn't a calculator). `Log In` / `Sign Up` both point at
+    `../index.html#login`, the id on the login box. `pricing.html` and
+    `resources.html` are root-level pages (like `services.html`), so
+    their own internal links use bare paths (`index.html`,
+    `services.html`), not the `../` prefix used inside `calculator/`.
 
 ## No fabricated regulatory/licensing claims
 
 `services.html` is a **"Coming Soon" advisory page** inspired by a
-real fee-only advisory firm's marketing site, but FinFlow is not a
+real fee-only advisory firm's marketing site, but EnrichMe is not a
 SEBI-registered Investment Adviser and holds no such licensing — so
 none of that firm's regulatory language was carried over.
 
 - Never add SEBI/RIA registration numbers, "fiduciary," "fee-only,"
   "zero commissions," or any other licensing/compliance claim to
-  FinFlow copy. These are specific, regulated claims that would be
+  EnrichMe copy. These are specific, regulated claims that would be
   false if attached to a product that isn't actually registered.
 - Don't fabricate real ₹ pricing for services that don't exist yet
   (see `services.html`'s "🔜 Coming Soon" badges instead of price
-  tags). If a reference site has a pricing table for a service FinFlow
+  tags). If a reference site has a pricing table for a service EnrichMe
   doesn't actually offer, drop the numbers, don't adapt them.
 - When adapting content from an external advisory/fintech reference
   site, treat licensing claims, pricing, and "free consultation"-style

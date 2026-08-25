@@ -2,7 +2,7 @@
   "permissions": {
     "allow": [
       "Bash(*)",
-      "Edit(/.claude/skills/finflow-locale/**)",
+      "Edit(/.claude/skills/enrichme-locale/**)",
       "Read(//Users/balajirajan/.claude/**)"
     ],
     "deny": [

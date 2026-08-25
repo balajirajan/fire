@@ -1,4 +1,4 @@
-# FinFlow
+# EnrichMe
 
 A personal & family wealth management app — net worth, expenses, FIRE planning, insurance, health tracking, and more, all in one place.
 

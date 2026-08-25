@@ -67,7 +67,7 @@ async function vaultCheckSetup() {
 
 function vaultShowSetupUI() {
   document.getElementById('lockedTitle').textContent = 'Set Up Your Vault';
-  document.getElementById('lockedSub').textContent = 'Choose a passphrase to encrypt your documents. This is separate from your FinFlow login, and is shared across every Document Vault category.';
+  document.getElementById('lockedSub').textContent = 'Choose a passphrase to encrypt your documents. This is separate from your EnrichMe login, and is shared across every Document Vault category.';
   document.getElementById('passphraseConfirmInput').style.display = 'block';
   document.getElementById('setupWarning').style.display = 'block';
   document.getElementById('unlockBtn').textContent = 'Create Vault';

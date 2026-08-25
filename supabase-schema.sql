@@ -1,4 +1,4 @@
--- FinFlow database schema
+-- EnrichMe database schema
 -- Run this once in the Supabase SQL Editor (Project → SQL Editor → New query).
 -- Every table is scoped to auth.uid() via Row Level Security, so each user
 -- only ever sees and modifies their own rows.
@@ -71,7 +71,7 @@ create policy "transactions_delete_own" on transactions for delete using (auth.u
 -- Daily Expense Capture (expense-quick-add.html, expense-daily-view.html):
 -- this table already existed but was unused by any page — this feature is
 -- its first real reader/writer. "owner" is the same plain text tag used on
--- goals (self/spouse/joint/child/other), not a foreign key, since FinFlow
+-- goals (self/spouse/joint/child/other), not a foreign key, since EnrichMe
 -- has no household-members entity outside FinSplit's separate multi-user
 -- model. "account" doubles as payment method (e.g. "HDFC Credit Card",
 -- "Cash") — free text, autocompleted client-side from recent entries
@@ -488,6 +488,39 @@ create policy "health_inputs_insert_own" on health_inputs for insert with check 
 create policy "health_inputs_update_own" on health_inputs for update using (auth.uid() = user_id);
 create policy "health_inputs_delete_own" on health_inputs for delete using (auth.uid() = user_id);
 
+-- ── Health: Body Fat Calculator inputs — its own table (separate from      ──
+-- ── health_inputs), so measurements and the weight-loss plan persist      ──
+-- ── across visits instead of resetting to defaults every time the page    ──
+-- ── loads. Powers body-fat-calculator.html.                               ──
+create table if not exists body_fat_inputs (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null default auth.uid() references auth.users (id) on delete cascade unique,
+  sex text not null default 'male' check (sex in ('male','female')),
+  age numeric not null default 30,
+  height_cm numeric not null default 170,
+  weight_kg numeric not null default 70,
+  neck_cm numeric not null default 38,
+  waist_cm numeric not null default 85,
+  hip_cm numeric not null default 95,
+  target_weight_kg numeric not null default 65,
+  activity_level text not null default 'light' check (activity_level in ('sedentary','light','moderate','vigorous')),
+  daily_deficit_kcal numeric not null default 500,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+alter table body_fat_inputs enable row level security;
+
+drop policy if exists "body_fat_inputs_select_own" on body_fat_inputs;
+drop policy if exists "body_fat_inputs_insert_own" on body_fat_inputs;
+drop policy if exists "body_fat_inputs_update_own" on body_fat_inputs;
+drop policy if exists "body_fat_inputs_delete_own" on body_fat_inputs;
+
+create policy "body_fat_inputs_select_own" on body_fat_inputs for select using (auth.uid() = user_id);
+create policy "body_fat_inputs_insert_own" on body_fat_inputs for insert with check (auth.uid() = user_id);
+create policy "body_fat_inputs_update_own" on body_fat_inputs for update using (auth.uid() = user_id);
+create policy "body_fat_inputs_delete_own" on body_fat_inputs for delete using (auth.uid() = user_id);
+
 -- ── Astrology: Rashi/Nakshatra/Lagna Finder inputs — one row per user, so ──
 -- ── birth details persist across visits. Purely for the tradition/        ──
 -- ── entertainment feature on astrology.html; not used anywhere else.      ──
@@ -825,7 +858,7 @@ create policy "savings_goals_delete_own" on savings_goals for delete using (auth
 -- goal-specific inflation rate, and a contribution history log for
 -- pace-based projections. "owner" is a plain text tag (self/spouse/joint/
 -- child/other), not a foreign key to a real household-members table, since
--- FinFlow has no Members entity outside FinSplit's separate multi-user
+-- EnrichMe has no Members entity outside FinSplit's separate multi-user
 -- model. manual_current_value stands in for a linked-account value until
 -- account linking (a future phase) connects goals to the real net-worth
 -- tables (accounts, other_investments, expense_grid, gold_holdings,
@@ -893,7 +926,7 @@ create policy "goal_contributions_insert_own" on goal_contributions for insert w
 create policy "goal_contributions_update_own" on goal_contributions for update using (auth.uid() = user_id);
 create policy "goal_contributions_delete_own" on goal_contributions for delete using (auth.uid() = user_id);
 
--- Goal account linking (Phase 3): FinFlow has no single Accounts table, so
+-- Goal account linking (Phase 3): EnrichMe has no single Accounts table, so
 -- source_id is a polymorphic reference tagged by source_type rather than a
 -- foreign key. The six source types cover every place an asset can live:
 --   'account'          -> accounts (type = 'asset' only), value = balance
@@ -1136,7 +1169,7 @@ create policy "reminder_windows_delete_own" on reminder_windows for delete using
 -- ── touching financial code. No effectiveness ratings, no cost/price        ──
 -- ── fields, no pharmacy lookups — a family log, not a health platform.      ──
 
--- FinFlow's existing "owner" tag elsewhere (self/spouse/joint/child/other,
+-- EnrichMe's existing "owner" tag elsewhere (self/spouse/joint/child/other,
 -- see transactions/savings_goals/obligations) is a plain text tag, not a
 -- real entity, and can't tell two children apart. This module needs to, so
 -- it gets a real lightweight Member table instead of reusing that tag.

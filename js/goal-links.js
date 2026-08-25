@@ -1,4 +1,4 @@
-// Goal account linking (Phase 3): FinFlow has no single Accounts table, so
+// Goal account linking (Phase 3): EnrichMe has no single Accounts table, so
 // this module fetches "linkable sources" from six different places and
 // treats them uniformly as {source_type, source_id, name, category_label,
 // current_value}. Not pure — talks to Supabase directly — kept separate

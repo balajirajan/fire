@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Body Fat Calculator - EnrichMe</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f8fafc;
+      color: #0f172a;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    a, button { color: inherit; text-decoration: none; font-family: inherit; }
+
+    .app-shell { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
+
+    .sidebar-toggle { display: none; }
+    .sidebar-backdrop { display: none; }
+    .topbar-mobile-logo { display: none; }
+    .topbar-left { display: flex; align-items: center; gap: 0.65rem; }
+
+    /* Sidebar */
+    .sidebar { background: #ffffff; border-right: 1px solid #e2e8f0; display: flex; flex-direction: column; padding: 1.5rem 1.25rem; }
+    .sidebar-logo { display: flex; align-items: center; gap: 0.65rem; font-size: 1.1rem; font-weight: 800; margin-bottom: 2rem; padding: 0 0.25rem; }
+    .sidebar-logo-icon { width: 30px; height: 30px; background: linear-gradient(135deg, #0ea5e9, #10b981); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; flex-shrink: 0; }
+    .sidebar-nav { display: flex; flex-direction: column; gap: 0.25rem; }
+    .sidebar-nav a, .sidebar-nav .nav-group-head { display: flex; align-items: center; gap: 0.75rem; padding: 0.7rem 0.75rem; border-radius: 0.6rem; font-size: 0.9rem; font-weight: 500; color: #364752; }
+    .sidebar-nav a:hover, .sidebar-nav .nav-group-head:hover { background: #f1f5f9; }
+    .sidebar-nav a.active { background: #0f172a; color: #ffffff; font-weight: 600; }
+    .sidebar-nav .nav-group-head.open { background: #f1f5f9; font-weight: 700; }
+    .sidebar-nav .nav-group-head.active { background: #0f172a; color: #ffffff; font-weight: 600; }
+    .sidebar-nav .nav-group-head.active .nav-chevron { color: rgba(255,255,255,0.6); }
+    .sidebar-nav .nav-icon { font-size: 1rem; width: 20px; text-align: center; flex-shrink: 0; }
+    .sidebar-nav .nav-label { flex: 1; }
+    .sidebar-nav .nav-chevron { color: #94a3b8; font-size: 0.85rem; }
+    .sidebar-nav .nav-section-label { font-size: 0.66rem; font-weight: 800; letter-spacing: 0.07em; text-transform: uppercase; color: #94a3b8; padding: 0.9rem 0.75rem 0.35rem; }
+    .sidebar-nav .nav-section-label:first-of-type { padding-top: 0.2rem; }
+    .sidebar-subnav { display: flex; flex-direction: column; gap: 0.2rem; padding-left: 1.6rem; margin: 0.15rem 0 0.3rem; }
+    .sidebar-subnav a { display: flex; align-items: center; gap: 0.6rem; padding: 0.55rem 0.6rem; border-radius: 0.5rem; font-size: 0.85rem; font-weight: 500; color: #364752; }
+    .sidebar-subnav a:hover { background: #f1f5f9; }
+    .sidebar-subnav a.active { background: #0f172a; color: #fff; font-weight: 600; }
+    .sidebar-spacer { flex: 1; }
+    .feedback-card { background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 0.9rem; padding: 1.1rem; margin-top: 1.5rem; }
+    .feedback-card .fc-icon { width: 32px; height: 32px; border-radius: 0.6rem; background: #eef2f7; display: flex; align-items: center; justify-content: center; font-size: 0.95rem; margin-bottom: 0.6rem; }
+    .feedback-card strong { display: block; font-size: 0.85rem; margin-bottom: 0.3rem; }
+    .feedback-card p { font-size: 0.78rem; color: #64748b; line-height: 1.5; margin-bottom: 0.85rem; }
+    .feedback-card a { display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; width: 100%; padding: 0.55rem; border: 1px solid #cbd5e1; border-radius: 0.5rem; font-size: 0.8rem; font-weight: 600; color: #364752; }
+    .feedback-card a:hover { border-color: #10b981; color: #10b981; }
+
+    /* Main */
+    .main { padding: 1.5rem 2.5rem 3rem; min-width: 0; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; padding-bottom: 1.25rem; border-bottom: 1px solid #e2e8f0; margin-bottom: 1.5rem; }
+    .topbar h1 { font-size: 1.4rem; font-weight: 700; }
+    .topbar-right { display: flex; align-items: center; gap: 0.85rem; }
+    .language-selector { display: flex; align-items: center; gap: 0.5rem; background: #ffffff; padding: 0.5rem 0.9rem; border-radius: 0.5rem; color: #51636f; border: 1px solid #e2e8f0; cursor: pointer; font-size: 0.85rem; }
+    .user-menu { position: relative; list-style: none; }
+    .user-menu > summary { cursor: pointer; list-style: none; width: 34px; height: 34px; border-radius: 50%; background: #eef2f7; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; font-size: 1rem; }
+    .user-menu > summary::-webkit-details-marker { display: none; }
+    .user-menu-panel { position: absolute; top: calc(100% + 0.6rem); right: 0; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 0.75rem; box-shadow: 0 10px 30px rgba(15,23,42,0.12); padding: 0.4rem; min-width: 150px; z-index: 20; }
+    .user-menu-panel a { display: block; padding: 0.55rem 0.7rem; border-radius: 0.5rem; font-size: 0.85rem; color: #364752; font-weight: 500; }
+    .user-menu-panel a:hover { background: #f1f5f9; color: #10b981; }
+
+    .page-head { margin-bottom: 1.5rem; max-width: 68ch; }
+    .page-head h2 { font-size: 1.6rem; font-weight: 800; margin-bottom: 0.3rem; }
+    .page-head p { color: #64748b; font-size: 0.9rem; line-height: 1.55; }
+
+    .prefill-note { display: none; align-items: center; gap: 0.5rem; background: #f0fdf7; border: 1px solid #bbf7d0; color: #047857; font-size: 0.82rem; padding: 0.6rem 0.9rem; border-radius: 0.6rem; margin-bottom: 1.5rem; }
+    .prefill-note.show { display: flex; }
+
+    /* Calculator grid */
+    .bf-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; align-items: start; margin-bottom: 1.5rem; }
+    @media (max-width: 900px) { .bf-grid { grid-template-columns: 1fr; } }
+
+    .bf-card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 1.25rem; padding: 1.75rem; box-shadow: 0 14px 36px rgba(15, 23, 42, 0.05); }
+    .bf-card-eyebrow { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #10b981; margin-bottom: 1.1rem; padding-bottom: 0.75rem; border-bottom: 1px solid #e2e8f0; }
+
+    /* Sex / activity pill chooser */
+    .pill-row { display: flex; gap: 0.5rem; margin-bottom: 1.4rem; flex-wrap: wrap; }
+    .pill-btn { flex: 1; min-width: 90px; padding: 0.6rem 0.9rem; border: 1px solid #cbd5e1; border-radius: 0.6rem; background: #fff; color: #364752; font-size: 0.85rem; font-weight: 600; cursor: pointer; text-align: center; }
+    .pill-btn:hover { border-color: #94a3b8; }
+    .pill-btn.selected { border-color: #10b981; background: rgba(16,185,129,0.08); color: #047857; box-shadow: 0 0 0 1px #10b981; }
+
+    /* Slider fields */
+    .calc-field { margin-bottom: 1.5rem; }
+    .calc-field:last-child { margin-bottom: 0; }
+    .calc-field-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.6rem; gap: 0.75rem; }
+    .calc-field-head strong { font-size: 0.9rem; color: #0f172a; font-weight: 600; }
+    .calc-field-value { font-weight: 700; color: #0f172a; background: #f1f5f9; padding: 0.3rem 0.7rem; border-radius: 0.5rem; font-size: 0.88rem; white-space: nowrap; }
+    .calc-slider { width: 100%; -webkit-appearance: none; appearance: none; height: 6px; border-radius: 50px; outline: none; cursor: pointer; background: #e2e8f0; }
+    .calc-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 20px; height: 20px; border-radius: 50%; background: #fff; border: 3px solid #10b981; box-shadow: 0 2px 8px rgba(15,23,42,0.18); cursor: pointer; }
+    .calc-slider::-moz-range-thumb { width: 20px; height: 20px; border-radius: 50%; background: #fff; border: 3px solid #10b981; cursor: pointer; }
+    .calc-field.hidden { display: none; }
+
+    /* Body composition result */
+    .bfp-hero { text-align: center; padding: 0.5rem 0 1.25rem; }
+    .bfp-hero .lead { color: #51636f; font-size: 0.9rem; margin-bottom: 0.6rem; }
+    .bfp-value { font-size: 2.6rem; font-weight: 800; background: linear-gradient(to right, #0ea5e9, #10b981); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .bfp-badge { display: inline-flex; margin-top: 0.6rem; font-size: 0.72rem; font-weight: 700; padding: 4px 12px; border-radius: 999px; }
+    .bfp-badge.essential { background: rgba(14,165,233,0.12); color: #0369a1; }
+    .bfp-badge.athletic { background: rgba(16,185,129,0.12); color: #047857; }
+    .bfp-badge.fitness { background: rgba(16,185,129,0.12); color: #047857; }
+    .bfp-badge.average { background: rgba(217,119,6,0.12); color: #b45309; }
+    .bfp-badge.obese { background: rgba(220,38,38,0.1); color: #b91c1c; }
+
+    .bf-mass-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+    .bf-mass-metric { background: #f8fafc; border-radius: 0.9rem; padding: 0.9rem 1rem; text-align: center; }
+    .bf-mass-label { font-size: 0.78rem; font-weight: 600; color: #64748b; margin-bottom: 0.3rem; }
+    .bf-mass-value { font-size: 1.25rem; font-weight: 700; color: #0f172a; }
+
+    .bfp-scale-note { font-size: 0.78rem; color: #94a3b8; margin-top: 1.1rem; padding-top: 1rem; border-top: 1px solid #f1f5f9; line-height: 1.5; }
+
+    /* Plan results */
+    .plan-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1.25rem; }
+    .plan-metric { background: #f8fafc; border-radius: 0.9rem; padding: 0.95rem 1rem; }
+    .plan-metric-label { font-size: 0.8rem; font-weight: 600; color: #364752; margin-bottom: 0.35rem; }
+    .plan-metric-value { font-size: 1.15rem; font-weight: 700; color: #10b981; }
+    .plan-metric-value.warn { color: #dc2626; }
+    .plan-metric-sub { font-size: 0.74rem; color: #94a3b8; margin-top: 0.15rem; }
+
+    .plan-warning { display: none; align-items: flex-start; gap: 0.6rem; background: #fef2f2; border: 1px solid #fecaca; color: #b91c1c; font-size: 0.82rem; padding: 0.75rem 0.9rem; border-radius: 0.6rem; margin-bottom: 1rem; line-height: 1.5; }
+    .plan-warning.show { display: flex; }
+
+    .plan-summary { text-align: center; background: linear-gradient(135deg, #f0f9ff, #ecfdf5); border-radius: 1rem; padding: 1.25rem 1.5rem; }
+    .plan-summary p.title { font-weight: 700; font-size: 1.02rem; margin-bottom: 0.3rem; }
+    .plan-summary p.sub { color: #51636f; font-size: 0.85rem; }
+
+    /* Chart */
+    .bf-chart-card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 1.25rem; padding: 1.5rem 1.4rem 1.1rem; box-shadow: 0 14px 36px rgba(15,23,42,0.05); margin-bottom: 1.5rem; }
+    .bf-chart-eyebrow { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #10b981; margin-bottom: 0.2rem; }
+    .bf-chart-title { font-size: 1.05rem; font-weight: 700; margin-bottom: 0.15rem; }
+    .bf-chart-meta { font-size: 0.78rem; color: #94a3b8; }
+    .bf-legend { display: flex; flex-wrap: wrap; gap: 1.2rem; margin-top: 0.85rem; padding-top: 0.85rem; border-top: 1px solid #f1f5f9; font-size: 0.78rem; color: #51636f; }
+    .bf-legend span { display: inline-flex; align-items: center; gap: 0.4rem; }
+    .bf-legend i { width: 18px; height: 3px; border-radius: 2px; display: inline-block; }
+
+    /* Content sections */
+    .bf-content { padding: 0.5rem 0 1rem; max-width: 78ch; }
+    .bf-content h3 { font-size: 1.15rem; font-weight: 700; margin: 1.75rem 0 0.6rem; }
+    .bf-content h3:first-child { margin-top: 0; }
+    .bf-content p { color: #364752; line-height: 1.65; font-size: 0.92rem; margin-bottom: 0.7rem; }
+    .bf-content ul { color: #364752; line-height: 1.65; font-size: 0.92rem; padding-left: 1.25rem; margin-bottom: 0.7rem; }
+    .bf-content li { margin-bottom: 0.35rem; }
+    .bf-formula-box { background: #f0fdf7; border-left: 4px solid #10b981; border-radius: 0.6rem; padding: 1rem 1.25rem; margin: 1rem 0; }
+    .bf-formula-box strong { font-size: 1rem; }
+    .bf-formula-box p { font-size: 0.82rem; color: #364752; margin: 0.5rem 0 0; }
+    .bf-disclaimer { font-size: 0.78rem; color: #94a3b8; line-height: 1.6; margin-top: 1.5rem; }
+
+    /* Mobile sidebar (kept last so it wins the cascade over the base rules above) */
+    @media (max-width: 860px) {
+      .app-shell { grid-template-columns: 1fr; }
+
+      .sidebar {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: 280px;
+        max-width: 84vw;
+        z-index: 100;
+        box-shadow: 12px 0 32px rgba(15, 23, 42, 0.18);
+        overflow-y: auto;
+      }
+
+      .sidebar.open { display: flex; }
+
+      .sidebar-backdrop.open {
+        display: block;
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.4);
+        z-index: 99;
+      }
+
+      .sidebar-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        flex-shrink: 0;
+        border: 1px solid #e2e8f0;
+        border-radius: 0.5rem;
+        background: #ffffff;
+        color: #364752;
+        font-size: 1.15rem;
+        cursor: pointer;
+      }
+
+      .topbar-mobile-logo {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 30px;
+        height: 30px;
+        background: linear-gradient(135deg, #0ea5e9, #10b981);
+        border-radius: 8px;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+      }
+
+      .topbar h1 { font-size: 1.15rem; }
+      .language-selector { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleSidebar()"></div>
+    <aside class="sidebar" id="sidebar">
+      <a href="dashboard.html" class="sidebar-logo">
+        <div class="sidebar-logo-icon">💰</div>
+        <span>EnrichMe</span>
+      </a>
+
+      <nav class="sidebar-nav">
+        <a href="dashboard.html">
+          <span class="nav-icon">▦</span>
+          <span class="nav-label">Dashboard</span>
+        </a>
+
+        <div class="nav-section-label">Wealth</div>
+        <a href="fire-plan.html">
+          <span class="nav-icon">🧭</span>
+          <span class="nav-label">FIRE Plan</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="net-worth.html">
+          <span class="nav-icon">📈</span>
+          <span class="nav-label">Networth</span>
+          <span class="nav-chevron">›</span>
+        </a>
+
+        <div class="nav-section-label">Cash Flow</div>
+        <a href="money-required.html">
+          <span class="nav-icon">🪴</span>
+          <span class="nav-label">Monthly CashFlow</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="income.html">
+          <span class="nav-icon">💵</span>
+          <span class="nav-label">Income</span>
+        </a>
+        <a href="tax-planning.html">
+          <span class="nav-icon">🧾</span>
+          <span class="nav-label">Tax Planning</span>
+        </a>
+
+        <div class="nav-section-label">Protection</div>
+        <a href="insurance-tracker.html">
+          <span class="nav-icon">🛡️</span>
+          <span class="nav-label">Insurance Tracker</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="reminders.html">
+          <span class="nav-icon">🔔</span>
+          <span class="nav-label">Reminders</span>
+        </a>
+        <a href="vault-overview.html">
+          <span class="nav-icon">🔒</span>
+          <span class="nav-label">Document Vault</span>
+          <span class="nav-chevron">›</span>
+        </a>
+
+        <div class="nav-section-label">Family &amp; Health</div>
+        <a href="life-expectancy.html" class="nav-group-head open active">
+          <span class="nav-icon">❤️</span>
+          <span class="nav-label">Health(is wealth)</span>
+          <span class="nav-chevron">⌄</span>
+        </a>
+        <div class="sidebar-subnav">
+          <a href="life-expectancy.html">
+            <span class="nav-icon">📉</span>
+            <span class="nav-label">Life Expectancy</span>
+          </a>
+          <a href="health-medicine-tracker.html">
+            <span class="nav-icon">💊</span>
+            <span class="nav-label">Medicine Tracker</span>
+          </a>
+          <a href="health-checkup-reports.html">
+            <span class="nav-icon">🩺</span>
+            <span class="nav-label">Checkup Reports</span>
+          </a>
+          <a href="body-fat-calculator.html" class="active">
+            <span class="nav-icon">⚖️</span>
+            <span class="nav-label">Body Fat Calculator</span>
+          </a>
+        </div>
+
+        <div class="nav-section-label">More</div>
+        <a href="split/dashboard.html">
+          <span class="nav-icon">💸</span>
+          <span class="nav-label">SplitExpenses(SplitWise)</span>
+        </a>
+        <a href="astrology.html">
+          <span class="nav-icon">🔮</span>
+          <span class="nav-label">Spiritual</span>
+        </a>
+
+        <a href="#">
+          <span class="nav-icon">⚙️</span>
+          <span class="nav-label">Settings</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-spacer"></div>
+
+      <div class="feedback-card">
+        <div class="fc-icon">💬</div>
+        <strong>Got feedback?</strong>
+        <p>Have an idea or found a bug? We read every message.</p>
+        <a href="mailto:hello@enrichme.app">✉ Contact Us</a>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <div class="topbar-left">
+          <button class="sidebar-toggle" aria-label="Menu" onclick="toggleSidebar()">☰</button>
+          <div class="topbar-mobile-logo">💰</div>
+          <h1>Body Fat Calculator</h1>
+        </div>
+        <div class="topbar-right">
+          <div class="language-selector">🌐 English ▾</div>
+          <details class="user-menu">
+            <summary>👤</summary>
+            <div class="user-menu-panel">
+              <a href="#">Settings</a>
+              <a href="#" onclick="signOutAndRedirect('index.html'); return false;">Log Out</a>
+            </div>
+          </details>
+        </div>
+      </div>
+
+      <div class="page-head">
+        <h2>Body Fat &amp; Weight Loss Calculator</h2>
+        <p>Estimate your body fat percentage from a tape measure, then find out exactly how many calories to cut — and how many days it'll realistically take — to reach your target weight.</p>
+      </div>
+
+      <div class="prefill-note" id="prefillNote">✓ Prefilled your age, height, weight and activity level from your Health Profile.</div>
+
+      <div class="bf-grid">
+        <div class="bf-card">
+          <p class="bf-card-eyebrow">Your Measurements</p>
+
+          <div class="calc-field">
+            <div class="calc-field-head"><strong>Sex</strong></div>
+            <div class="pill-row" id="sexPills">
+              <button type="button" class="pill-btn selected" data-sex="male">Male</button>
+              <button type="button" class="pill-btn" data-sex="female">Female</button>
+            </div>
+          </div>
+
+          <div class="calc-field">
+            <div class="calc-field-head"><strong>Age</strong><span class="calc-field-value" id="ageValue">30 yrs</span></div>
+            <input type="range" class="calc-slider" id="ageRange" min="16" max="80" step="1" value="30">
+          </div>
+
+          <div class="calc-field">
+            <div class="calc-field-head"><strong>Height</strong><span class="calc-field-value" id="heightValue">170 cm</span></div>
+            <input type="range" class="calc-slider" id="heightRange" min="130" max="210" step="1" value="170">
+          </div>
+
+          <div class="calc-field">
+            <div class="calc-field-head"><strong>Weight</strong><span class="calc-field-value" id="weightValue">70 kg</span></div>
+            <input type="range" class="calc-slider" id="weightRange" min="35" max="160" step="0.5" value="70">
+          </div>
+
+          <div class="calc-field">
+            <div class="calc-field-head"><strong>Neck circumference</strong><span class="calc-field-value" id="neckValue">38 cm</span></div>
+            <input type="range" class="calc-slider" id="neckRange" min="25" max="55" step="0.5" value="38">
+          </div>
+
+          <div class="calc-field">
+            <div class="calc-field-head"><strong>Waist circumference</strong><span class="calc-field-value" id="waistValue">85 cm</span></div>
+            <input type="range" class="calc-slider" id="waistRange" min="50" max="160" step="0.5" value="85">
+          </div>
+
+          <div class="calc-field hidden" id="hipField">
+            <div class="calc-field-head"><strong>Hip circumference</strong><span class="calc-field-value" id="hipValue">95 cm</span></div>
+            <input type="range" class="calc-slider" id="hipRange" min="60" max="170" step="0.5" value="95">
+          </div>
+        </div>
+
+        <div class="bf-card">
+          <p class="bf-card-eyebrow">Your Body Composition</p>
+          <div class="bfp-hero">
+            <p class="lead">Estimated Body Fat</p>
+            <div class="bfp-value" id="bfpValue">—%</div>
+            <span class="bfp-badge" id="bfpBadge">—</span>
+          </div>
+          <div class="bf-mass-row">
+            <div class="bf-mass-metric">
+              <div class="bf-mass-label">Fat Mass</div>
+              <div class="bf-mass-value" id="fatMassValue">— kg</div>
+            </div>
+            <div class="bf-mass-metric">
+              <div class="bf-mass-label">Lean Mass</div>
+              <div class="bf-mass-value" id="leanMassValue">— kg</div>
+            </div>
+          </div>
+          <p class="bfp-scale-note">Estimated using the U.S. Navy circumference method — typically accurate to within 3–4% of a DEXA scan for most body types. Not a medical measurement.</p>
+        </div>
+      </div>
+
+      <div class="bf-grid">
+        <div class="bf-card">
+          <p class="bf-card-eyebrow">Your Weight Loss Plan</p>
+
+          <div class="calc-field">
+            <div class="calc-field-head"><strong>Target weight</strong><span class="calc-field-value" id="targetWeightValue">65 kg</span></div>
+            <input type="range" class="calc-slider" id="targetWeightRange" min="35" max="160" step="0.5" value="65">
+          </div>
+
+          <div class="calc-field">
+            <div class="calc-field-head"><strong>Activity level</strong></div>
+            <div class="pill-row" id="activityPills">
+              <button type="button" class="pill-btn" data-activity="sedentary">Sedentary</button>
+              <button type="button" class="pill-btn selected" data-activity="light">Light</button>
+              <button type="button" class="pill-btn" data-activity="moderate">Moderate</button>
+              <button type="button" class="pill-btn" data-activity="vigorous">Vigorous</button>
+            </div>
+          </div>
+
+          <div class="calc-field">
+            <div class="calc-field-head"><strong>Daily calorie deficit</strong><span class="calc-field-value" id="deficitValue">500 kcal/day</span></div>
+            <input type="range" class="calc-slider" id="deficitRange" min="250" max="1000" step="50" value="500">
+          </div>
+        </div>
+
+        <div class="bf-card">
+          <p class="bf-card-eyebrow">Calories &amp; Timeline</p>
+
+          <div class="plan-warning" id="planWarning"></div>
+
+          <div class="plan-grid">
+            <div class="plan-metric">
+              <div class="plan-metric-label">Weight to lose</div>
+              <div class="plan-metric-value" id="weightToLoseValue">— kg</div>
+            </div>
+            <div class="plan-metric">
+              <div class="plan-metric-label">Total calories to burn</div>
+              <div class="plan-metric-value" id="totalKcalValue">— kcal</div>
+            </div>
+            <div class="plan-metric">
+              <div class="plan-metric-label">Days needed</div>
+              <div class="plan-metric-value" id="daysValue">—</div>
+              <div class="plan-metric-sub" id="weeksSub"></div>
+            </div>
+            <div class="plan-metric">
+              <div class="plan-metric-label">Your daily calorie target</div>
+              <div class="plan-metric-value" id="dailyTargetValue">— kcal</div>
+              <div class="plan-metric-sub" id="tdeeSub"></div>
+            </div>
+          </div>
+
+          <div class="plan-summary">
+            <p class="title" id="planSummaryTitle">Set a target weight to see your plan</p>
+            <p class="sub" id="planSummarySub"></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bf-chart-card">
+        <p class="bf-chart-eyebrow">Weight Trajectory</p>
+        <h3 class="bf-chart-title">Your path to your target weight</h3>
+        <p class="bf-chart-meta" id="chartMeta">—</p>
+        <div id="weightChart"></div>
+        <div class="bf-legend">
+          <span><i style="background:#10b981;"></i> Projected weight</span>
+          <span><i style="background:#f59e0b;"></i> Target weight</span>
+        </div>
+      </div>
+
+      <div class="bf-content">
+        <h3>What is body fat percentage?</h3>
+        <p>Body fat percentage is the proportion of your total body weight that's made up of fat, as opposed to muscle, bone, organs and water (your "lean mass"). It's a more useful fitness marker than weight or BMI alone, since two people at the same weight and height can have very different amounts of fat versus muscle.</p>
+
+        <h3>How is this calculated?</h3>
+        <p>This calculator uses the U.S. Navy circumference method, developed by the U.S. Navy as a fast, equipment-free alternative to skinfold calipers or a DEXA scan. It uses your neck and waist measurements (plus hip, for women) along with your height.</p>
+        <div class="bf-formula-box">
+          <strong>Men:</strong> Body Fat % = 495 / (1.0324 − 0.19077 × log₁₀(waist − neck) + 0.15456 × log₁₀(height)) − 450
+          <p><strong>Women:</strong> Body Fat % = 495 / (1.29579 − 0.35004 × log₁₀(waist + hip − neck) + 0.22100 × log₁₀(height)) − 450</p>
+        </div>
+
+        <h3>How is the calorie deficit calculated?</h3>
+        <p>Roughly 7,700 kcal of energy deficit corresponds to 1 kg of fat loss. This calculator first estimates your Total Daily Energy Expenditure (TDEE) using the Mifflin-St Jeor formula (based on your age, sex, height, weight and activity level), then works out how many days it'll take to reach your target weight at your chosen daily deficit.</p>
+        <ul>
+          <li><strong>Total calories to burn</strong> = (current weight − target weight) × 7,700 kcal</li>
+          <li><strong>Days needed</strong> = total calories to burn ÷ daily deficit</li>
+          <li><strong>Daily calorie target</strong> = your TDEE − daily deficit</li>
+        </ul>
+
+        <h3>Is a 500 kcal/day deficit safe?</h3>
+        <p>A deficit of 500 kcal/day is the most commonly recommended starting point — it targets roughly 0.5 kg of fat loss per week, which is considered sustainable for most adults. Deficits above 1,000 kcal/day, or a daily target below 1,200 kcal (women) / 1,500 kcal (men), are generally not recommended without medical supervision — this calculator will flag it if your inputs land there.</p>
+
+        <p class="bf-disclaimer">This tool provides estimates for general wellness purposes only, using widely published formulas (U.S. Navy method, Mifflin-St Jeor). It is not a medical device and does not replace advice from a doctor, dietitian, or other qualified professional — especially if you have an existing health condition or are pregnant.</p>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-client.js"></script>
+  <script>
+    function toggleSidebar() {
+      var sidebar = document.getElementById('sidebar');
+      var backdrop = document.getElementById('sidebarBackdrop');
+      var isOpen = sidebar.classList.toggle('open');
+      backdrop.classList.toggle('open', isOpen);
+    }
+
+    var SLIDER_FILL = '#10b981';
+    var SLIDER_TRACK = '#e2e8f0';
+    var ACTIVITY_MULTIPLIER = { sedentary: 1.2, light: 1.375, moderate: 1.55, vigorous: 1.725 };
+
+    var state = {
+      sex: 'male',
+      activity: 'light',
+      targetWeightTouched: false
+    };
+
+    var els = {
+      ageRange: document.getElementById('ageRange'),
+      heightRange: document.getElementById('heightRange'),
+      weightRange: document.getElementById('weightRange'),
+      neckRange: document.getElementById('neckRange'),
+      waistRange: document.getElementById('waistRange'),
+      hipRange: document.getElementById('hipRange'),
+      targetWeightRange: document.getElementById('targetWeightRange'),
+      deficitRange: document.getElementById('deficitRange')
+    };
+
+    function applyFill(slider) {
+      var pct = 100 * (slider.value - slider.min) / (slider.max - slider.min);
+      slider.style.background = 'linear-gradient(90deg, ' + SLIDER_FILL + ' ' + pct + '%, ' + SLIDER_TRACK + ' ' + pct + '%)';
+    }
+
+    Array.prototype.forEach.call(document.querySelectorAll('.calc-slider'), function (el) {
+      applyFill(el);
+      el.addEventListener('input', function () { applyFill(el); recalculate(); scheduleSave(); });
+    });
+
+    Array.prototype.forEach.call(document.querySelectorAll('#sexPills .pill-btn'), function (btn) {
+      btn.addEventListener('click', function () {
+        state.sex = btn.dataset.sex;
+        Array.prototype.forEach.call(document.querySelectorAll('#sexPills .pill-btn'), function (b) { b.classList.toggle('selected', b === btn); });
+        document.getElementById('hipField').classList.toggle('hidden', state.sex !== 'female');
+        recalculate();
+        scheduleSave();
+      });
+    });
+
+    Array.prototype.forEach.call(document.querySelectorAll('#activityPills .pill-btn'), function (btn) {
+      btn.addEventListener('click', function () {
+        state.activity = btn.dataset.activity;
+        Array.prototype.forEach.call(document.querySelectorAll('#activityPills .pill-btn'), function (b) { b.classList.toggle('selected', b === btn); });
+        recalculate();
+        scheduleSave();
+      });
+    });
+
+    els.weightRange.addEventListener('input', function () {
+      if (!state.targetWeightTouched) {
+        var suggested = Math.max(Number(els.targetWeightRange.min), Number(els.weightRange.value) - 5);
+        els.targetWeightRange.value = suggested;
+        applyFill(els.targetWeightRange);
+        document.getElementById('targetWeightValue').textContent = fmtKg(suggested);
+      }
+    });
+    els.targetWeightRange.addEventListener('input', function () { state.targetWeightTouched = true; });
+
+    function fmtKg(v) { return Number(v).toFixed(1).replace(/\.0$/, '') + ' kg'; }
+    function fmtCm(v) { return Math.round(Number(v)) + ' cm'; }
+
+    function bfCategory(sex, bf) {
+      var ranges = sex === 'female'
+        ? [ [0, 13, 'essential', 'Essential Fat'], [13, 20, 'athletic', 'Athletic'], [20, 24, 'fitness', 'Fitness'], [24, 31, 'average', 'Average'], [31, 100, 'obese', 'Obese'] ]
+        : [ [0, 5, 'essential', 'Essential Fat'], [5, 13, 'athletic', 'Athletic'], [13, 17, 'fitness', 'Fitness'], [17, 24, 'average', 'Average'], [24, 100, 'obese', 'Obese'] ];
+      for (var i = 0; i < ranges.length; i++) {
+        if (bf < ranges[i][1]) return { cls: ranges[i][2], label: ranges[i][3] };
+      }
+      return { cls: 'obese', label: 'Obese' };
+    }
+
+    function recalculate() {
+      var age = Number(els.ageRange.value);
+      var height = Number(els.heightRange.value);
+      var weight = Number(els.weightRange.value);
+      var neck = Number(els.neckRange.value);
+      var waist = Number(els.waistRange.value);
+      var hip = Number(els.hipRange.value);
+      var targetWeight = Number(els.targetWeightRange.value);
+      var deficit = Number(els.deficitRange.value);
+
+      document.getElementById('ageValue').textContent = age + ' yrs';
+      document.getElementById('heightValue').textContent = fmtCm(height);
+      document.getElementById('weightValue').textContent = fmtKg(weight);
+      document.getElementById('neckValue').textContent = fmtCm(neck);
+      document.getElementById('waistValue').textContent = fmtCm(waist);
+      document.getElementById('hipValue').textContent = fmtCm(hip);
+      document.getElementById('targetWeightValue').textContent = fmtKg(targetWeight);
+      document.getElementById('deficitValue').textContent = deficit + ' kcal/day';
+
+      // --- Body fat % (U.S. Navy method) ---
+      var bfp;
+      if (state.sex === 'female') {
+        bfp = 495 / (1.29579 - 0.35004 * Math.log10(waist + hip - neck) + 0.22100 * Math.log10(height)) - 450;
+      } else {
+        bfp = 495 / (1.0324 - 0.19077 * Math.log10(waist - neck) + 0.15456 * Math.log10(height)) - 450;
+      }
+      bfp = Math.max(3, Math.min(60, bfp));
+
+      var cat = bfCategory(state.sex, bfp);
+      document.getElementById('bfpValue').textContent = bfp.toFixed(1) + '%';
+      var badge = document.getElementById('bfpBadge');
+      badge.textContent = cat.label;
+      badge.className = 'bfp-badge ' + cat.cls;
+
+      var fatMass = weight * bfp / 100;
+      var leanMass = weight - fatMass;
+      document.getElementById('fatMassValue').textContent = fmtKg(fatMass);
+      document.getElementById('leanMassValue').textContent = fmtKg(leanMass);
+
+      // --- BMR / TDEE (Mifflin-St Jeor) ---
+      var bmr = state.sex === 'female'
+        ? 10 * weight + 6.25 * height - 5 * age - 161
+        : 10 * weight + 6.25 * height - 5 * age + 5;
+      var tdee = bmr * ACTIVITY_MULTIPLIER[state.activity];
+
+      // --- Weight loss plan ---
+      var toLose = weight - targetWeight;
+      var warningEl = document.getElementById('planWarning');
+
+      if (toLose <= 0) {
+        document.getElementById('weightToLoseValue').textContent = '—';
+        document.getElementById('totalKcalValue').textContent = '—';
+        document.getElementById('daysValue').textContent = '—';
+        document.getElementById('weeksSub').textContent = '';
+        document.getElementById('dailyTargetValue').textContent = Math.round(tdee) + ' kcal';
+        document.getElementById('tdeeSub').textContent = 'Your maintenance calories (TDEE)';
+        document.getElementById('planSummaryTitle').textContent = 'Set a target weight below your current weight';
+        document.getElementById('planSummarySub').textContent = 'Move the target weight slider left to build a loss plan.';
+        warningEl.classList.remove('show');
+        renderChart(weight, weight, 0);
+        return;
+      }
+
+      var totalKcal = toLose * 7700;
+      var days = totalKcal / deficit;
+      var weeks = days / 7;
+      var dailyTarget = tdee - deficit;
+      var weeklyRateKg = (deficit * 7) / 7700;
+      var minSafeIntake = state.sex === 'female' ? 1200 : 1500;
+
+      document.getElementById('weightToLoseValue').textContent = fmtKg(toLose);
+      document.getElementById('totalKcalValue').textContent = Math.round(totalKcal).toLocaleString('en-IN') + ' kcal';
+      document.getElementById('daysValue').textContent = Math.round(days) + ' days';
+      document.getElementById('weeksSub').textContent = '≈ ' + weeks.toFixed(1) + ' weeks';
+      document.getElementById('dailyTargetValue').textContent = Math.round(dailyTarget) + ' kcal';
+      document.getElementById('tdeeSub').textContent = 'TDEE ' + Math.round(tdee) + ' kcal − ' + deficit + ' kcal deficit';
+
+      var dailyTargetEl = document.getElementById('dailyTargetValue');
+      var warnings = [];
+      if (dailyTarget < minSafeIntake) {
+        warnings.push('Your daily calorie target of ' + Math.round(dailyTarget) + ' kcal is below the commonly recommended minimum of ' + minSafeIntake + ' kcal — consider a smaller deficit, or check with a doctor or dietitian before going lower.');
+      }
+      if (weeklyRateKg > 1) {
+        warnings.push('A deficit this large targets ' + weeklyRateKg.toFixed(1) + ' kg/week — faster than the generally recommended safe pace of 0.5–1 kg/week.');
+      }
+      dailyTargetEl.classList.toggle('warn', dailyTarget < minSafeIntake);
+
+      if (warnings.length) {
+        warningEl.innerHTML = '⚠️ ' + warnings.join(' ');
+        warningEl.classList.add('show');
+      } else {
+        warningEl.classList.remove('show');
+      }
+
+      var finishDate = new Date();
+      finishDate.setDate(finishDate.getDate() + Math.round(days));
+      var finishStr = finishDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+
+      document.getElementById('planSummaryTitle').textContent = 'Lose ' + fmtKg(toLose) + ' by ' + finishStr;
+      document.getElementById('planSummarySub').textContent = 'At a ' + deficit + ' kcal/day deficit (' + weeklyRateKg.toFixed(2) + ' kg/week), eating about ' + Math.round(dailyTarget) + ' kcal/day.';
+
+      renderChart(weight, targetWeight, Math.round(days));
+    }
+
+    function renderChart(startWeight, targetWeight, days) {
+      var W = 640, H = 200, padL = 46, padR = 16, padT = 20, padB = 30;
+      var plotW = W - padL - padR, plotH = H - padT - padB;
+
+      var maxVal = Math.max(startWeight, targetWeight) * 1.06;
+      var minVal = Math.min(startWeight, targetWeight) * 0.94;
+      var range = Math.max(maxVal - minVal, 1);
+
+      function xAt(idx) { return padL + (days === 0 ? 0 : (idx / days)) * plotW; }
+      function yAt(val) { return padT + plotH - ((val - minVal) / range) * plotH; }
+
+      var lineStart = xAt(0) + ',' + yAt(startWeight);
+      var lineEnd = xAt(days) + ',' + yAt(targetWeight);
+      var line = 'M' + lineStart + ' L' + lineEnd;
+      var area = line + ' L' + xAt(days) + ',' + yAt(minVal) + ' L' + xAt(0) + ',' + yAt(minVal) + ' Z';
+
+      var gridLines = '';
+      for (var g = 0; g <= 3; g++) {
+        var gy = padT + (g / 3) * plotH;
+        gridLines += '<line x1="' + padL + '" y1="' + gy + '" x2="' + (W - padR) + '" y2="' + gy + '" stroke="#eef2f6" stroke-width="1"/>';
+        var val = maxVal - (g / 3) * range;
+        gridLines += '<text x="' + (padL - 8) + '" y="' + (gy + 4) + '" text-anchor="end" font-size="10" fill="#94a3b8">' + val.toFixed(0) + '</text>';
+      }
+
+      var targetY = yAt(targetWeight);
+      var targetLine = '<line x1="' + padL + '" y1="' + targetY + '" x2="' + (W - padR) + '" y2="' + targetY + '" stroke="#f59e0b" stroke-width="2" stroke-dasharray="6 4"/>';
+
+      var todayLabel = '<text x="' + xAt(0) + '" y="' + (H - 8) + '" text-anchor="start" font-size="10" fill="#94a3b8">Today</text>';
+      var endLabel = days > 0
+        ? '<text x="' + xAt(days) + '" y="' + (H - 8) + '" text-anchor="end" font-size="10" fill="#94a3b8">Day ' + days + '</text>'
+        : '';
+
+      var svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" style="width:100%;height:auto;font-family:inherit;">' +
+        gridLines +
+        '<path d="' + area + '" fill="rgba(16,185,129,0.14)" stroke="none"/>' +
+        '<path d="' + line + '" fill="none" stroke="#10b981" stroke-width="2.5"/>' +
+        targetLine + todayLabel + endLabel +
+        '<circle cx="' + xAt(0) + '" cy="' + yAt(startWeight) + '" r="4" fill="#10b981"/>' +
+        '<circle cx="' + xAt(days) + '" cy="' + yAt(targetWeight) + '" r="4" fill="#0ea5e9"/>' +
+        '</svg>';
+
+      document.getElementById('weightChart').innerHTML = svg;
+      document.getElementById('chartMeta').textContent = days > 0
+        ? fmtKg(startWeight) + ' today → ' + fmtKg(targetWeight) + ' in ~' + days + ' days'
+        : 'Set a target weight below your current weight to see your trajectory.';
+    }
+
+    /* ---- Persist to its own body_fat_inputs table (separate from          ----
+       health_inputs), same debounced-upsert pattern as life-expectancy.html. ---- */
+
+    function setSlider(el, value) {
+      el.value = Math.min(Math.max(Number(value), Number(el.min)), Number(el.max));
+      applyFill(el);
+    }
+
+    function setSex(sex) {
+      state.sex = sex;
+      Array.prototype.forEach.call(document.querySelectorAll('#sexPills .pill-btn'), function (b) {
+        b.classList.toggle('selected', b.dataset.sex === sex);
+      });
+      document.getElementById('hipField').classList.toggle('hidden', sex !== 'female');
+    }
+
+    function setActivity(level) {
+      if (!ACTIVITY_MULTIPLIER[level]) return;
+      state.activity = level;
+      Array.prototype.forEach.call(document.querySelectorAll('#activityPills .pill-btn'), function (b) {
+        b.classList.toggle('selected', b.dataset.activity === level);
+      });
+    }
+
+    async function loadSavedInputs() {
+      var { data, error } = await supabaseClient.from('body_fat_inputs').select('*').maybeSingle();
+      if (error) { console.error('Could not load saved body fat inputs', error); return null; }
+      return data;
+    }
+
+    function applySavedInputs(saved) {
+      if (saved.sex === 'male' || saved.sex === 'female') setSex(saved.sex);
+      if (saved.age) setSlider(els.ageRange, saved.age);
+      if (saved.height_cm) setSlider(els.heightRange, saved.height_cm);
+      if (saved.weight_kg) setSlider(els.weightRange, saved.weight_kg);
+      if (saved.neck_cm) setSlider(els.neckRange, saved.neck_cm);
+      if (saved.waist_cm) setSlider(els.waistRange, saved.waist_cm);
+      if (saved.hip_cm) setSlider(els.hipRange, saved.hip_cm);
+      if (saved.target_weight_kg) { setSlider(els.targetWeightRange, saved.target_weight_kg); state.targetWeightTouched = true; }
+      if (saved.activity_level) setActivity(saved.activity_level);
+      if (saved.daily_deficit_kcal) setSlider(els.deficitRange, saved.daily_deficit_kcal);
+    }
+
+    async function saveInputs() {
+      var payload = {
+        sex: state.sex,
+        age: Number(els.ageRange.value),
+        height_cm: Number(els.heightRange.value),
+        weight_kg: Number(els.weightRange.value),
+        neck_cm: Number(els.neckRange.value),
+        waist_cm: Number(els.waistRange.value),
+        hip_cm: Number(els.hipRange.value),
+        target_weight_kg: Number(els.targetWeightRange.value),
+        activity_level: state.activity,
+        daily_deficit_kcal: Number(els.deficitRange.value),
+        updated_at: new Date().toISOString()
+      };
+      var { error } = await supabaseClient.from('body_fat_inputs').upsert(payload, { onConflict: 'user_id' });
+      if (error) console.error('Could not save body fat inputs', error);
+    }
+
+    var saveTimer = null;
+    function scheduleSave() {
+      if (saveTimer) clearTimeout(saveTimer);
+      saveTimer = setTimeout(saveInputs, 600);
+    }
+
+    // First-time bootstrap only: borrow age/height/weight/sex/activity from
+    // the Health Profile (life-expectancy.html) so a brand-new user isn't
+    // starting from generic defaults. Never overwrites a saved body_fat_inputs row.
+    async function prefillFromHealthProfile() {
+      try {
+        var { data } = await supabaseClient.from('health_inputs').select('*').maybeSingle();
+        if (!data) return;
+
+        if (data.sex === 'female' || data.sex === 'male') setSex(data.sex);
+        if (data.age) setSlider(els.ageRange, data.age);
+        if (data.height_cm) setSlider(els.heightRange, data.height_cm);
+        if (data.weight_kg) {
+          setSlider(els.weightRange, data.weight_kg);
+          setSlider(els.targetWeightRange, Math.max(Number(els.targetWeightRange.min), Number(els.weightRange.value) - 5));
+        }
+        if (data.activity_level) setActivity(data.activity_level);
+
+        document.getElementById('prefillNote').classList.add('show');
+        recalculate();
+        scheduleSave();
+      } catch (e) {
+        // No saved health profile yet — defaults stay as-is.
+      }
+    }
+
+    (async function init() {
+      var user = await requireAuth('index.html#login');
+      if (!user) return;
+
+      recalculate();
+
+      var saved = await loadSavedInputs();
+      if (saved) {
+        applySavedInputs(saved);
+        recalculate();
+      } else {
+        await prefillFromHealthProfile();
+      }
+    })();
+  </script>
+</body>
+</html>
