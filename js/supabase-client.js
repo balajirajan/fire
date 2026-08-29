@@ -16,7 +16,7 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_
 // Redirects to the login page if there's no active session, and otherwise
 // resolves with the current user.
 async function requireAuth(loginPath) {
-  loginPath = loginPath || 'index.html#login';
+  loginPath = loginPath || 'login.html';
   const { data: { session } } = await supabaseClient.auth.getSession();
   if (!session) {
     window.location.href = loginPath;
@@ -28,4 +28,12 @@ async function requireAuth(loginPath) {
 async function signOutAndRedirect(redirectPath) {
   await supabaseClient.auth.signOut();
   window.location.href = redirectPath || 'index.html';
+}
+
+// Whether the current signed-in user is an admin (see profiles.is_admin /
+// the is_admin() RPC in supabase-schema.sql). Call after requireAuth().
+async function isAdmin() {
+  const { data, error } = await supabaseClient.rpc('is_admin');
+  if (error) { console.error('Could not check admin status', error); return false; }
+  return !!data;
 }

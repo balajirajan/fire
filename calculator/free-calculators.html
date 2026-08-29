@@ -39,18 +39,13 @@
       gap: 0.75rem;
       font-size: 1.25rem;
       font-weight: bold;
-      color: #0f172a;
+      color: #712B13;
     }
 
     .logo-icon {
       width: 32px;
       height: 32px;
-      background: linear-gradient(135deg, #0ea5e9, #10b981);
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.5rem;
+      flex-shrink: 0;
     }
 
     .nav-links {
@@ -416,7 +411,10 @@
 <body>
   <nav>
     <a href="../index.html" class="logo">
-      <div class="logo-icon">💰</div>
+      <svg class="logo-icon" viewBox="8 8 98 94" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <circle cx="55" cy="55" r="42" fill="none" stroke="#712B13" stroke-width="8" stroke-linecap="round" stroke-dasharray="230 34" stroke-dashoffset="20"/>
+        <path d="M92,33 Q101,45 95,52 Q97,43 89,41 Q86,48 92,53 Q80,50 80,40 Q80,34 92,33 Z" fill="#712B13"/>
+      </svg>
       <span>EnrichMe</span>
     </a>
     <button class="nav-toggle" id="navToggle" aria-label="Menu" aria-expanded="false" onclick="toggleMobileNav()">☰</button>
@@ -426,7 +424,7 @@
       <a href="../pricing.html">Pricing</a>
       <a href="../resources.html">Learn</a>
       <a href="../services.html">Services</a>
-      <a href="../index.html#login" class="nav-signup-btn">Sign In</a>
+      <a href="../login.html" class="nav-signup-btn">Sign In</a>
     </div>
   </nav>
 
@@ -443,7 +441,7 @@
   <section class="hero">
     <div class="hero-inner">
       <h1>Free Financial Calculators &amp; Tools</h1>
-      <p>EnrichMe offers free financial calculators built for India — FIRE planning, SIP &amp; investing, EMI &amp; loans, income tax, retirement, NPS, and more. No sign-up, no email, no paywall.</p>
+      <p>EnrichMe offers free financial calculators built for India - FIRE planning, SIP &amp; investing, EMI &amp; loans, income tax, retirement, NPS, and more. No sign-up, no email, no paywall.</p>
       <div class="trust-badges">
         <span>✓ 100% free</span>
         <span>✓ No sign-up</span>
@@ -488,7 +486,7 @@
         <div class="tool-icon-wrap" style="background: rgba(79,70,229,0.12);">💯</div>
         <div>
           <h3>Financial Fitness Score</h3>
-          <p>A 2-minute quiz — get your score out of 100.</p>
+          <p>A 2-minute quiz - get your score out of 100.</p>
         </div>
       </a>
     </div>
@@ -501,7 +499,7 @@
       <a href="fitness-score.html" class="tool-card" data-category="health" data-name="financial health score fitness score">
         <div class="tool-icon-wrap" style="background: rgba(79,70,229,0.12);">💯</div>
         <h3>Financial Fitness Score</h3>
-        <p>A 2-minute quiz on savings, debt, and protection — get your score out of 100.</p>
+        <p>A 2-minute quiz on savings, debt, and protection - get your score out of 100.</p>
         <span class="open-link">Check your score →</span>
       </a>
       <a href="monthly-expense-calculator.html" class="tool-card" data-category="health" data-name="monthly expense calculator budget">
@@ -527,7 +525,7 @@
 
   <section class="block alt" id="section-goal">
     <p class="section-title" data-section="goal">Plan Your Goals</p>
-    <p class="section-sub">Work out when you can retire early — and what it takes to fund every goal along the way.</p>
+    <p class="section-sub">Work out when you can retire early - and what it takes to fund every goal along the way.</p>
     <div class="tool-grid" id="cards-goal">
       <a href="fire-calculator.html" class="tool-card" data-category="goal" data-name="fire calculator">
         <div class="tool-icon-wrap" style="background: rgba(217,119,6,0.12);">🔥</div>
@@ -544,7 +542,7 @@
       <a href="#" class="tool-card" data-category="goal" data-name="barista fire calculator">
         <div class="tool-icon-wrap" style="background: rgba(217,119,6,0.12);">☕</div>
         <h3>Barista FIRE Calculator</h3>
-        <p>Downshift to part-time work — with healthcare costs built in.</p>
+        <p>Downshift to part-time work - with healthcare costs built in.</p>
         <span class="open-link">Open calculator →</span>
       </a>
       <a href="#" class="tool-card" data-category="goal" data-name="how long will my money last">
@@ -594,7 +592,7 @@
 
   <section class="block" id="section-invest">
     <p class="section-title" data-section="invest">Invest &amp; Grow</p>
-    <p class="section-sub">See what your money can do over decades — growth, allocation, and real-world comparisons.</p>
+    <p class="section-sub">See what your money can do over decades - growth, allocation, and real-world comparisons.</p>
     <div class="tool-grid" id="cards-invest">
       <a href="#" class="tool-card" data-category="invest" data-name="compound interest calculator">
         <div class="tool-icon-wrap" style="background: rgba(8,145,178,0.12);">📈</div>
@@ -673,7 +671,7 @@
 
   <section class="block alt" id="section-loan">
     <p class="section-title" data-section="loan">Loans &amp; Debt</p>
-    <p class="section-sub">Get the full picture of your biggest debts — loans, EMIs, prepayments, and rent vs buy.</p>
+    <p class="section-sub">Get the full picture of your biggest debts - loans, EMIs, prepayments, and rent vs buy.</p>
     <div class="tool-grid" id="cards-loan">
       <a href="#" class="tool-card" data-category="loan" data-name="mortgage side-by-side">
         <div class="tool-icon-wrap" style="background: rgba(124,58,237,0.12);">🏠</div>
@@ -696,7 +694,7 @@
       <a href="#" class="tool-card" data-category="loan" data-name="debt snowball vs avalanche">
         <div class="tool-icon-wrap" style="background: rgba(225,29,72,0.12);">💳</div>
         <h3>Debt Snowball vs Avalanche</h3>
-        <p>Two payoff methods, one debt-free date — see which wins.</p>
+        <p>Two payoff methods, one debt-free date - see which wins.</p>
         <span class="open-link">Open calculator →</span>
       </a>
       <a href="#" class="tool-card" data-category="loan" data-name="emi calculator">
@@ -722,7 +720,7 @@
 
   <section class="block" id="section-tax">
     <p class="section-title" data-section="tax">Tax Planning</p>
-    <p class="section-sub">Know what you owe, and what you can save — under India's tax rules.</p>
+    <p class="section-sub">Know what you owe, and what you can save - under India's tax rules.</p>
     <div class="tool-grid" id="cards-tax" style="grid-template-columns: repeat(3, 1fr); max-width: 850px;">
       <a href="#" class="tool-card" data-category="tax" data-name="income tax calculator">
         <div class="tool-icon-wrap" style="background: rgba(225,29,72,0.12);">🧾</div>
@@ -763,14 +761,14 @@
           <tr><td>SIP Calculator</td><td>What will my monthly SIP be worth over time?</td><td>Monthly amount, return, tenure</td></tr>
           <tr><td>Step-Up SIP Calculator</td><td>How much faster can I grow wealth by increasing my SIP yearly?</td><td>Starting SIP, step-up %, tenure</td></tr>
           <tr><td>EMI Calculator</td><td>What will my monthly loan repayment be?</td><td>Loan amount, rate, tenure</td></tr>
-          <tr><td>Income Tax Calculator</td><td>Old regime or new regime — which saves more tax?</td><td>Income, deductions, regime</td></tr>
+          <tr><td>Income Tax Calculator</td><td>Old regime or new regime - which saves more tax?</td><td>Income, deductions, regime</td></tr>
           <tr><td>HRA Calculator</td><td>How much of my HRA is tax-exempt?</td><td>Basic salary, HRA received, rent paid, city</td></tr>
           <tr><td>NPS Calculator</td><td>What corpus and pension can I expect from NPS?</td><td>Contribution, age, expected return</td></tr>
           <tr><td>CAGR Calculator</td><td>What was my investment's average annual return?</td><td>Start value, end value, duration</td></tr>
           <tr><td>XIRR Calculator</td><td>What's my real return with irregular investments?</td><td>Cash flow dates and amounts</td></tr>
           <tr><td>Mortgage vs Invest</td><td>Prepay the home loan early or invest?</td><td>Loan rate, market return, inflation</td></tr>
-          <tr><td>Rent vs Buy Calculator</td><td>Should I rent or buy — and when does buying win?</td><td>Home price, rent, down payment, return</td></tr>
-          <tr><td>Debt Snowball vs Avalanche</td><td>Snowball or avalanche — when am I debt-free?</td><td>Balances, rates, minimum payments</td></tr>
+          <tr><td>Rent vs Buy Calculator</td><td>Should I rent or buy - and when does buying win?</td><td>Home price, rent, down payment, return</td></tr>
+          <tr><td>Debt Snowball vs Avalanche</td><td>Snowball or avalanche - when am I debt-free?</td><td>Balances, rates, minimum payments</td></tr>
           <tr><td>Net Worth Percentile</td><td>How does my net worth compare to my peers?</td><td>Net worth, age, city</td></tr>
         </tbody>
       </table>
@@ -782,7 +780,7 @@
     <div class="faq-wrap">
       <details open>
         <summary>Are these financial calculators really free?</summary>
-        <p>Yes — every calculator on this page is completely free, with no paywall, no premium tier, and no usage limits. They're maintained as part of the free EnrichMe app, so there's no catch hidden inside the tools.</p>
+        <p>Yes - every calculator on this page is completely free, with no paywall, no premium tier, and no usage limits. They're maintained as part of the free EnrichMe app, so there's no catch hidden inside the tools.</p>
       </details>
       <details>
         <summary>Do I need an account or email to use them?</summary>
@@ -798,14 +796,14 @@
       </details>
       <details>
         <summary>Can I save my results?</summary>
-        <p>The calculators themselves don't store anything — your inputs stay in your browser. If you want to go further, create a free EnrichMe account to track your plan against your real numbers.</p>
+        <p>The calculators themselves don't store anything - your inputs stay in your browser. If you want to go further, create a free EnrichMe account to track your plan against your real numbers.</p>
       </details>
     </div>
   </section>
 
   <section class="cta-section">
     <h2>See your full financial picture</h2>
-    <p>One free app for budgets, net worth, portfolio, and your FIRE plan — pick up where the calculators leave off.</p>
+    <p>One free app for budgets, net worth, portfolio, and your FIRE plan - pick up where the calculators leave off.</p>
     <a href="../index.html" class="btn-primary">Get Started Free →</a>
   </section>
 

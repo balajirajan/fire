@@ -26,8 +26,8 @@
 
     /* Sidebar */
     .sidebar { background: #ffffff; border-right: 1px solid #e2e8f0; display: flex; flex-direction: column; padding: 1.5rem 1.25rem; }
-    .sidebar-logo { display: flex; align-items: center; gap: 0.65rem; font-size: 1.1rem; font-weight: 800; margin-bottom: 2rem; padding: 0 0.25rem; }
-    .sidebar-logo-icon { width: 30px; height: 30px; background: linear-gradient(135deg, #0ea5e9, #10b981); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; flex-shrink: 0; }
+    .sidebar-logo { display: flex; align-items: center; gap: 0.65rem; font-size: 1.1rem; font-weight: 800; margin-bottom: 2rem; padding: 0 0.25rem; color: #712B13; }
+    .sidebar-logo-icon { width: 30px; height: 30px; flex-shrink: 0; }
     .sidebar-nav { display: flex; flex-direction: column; gap: 0.25rem; }
     .sidebar-nav a, .sidebar-nav .nav-group-head { display: flex; align-items: center; gap: 0.75rem; padding: 0.7rem 0.75rem; border-radius: 0.6rem; font-size: 0.9rem; font-weight: 500; color: #364752; }
     .sidebar-nav a:hover, .sidebar-nav .nav-group-head:hover { background: #f1f5f9; }
@@ -35,7 +35,8 @@
     .sidebar-nav .nav-group-head.open { background: #f1f5f9; font-weight: 700; }
     .sidebar-nav .nav-group-head.active { background: #0f172a; color: #ffffff; font-weight: 600; }
     .sidebar-nav .nav-group-head.active .nav-chevron { color: rgba(255,255,255,0.6); }
-    .sidebar-nav .nav-icon { font-size: 1rem; width: 20px; text-align: center; flex-shrink: 0; }
+    .sidebar-nav .nav-icon { width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .sidebar-nav .nav-icon .tabler-icon { width: 18px; height: 18px; }
     .sidebar-nav .nav-label { flex: 1; }
     .sidebar-nav .nav-chevron { color: #94a3b8; font-size: 0.85rem; }
     .sidebar-nav .nav-section-label { font-size: 0.66rem; font-weight: 800; letter-spacing: 0.07em; text-transform: uppercase; color: #94a3b8; padding: 0.9rem 0.75rem 0.35rem; }
@@ -158,7 +159,7 @@
     .sync-btn { background: none; border: none; padding: 0; color: #10b981; font-weight: 600; font-size: inherit; cursor: pointer; text-decoration: underline; }
     .expense-status-note { font-size: 0.76rem; color: #64748b; margin-top: 0.3rem; }
 
-    /* FIRE progress hero — real data, same dark-gradient theme as every other page */
+    /* FIRE progress hero - real data, same dark-gradient theme as every other page */
     .fire-hero {
       background: linear-gradient(135deg, #0f172a, #1e293b);
       border-radius: 1.25rem;
@@ -173,7 +174,8 @@
     }
     .fire-hero-stats { display: flex; flex-wrap: wrap; gap: 2.25rem; flex: 1; min-width: 280px; }
     .fire-hero-stat { min-width: 150px; }
-    .fire-hero-icon { font-size: 1.1rem; margin-bottom: 0.4rem; opacity: 0.9; }
+    .fire-hero-icon { margin-bottom: 0.4rem; opacity: 0.9; }
+    .fire-hero-icon .tabler-icon { width: 20px; height: 20px; display: block; }
     .fire-hero-label { font-size: 0.78rem; color: #94a3b8; font-weight: 600; margin-bottom: 0.3rem; }
     .fire-hero-value { font-size: 1.75rem; font-weight: 800; }
     .fire-hero-value.negative { color: #f87171; }
@@ -256,9 +258,6 @@
         justify-content: center;
         width: 30px;
         height: 30px;
-        background: linear-gradient(135deg, #0ea5e9, #10b981);
-        border-radius: 8px;
-        font-size: 1.1rem;
         flex-shrink: 0;
       }
 
@@ -272,88 +271,90 @@
     <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleSidebar()"></div>
     <aside class="sidebar" id="sidebar">
       <a href="dashboard.html" class="sidebar-logo">
-        <div class="sidebar-logo-icon">💰</div>
+        <svg class="sidebar-logo-icon" viewBox="8 8 98 94" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <circle cx="55" cy="55" r="42" fill="none" stroke="#712B13" stroke-width="8" stroke-linecap="round" stroke-dasharray="230 34" stroke-dashoffset="20"/>
+          <path d="M92,33 Q101,45 95,52 Q97,43 89,41 Q86,48 92,53 Q80,50 80,40 Q80,34 92,33 Z" fill="#712B13"/>
+        </svg>
         <span>EnrichMe</span>
       </a>
 
       <nav class="sidebar-nav">
         <a href="dashboard.html">
-          <span class="nav-icon">▦</span>
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M5 12l-2 0l9 -9l9 9l-2 0" /><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" /><path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" /></svg></span>
           <span class="nav-label">Dashboard</span>
         </a>
 
         <div class="nav-section-label">Wealth</div>
-        <a href="fire-plan.html" class="nav-group-head open active">
-          <span class="nav-icon">🧭</span>
+        <a href="fire-plan.html" class="active">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M8 16l2 -6l6 -2l-2 6l-6 2" /><path d="M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /><path d="M12 3l0 2" /><path d="M12 19l0 2" /><path d="M3 12l2 0" /><path d="M19 12l2 0" /></svg></span>
           <span class="nav-label">FIRE Plan</span>
-          <span class="nav-chevron">⌄</span>
+          <span class="nav-chevron">›</span>
         </a>
-        <div class="sidebar-subnav">
-          <a href="fire-plan.html" class="active">
-            <span class="nav-icon">🧮</span>
-            <span class="nav-label">FIRE Calculation</span>
-          </a>
-          <a href="fire-goals.html">
-            <span class="nav-icon">🎯</span>
-            <span class="nav-label">Goal</span>
-          </a>
-        </div>
+        <a href="fire-goals.html">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M11 12a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M7 12a5 5 0 1 0 10 0a5 5 0 1 0 -10 0" /><path d="M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /></svg></span>
+          <span class="nav-label">Goal Based Savings</span>
+          <span class="nav-chevron">›</span>
+        </a>
         <a href="net-worth.html">
-          <span class="nav-icon">📈</span>
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M3 17l6 -6l4 4l8 -8" /><path d="M14 7l7 0l0 7" /></svg></span>
           <span class="nav-label">Networth</span>
           <span class="nav-chevron">›</span>
         </a>
 
         <div class="nav-section-label">Cash Flow</div>
         <a href="money-required.html">
-          <span class="nav-icon">🪴</span>
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M3 13a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v6a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -6" /><path d="M15 9a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v10a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -10" /><path d="M9 5a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v14a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -14" /><path d="M4 20h14" /></svg></span>
           <span class="nav-label">Monthly CashFlow</span>
           <span class="nav-chevron">›</span>
         </a>
         <a href="income.html">
-          <span class="nav-icon">💵</span>
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M7 15h-3a1 1 0 0 1 -1 -1v-8a1 1 0 0 1 1 -1h12a1 1 0 0 1 1 1v3" /><path d="M7 10a1 1 0 0 1 1 -1h12a1 1 0 0 1 1 1v8a1 1 0 0 1 -1 1h-12a1 1 0 0 1 -1 -1l0 -8" /><path d="M12 14a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /></svg></span>
           <span class="nav-label">Income</span>
         </a>
         <a href="tax-planning.html">
-          <span class="nav-icon">🧾</span>
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M5 21v-16a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v16l-3 -2l-2 2l-2 -2l-2 2l-2 -2l-3 2" /><path d="M14 8h-2.5a1.5 1.5 0 0 0 0 3h1a1.5 1.5 0 0 1 0 3h-2.5m2 0v1.5m0 -9v1.5" /></svg></span>
           <span class="nav-label">Tax Planning</span>
         </a>
 
         <div class="nav-section-label">Protection</div>
         <a href="insurance-tracker.html">
-          <span class="nav-icon">🛡️</span>
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M11.46 20.846a12 12 0 0 1 -7.96 -14.846a12 12 0 0 0 8.5 -3a12 12 0 0 0 8.5 3a12 12 0 0 1 -.09 7.06" /><path d="M15 19l2 2l4 -4" /></svg></span>
           <span class="nav-label">Insurance Tracker</span>
           <span class="nav-chevron">›</span>
         </a>
         <a href="reminders.html">
-          <span class="nav-icon">🔔</span>
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M10 5a2 2 0 1 1 4 0a7 7 0 0 1 4 6v3a4 4 0 0 0 2 3h-16a4 4 0 0 0 2 -3v-3a7 7 0 0 1 4 -6" /><path d="M9 17v1a3 3 0 0 0 6 0v-1" /></svg></span>
           <span class="nav-label">Reminders</span>
         </a>
         <a href="vault-overview.html">
-          <span class="nav-icon">🔒</span>
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M5 13a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v6a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-6" /><path d="M11 16a1 1 0 1 0 2 0a1 1 0 0 0 -2 0" /><path d="M8 11v-4a4 4 0 1 1 8 0v4" /></svg></span>
           <span class="nav-label">Document Vault</span>
           <span class="nav-chevron">›</span>
         </a>
 
         <div class="nav-section-label">Family &amp; Health</div>
         <a href="life-expectancy.html">
-          <span class="nav-icon">❤️</span>
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M19.5 12.572l-7.5 7.428l-7.5 -7.428a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572" /></svg></span>
           <span class="nav-label">Health(is wealth)</span>
           <span class="nav-chevron">›</span>
         </a>
 
         <div class="nav-section-label">More</div>
         <a href="split/dashboard.html">
-          <span class="nav-icon">💸</span>
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M5 7a4 4 0 1 0 8 0a4 4 0 1 0 -8 0" /><path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /><path d="M21 21v-2a4 4 0 0 0 -3 -3.85" /></svg></span>
           <span class="nav-label">SplitExpenses(SplitWise)</span>
         </a>
+        <a href="will-document.html">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2" /><path d="M9 9l1 0" /><path d="M9 13l6 0" /><path d="M9 17l6 0" /></svg></span>
+          <span class="nav-label">Will Planner</span>
+        </a>
         <a href="astrology.html">
-          <span class="nav-icon">🔮</span>
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454l0 .008" /><path d="M17 4a2 2 0 0 0 2 2a2 2 0 0 0 -2 2a2 2 0 0 0 -2 -2a2 2 0 0 0 2 -2" /><path d="M19 11h2m-1 -1v2" /></svg></span>
           <span class="nav-label">Spiritual</span>
         </a>
 
         <a href="#">
-          <span class="nav-icon">⚙️</span>
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M10.325 4.317c.426 -1.756 2.924 -1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543 -.94 3.31 .826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756 .426 1.756 2.924 0 3.35a1.724 1.724 0 0 0 -1.066 2.573c.94 1.543 -.826 3.31 -2.37 2.37a1.724 1.724 0 0 0 -2.572 1.065c-.426 1.756 -2.924 1.756 -3.35 0a1.724 1.724 0 0 0 -2.573 -1.066c-1.543 .94 -3.31 -.826 -2.37 -2.37a1.724 1.724 0 0 0 -1.065 -2.572c-1.756 -.426 -1.756 -2.924 0 -3.35a1.724 1.724 0 0 0 1.066 -2.573c-.94 -1.543 .826 -3.31 2.37 -2.37c1 .608 2.296 .07 2.572 -1.065" /><path d="M9 12a3 3 0 1 0 6 0a3 3 0 0 0 -6 0" /></svg></span>
           <span class="nav-label">Settings</span>
         </a>
       </nav>
@@ -372,7 +373,10 @@
       <div class="topbar">
         <div class="topbar-left">
           <button class="sidebar-toggle" aria-label="Menu" onclick="toggleSidebar()">☰</button>
-          <div class="topbar-mobile-logo">💰</div>
+          <svg class="topbar-mobile-logo" viewBox="8 8 98 94" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <circle cx="55" cy="55" r="42" fill="none" stroke="#712B13" stroke-width="8" stroke-linecap="round" stroke-dasharray="230 34" stroke-dashoffset="20"/>
+            <path d="M92,33 Q101,45 95,52 Q97,43 89,41 Q86,48 92,53 Q80,50 80,40 Q80,34 92,33 Z" fill="#712B13"/>
+          </svg>
           <h1>FIRE Plan</h1>
         </div>
         <div class="topbar-right">
@@ -389,28 +393,34 @@
 
       <div class="page-head">
         <h2>FIRE Plan</h2>
-        <p><b>F</b>inancial <b>I</b>ndependence, <b>R</b>etire <b>E</b>arly — find your number and the savings path to get there, adjusted for Indian inflation.</p>
+        <p><b>F</b>inancial <b>I</b>ndependence, <b>R</b>etire <b>E</b>arly - find your number and the savings path to get there, adjusted for Indian inflation.</p>
       </div>
 
       <div class="fire-hero" id="fireHero">
         <div class="fire-hero-stats">
           <div class="fire-hero-stat">
-            <div class="fire-hero-icon">💰</div>
+            <div class="fire-hero-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M11 12a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M7 12a5 5 0 1 0 10 0a5 5 0 1 0 -10 0" /><path d="M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /></svg></div>
+            <div class="fire-hero-label">FIRE Number</div>
+            <div class="fire-hero-value" id="heroFireNumber">₹0</div>
+            <div class="fire-hero-sub">Annual expenses at retirement × 25</div>
+          </div>
+          <div class="fire-hero-stat">
+            <div class="fire-hero-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M3 17l6 -6l4 4l8 -8" /><path d="M14 7l7 0l0 7" /></svg></div>
             <div class="fire-hero-label">Current Net Worth</div>
             <div class="fire-hero-value" id="heroNetWorth">₹0</div>
             <div class="fire-hero-sub">Counted toward your FIRE corpus</div>
           </div>
           <div class="fire-hero-stat">
-            <div class="fire-hero-icon">📊</div>
-            <div class="fire-hero-label">Savings Rate</div>
-            <div class="fire-hero-value" id="heroSavingsRate">—</div>
-            <div class="fire-hero-sub">This month · Income kept, not spent</div>
-          </div>
-          <div class="fire-hero-stat">
-            <div class="fire-hero-icon">💵</div>
-            <div class="fire-hero-label">Monthly Surplus</div>
+            <div class="fire-hero-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M7 15h-3a1 1 0 0 1 -1 -1v-8a1 1 0 0 1 1 -1h12a1 1 0 0 1 1 1v3" /><path d="M7 10a1 1 0 0 1 1 -1h12a1 1 0 0 1 1 1v8a1 1 0 0 1 -1 1h-12a1 1 0 0 1 -1 -1l0 -8" /><path d="M12 14a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /></svg></div>
+            <div class="fire-hero-label">Monthly Savings</div>
             <div class="fire-hero-value" id="heroSurplus">₹0</div>
             <div class="fire-hero-sub">Income − Expenses − Loan EMI</div>
+          </div>
+          <div class="fire-hero-stat">
+            <div class="fire-hero-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M17 17m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M7 7m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M17 7l-10 10" /></svg></div>
+            <div class="fire-hero-label">Monthly Savings Rate</div>
+            <div class="fire-hero-value" id="heroSavingsRate">-</div>
+            <div class="fire-hero-sub">This month · Income kept, not spent</div>
           </div>
         </div>
         <div class="fire-hero-progress">
@@ -427,7 +437,7 @@
       <div class="charts-row">
         <div class="chart-card">
           <h3 style="font-size:1rem;font-weight:700;margin-bottom:0.2rem;">This Month's Cash Flow</h3>
-          <p class="chart-sub" style="font-size:0.78rem;color:#94a3b8;margin-bottom:0.75rem;">Pulled live from Income, Expenses and Loan/EMI — this is what funds your Monthly Investment below.</p>
+          <p class="chart-sub" style="font-size:0.78rem;color:#94a3b8;margin-bottom:0.75rem;">Pulled live from Income, Expenses and Loan/EMI - this is what funds your Monthly Investment below.</p>
           <div class="cashflow-grid" id="cashflowGrid"></div>
         </div>
         <div class="chart-card">
@@ -467,6 +477,10 @@
           <div class="calc-field">
             <div class="calc-field-head"><strong>Life Expectancy</strong><span class="calc-field-value" id="lifeValue">85</span></div>
             <input type="range" class="calc-slider" id="lifeRange" min="50" max="100" step="1" value="85">
+            <p style="font-size: 0.78rem; margin-top: 0.5rem;">
+              <button type="button" class="sync-btn" onclick="syncLifeExpectancyFromApp(true)">🔄 Use my calculated number</button>
+            </p>
+            <p class="expense-status-note" id="lifeStatusNote">A guess here can throw off your whole plan - get a real number from the <a href="life-expectancy.html" style="color:#10b981;font-weight:600;">Life Expectancy Calculator</a>.</p>
           </div>
 
           <div class="calc-field">
@@ -505,8 +519,8 @@
             <div class="fc-snapshot-title">FIRE Snapshot</div>
             <div class="fc-metric-row"><span>Annual Expenses Today</span><strong id="annualExpenseToday">₹0</strong></div>
             <div class="fc-metric-row"><span>Expense at Age <span id="expenseFireAgeLabel">50</span></span><strong id="expenseAtFireAge">₹0</strong></div>
-            <div class="fc-metric-row"><span title="15x your annual expenses. Covers essential living costs with a streamlined lifestyle — the minimum to retire early.">Lean FIRE ⓘ</span><strong id="leanFireValue">₹0</strong></div>
-            <div class="fc-metric-row"><span title="50x your annual expenses. Allows for a higher lifestyle spend — travel, comfort, no compromise.">Fat FIRE ⓘ</span><strong id="fatFireValue">₹0</strong></div>
+            <div class="fc-metric-row"><span title="15x your annual expenses. Covers essential living costs with a streamlined lifestyle - the minimum to retire early.">Lean FIRE ⓘ</span><strong id="leanFireValue">₹0</strong></div>
+            <div class="fc-metric-row"><span title="50x your annual expenses. Allows for a higher lifestyle spend - travel, comfort, no compromise.">Fat FIRE ⓘ</span><strong id="fatFireValue">₹0</strong></div>
           </div>
         </div>
       </div>
@@ -555,7 +569,7 @@
             <div class="proj-metric">
               <div class="proj-metric-label" id="projGapTitle">Gap to Fill</div>
               <div class="proj-metric-value warn" id="projGapValue">₹0</div>
-              <div class="proj-metric-sub" id="projGapSub">Shortfall — additional needed</div>
+              <div class="proj-metric-sub" id="projGapSub">Shortfall - additional needed</div>
             </div>
             <div class="proj-metric">
               <div class="proj-metric-label">Monthly SIP Required</div>
@@ -564,7 +578,7 @@
             </div>
             <div class="proj-metric">
               <div class="proj-metric-label">FIRE Corpus Lasts Until</div>
-              <div class="proj-metric-value warn" id="projSurviveAge">—</div>
+              <div class="proj-metric-value warn" id="projSurviveAge">-</div>
               <div class="proj-metric-sub" id="projSurviveSub"><span class="fc-stat-badge warn" id="projSurviveBadge">⚠️ Depletes Early</span></div>
             </div>
           </div>
@@ -595,13 +609,13 @@
             <div class="fc-stat-card">
               <p class="fc-stat-eyebrow">Your Money Lasts Until</p>
               <span class="fc-stat-badge warn" id="statSurviveBadge">⚠️ Depletes Early</span>
-              <p class="fc-stat-value warn" id="statSurviveAge">—</p>
-              <p class="fc-stat-sub" id="statSurviveSub">—</p>
+              <p class="fc-stat-value warn" id="statSurviveAge">-</p>
+              <p class="fc-stat-sub" id="statSurviveSub">-</p>
             </div>
             <div class="fc-stat-card" style="background: linear-gradient(145deg,#f0fdf7,#e6f9ef);">
               <p class="fc-stat-eyebrow">Years of Financial Freedom</p>
               <p class="fc-stat-value" id="statFreeYears">0 yrs</p>
-              <p class="fc-stat-sub" id="statFreeSub">—</p>
+              <p class="fc-stat-sub" id="statFreeSub">-</p>
             </div>
           </div>
         </div>
@@ -609,24 +623,24 @@
 
       <div class="chart-card fc-content">
         <h3>What is FIRE?</h3>
-        <p>FIRE stands for Financial Independence, Retire Early. It's a simple idea: build enough wealth to cover your living expenses for life, so that work becomes a choice rather than a necessity — whether that means quitting the 9-to-5 at 45, going part-time, or just knowing you <em>could</em> stop anytime without panic.</p>
+        <p>FIRE stands for Financial Independence, Retire Early. It's a simple idea: build enough wealth to cover your living expenses for life, so that work becomes a choice rather than a necessity - whether that means quitting the 9-to-5 at 45, going part-time, or just knowing you <em>could</em> stop anytime without panic.</p>
 
         <h3>How your FIRE Number is calculated</h3>
         <p>The calculator projects your monthly expenses forward to your target FIRE age using your inflation assumption, then applies the 4% Safe Withdrawal Rate:</p>
         <div class="fc-formula-box">
           <strong>FIRE Number = Annual Expenses at Retirement × 25</strong>
-          <p>The 25× multiple comes from the 4% rule — withdrawing 4% of a well-invested corpus each year is designed to sustain it through a long retirement. Multiplying by 25 is the same as dividing by 4%.</p>
+          <p>The 25× multiple comes from the 4% rule - withdrawing 4% of a well-invested corpus each year is designed to sustain it through a long retirement. Multiplying by 25 is the same as dividing by 4%.</p>
         </div>
-        <p>The portfolio section then checks your progress: it projects your current portfolio and monthly SIP forward to your FIRE age, and shows either the surplus you're on track for, or the gap — and the extra monthly SIP needed to close it.</p>
+        <p>The portfolio section then checks your progress: it projects your current portfolio and monthly SIP forward to your FIRE age, and shows either the surplus you're on track for, or the gap - and the extra monthly SIP needed to close it.</p>
 
         <h3>Lean FIRE, Fat FIRE, and everything in between</h3>
-        <p><strong>Lean FIRE</strong> (15× annual expenses) covers the essentials — housing, food, healthcare — on a streamlined budget. <strong>Fat FIRE</strong> (50× annual expenses) keeps your full lifestyle intact, including travel and discretionary spending. Most people land somewhere between the two; both are shown in your FIRE Snapshot above.</p>
+        <p><strong>Lean FIRE</strong> (15× annual expenses) covers the essentials - housing, food, healthcare - on a streamlined budget. <strong>Fat FIRE</strong> (50× annual expenses) keeps your full lifestyle intact, including travel and discretionary spending. Most people land somewhere between the two; both are shown in your FIRE Snapshot above.</p>
 
         <h3>Is the 4% rule safe for India?</h3>
-        <p>The 4% rule comes from US market data, where inflation has historically run 2–3%. India's long-term inflation averages 6–7%, and healthcare costs rise even faster (12–15% a year). Most Indian planners recommend a more conservative 3–3.5% withdrawal rate — meaning a corpus closer to 28–33× expenses. Treat this calculator's 25× output as a starting point, and build in a 10–15% buffer.</p>
+        <p>The 4% rule comes from US market data, where inflation has historically run 2–3%. India's long-term inflation averages 6–7%, and healthcare costs rise even faster (12–15% a year). Most Indian planners recommend a more conservative 3–3.5% withdrawal rate - meaning a corpus closer to 28–33× expenses. Treat this calculator's 25× output as a starting point, and build in a 10–15% buffer.</p>
 
         <h3>Include your PPF, NPS and EPF</h3>
-        <p>Retirement savings sitting in EPF, PPF, and NPS count toward your FIRE corpus too — don't leave them out. Add your EPF balance, PPF maturity value, and the 60% tax-free NPS lump sum to the <strong>Current Portfolio</strong> field so your gap or surplus reflects reality, not an inflated target — or just use the "Use my Net Worth total" sync above.</p>
+        <p>Retirement savings sitting in EPF, PPF, and NPS count toward your FIRE corpus too - don't leave them out. Add your EPF balance, PPF maturity value, and the 60% tax-free NPS lump sum to the <strong>Current Portfolio</strong> field so your gap or surplus reflects reality, not an inflated target - or just use the "Use my Net Worth total" sync above.</p>
       </div>
 
       <div class="chart-card">
@@ -634,19 +648,19 @@
         <div class="faq-wrap">
           <details open>
             <summary>What is a good FIRE number in India?</summary>
-            <p>It depends entirely on your lifestyle, future expenses, and retirement age — there's no universal number. Many Indians aiming for early retirement target somewhere between ₹5 crore and ₹12 crore, but the calculator above gives you a figure based on your actual expenses.</p>
+            <p>It depends entirely on your lifestyle, future expenses, and retirement age - there's no universal number. Many Indians aiming for early retirement target somewhere between ₹5 crore and ₹12 crore, but the calculator above gives you a figure based on your actual expenses.</p>
           </details>
           <details>
             <summary>Is FIRE realistic on a regular salary?</summary>
-            <p>Yes. With early planning and a disciplined SIP, even someone earning ₹60,000/month can reach FIRE in 15–20 years. Starting early matters more than starting big — time in the market is the biggest lever you have.</p>
+            <p>Yes. With early planning and a disciplined SIP, even someone earning ₹60,000/month can reach FIRE in 15–20 years. Starting early matters more than starting big - time in the market is the biggest lever you have.</p>
           </details>
           <details>
             <summary>What if I'm already 40 or 45?</summary>
-            <p>Starting now is still better than not starting. You may need to push your target FIRE age or invest more aggressively — use the sliders above to see exactly what changes would close the gap.</p>
+            <p>Starting now is still better than not starting. You may need to push your target FIRE age or invest more aggressively - use the sliders above to see exactly what changes would close the gap.</p>
           </details>
           <details>
             <summary>What happens if markets crash right after I FIRE?</summary>
-            <p>This is called sequence-of-returns risk — a bad market stretch in your first 5–10 retired years can do lasting damage to your corpus. Mitigate it with a 2–3 year cash buffer and a higher debt allocation in early retirement, and lean toward a more conservative withdrawal rate (3–3.5% instead of 4%).</p>
+            <p>This is called sequence-of-returns risk - a bad market stretch in your first 5–10 retired years can do lasting damage to your corpus. Mitigate it with a 2–3 year cash buffer and a higher debt allocation in early retirement, and lean toward a more conservative withdrawal rate (3–3.5% instead of 4%).</p>
           </details>
           <details>
             <summary>Should I plan my kids' education separately?</summary>
@@ -654,7 +668,7 @@
           </details>
           <details>
             <summary>How often should I revisit this number?</summary>
-            <p>Once a year, or after any major life change — a raise, a new expense, a shift in your target retirement age. Your FIRE number moves as your life does.</p>
+            <p>Once a year, or after any major life change - a raise, a new expense, a shift in your target retirement age. Your FIRE number moves as your life does.</p>
           </details>
         </div>
       </div>
@@ -836,12 +850,12 @@
         gapTitleEl.textContent = 'Projected Surplus';
         gapValueEl.textContent = '+' + formatRupee(gap, true);
         gapValueEl.classList.remove('warn');
-        gapSubEl.textContent = 'Surplus — you are on track';
+        gapSubEl.textContent = 'Surplus - you are on track';
       } else {
         gapTitleEl.textContent = 'Gap to Fill';
         gapValueEl.textContent = '-' + formatRupee(Math.abs(gap), true);
         gapValueEl.classList.add('warn');
-        gapSubEl.textContent = 'Shortfall — additional needed';
+        gapSubEl.textContent = 'Shortfall - additional needed';
       }
 
       var reqSipEl = document.getElementById('projReqSip');
@@ -1027,6 +1041,12 @@
       return (grid || []).reduce(function (s, r) { return s + (Number(r.amount) || 0); }, 0);
     }
 
+    async function loadRealLifeExpectancy() {
+      var { data, error } = await supabaseClient.from('health_inputs').select('life_expectancy').maybeSingle();
+      if (error) { console.error('Could not load life expectancy', error); return 0; }
+      return data && data.life_expectancy ? Number(data.life_expectancy) : 0;
+    }
+
     function setSliderFromValue(sliderId, displayId, value) {
       var slider = els[sliderId];
       var step = Number(slider.step);
@@ -1075,7 +1095,7 @@
       realExpense = await loadCurrentMonthTotal('expenses');
 
       if (!realExpense) {
-        if (explicit) note.innerHTML = "No expenses found for this month yet — add some in <a href=\"expenses.html\" style=\"color:#10b981;font-weight:600;\">Expenses</a> first.";
+        if (explicit) note.innerHTML = "No expenses found for this month yet - add some in <a href=\"expenses.html\" style=\"color:#10b981;font-weight:600;\">Expenses</a> first.";
         return;
       }
 
@@ -1087,7 +1107,7 @@
       note.innerHTML = '✓ Synced ' + formatRupee(realExpense) + '/mo from this month\'s Expenses' + adjustedNote + '.';
     }
 
-    /* ---- FIRE corpus: everything that counts toward your number — the   ----
+    /* ---- FIRE corpus: everything that counts toward your number - the   ----
        four investable Networth sections plus your personal-IOU net       ----
        position (receivables help, debts owed to others hurt).            ---- */
     async function loadFireCorpusBreakdown() {
@@ -1121,7 +1141,7 @@
       realCorpus = breakdown;
 
       if (!breakdown.total) {
-        if (explicit) note.innerHTML = "No investments found yet — add some in <a href=\"net-worth.html\" style=\"color:#10b981;font-weight:600;\">Net Worth</a> first.";
+        if (explicit) note.innerHTML = "No investments found yet - add some in <a href=\"net-worth.html\" style=\"color:#10b981;font-weight:600;\">Net Worth</a> first.";
         return;
       }
 
@@ -1142,8 +1162,8 @@
 
       if (surplus <= 0) {
         if (explicit) note.innerHTML = surplus < 0
-          ? "Your expenses and EMI currently exceed your income this month — nothing left over to suggest."
-          : "No income found for this month yet — add some in <a href=\"income.html\" style=\"color:#10b981;font-weight:600;\">Income</a> first.";
+          ? "Your expenses and EMI currently exceed your income this month - nothing left over to suggest."
+          : "No income found for this month yet - add some in <a href=\"income.html\" style=\"color:#10b981;font-weight:600;\">Income</a> first.";
         renderCashFlowCard();
         return;
       }
@@ -1155,6 +1175,23 @@
 
       var adjustedNote = clamped !== Math.round(surplus) ? ' (adjusted to fit this slider’s range)' : '';
       note.innerHTML = '✓ Synced ' + formatRupee(surplus) + '/mo surplus' + adjustedNote + '.';
+    }
+
+    async function syncLifeExpectancyFromApp(explicit) {
+      var note = document.getElementById('lifeStatusNote');
+      var real = await loadRealLifeExpectancy();
+
+      if (!real) {
+        if (explicit) note.innerHTML = "No calculation found yet - figure out your number in the <a href=\"life-expectancy.html\" style=\"color:#10b981;font-weight:600;\">Life Expectancy Calculator</a> first.";
+        return;
+      }
+
+      var clamped = setSliderFromValue('lifeRange', 'lifeValue', real);
+      recalculate();
+      await saveInputs();
+
+      var adjustedNote = clamped !== Math.round(real) ? ' (adjusted to fit this slider’s range)' : '';
+      note.innerHTML = '✓ Synced ' + Math.round(real) + ' yrs from your Life Expectancy Calculator' + adjustedNote + '.';
     }
 
     /* ---- Charts: a single-value progress ring, and a multi-segment donut ---- */
@@ -1194,10 +1231,11 @@
       return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
 
-    /* Updates the top hero — called once with real data on load, and again
+    /* Updates the top hero - called once with real data on load, and again
        every time a slider changes (since the FIRE Number it's compared
        against moves with your assumptions). */
     function renderProgressHero(fireNumber) {
+      document.getElementById('heroFireNumber').textContent = formatRupee(fireNumber, true);
       document.getElementById('heroNetWorth').textContent = formatRupee(realCorpus.total, true);
 
       var surplus = realIncome - realExpense - realLoanEmi;
@@ -1207,7 +1245,7 @@
         savingsRateEl.textContent = (rate >= 0 ? '' : '-') + Math.abs(Math.round(rate)) + '%';
         savingsRateEl.className = 'fire-hero-value' + (rate < 0 ? ' negative' : '');
       } else {
-        savingsRateEl.textContent = '—';
+        savingsRateEl.textContent = '-';
       }
 
       var surplusEl = document.getElementById('heroSurplus');
@@ -1241,7 +1279,7 @@
       ];
       var withValue = segments.filter(function (s) { return s.value > 0; });
       if (withValue.length === 0) {
-        wrap.innerHTML = '<div style="text-align:center;padding:2rem 1rem;color:#94a3b8;font-size:0.85rem;">No holdings yet — add one in any Networth section to see it here.</div>';
+        wrap.innerHTML = '<div style="text-align:center;padding:2rem 1rem;color:#94a3b8;font-size:0.85rem;">No holdings yet - add one in any Networth section to see it here.</div>';
         return;
       }
       var total = withValue.reduce(function (s, d) { return s + d.value; }, 0);
@@ -1295,7 +1333,7 @@
     });
 
     (async function init() {
-      var user = await requireAuth('index.html#login');
+      var user = await requireAuth('login.html');
       if (!user) return;
 
       var results = await Promise.all([
@@ -1303,16 +1341,18 @@
         loadCurrentMonthTotal('income'),
         loadCurrentMonthTotal('loans'),
         loadFireCorpusBreakdown(),
-        loadSavedInputs()
+        loadSavedInputs(),
+        loadRealLifeExpectancy()
       ]);
       realExpense = results[0];
       realIncome = results[1];
       realLoanEmi = results[2];
       realCorpus = results[3];
       var saved = results[4];
+      var realLifeExpectancy = results[5];
 
       if (saved) {
-        // Restore every slider exactly as you left it — nothing here is
+        // Restore every slider exactly as you left it - nothing here is
         // re-derived from live data, so your assumptions never reset.
         setSliderFromValue('expensesRange', 'expensesValue', saved.monthly_expenses);
         setSliderFromValue('ageRange', 'ageValue', saved.age);
@@ -1327,6 +1367,7 @@
         // First-ever visit: seed a sensible starting point from real data.
         if (realExpense) setSliderFromValue('expensesRange', 'expensesValue', realExpense);
         if (realCorpus.total) setSliderFromValue('corpusRange', 'corpusValue', realCorpus.total);
+        if (realLifeExpectancy) setSliderFromValue('lifeRange', 'lifeValue', realLifeExpectancy);
         var surplus = realIncome - realExpense - realLoanEmi;
         if (surplus > 0) setSliderFromValue('savingRange', 'savingValue', surplus);
         await saveInputs();

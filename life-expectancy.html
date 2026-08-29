@@ -26,8 +26,8 @@
 
     /* Sidebar */
     .sidebar { background: #ffffff; border-right: 1px solid #e2e8f0; display: flex; flex-direction: column; padding: 1.5rem 1.25rem; }
-    .sidebar-logo { display: flex; align-items: center; gap: 0.65rem; font-size: 1.1rem; font-weight: 800; margin-bottom: 2rem; padding: 0 0.25rem; }
-    .sidebar-logo-icon { width: 30px; height: 30px; background: linear-gradient(135deg, #0ea5e9, #10b981); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; flex-shrink: 0; }
+    .sidebar-logo { display: flex; align-items: center; gap: 0.65rem; font-size: 1.1rem; font-weight: 800; margin-bottom: 2rem; padding: 0 0.25rem; color: #712B13; }
+    .sidebar-logo-icon { width: 30px; height: 30px; flex-shrink: 0; }
     .sidebar-nav { display: flex; flex-direction: column; gap: 0.25rem; }
     .sidebar-nav a, .sidebar-nav .nav-group-head { display: flex; align-items: center; gap: 0.75rem; padding: 0.7rem 0.75rem; border-radius: 0.6rem; font-size: 0.9rem; font-weight: 500; color: #364752; }
     .sidebar-nav a:hover, .sidebar-nav .nav-group-head:hover { background: #f1f5f9; }
@@ -35,7 +35,8 @@
     .sidebar-nav .nav-group-head.open { background: #f1f5f9; font-weight: 700; }
     .sidebar-nav .nav-group-head.active { background: #0f172a; color: #ffffff; font-weight: 600; }
     .sidebar-nav .nav-group-head.active .nav-chevron { color: rgba(255,255,255,0.6); }
-    .sidebar-nav .nav-icon { font-size: 1rem; width: 20px; text-align: center; flex-shrink: 0; }
+    .sidebar-nav .nav-icon { width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .sidebar-nav .nav-icon .tabler-icon { width: 18px; height: 18px; }
     .sidebar-nav .nav-label { flex: 1; }
     .sidebar-nav .nav-chevron { color: #94a3b8; font-size: 0.85rem; }
     .sidebar-nav .nav-section-label { font-size: 0.66rem; font-weight: 800; letter-spacing: 0.07em; text-transform: uppercase; color: #94a3b8; padding: 0.9rem 0.75rem 0.35rem; }
@@ -68,6 +69,36 @@
     .page-head { margin-bottom: 1.5rem; }
     .page-head h2 { font-size: 1.6rem; font-weight: 800; margin-bottom: 0.3rem; }
     .page-head p { color: #64748b; font-size: 0.9rem; }
+
+    .health-tagline {
+      font-size: clamp(1.8rem, 3.4vw, 2.4rem);
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      line-height: 1.15;
+      margin-bottom: 0.6rem;
+      background: linear-gradient(to right, #0ea5e9, #10b981);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .health-subtagline {
+      font-size: clamp(1rem, 1.6vw, 1.15rem);
+      font-weight: 600;
+      font-style: italic;
+      color: #364752;
+      margin-bottom: 1.25rem;
+      line-height: 1.5;
+    }
+
+    .health-closing {
+      text-align: center;
+      max-width: 60ch;
+      margin: 2rem auto 0.5rem;
+      padding-top: 1.75rem;
+      border-top: 1px solid #e2e8f0;
+      font-size: clamp(1.1rem, 2vw, 1.3rem);
+    }
 
     /* Results hero */
     .health-hero {
@@ -213,7 +244,7 @@
     .timeline-marker.label-above .timeline-label { top: auto; bottom: 20px; }
     .timeline-label .tl-age { display: block; font-size: 0.65rem; font-weight: 600; color: #94a3b8; }
 
-    /* What's Moving Your Number — two columns, sorted lowest to highest */
+    /* What's Moving Your Number - two columns, sorted lowest to highest */
     .breakdown-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 0 2rem; }
     @media (max-width: 700px) { .breakdown-columns { grid-template-columns: 1fr; } }
 
@@ -273,9 +304,6 @@
         justify-content: center;
         width: 30px;
         height: 30px;
-        background: linear-gradient(135deg, #0ea5e9, #10b981);
-        border-radius: 8px;
-        font-size: 1.1rem;
         flex-shrink: 0;
       }
 
@@ -289,96 +317,108 @@
     <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleSidebar()"></div>
     <aside class="sidebar" id="sidebar">
       <a href="dashboard.html" class="sidebar-logo">
-        <div class="sidebar-logo-icon">💰</div>
+        <svg class="sidebar-logo-icon" viewBox="8 8 98 94" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <circle cx="55" cy="55" r="42" fill="none" stroke="#712B13" stroke-width="8" stroke-linecap="round" stroke-dasharray="230 34" stroke-dashoffset="20"/>
+          <path d="M92,33 Q101,45 95,52 Q97,43 89,41 Q86,48 92,53 Q80,50 80,40 Q80,34 92,33 Z" fill="#712B13"/>
+        </svg>
         <span>EnrichMe</span>
       </a>
 
       <nav class="sidebar-nav">
         <a href="dashboard.html">
-          <span class="nav-icon">▦</span>
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M5 12l-2 0l9 -9l9 9l-2 0" /><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" /><path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" /></svg></span>
           <span class="nav-label">Dashboard</span>
         </a>
 
         <div class="nav-section-label">Wealth</div>
         <a href="fire-plan.html">
-          <span class="nav-icon">🧭</span>
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M8 16l2 -6l6 -2l-2 6l-6 2" /><path d="M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /><path d="M12 3l0 2" /><path d="M12 19l0 2" /><path d="M3 12l2 0" /><path d="M19 12l2 0" /></svg></span>
           <span class="nav-label">FIRE Plan</span>
           <span class="nav-chevron">›</span>
         </a>
+        <a href="fire-goals.html">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M11 12a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M7 12a5 5 0 1 0 10 0a5 5 0 1 0 -10 0" /><path d="M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /></svg></span>
+          <span class="nav-label">Goal Based Savings</span>
+          <span class="nav-chevron">›</span>
+        </a>
         <a href="net-worth.html">
-          <span class="nav-icon">📈</span>
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M3 17l6 -6l4 4l8 -8" /><path d="M14 7l7 0l0 7" /></svg></span>
           <span class="nav-label">Networth</span>
           <span class="nav-chevron">›</span>
         </a>
 
         <div class="nav-section-label">Cash Flow</div>
         <a href="money-required.html">
-          <span class="nav-icon">🪴</span>
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M3 13a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v6a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -6" /><path d="M15 9a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v10a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -10" /><path d="M9 5a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v14a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -14" /><path d="M4 20h14" /></svg></span>
           <span class="nav-label">Monthly CashFlow</span>
           <span class="nav-chevron">›</span>
         </a>
         <a href="income.html">
-          <span class="nav-icon">💵</span>
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M7 15h-3a1 1 0 0 1 -1 -1v-8a1 1 0 0 1 1 -1h12a1 1 0 0 1 1 1v3" /><path d="M7 10a1 1 0 0 1 1 -1h12a1 1 0 0 1 1 1v8a1 1 0 0 1 -1 1h-12a1 1 0 0 1 -1 -1l0 -8" /><path d="M12 14a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /></svg></span>
           <span class="nav-label">Income</span>
         </a>
         <a href="tax-planning.html">
-          <span class="nav-icon">🧾</span>
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M5 21v-16a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v16l-3 -2l-2 2l-2 -2l-2 2l-2 -2l-3 2" /><path d="M14 8h-2.5a1.5 1.5 0 0 0 0 3h1a1.5 1.5 0 0 1 0 3h-2.5m2 0v1.5m0 -9v1.5" /></svg></span>
           <span class="nav-label">Tax Planning</span>
         </a>
 
         <div class="nav-section-label">Protection</div>
         <a href="insurance-tracker.html">
-          <span class="nav-icon">🛡️</span>
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M11.46 20.846a12 12 0 0 1 -7.96 -14.846a12 12 0 0 0 8.5 -3a12 12 0 0 0 8.5 3a12 12 0 0 1 -.09 7.06" /><path d="M15 19l2 2l4 -4" /></svg></span>
           <span class="nav-label">Insurance Tracker</span>
           <span class="nav-chevron">›</span>
         </a>
         <a href="reminders.html">
-          <span class="nav-icon">🔔</span>
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M10 5a2 2 0 1 1 4 0a7 7 0 0 1 4 6v3a4 4 0 0 0 2 3h-16a4 4 0 0 0 2 -3v-3a7 7 0 0 1 4 -6" /><path d="M9 17v1a3 3 0 0 0 6 0v-1" /></svg></span>
           <span class="nav-label">Reminders</span>
         </a>
         <a href="vault-overview.html">
-          <span class="nav-icon">🔒</span>
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M5 13a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v6a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-6" /><path d="M11 16a1 1 0 1 0 2 0a1 1 0 0 0 -2 0" /><path d="M8 11v-4a4 4 0 1 1 8 0v4" /></svg></span>
           <span class="nav-label">Document Vault</span>
           <span class="nav-chevron">›</span>
         </a>
 
         <div class="nav-section-label">Family &amp; Health</div>
         <a href="life-expectancy.html" class="nav-group-head open active">
-          <span class="nav-icon">❤️</span>
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M19.5 12.572l-7.5 7.428l-7.5 -7.428a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572" /></svg></span>
           <span class="nav-label">Health(is wealth)</span>
           <span class="nav-chevron">⌄</span>
         </a>
         <div class="sidebar-subnav">
           <a href="life-expectancy.html" class="active">
-            <span class="nav-icon">📉</span>
+            <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M6.5 7h11" /><path d="M6.5 17h11" /><path d="M6 20v-2a6 6 0 1 1 12 0v2a1 1 0 0 1 -1 1h-10a1 1 0 0 1 -1 -1" /><path d="M6 4v2a6 6 0 1 0 12 0v-2a1 1 0 0 0 -1 -1h-10a1 1 0 0 0 -1 1" /></svg></span>
             <span class="nav-label">Life Expectancy</span>
           </a>
           <a href="health-medicine-tracker.html">
-            <span class="nav-icon">💊</span>
+            <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M4.5 12.5l8 -8a4.94 4.94 0 0 1 7 7l-8 8a4.94 4.94 0 0 1 -7 -7" /><path d="M8.5 8.5l7 7" /></svg></span>
             <span class="nav-label">Medicine Tracker</span>
           </a>
           <a href="health-checkup-reports.html">
-            <span class="nav-icon">🩺</span>
+            <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M6 4h-1a2 2 0 0 0 -2 2v3.5a5.5 5.5 0 0 0 11 0v-3.5a2 2 0 0 0 -2 -2h-1" /><path d="M8 15a6 6 0 1 0 12 0v-3" /><path d="M11 3v2" /><path d="M6 3v2" /><path d="M18 10a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /></svg></span>
             <span class="nav-label">Checkup Reports</span>
           </a>
           <a href="body-fat-calculator.html">
-            <span class="nav-icon">⚖️</span>
+            <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M7 20l10 0" /><path d="M6 6l6 -1l6 1" /><path d="M12 3l0 17" /><path d="M9 12l-3 -6l-3 6a3 3 0 0 0 6 0" /><path d="M21 12l-3 -6l-3 6a3 3 0 0 0 6 0" /></svg></span>
             <span class="nav-label">Body Fat Calculator</span>
           </a>
         </div>
 
         <div class="nav-section-label">More</div>
         <a href="split/dashboard.html">
-          <span class="nav-icon">💸</span>
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M5 7a4 4 0 1 0 8 0a4 4 0 1 0 -8 0" /><path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /><path d="M21 21v-2a4 4 0 0 0 -3 -3.85" /></svg></span>
           <span class="nav-label">SplitExpenses(SplitWise)</span>
         </a>
+        <a href="will-document.html">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2" /><path d="M9 9l1 0" /><path d="M9 13l6 0" /><path d="M9 17l6 0" /></svg></span>
+          <span class="nav-label">Will Planner</span>
+        </a>
         <a href="astrology.html">
-          <span class="nav-icon">🔮</span>
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454l0 .008" /><path d="M17 4a2 2 0 0 0 2 2a2 2 0 0 0 -2 2a2 2 0 0 0 -2 -2a2 2 0 0 0 2 -2" /><path d="M19 11h2m-1 -1v2" /></svg></span>
           <span class="nav-label">Spiritual</span>
         </a>
 
         <a href="#">
-          <span class="nav-icon">⚙️</span>
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M10.325 4.317c.426 -1.756 2.924 -1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543 -.94 3.31 .826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756 .426 1.756 2.924 0 3.35a1.724 1.724 0 0 0 -1.066 2.573c.94 1.543 -.826 3.31 -2.37 2.37a1.724 1.724 0 0 0 -2.572 1.065c-.426 1.756 -2.924 1.756 -3.35 0a1.724 1.724 0 0 0 -2.573 -1.066c-1.543 .94 -3.31 -.826 -2.37 -2.37a1.724 1.724 0 0 0 -1.065 -2.572c-1.756 -.426 -1.756 -2.924 0 -3.35a1.724 1.724 0 0 0 1.066 -2.573c-.94 -1.543 .826 -3.31 2.37 -2.37c1 .608 2.296 .07 2.572 -1.065" /><path d="M9 12a3 3 0 1 0 6 0a3 3 0 0 0 -6 0" /></svg></span>
           <span class="nav-label">Settings</span>
         </a>
       </nav>
@@ -397,7 +437,10 @@
       <div class="topbar">
         <div class="topbar-left">
           <button class="sidebar-toggle" aria-label="Menu" onclick="toggleSidebar()">☰</button>
-          <div class="topbar-mobile-logo">💰</div>
+          <svg class="topbar-mobile-logo" viewBox="8 8 98 94" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <circle cx="55" cy="55" r="42" fill="none" stroke="#712B13" stroke-width="8" stroke-linecap="round" stroke-dasharray="230 34" stroke-dashoffset="20"/>
+            <path d="M92,33 Q101,45 95,52 Q97,43 89,41 Q86,48 92,53 Q80,50 80,40 Q80,34 92,33 Z" fill="#712B13"/>
+          </svg>
           <h1>Health(is wealth)</h1>
         </div>
         <div class="topbar-right">
@@ -412,9 +455,11 @@
         </div>
       </div>
 
+      <p class="health-tagline">Health is part of your portfolio.</p>
+
       <div class="page-head">
         <h2>Life Expectancy Calculator</h2>
-        <p>Health is the real wealth — answer a few questions to estimate your life expectancy and see which habits move the number most.</p>
+        <p>Health is the real wealth - answer a few questions to estimate your life expectancy and see which habits move the number most.</p>
       </div>
 
       <div class="health-hero" id="healthHero">
@@ -469,13 +514,13 @@
 
       <div class="chart-card">
         <h3>What's Moving Your Number</h3>
-        <p class="chart-sub">Each habit's net effect, in years — sorted lowest to highest.</p>
+        <p class="chart-sub">Each habit's net effect, in years - sorted lowest to highest.</p>
         <div class="breakdown-columns" id="breakdownList"></div>
       </div>
 
       <div class="input-section-head">
         <h3>Tell Us About Yourself</h3>
-        <p>12 quick categories, no essays. Every answer sharpens your estimate in real time — and it's all saved automatically as you go.</p>
+        <p>12 quick categories, no essays. Every answer sharpens your estimate in real time - and it's all saved automatically as you go.</p>
       </div>
 
       <div class="progress-banner" id="progressBanner">
@@ -548,7 +593,7 @@
       <div class="q-card" style="--accent:#22c55e;--accent-bg:rgba(34,197,94,0.12);">
         <div class="q-card-eyebrow">
           <span class="q-card-icon-badge">🥗</span>
-          <span class="q-card-title-wrap"><span class="q-card-title">Diet</span><span class="q-card-subtitle">You are what you eat — literally.</span></span>
+          <span class="q-card-title-wrap"><span class="q-card-title">Diet</span><span class="q-card-subtitle">You are what you eat - literally.</span></span>
           <span class="q-card-score" data-score="diet">+0.0 yrs</span>
         </div>
         <div class="q-field">
@@ -647,7 +692,7 @@
         <div class="q-field">
           <div class="q-field-label">Intimacy / closeness frequency</div>
           <div class="choice-grid" id="intimacyFrequencyGrid"></div>
-          <div class="q-field-note">Optional — used only for a general wellbeing correlation. Choose "Prefer not to say" if you'd rather skip this.</div>
+          <div class="q-field-note">Optional - used only for a general wellbeing correlation. Choose "Prefer not to say" if you'd rather skip this.</div>
         </div>
       </div>
 
@@ -707,7 +752,7 @@
 
       <div class="chart-card">
         <h3>Global Longevity Comparison</h3>
-        <p class="chart-sub">Average life expectancy by country — India shown first as your baseline.</p>
+        <p class="chart-sub">Average life expectancy by country - India shown first as your baseline.</p>
         <div class="compare-table-wrap">
           <table class="compare-table">
             <thead><tr><th>Region</th><th>Male</th><th>Female</th></tr></thead>
@@ -719,13 +764,15 @@
 
       <div class="chart-card">
         <h3>Personalized Longevity Timeline</h3>
-        <p class="chart-sub">Your life mapped from birth to your potential — showing what's possible with better habits.</p>
+        <p class="chart-sub">Your life mapped from birth to your potential - showing what's possible with better habits.</p>
         <div class="timeline-wrap">
           <div class="timeline-track" id="timelineTrack"></div>
         </div>
       </div>
 
       <div class="disclaimer">⚠️ This is an educational estimate based on general population health research, not a medical diagnosis or clinical tool. It doesn't account for your family history, genetics, or medications. Please consult a healthcare professional for personalized advice.</div>
+
+      <p class="health-subtagline health-closing">When you have good health, you have a thousand problems. When you don't, you have only one - that's health.</p>
     </main>
   </div>
 
@@ -977,7 +1024,7 @@
     }
 
     /* ---- Scoring model: a transparent, educational additive-years        ----
-       estimate (base life expectancy adjusted by lifestyle factors) —     ----
+       estimate (base life expectancy adjusted by lifestyle factors) -     ----
        not a clinical or proprietary actuarial model.                     ---- */
     function calculate() {
       var base = state.sex === 'female' ? 72 : 69;
@@ -1057,7 +1104,7 @@
     };
 
     /* Best-case value per category, used to compute the "Potential" marker  */
-    /* on the longevity timeline — i.e. years achievable with ideal habits.  */
+    /* on the longevity timeline - i.e. years achievable with ideal habits.  */
     var POINT_MAX = {
       smoking: 0, alcohol: 0.5, diet: 3, activity: 4.5, weight: 1, sleep: 1, mental: 4, conditions: 0, prevention: 1.3,
       environment: 2.8, family: 4.2
@@ -1192,7 +1239,7 @@
       renderTimeline(result);
     }
 
-    /* ---- Persist answers to Supabase, same pattern as fire_plan_inputs — ----
+    /* ---- Persist answers to Supabase, same pattern as fire_plan_inputs - ----
        so your answers don't reset every time you revisit this page.      ---- */
 
     async function loadSavedInputs() {
@@ -1218,6 +1265,7 @@
         water_quality: state.waterQuality, healthcare_access: state.healthcareAccess,
         relationship_status: state.relationshipStatus, partner_support: state.partnerSupport,
         family_time: state.familyTime, intimacy_frequency: state.intimacyFrequency,
+        life_expectancy: calculate().lifeExpectancy,
         updated_at: new Date().toISOString()
       };
       var { error } = await supabaseClient.from('health_inputs').upsert(payload, { onConflict: 'user_id' });
@@ -1293,7 +1341,7 @@
     }
 
     (async function init() {
-      var user = await requireAuth('index.html#login');
+      var user = await requireAuth('login.html');
       if (!user) return;
 
       var saved = await loadSavedInputs();
@@ -1314,7 +1362,10 @@
       wireNumberInput('weightInput', 'weightKg');
 
       recalculate();
-      if (!saved) await saveInputs();
+      // Backfill life_expectancy for rows saved before that column existed,
+      // so the FIRE Plan sync has something to read without the user having
+      // to re-touch every question just to trigger a save.
+      if (!saved || saved.life_expectancy === null || saved.life_expectancy === undefined) await saveInputs();
     })();
   </script>
 </body>

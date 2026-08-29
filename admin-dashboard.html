@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - EnrichMe</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f8fafc;
+      color: #0f172a;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    a, button { color: inherit; text-decoration: none; font-family: inherit; }
+
+    .admin-shell { max-width: 1080px; margin: 0 auto; padding: 1.5rem 2rem 3rem; }
+
+    .topbar { display: flex; align-items: center; justify-content: space-between; padding-bottom: 1.25rem; border-bottom: 1px solid #e2e8f0; margin-bottom: 1.5rem; }
+    .topbar-left { display: flex; align-items: center; gap: 0.75rem; }
+    .topbar-logo { display: flex; align-items: center; gap: 0.6rem; font-size: 1.05rem; font-weight: 800; color: #712B13; }
+    .topbar-logo-icon { width: 28px; height: 28px; flex-shrink: 0; }
+    .topbar-divider { width: 1px; height: 22px; background: #e2e8f0; }
+    .topbar h1 { font-size: 1.15rem; font-weight: 700; }
+    .admin-badge { font-size: 0.68rem; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase; color: #712B13; background: rgba(113,43,19,0.1); padding: 0.2rem 0.55rem; border-radius: 999px; margin-left: 0.6rem; }
+    .topbar-right { display: flex; align-items: center; gap: 0.85rem; }
+    .back-link { font-size: 0.85rem; font-weight: 600; color: #64748b; }
+    .back-link:hover { color: #0f172a; }
+    .user-menu { position: relative; list-style: none; }
+    .user-menu > summary { cursor: pointer; list-style: none; width: 34px; height: 34px; border-radius: 50%; background: #eef2f7; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; font-size: 1rem; }
+    .user-menu > summary::-webkit-details-marker { display: none; }
+    .user-menu-panel { position: absolute; top: calc(100% + 0.6rem); right: 0; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 0.75rem; box-shadow: 0 10px 30px rgba(15,23,42,0.12); padding: 0.4rem; min-width: 150px; z-index: 20; }
+    .user-menu-panel a { display: block; padding: 0.55rem 0.7rem; border-radius: 0.5rem; font-size: 0.85rem; color: #364752; font-weight: 500; }
+    .user-menu-panel a:hover { background: #f1f5f9; color: #10b981; }
+
+    .page-head { margin-bottom: 1.5rem; }
+    .page-head h2 { font-size: 1.6rem; font-weight: 800; margin-bottom: 0.3rem; }
+    .page-head p { color: #64748b; font-size: 0.9rem; }
+
+    .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; margin-bottom: 1.75rem; }
+    @media (max-width: 700px) { .stats-row { grid-template-columns: 1fr; } }
+    .stat-card { background: linear-gradient(135deg, #0f172a, #1e293b); border-radius: 1.1rem; padding: 1.4rem 1.6rem; color: #fff; }
+    .stat-label { font-size: 0.75rem; color: #94a3b8; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.5rem; }
+    .stat-value { font-size: 2rem; font-weight: 800; }
+
+    .panel { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 1.1rem; box-shadow: 0 4px 16px rgba(15,23,42,0.03); overflow: hidden; }
+    .panel-head { display: flex; align-items: center; justify-content: space-between; padding: 1.1rem 1.4rem; border-bottom: 1px solid #f1f5f9; }
+    .panel-head h3 { font-size: 1rem; font-weight: 800; }
+
+    .btn-primary { padding: 0.55rem 1.1rem; border: none; border-radius: 0.6rem; background: linear-gradient(135deg, #0ea5e9, #10b981); color: #fff; font-size: 0.83rem; font-weight: 700; cursor: pointer; }
+    .btn-primary:hover { opacity: 0.92; }
+    .btn-outline { padding: 0.5rem 0.9rem; border: 1px solid #cbd5e1; border-radius: 0.55rem; background: #fff; color: #364752; font-size: 0.8rem; font-weight: 600; cursor: pointer; }
+    .btn-outline:hover { border-color: #94a3b8; }
+    .btn-danger-text { background: none; border: none; color: #dc2626; font-size: 0.8rem; font-weight: 700; cursor: pointer; padding: 0.3rem 0.4rem; }
+    .btn-danger-text:hover { text-decoration: underline; }
+
+    .user-table-wrap { overflow-x: auto; }
+    table.user-table { width: 100%; border-collapse: collapse; min-width: 680px; }
+    table.user-table th { text-align: left; padding: 0.7rem 1.4rem; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: #94a3b8; border-bottom: 1px solid #e2e8f0; background: #f8fafc; }
+    table.user-table td { padding: 0.75rem 1.4rem; font-size: 0.85rem; color: #364752; border-bottom: 1px solid #f1f5f9; }
+    table.user-table tr:last-child td { border-bottom: none; }
+    .user-email { font-weight: 700; color: #0f172a; }
+    .user-name { color: #64748b; font-size: 0.8rem; margin-top: 0.1rem; }
+    .row-actions { display: flex; gap: 0.9rem; align-items: center; }
+    .admin-pill { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; color: #712B13; background: rgba(113,43,19,0.1); padding: 0.15rem 0.5rem; border-radius: 999px; margin-left: 0.5rem; }
+
+    .empty-state, .load-error { text-align: center; padding: 2.5rem 1.5rem; color: #94a3b8; font-size: 0.88rem; }
+    .load-error { color: #991b1b; }
+
+    /* Modal */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.5); display: none; align-items: center; justify-content: center; z-index: 100; padding: 1rem; }
+    .modal-overlay.show { display: flex; }
+    .modal-card { background: #fff; border-radius: 1.1rem; padding: 1.75rem; width: 100%; max-width: 380px; box-shadow: 0 20px 60px rgba(15,23,42,0.25); }
+    .modal-card h3 { font-size: 1.05rem; font-weight: 800; margin-bottom: 1.1rem; }
+    .modal-field { margin-bottom: 1rem; }
+    .modal-field label { display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 0.4rem; color: #364752; }
+    .modal-field input { width: 100%; padding: 0.6rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 0.55rem; font-size: 0.88rem; font-family: inherit; }
+    .modal-field input:focus { outline: none; border-color: #10b981; box-shadow: 0 0 0 2px rgba(16,185,129,0.15); }
+    .modal-field .hint { font-size: 0.72rem; color: #94a3b8; margin-top: 0.3rem; }
+    .modal-error { font-size: 0.8rem; color: #dc2626; font-weight: 600; margin-bottom: 0.8rem; min-height: 1.1em; }
+    .modal-actions { display: flex; justify-content: flex-end; gap: 0.6rem; margin-top: 1.2rem; }
+
+    .gate-message { text-align: center; padding: 4rem 1.5rem; color: #64748b; }
+  </style>
+</head>
+<body>
+  <div class="admin-shell" id="adminShell" style="display:none;">
+    <div class="topbar">
+      <div class="topbar-left">
+        <a href="dashboard.html" class="topbar-logo">
+          <svg class="topbar-logo-icon" viewBox="8 8 98 94" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <circle cx="55" cy="55" r="42" fill="none" stroke="#712B13" stroke-width="8" stroke-linecap="round" stroke-dasharray="230 34" stroke-dashoffset="20"/>
+            <path d="M92,33 Q101,45 95,52 Q97,43 89,41 Q86,48 92,53 Q80,50 80,40 Q80,34 92,33 Z" fill="#712B13"/>
+          </svg>
+          <span>EnrichMe</span>
+        </a>
+        <div class="topbar-divider"></div>
+        <h1>Admin<span class="admin-badge">Admin</span></h1>
+      </div>
+      <div class="topbar-right">
+        <a href="dashboard.html" class="back-link">← Back to app</a>
+        <details class="user-menu">
+          <summary>👤</summary>
+          <div class="user-menu-panel">
+            <a href="#" onclick="signOutAndRedirect('index.html'); return false;">Log Out</a>
+          </div>
+        </details>
+      </div>
+    </div>
+
+    <div class="page-head">
+      <h2>Admin Dashboard</h2>
+      <p>Manage accounts and see who's using EnrichMe. Account-level info only — no user's financial data is visible from here.</p>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">Total Users</div>
+        <div class="stat-value" id="statTotalUsers">–</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">New This Month</div>
+        <div class="stat-value" id="statNewThisMonth">–</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Active In Last 30 Days</div>
+        <div class="stat-value" id="statActive30">–</div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <h3>Users</h3>
+        <button type="button" class="btn-primary" id="addUserBtn">+ Add User</button>
+      </div>
+      <p class="load-error" id="loadError" style="display:none;"></p>
+      <div class="user-table-wrap">
+        <table class="user-table" id="userTable" style="display:none;">
+          <thead>
+            <tr><th>User</th><th>Joined</th><th>Last Active</th><th></th></tr>
+          </thead>
+          <tbody id="userTableBody"></tbody>
+        </table>
+      </div>
+      <div class="empty-state" id="userEmptyState" style="display:none;">No users yet.</div>
+    </div>
+  </div>
+
+  <div class="gate-message" id="gateMessage" style="display:none;">Checking admin access…</div>
+
+  <!-- Add / Edit user modal -->
+  <div class="modal-overlay" id="userModal">
+    <div class="modal-card">
+      <h3 id="userModalTitle">Add User</h3>
+      <p class="modal-error" id="userModalError"></p>
+      <div class="modal-field" id="emailFieldWrap">
+        <label>Email</label>
+        <input type="email" id="modalEmail" placeholder="user@example.com">
+      </div>
+      <div class="modal-field">
+        <label>Full name</label>
+        <input type="text" id="modalFullName" placeholder="Jane Doe">
+      </div>
+      <div class="modal-field" id="passwordFieldWrap">
+        <label id="passwordLabel">Temporary password</label>
+        <input type="text" id="modalPassword" placeholder="At least 6 characters">
+        <div class="hint" id="passwordHint">Share this with the user — they can change it after signing in.</div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn-outline" onclick="closeUserModal()">Cancel</button>
+        <button type="button" class="btn-primary" id="saveUserBtn">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-client.js"></script>
+  <script>
+    var users = [];
+    var editingUserId = null; // null while the modal is in "add" mode
+
+    function formatDate(iso) {
+      if (!iso) return '—';
+      var d = new Date(iso);
+      return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+    }
+
+    function daysAgo(iso) {
+      if (!iso) return null;
+      return Math.floor((Date.now() - new Date(iso).getTime()) / 86400000);
+    }
+
+    function escapeHtml(s) {
+      return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function renderStats() {
+      document.getElementById('statTotalUsers').textContent = users.length;
+
+      var now = new Date();
+      var monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+      var newThisMonth = users.filter(function (u) { return new Date(u.created_at) >= monthStart; }).length;
+      document.getElementById('statNewThisMonth').textContent = newThisMonth;
+
+      var active30 = users.filter(function (u) { var d = daysAgo(u.last_sign_in_at); return d !== null && d <= 30; }).length;
+      document.getElementById('statActive30').textContent = active30;
+    }
+
+    function renderUserTable() {
+      var table = document.getElementById('userTable');
+      var empty = document.getElementById('userEmptyState');
+      var body = document.getElementById('userTableBody');
+
+      if (!users.length) {
+        table.style.display = 'none';
+        empty.style.display = 'block';
+        return;
+      }
+      table.style.display = '';
+      empty.style.display = 'none';
+
+      body.innerHTML = users.map(function (u) {
+        return '<tr>' +
+          '<td><div class="user-email">' + escapeHtml(u.email) + (u.is_admin ? '<span class="admin-pill">Admin</span>' : '') + '</div>' +
+            '<div class="user-name">' + escapeHtml(u.full_name || 'No name set') + '</div></td>' +
+          '<td>' + formatDate(u.created_at) + '</td>' +
+          '<td>' + formatDate(u.last_sign_in_at) + '</td>' +
+          '<td><div class="row-actions">' +
+            '<button type="button" class="btn-outline" data-edit="' + u.id + '">Edit</button>' +
+            '<button type="button" class="btn-danger-text" data-delete="' + u.id + '" data-email="' + escapeHtml(u.email) + '">Delete</button>' +
+          '</div></td>' +
+        '</tr>';
+      }).join('');
+
+      Array.prototype.forEach.call(body.querySelectorAll('[data-edit]'), function (btn) {
+        btn.addEventListener('click', function () { openEditModal(btn.dataset.edit); });
+      });
+      Array.prototype.forEach.call(body.querySelectorAll('[data-delete]'), function (btn) {
+        btn.addEventListener('click', function () { handleDeleteUser(btn.dataset.delete, btn.dataset.email); });
+      });
+    }
+
+    async function loadUsers() {
+      var errEl = document.getElementById('loadError');
+      errEl.style.display = 'none';
+      var { data, error } = await supabaseClient.functions.invoke('admin-users', { body: { action: 'list' } });
+      if (error || (data && data.error)) {
+        errEl.textContent = '⚠️ Could not load users: ' + (error ? error.message : data.error);
+        errEl.style.display = 'block';
+        return;
+      }
+      users = data.users || [];
+      renderStats();
+      renderUserTable();
+    }
+
+    /* ---- Add / edit modal ---- */
+
+    function openAddModal() {
+      editingUserId = null;
+      document.getElementById('userModalTitle').textContent = 'Add User';
+      document.getElementById('userModalError').textContent = '';
+      document.getElementById('modalEmail').value = '';
+      document.getElementById('modalFullName').value = '';
+      document.getElementById('modalPassword').value = '';
+      document.getElementById('emailFieldWrap').style.display = '';
+      document.getElementById('passwordFieldWrap').style.display = '';
+      document.getElementById('passwordLabel').textContent = 'Temporary password';
+      document.getElementById('passwordHint').textContent = 'Share this with the user — they can change it after signing in.';
+      document.getElementById('userModal').classList.add('show');
+    }
+
+    function openEditModal(userId) {
+      var u = users.filter(function (x) { return x.id === userId; })[0];
+      if (!u) return;
+      editingUserId = userId;
+      document.getElementById('userModalTitle').textContent = 'Edit User';
+      document.getElementById('userModalError').textContent = '';
+      document.getElementById('modalEmail').value = u.email;
+      document.getElementById('modalFullName').value = u.full_name || '';
+      document.getElementById('modalPassword').value = '';
+      document.getElementById('emailFieldWrap').style.display = 'none';
+      document.getElementById('passwordFieldWrap').style.display = '';
+      document.getElementById('passwordLabel').textContent = 'New password (optional)';
+      document.getElementById('passwordHint').textContent = 'Leave blank to keep their current password.';
+      document.getElementById('userModal').classList.add('show');
+    }
+
+    function closeUserModal() {
+      document.getElementById('userModal').classList.remove('show');
+    }
+
+    async function saveUser() {
+      var errEl = document.getElementById('userModalError');
+      errEl.textContent = '';
+      var fullName = document.getElementById('modalFullName').value.trim();
+      var password = document.getElementById('modalPassword').value;
+      var btn = document.getElementById('saveUserBtn');
+      btn.disabled = true;
+
+      try {
+        if (editingUserId) {
+          var payload = { action: 'update', userId: editingUserId, fullName: fullName };
+          if (password) payload.password = password;
+          var { data, error } = await supabaseClient.functions.invoke('admin-users', { body: payload });
+          if (error || (data && data.error)) throw new Error(error ? error.message : data.error);
+        } else {
+          var email = document.getElementById('modalEmail').value.trim();
+          if (!email || !password || password.length < 6) {
+            errEl.textContent = 'Email and a password of at least 6 characters are required.';
+            btn.disabled = false;
+            return;
+          }
+          var { data: cdata, error: cerror } = await supabaseClient.functions.invoke('admin-users', {
+            body: { action: 'create', email: email, password: password, fullName: fullName }
+          });
+          if (cerror || (cdata && cdata.error)) throw new Error(cerror ? cerror.message : cdata.error);
+        }
+        closeUserModal();
+        await loadUsers();
+      } catch (e) {
+        errEl.textContent = e.message || 'Something went wrong. Please try again.';
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    async function handleDeleteUser(userId, email) {
+      if (!confirm('Delete ' + email + '? This permanently removes their account and all of their data. This can\'t be undone.')) return;
+      var { data, error } = await supabaseClient.functions.invoke('admin-users', { body: { action: 'delete', userId: userId } });
+      if (error || (data && data.error)) {
+        alert('Could not delete user: ' + (error ? error.message : data.error));
+        return;
+      }
+      await loadUsers();
+    }
+
+    (async function init() {
+      var user = await requireAuth('login.html');
+      if (!user) return;
+
+      var gate = document.getElementById('gateMessage');
+      gate.style.display = 'block';
+
+      var admin = await isAdmin();
+      if (!admin) {
+        window.location.href = 'dashboard.html';
+        return;
+      }
+
+      gate.style.display = 'none';
+      document.getElementById('adminShell').style.display = 'block';
+
+      document.getElementById('addUserBtn').addEventListener('click', openAddModal);
+      document.getElementById('saveUserBtn').addEventListener('click', saveUser);
+      document.getElementById('userModal').addEventListener('click', function (e) { if (e.target === this) closeUserModal(); });
+
+      await loadUsers();
+    })();
+  </script>
+</body>
+</html>

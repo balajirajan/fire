@@ -32,6 +32,21 @@ explicitly asks for another country.
   otherwise leave it as an adjustable input rather than guessing a US
   number.
 
+## Writing style: no em dashes
+
+EnrichMe copy does not use em dashes (—). Use a hyphen with spaces
+(" - ") instead, or restructure the sentence with a comma, colon, or
+period if a hyphen reads awkwardly. All 383 existing instances across
+every page were swept and replaced on 2026-08-19.
+
+- Applies to all user-facing text: page copy, calculator labels,
+  button/tooltip text, and any string built in JS that renders in the
+  UI, not just literal HTML content.
+- Code comments (JS/CSS) are not in scope for this rule - it targets
+  product copy, not internal documentation.
+- When adapting or porting text from an external reference site, strip
+  em dashes during the rewrite rather than carrying them over.
+
 ## Deferred: US and other countries
 
 Multi-country support (currency switcher beyond decoration, US
@@ -62,13 +77,135 @@ in scope now.
 
 ## Visual theme
 
-EnrichMe uses a **light theme** (white/soft cyan-to-emerald gradient
-background, `#0f172a` near-black text, `#10b981` emerald as the
-primary accent, `#0ea5e9` cyan as the secondary accent in gradients).
-This replaced an earlier dark-navy theme. When adding new pages or
-sections, match this palette rather than reintroducing dark
-backgrounds — check `index.html`'s `<style>` block for the current
-token values before improvising new colors.
+EnrichMe uses a **Rocket Money-inspired light theme**: white/warm-gray
+backgrounds, near-black ink text, and a single red accent used
+sparingly — not the earlier cyan-to-emerald gradient theme (that
+palette is retired; don't reintroduce it in new or edited pages).
+
+- **Palette tokens** (defined as CSS custom properties in
+  `index.html`'s `:root`; replicate the same values — cyan/emerald
+  hexes have no more design intent here):
+  - `--bg: #ffffff` (page background)
+  - `--bg-alt: #f5f4f1` (warm light-gray section/panel background —
+    e.g. the hero panel, hover states, alternating sections)
+  - `--ink: #16130f` (primary text, near-black, warm — not pure
+    `#000` or the old `#0f172a` slate)
+  - `--ink-soft: #5c584f` (body/secondary text)
+  - `--ink-faint: #8a857a` (placeholder/faint text)
+  - `--border: #e7e3dc` (warm light border, replaces `#e2e8f0`)
+  - `--accent: #de3341` (the one brand red — used sparingly: eyebrows,
+    links on hover, checkmarks, one hero headline word, a diagram's
+    center/focal element — never as a full-page wash)
+  - `--accent-dark: #a3202b` (accent hover/active state)
+  - `--accent-tint: #fdeceb` (light red tint background, e.g. info
+    chips, callout cards)
+  - `--black` / `--black-hover`: `#16130f` / `#322d26` (solid fill for
+    primary buttons)
+- **Buttons**: primary CTAs are solid-black, fully-rounded pills
+  (`border-radius: 999px`, `background: var(--black)`, white text,
+  hover `var(--black-hover)`); secondary buttons are the same pill
+  shape with a `1.5px solid var(--ink)` outline, inverting to filled
+  black on hover. No more gradient buttons.
+- **Icon badges** (feature icons, mega-menu icons, path-timeline
+  step icons): solid `var(--ink)` background, not gradients. Reserve
+  `var(--accent)` for the one focal/final element in a sequence (e.g.
+  the last step of a journey, a diagram's center node) so the red
+  stays a deliberate highlight, not a repeated pattern.
+- **This theme applies site-wide, not just `index.html`.** It was
+  first rolled out on the landing page; when creating or materially
+  editing any other page (dashboard, calculators, vault, will
+  planner, split expenses, etc.), bring its colors in line with these
+  tokens rather than leaving the old cyan/emerald palette in place.
+  Don't do a drive-by repaint of a page you're not otherwise touching,
+  but any page you do touch should end up on this palette, and any
+  brand-new page must start on it. Check `index.html`'s `<style>`
+  block for the current token values and component patterns (button
+  shapes, card borders, hover states) before improvising new ones.
+
+## Icon system
+
+EnrichMe uses **Tabler Icons** (outline variant, MIT licensed) as the
+one icon library, site-wide — emoji icons are retired. This applies
+to the landing page's feature cards and nav mega-menu, and to every
+app page's sidebar nav (`.nav-icon`).
+
+- **Format**: each icon is inlined as a raw `<svg>` — no icon font, no
+  CDN script dependency at runtime, no build step (this is a static
+  site). Fetch the source SVG from
+  `https://unpkg.com/@tabler/icons@latest/icons/outline/{name}.svg`,
+  strip the `xmlns`/`width`/`height`/`class` attributes and the
+  invisible `stroke="none" d="M0 0h24v24H0z"` bounding-box path, and
+  keep only the real `<path>` elements. Wrap them in:
+  ```html
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+       stroke-linecap="round" stroke-linejoin="round" class="tabler-icon">
+    <path d="..." /><path d="..." />
+  </svg>
+  ```
+  Never hand-draw icon paths — always pull the real path data from
+  Tabler so the linework stays consistent with the rest of the set.
+- **Color**: sidebar nav icons use `stroke="currentColor"` so they
+  inherit the link's text color automatically (ink when idle, white
+  when the parent `<a>` is `.active` with a dark background) — don't
+  hardcode a stroke color there. Icon badges with a fixed dark
+  background (`.feature-icon`, `.mega-menu-icon`) instead hardcode
+  `stroke="#ffffff"`, since the badge background never changes to
+  something white needing dark strokes.
+- **Sizing**: the icon inherits its box from a wrapper, not from its
+  own `width`/`height` attributes (which are stripped). Size it via
+  CSS on `.tabler-icon` scoped to its container, e.g.
+  `.sidebar-nav .nav-icon .tabler-icon { width: 18px; height: 18px; }`
+  or `.feature-icon .tabler-icon { width: 22px; height: 22px; }`.
+- **One icon per concept, reused across pages.** The mapping below is
+  the source of truth — reuse it rather than picking a new icon for
+  a label that already has one, and extend it (documenting the new
+  label → icon name here) when a genuinely new nav item or feature is
+  added. Within any single sidebar list, no two visible items should
+  share the same icon (differentiate with a plain vs. "-check"/"-2"
+  variant if the closest concept is already taken, as done below with
+  `shield-check` vs `shield`).
+
+  | Label | Icon (outline) |
+  |---|---|
+  | Dashboard | `home` |
+  | FIRE Plan / FIRE Planning & Goals | `compass` |
+  | Goal Based Savings | `target` |
+  | Networth / Net Worth Tracking | `trending-up` |
+  | Stocks/MF | `chart-candle` |
+  | Gold + Commodities | `coin` |
+  | Government Scheme | `building-government` (maps to Tabler's `building-monument`) |
+  | Properties / Property Documents | `building` |
+  | Personal Debt & Receivable | `arrows-left-right` |
+  | Loan / EMI | `trending-down` |
+  | Bank Balances | `building-bank` |
+  | Monthly CashFlow | `chart-bar` |
+  | Income | `cash` |
+  | Tax Planning | `receipt-2` |
+  | Insurance Tracker | `shield-check` |
+  | My Policies / Insurance Documents | `shield` |
+  | Coverage Calculator / Monthly Expenses | `calculator` |
+  | Reminders | `bell` |
+  | Document Vault | `lock` |
+  | Bank Locker | `key` |
+  | Bond Documents | `file-certificate` |
+  | Government Documents | `certificate` |
+  | Vehicle Documents | `car` |
+  | Education Certificates | `school` |
+  | Legal & Estate Documents | `gavel` |
+  | Health(is wealth) / Health & Longevity | `heart` |
+  | Life Expectancy | `hourglass` |
+  | Medicine Tracker | `pill` |
+  | Checkup Reports | `stethoscope` |
+  | Body Fat Calculator | `scale` |
+  | SplitExpenses(SplitWise) | `users` |
+  | Will Planner | `file-text` |
+  | Will Document | `file-description` |
+  | Spiritual / Vedic Astrology | `moon-stars` |
+  | Settings | `settings` |
+  | Expenses tracker(Daily Log) / Daily Expense Capture | `bolt` |
+  | Expenses Calculator | `adjustments-horizontal` |
+  | Monthly Budgeting | `table` |
+  | Financial Calculators | `calculator` |
 
 ## Tools taxonomy
 

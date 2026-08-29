@@ -37,19 +37,14 @@
       gap: 0.75rem;
       font-size: 1.25rem;
       font-weight: bold;
-      color: #0f172a;
+      color: #712B13;
       text-decoration: none;
     }
 
     .logo-icon {
       width: 32px;
       height: 32px;
-      background: linear-gradient(135deg, #0ea5e9, #10b981);
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.5rem;
+      flex-shrink: 0;
     }
 
     .nav-links {
@@ -402,7 +397,10 @@
 <body>
   <nav>
     <a href="../index.html" class="logo">
-      <div class="logo-icon">💰</div>
+      <svg class="logo-icon" viewBox="8 8 98 94" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <circle cx="55" cy="55" r="42" fill="none" stroke="#712B13" stroke-width="8" stroke-linecap="round" stroke-dasharray="230 34" stroke-dashoffset="20"/>
+        <path d="M92,33 Q101,45 95,52 Q97,43 89,41 Q86,48 92,53 Q80,50 80,40 Q80,34 92,33 Z" fill="#712B13"/>
+      </svg>
       <span>EnrichMe</span>
     </a>
     <button class="nav-toggle" id="navToggle" aria-label="Menu" aria-expanded="false" onclick="toggleMobileNav()">☰</button>
@@ -412,7 +410,7 @@
       <a href="../pricing.html">Pricing</a>
       <a href="../resources.html">Learn</a>
       <a href="../services.html">Services</a>
-      <a href="../index.html#login" class="nav-signup-btn">Sign In</a>
+      <a href="../login.html" class="nav-signup-btn">Sign In</a>
     </div>
   </nav>
 
@@ -442,7 +440,7 @@
         <div class="quiz-header-row">
           <div>
             <h1 class="quiz-title">Know your Financial Fitness Score</h1>
-            <p class="quiz-subtitle">A quick 2-minute quiz on your money habits — get your free score out of 100.</p>
+            <p class="quiz-subtitle">A quick 2-minute quiz on your money habits - get your free score out of 100.</p>
           </div>
           <div class="quiz-nav-btns">
             <button class="quiz-next-btn" id="next1" disabled onclick="goToStep(2)">Next →</button>
@@ -486,7 +484,7 @@
         <div class="quiz-header-row">
           <div>
             <h1 class="quiz-title">A few questions about your money habits</h1>
-            <p class="quiz-subtitle">Answer honestly — this is what actually shapes your score.</p>
+            <p class="quiz-subtitle">Answer honestly - this is what actually shapes your score.</p>
           </div>
           <div class="quiz-nav-btns">
             <button class="quiz-back-btn" onclick="goToStep(1)">← Back</button>
@@ -575,8 +573,8 @@
             </div>
           </div>
           <div>
-            <p class="score-tier" id="scoreTier">—</p>
-            <p class="score-msg" id="scoreMsg">—</p>
+            <p class="score-tier" id="scoreTier">-</p>
+            <p class="score-msg" id="scoreMsg">-</p>
           </div>
         </div>
 
@@ -588,7 +586,7 @@
         </div>
 
         <div class="score-cta">
-          <a href="../index.html#login" class="primary">Start tracking in EnrichMe →</a>
+          <a href="../login.html?mode=signup" class="primary">Start tracking in EnrichMe →</a>
           <a href="free-calculators.html#section-goal" class="secondary">Explore goal calculators</a>
         </div>
       </div>
@@ -630,7 +628,7 @@
 
     var sideQuotes = {
       1: { quote: "Financial fitness refers to being in control of one's finances and having a plan in place to achieve financial goals.", icon: '🌱' },
-      2: { quote: "There are no shortcuts — just honest answers today, and a clearer plan tomorrow.", icon: '🧭' },
+      2: { quote: "There are no shortcuts - just honest answers today, and a clearer plan tomorrow.", icon: '🧭' },
       3: { quote: "Awareness is the first step. Now let's build the plan.", icon: '🏆' }
     };
 
@@ -704,16 +702,16 @@
       var tier, msg;
       if (total <= 40) {
         tier = 'Just Getting Started';
-        msg = "You're at the beginning of your financial journey — and that's a fine place to start. Small, consistent steps from here compound fast.";
+        msg = "You're at the beginning of your financial journey - and that's a fine place to start. Small, consistent steps from here compound fast.";
       } else if (total <= 65) {
         tier = 'Building Momentum';
         msg = "You've got real fundamentals in place. Tightening a couple of gaps above will move you into a much stronger position.";
       } else if (total <= 85) {
         tier = 'Solid Foundation';
-        msg = "You're in good shape — disciplined saving and sensible risk management are paying off. A few refinements away from thriving.";
+        msg = "You're in good shape - disciplined saving and sensible risk management are paying off. A few refinements away from thriving.";
       } else {
         tier = 'Thriving & FIRE-Ready';
-        msg = "Excellent. Your habits put you well ahead of most — you're in a strong position to seriously plan for financial independence.";
+        msg = "Excellent. Your habits put you well ahead of most - you're in a strong position to seriously plan for financial independence.";
       }
       document.getElementById('scoreTier').textContent = tier;
       document.getElementById('scoreMsg').textContent = msg;
@@ -730,7 +728,7 @@
         ? "You're actually doing better than you gave yourself credit for."
         : delta < -5
           ? "Your habits have more room to grow than your self-rating suggested."
-          : "Your self-rating and calculated score are closely aligned — good self-awareness.";
+          : "Your self-rating and calculated score are closely aligned - good self-awareness.";
       document.getElementById('scoreCompare').innerHTML =
         'You rated yourself <strong>' + selfRating + '/50</strong> (~' + selfOn100 + '/100). ' +
         'We calculated <strong>' + total + '/100</strong> from your answers. ' + deltaText;

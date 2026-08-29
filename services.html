@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Advisory Services (Coming Soon) - EnrichMe</title>
-  <meta name="description" content="Guided financial planning, retirement, wealth management, tax, and estate services — coming soon to EnrichMe, alongside the free calculators and trackers.">
+  <meta name="description" content="Guided financial planning, retirement, wealth management, tax, and estate services - coming soon to EnrichMe, alongside the free calculators and trackers.">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -31,8 +31,8 @@
       backdrop-filter: blur(10px);
       border-bottom: 1px solid #e2e8f0;
     }
-    .logo { display: flex; align-items: center; gap: 0.75rem; font-size: 1.25rem; font-weight: bold; color: #0f172a; text-decoration: none; }
-    .logo-icon { width: 32px; height: 32px; background: linear-gradient(135deg, #0ea5e9, #10b981); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
+    .logo { display: flex; align-items: center; gap: 0.75rem; font-size: 1.25rem; font-weight: bold; color: #712B13; text-decoration: none; }
+    .logo-icon { width: 32px; height: 32px; flex-shrink: 0; }
     .nav-links { display: flex; gap: 2rem; align-items: center; font-size: 0.95rem; }
     .nav-links a { color: #51636f; text-decoration: none; transition: color 0.3s; display: flex; align-items: center; gap: 0.5rem; }
     .nav-links a:hover { color: #10b981; }    .nav-toggle { display: none; background: none; border: 1px solid #e2e8f0; border-radius: 0.5rem; width: 40px; height: 40px; align-items: center; justify-content: center; font-size: 1.2rem; color: #364752; cursor: pointer; }
@@ -156,7 +156,10 @@
 <body>
   <nav>
     <a href="index.html" class="logo">
-      <div class="logo-icon">💰</div>
+      <svg class="logo-icon" viewBox="8 8 98 94" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <circle cx="55" cy="55" r="42" fill="none" stroke="#712B13" stroke-width="8" stroke-linecap="round" stroke-dasharray="230 34" stroke-dashoffset="20"/>
+        <path d="M92,33 Q101,45 95,52 Q97,43 89,41 Q86,48 92,53 Q80,50 80,40 Q80,34 92,33 Z" fill="#712B13"/>
+      </svg>
       <span>EnrichMe</span>
     </a>
     <button class="nav-toggle" id="navToggle" aria-label="Menu" aria-expanded="false" onclick="toggleMobileNav()">☰</button>
@@ -166,7 +169,7 @@
       <a href="pricing.html">Pricing</a>
       <a href="resources.html">Learn</a>
       <a href="services.html">Services</a>
-      <a href="index.html#login" class="nav-signup-btn">Sign In</a>
+      <a href="login.html" class="nav-signup-btn">Sign In</a>
     </div>
   </nav>
 
@@ -184,9 +187,9 @@
     <div class="container">
       <span class="soon-badge">🔜 Coming Soon</span>
       <h1>Guided Advisory, Coming to EnrichMe</h1>
-      <p>Beyond the calculators and self-tracking tools, we're building guided support for the moments that need a second opinion — a full financial plan, a retirement number you can trust, or your first Will. Here's what's on the way.</p>
+      <p>Beyond the calculators and self-tracking tools, we're building guided support for the moments that need a second opinion - a full financial plan, a retirement number you can trust, or your first Will. Here's what's on the way.</p>
       <div class="svc-hero-cta">
-        <a href="index.html#login" class="btn-primary">Notify me at launch →</a>
+        <a href="login.html?mode=signup" class="btn-primary">Notify me at launch →</a>
         <a href="calculator/free-calculators.html" class="btn-secondary">Explore free tools</a>
       </div>
       <p class="svc-hero-note">No cost to join the waitlist. We'll only email you when this actually launches.</p>
@@ -197,7 +200,7 @@
     <div class="container">
       <span class="svc-tag">Five Services</span>
       <h2>Everything We're Building, in <em>One Place</em></h2>
-      <p class="svc-intro">Each service is designed to work on its own or alongside your EnrichMe data — none of it is live yet, so nothing below can be booked today.</p>
+      <p class="svc-intro">Each service is designed to work on its own or alongside your EnrichMe data - none of it is live yet, so nothing below can be booked today.</p>
 
       <div class="svc-tab-bar" role="tablist" aria-label="Planned advisory services">
         <button class="svc-tab active" role="tab" aria-selected="true" data-panel="fp">🎯 Financial Planning</button>
@@ -210,7 +213,7 @@
       <div class="svc-tab-panel active" id="panel-fp">
         <div class="svc-tab-body">
           <h3>Financial Planning</h3>
-          <p class="lead">One written plan connecting every goal — retirement, a home, your kids' education — to a timeline and a savings target.</p>
+          <p class="lead">One written plan connecting every goal - retirement, a home, your kids' education - to a timeline and a savings target.</p>
           <ul>
             <li>Goal mapping with a target corpus and timeline for each one</li>
             <li>An investment strategy matched to your risk profile</li>
@@ -234,7 +237,7 @@
       <div class="svc-tab-panel" id="panel-rp">
         <div class="svc-tab-body">
           <h3>Retirement Planning</h3>
-          <p class="lead">Turn your FIRE number into a real accumulation and withdrawal plan — EPF, PPF, and NPS folded in.</p>
+          <p class="lead">Turn your FIRE number into a real accumulation and withdrawal plan - EPF, PPF, and NPS folded in.</p>
           <ul>
             <li>A retirement corpus calculation tailored to your numbers</li>
             <li>EPF, PPF, and NPS combined into one honest total</li>
@@ -282,7 +285,7 @@
       <div class="svc-tab-panel" id="panel-tx">
         <div class="svc-tab-body">
           <h3>Tax Services</h3>
-          <p class="lead">Help making sense of regime choice, capital gains, and filing season — without the last-minute scramble.</p>
+          <p class="lead">Help making sense of regime choice, capital gains, and filing season - without the last-minute scramble.</p>
           <ul>
             <li>Old vs new regime comparison for your income</li>
             <li>A plain-language look at LTCG and STCG on your gains</li>
@@ -333,7 +336,7 @@
     <div class="container">
       <span class="svc-tag">Service Routing</span>
       <h2>Which One Might Be Right for <em>You?</em></h2>
-      <p class="svc-intro">A rough guide to where each service will fit — tap a card to jump to it above.</p>
+      <p class="svc-intro">A rough guide to where each service will fit - tap a card to jump to it above.</p>
 
       <div class="svc-scenario-grid">
         <button type="button" class="svc-scenario-tile" onclick="activateTab('fp')">
@@ -406,7 +409,7 @@
       </div>
 
       <div class="svc-process-note">
-        This is the experience we're designing toward — not a live service yet. Nothing on this page can be booked today, and no payment is collected anywhere on EnrichMe for advisory services.
+        This is the experience we're designing toward - not a live service yet. Nothing on this page can be booked today, and no payment is collected anywhere on EnrichMe for advisory services.
       </div>
     </div>
   </section>
@@ -418,7 +421,7 @@
       <div class="faq-wrap">
         <details open>
           <summary>Is this available right now?</summary>
-          <p>Not yet. These advisory services are still in development. Today, EnrichMe is self-serve — calculators, budgeting, and your Financial Fitness Score. Guided advisory is the next phase.</p>
+          <p>Not yet. These advisory services are still in development. Today, EnrichMe is self-serve - calculators, budgeting, and your Financial Fitness Score. Guided advisory is the next phase.</p>
         </details>
         <details>
           <summary>Will this cost extra?</summary>
@@ -426,7 +429,7 @@
         </details>
         <details>
           <summary>Will it use the data I've already tracked in EnrichMe?</summary>
-          <p>If you opt in, a future advisory conversation could reference numbers you've already tracked — your budget, FIRE plan, or Fitness Score — so you're not starting from scratch. Nothing is shared without your consent.</p>
+          <p>If you opt in, a future advisory conversation could reference numbers you've already tracked - your budget, FIRE plan, or Fitness Score - so you're not starting from scratch. Nothing is shared without your consent.</p>
         </details>
         <details>
           <summary>Who will actually provide the advice?</summary>
@@ -434,7 +437,7 @@
         </details>
         <details>
           <summary>Can I get notified when it launches?</summary>
-          <p>Yes — create a free EnrichMe account and we'll let you know there first.</p>
+          <p>Yes - create a free EnrichMe account and we'll let you know there first.</p>
         </details>
         <details>
           <summary>Is anything on this page financial advice today?</summary>
@@ -446,10 +449,10 @@
 
   <section class="svc-cta-section">
     <h2>Want to be first in line?</h2>
-    <p>Create a free EnrichMe account today — we'll email you the moment guided advisory opens up.</p>
-    <a href="index.html#login" class="btn-primary">Notify me at launch →</a>
+    <p>Create a free EnrichMe account today - we'll email you the moment guided advisory opens up.</p>
+    <a href="login.html?mode=signup" class="btn-primary">Notify me at launch →</a>
     <p class="svc-disclaimer" style="margin-left:auto;margin-right:auto;">
-      EnrichMe is a personal finance tracking app. The services on this page are planned and not yet operating —
+      EnrichMe is a personal finance tracking app. The services on this page are planned and not yet operating -
       nothing here is currently offered, licensed, or regulated, and nothing on this page should be treated as
       financial, tax, or legal advice.
     </p>

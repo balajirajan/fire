@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Pricing - EnrichMe</title>
-  <meta name="description" content="Simple, transparent pricing for EnrichMe — Basic, Family and HNI plans for budgeting, net worth tracking and FIRE planning in India.">
+  <meta name="description" content="Simple, transparent pricing for EnrichMe - Basic, Family and HNI plans for FIRE planning, net worth tracking and budgeting in India.">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -31,8 +31,8 @@
       backdrop-filter: blur(10px);
       border-bottom: 1px solid #e2e8f0;
     }
-    .logo { display: flex; align-items: center; gap: 0.75rem; font-size: 1.25rem; font-weight: bold; color: #0f172a; text-decoration: none; }
-    .logo-icon { width: 32px; height: 32px; background: linear-gradient(135deg, #0ea5e9, #10b981); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
+    .logo { display: flex; align-items: center; gap: 0.75rem; font-size: 1.25rem; font-weight: bold; color: #712B13; text-decoration: none; }
+    .logo-icon { width: 32px; height: 32px; flex-shrink: 0; }
     .nav-links { display: flex; gap: 2rem; align-items: center; font-size: 0.95rem; }
     .nav-links a { color: #51636f; text-decoration: none; transition: color 0.3s; display: flex; align-items: center; gap: 0.5rem; }
     .nav-links a:hover { color: #10b981; }
@@ -188,7 +188,10 @@
 <body>
   <nav>
     <a href="index.html" class="logo">
-      <div class="logo-icon">💰</div>
+      <svg class="logo-icon" viewBox="8 8 98 94" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <circle cx="55" cy="55" r="42" fill="none" stroke="#712B13" stroke-width="8" stroke-linecap="round" stroke-dasharray="230 34" stroke-dashoffset="20"/>
+        <path d="M92,33 Q101,45 95,52 Q97,43 89,41 Q86,48 92,53 Q80,50 80,40 Q80,34 92,33 Z" fill="#712B13"/>
+      </svg>
       <span>EnrichMe</span>
     </a>
     <button class="nav-toggle" id="navToggle" aria-label="Menu" aria-expanded="false" onclick="toggleMobileNav()">☰</button>
@@ -198,7 +201,7 @@
       <a href="pricing.html" class="active">Pricing</a>
       <a href="resources.html">Learn</a>
       <a href="services.html">Services</a>
-      <a href="index.html#login" class="nav-signup-btn">Sign In</a>
+      <a href="login.html" class="nav-signup-btn">Sign In</a>
     </div>
   </nav>
 
@@ -231,9 +234,9 @@
             <span class="period">/ forever</span>
           </div>
           <div class="plan-annual-note">&nbsp;</div>
-          <a href="index.html#login" class="btn-secondary plan-cta">Start free</a>
+          <a href="login.html?mode=signup" class="btn-secondary plan-cta">Start free</a>
           <ul class="plan-features">
-            <li>Manual net worth tracking — banks, investments, property, gold</li>
+            <li>Manual net worth tracking - banks, investments, property, gold</li>
             <li>Monthly budgeting &amp; expense capture</li>
             <li>FIRE goal calculator &amp; planning</li>
             <li>Insurance &amp; loan tracker</li>
@@ -250,8 +253,8 @@
             <span class="amount">₹299</span>
             <span class="period">/ month</span>
           </div>
-          <div class="plan-annual-note">₹2,999 billed yearly — save ₹590</div>
-          <a href="index.html#login" class="btn-primary plan-cta">Choose Family</a>
+          <div class="plan-annual-note">₹2,999 billed yearly - save ₹590</div>
+          <a href="login.html?mode=signup" class="btn-primary plan-cta">Choose Family</a>
           <ul class="plan-features">
             <li class="included-prefix">Everything in Basic, plus</li>
             <li>Up to 5 family members on one plan</li>
@@ -268,11 +271,11 @@
             <span class="amount">₹999</span>
             <span class="period">/ month</span>
           </div>
-          <div class="plan-annual-note">₹9,999 billed yearly — save ₹2,000</div>
-          <a href="index.html#login" class="btn-secondary plan-cta">Choose HNI</a>
+          <div class="plan-annual-note">₹9,999 billed yearly - save ₹2,000</div>
+          <a href="login.html?mode=signup" class="btn-secondary plan-cta">Choose HNI</a>
           <ul class="plan-features">
             <li class="included-prefix">Everything in Family, plus</li>
-            <li>Auto net worth sync via the SEBI-regulated Account Aggregator framework — stocks, mutual funds &amp; bonds fetched automatically</li>
+            <li>Auto net worth sync via the SEBI-regulated Account Aggregator framework - stocks, mutual funds &amp; bonds fetched automatically</li>
             <li>Advanced tax &amp; estate planning tools</li>
             <li>50 GB encrypted document vault</li>
             <li>Dedicated onboarding call &amp; priority phone support</li>
@@ -282,7 +285,7 @@
       </div>
 
       <p class="aa-note">
-        The HNI plan's auto net worth sync uses India's Account Aggregator framework (regulated by RBI/SEBI) to pull your holdings with your consent — EnrichMe itself is not a registered investment adviser and this isn't investment advice.
+        The HNI plan's auto net worth sync uses India's Account Aggregator framework (regulated by RBI/SEBI) to pull your holdings with your consent - EnrichMe itself is not a registered investment adviser and this isn't investment advice.
       </p>
     </div>
   </section>
@@ -295,11 +298,11 @@
       <div class="faq-wrap">
         <details open>
           <summary>Can I switch plans later?</summary>
-          <p>Yes. Upgrade or downgrade anytime from your account settings — changes apply from your next billing cycle, and nothing you've already tracked is lost.</p>
+          <p>Yes. Upgrade or downgrade anytime from your account settings - changes apply from your next billing cycle, and nothing you've already tracked is lost.</p>
         </details>
         <details>
           <summary>Is Basic really free forever?</summary>
-          <p>Yes. Basic isn't a trial — it stays free for as long as you use it, with no card required to sign up.</p>
+          <p>Yes. Basic isn't a trial - it stays free for as long as you use it, with no card required to sign up.</p>
         </details>
         <details>
           <summary>What exactly is the Account Aggregator integration on HNI?</summary>
@@ -307,11 +310,11 @@
         </details>
         <details>
           <summary>How many people can share a Family plan?</summary>
-          <p>Up to 5 members, each with their own login, sharing selected goals and a joint expense split — while personal accounts stay private unless explicitly shared.</p>
+          <p>Up to 5 members, each with their own login, sharing selected goals and a joint expense split - while personal accounts stay private unless explicitly shared.</p>
         </details>
         <details>
           <summary>Is my data secure?</summary>
-          <p>Your document vault uses AES-256 encryption locked with a passphrase only you know — not even we can read it. Account data is encrypted in transit and at rest.</p>
+          <p>Your document vault uses AES-256 encryption locked with a passphrase only you know - not even we can read it. Account data is encrypted in transit and at rest.</p>
         </details>
       </div>
     </div>
@@ -319,10 +322,10 @@
 
   <section class="pr-cta-section">
     <h2>Ready to see where you stand?</h2>
-    <p>Start with Basic today, completely free — upgrade only when you actually need to.</p>
-    <a href="index.html#login" class="btn-primary">Start Tracking My Money →</a>
+    <p>Start with Basic today, completely free - upgrade only when you actually need to.</p>
+    <a href="login.html?mode=signup" class="btn-primary">Start Tracking My Money →</a>
     <p class="pr-disclaimer">
-      Prices shown are in INR and apply to individual and family use within India. EnrichMe is a personal finance tracking app, not a SEBI-registered investment adviser — nothing on this page is financial, tax, or legal advice.
+      Prices shown are in INR and apply to individual and family use within India. EnrichMe is a personal finance tracking app, not a SEBI-registered investment adviser - nothing on this page is financial, tax, or legal advice.
     </p>
   </section>
 

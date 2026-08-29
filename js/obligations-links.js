@@ -15,7 +15,7 @@
     var { data, error } = await supabaseClient.from('insurance_policies').select('id, insurer, policy_type, sum_assured');
     if (error || !data) return [];
     return data.map(function (p) {
-      var name = (p.insurer || 'Unknown insurer') + ' — ' + titleCase(p.policy_type || 'policy');
+      var name = (p.insurer || 'Unknown insurer') + ' - ' + titleCase(p.policy_type || 'policy');
       return {
         source_type: 'insurance_policy',
         source_id: p.id,

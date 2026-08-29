@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In - EnrichMe</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #ffffff;
+      --bg-alt: #f5f4f1;
+      --ink: #16130f;
+      --ink-soft: #5c584f;
+      --ink-faint: #8a857a;
+      --border: #e7e3dc;
+      --accent: #de3341;
+      --accent-dark: #a3202b;
+      --accent-tint: #fdeceb;
+      --black: #16130f;
+      --black-hover: #322d26;
+      --logo-brown: #712b13;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      color: var(--ink);
+      min-height: 100dvh;
+      overflow-x: hidden;
+    }
+
+    a, button { color: inherit; font-family: inherit; }
+
+    /* Top bar: brand + way back home, always visible regardless of column layout */
+    .auth-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.25rem 2.5rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--logo-brown);
+      text-decoration: none;
+    }
+
+    .logo-icon {
+      width: 30px;
+      height: 30px;
+      flex-shrink: 0;
+    }
+
+    .back-home {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--ink-soft);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .back-home:hover {
+      color: var(--accent);
+    }
+
+    @media (max-width: 700px) {
+      .auth-topbar { padding: 1.1rem 1.5rem; }
+    }
+
+    /* Split shell */
+    .auth-shell {
+      display: grid;
+      grid-template-columns: 1.05fr 1fr;
+      min-height: calc(100dvh - 65px);
+    }
+
+    /* Left: brand story */
+    .auth-left {
+      background: var(--bg);
+      padding: 3.5rem 3.5rem 3rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 1.75rem;
+    }
+
+    .auth-left h1 {
+      font-size: 2.4rem;
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.01em;
+      max-width: 20ch;
+      margin-bottom: 1rem;
+    }
+
+    .auth-left-sub {
+      color: var(--ink-soft);
+      font-size: 1.05rem;
+      line-height: 1.5;
+      max-width: 42ch;
+    }
+
+    .auth-pill {
+      display: inline-flex;
+      width: fit-content;
+      background: var(--bg-alt);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 0.4rem 1rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--ink-soft);
+    }
+
+    .auth-bullets {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+
+    .auth-bullets li {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    .auth-bullets .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+      flex-shrink: 0;
+    }
+
+    .auth-visual {
+      border-radius: 1rem;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      max-width: 480px;
+    }
+
+    .auth-visual img {
+      width: 100%;
+      height: 190px;
+      object-fit: cover;
+      object-position: top;
+      display: block;
+    }
+
+    @media (max-width: 960px) {
+      .auth-shell { grid-template-columns: 1fr; }
+      .auth-left { display: none; }
+    }
+
+    /* Right: the form card */
+    .auth-right {
+      background: var(--bg-alt);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2.5rem 2rem;
+    }
+
+    .login-box {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+      padding: 2.5rem;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 10px 40px rgba(22, 19, 15, 0.06);
+    }
+
+    .login-box h2 {
+      font-size: 1.6rem;
+      margin-bottom: 0.5rem;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .login-box .subtitle {
+      color: var(--ink-faint);
+      font-size: 0.92rem;
+      margin-bottom: 1.75rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.9rem;
+      margin-bottom: 0.4rem;
+      color: var(--ink);
+      font-weight: 500;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      background: var(--bg-alt);
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      color: var(--ink);
+      font-size: 0.95rem;
+      transition: all 0.3s;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: var(--accent);
+      background: #ffffff;
+      box-shadow: 0 0 0 3px rgba(222, 51, 65, 0.1);
+    }
+
+    .form-group input::placeholder {
+      color: var(--ink-faint);
+    }
+
+    .form-options {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.25rem;
+      font-size: 0.88rem;
+    }
+
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .checkbox-group input[type="checkbox"] {
+      cursor: pointer;
+      width: 17px;
+      height: 17px;
+      accent-color: var(--accent);
+      flex-shrink: 0;
+    }
+
+    .checkbox-group label {
+      margin: 0;
+      cursor: pointer;
+      color: var(--ink);
+    }
+
+    .forgot-password {
+      color: var(--ink-soft);
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+
+    .forgot-password:hover {
+      color: var(--accent);
+    }
+
+    .terms-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.6rem;
+      margin-bottom: 1.25rem;
+      font-size: 0.82rem;
+      color: var(--ink-soft);
+      line-height: 1.5;
+    }
+
+    .terms-row input[type="checkbox"] {
+      margin-top: 0.2rem;
+      cursor: pointer;
+      width: 17px;
+      height: 17px;
+      accent-color: var(--accent);
+      flex-shrink: 0;
+    }
+
+    .terms-row a {
+      color: var(--ink);
+      text-decoration: underline;
+      transition: color 0.3s;
+    }
+
+    .terms-row a:hover {
+      color: var(--accent);
+    }
+
+    .signin-btn {
+      width: 100%;
+      padding: 0.85rem;
+      background: var(--black);
+      color: white;
+      border: none;
+      border-radius: 999px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-bottom: 1.25rem;
+    }
+
+    .signin-btn:hover {
+      background: var(--black-hover);
+      transform: translateY(-1px);
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+      color: var(--ink-faint);
+      font-size: 0.85rem;
+    }
+
+    .divider::before,
+    .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .google-btn {
+      width: 100%;
+      padding: 0.7rem;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--ink);
+      border-radius: 0.5rem;
+      font-size: 0.92rem;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      transition: all 0.3s;
+      margin-bottom: 1.5rem;
+    }
+
+    .google-btn:hover {
+      border-color: var(--ink);
+      color: var(--ink);
+    }
+
+    .google-icon {
+      font-size: 1.15rem;
+    }
+
+    .signup-link {
+      text-align: center;
+      font-size: 0.88rem;
+      color: var(--ink-faint);
+    }
+
+    .signup-link a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.3s;
+    }
+
+    .signup-link a:hover {
+      color: var(--accent-dark);
+    }
+
+    .auth-message {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #b91c1c;
+      font-size: 0.82rem;
+      padding: 0.65rem 0.85rem;
+      border-radius: 0.5rem;
+      margin-bottom: 1.25rem;
+      line-height: 1.5;
+    }
+
+    .auth-message.info {
+      background: var(--bg-alt);
+      border-color: var(--border);
+      color: var(--ink);
+    }
+  </style>
+</head>
+<body>
+  <div class="auth-topbar">
+    <a href="index.html" class="logo">
+      <svg class="logo-icon" viewBox="8 8 98 94" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <circle cx="55" cy="55" r="42" fill="none" stroke="#712B13" stroke-width="8" stroke-linecap="round" stroke-dasharray="230 34" stroke-dashoffset="20"/>
+        <path d="M92,33 Q101,45 95,52 Q97,43 89,41 Q86,48 92,53 Q80,50 80,40 Q80,34 92,33 Z" fill="#712B13"/>
+      </svg>
+      <span>EnrichMe</span>
+    </a>
+    <a href="index.html" class="back-home">← Back to home</a>
+  </div>
+
+  <div class="auth-shell">
+    <div class="auth-left">
+      <div>
+        <h1>Reach your FIRE number.</h1>
+        <p class="auth-left-sub">Plan the exact year work becomes optional, then track net worth, expenses and insurance to get there. Built for India.</p>
+      </div>
+
+      <div>
+        <div class="auth-pill">EnrichMe also helps you</div>
+        <ul class="auth-bullets" style="margin-top: 1rem;">
+          <li><span class="dot"></span>Track your complete net worth</li>
+          <li><span class="dot"></span>Manage expenses and monthly budgeting</li>
+          <li><span class="dot"></span>Protect what matters with insurance</li>
+        </ul>
+      </div>
+
+      <div class="auth-visual">
+        <img src="assets/img/hero-wealth-trajectory.png" alt="EnrichMe FIRE calculator showing a wealth trajectory chart from age 30 to retirement">
+      </div>
+    </div>
+
+    <div class="auth-right">
+      <div class="login-box">
+        <h2 id="authTitle">Welcome Back</h2>
+        <p class="subtitle" id="authSubtitle">Sign in to continue your journey</p>
+
+        <p class="auth-message" id="authMessage" style="display:none;"></p>
+
+        <form onsubmit="handleAuthSubmit(event)">
+          <div class="form-group" id="nameField" style="display:none;">
+            <label>Full name</label>
+            <input type="text" placeholder="Your name" id="fullName">
+          </div>
+
+          <div class="form-group" id="emailField">
+            <label>Email</label>
+            <input type="email" placeholder="you@example.com" id="email" required>
+          </div>
+
+          <div class="form-group" id="passwordField">
+            <label>Password</label>
+            <input type="password" placeholder="••••••••" id="password" required minlength="6">
+          </div>
+
+          <div class="form-group" id="otpField" style="display:none;">
+            <label>Verification code</label>
+            <input type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]*" maxlength="6" placeholder="123456" id="otpCode">
+          </div>
+
+          <div class="form-options" id="rememberRow">
+            <div class="checkbox-group">
+              <input type="checkbox" id="remember" checked>
+              <label for="remember">Remember me</label>
+            </div>
+            <a href="#" class="forgot-password" onclick="handleForgotPassword(event)">Forgot password?</a>
+          </div>
+
+          <div class="terms-row" id="termsRow" style="display:none;">
+            <input type="checkbox" id="agreeTerms">
+            <label for="agreeTerms">I agree to the <a href="#">Terms and Conditions</a> and <a href="#">Privacy Policy</a>.</label>
+          </div>
+
+          <p class="signup-link" id="resendRow" style="display:none;">
+            Didn't get a code? <a href="#" onclick="handleResendCode(event)">Resend</a>
+          </p>
+
+          <button type="submit" class="signin-btn" id="authSubmitBtn">Sign In</button>
+        </form>
+
+        <div id="googleBlock">
+          <div class="divider">OR</div>
+
+          <button class="google-btn" onclick="handleGoogleSignIn()">
+            <span class="google-icon">G</span>
+            Sign in with Google
+          </button>
+        </div>
+
+        <p class="signup-link" id="authToggleWrap">
+          New here? <a href="#" onclick="toggleAuthMode(event)">Join now</a>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-client.js"></script>
+  <script>
+    let authMode = 'signin';
+    let pendingOtpEmail = '';
+
+    function toggleAuthMode(event) {
+      if (event) event.preventDefault();
+      setAuthMode(authMode === 'signin' ? 'signup' : 'signin');
+    }
+
+    function submitButtonLabel() {
+      if (authMode === 'otp') return 'Verify & Continue';
+      return authMode === 'signup' ? 'Create Account' : 'Sign In';
+    }
+
+    function setAuthMode(mode) {
+      authMode = mode;
+      const isSignup = authMode === 'signup';
+      const isOtp = authMode === 'otp';
+
+      document.getElementById('authTitle').textContent = isOtp ? 'Verify your email' : (isSignup ? 'Create your account' : 'Welcome Back');
+      document.getElementById('authSubtitle').textContent = isOtp
+        ? ('Enter the 6-digit code we sent to ' + pendingOtpEmail)
+        : (isSignup ? 'Start tracking your money in minutes' : 'Sign in to continue your journey');
+      document.getElementById('nameField').style.display = isSignup ? '' : 'none';
+      document.getElementById('emailField').style.display = isOtp ? 'none' : '';
+      document.getElementById('passwordField').style.display = isOtp ? 'none' : '';
+      document.getElementById('otpField').style.display = isOtp ? '' : 'none';
+      document.getElementById('rememberRow').style.display = (isSignup || isOtp) ? 'none' : '';
+      document.getElementById('termsRow').style.display = isSignup ? 'flex' : 'none';
+      document.getElementById('resendRow').style.display = isOtp ? 'block' : 'none';
+      document.getElementById('googleBlock').style.display = isOtp ? 'none' : '';
+      document.getElementById('authSubmitBtn').textContent = submitButtonLabel();
+      document.getElementById('authToggleWrap').style.display = isOtp ? 'none' : '';
+      if (!isOtp) {
+        document.getElementById('authToggleWrap').innerHTML = isSignup
+          ? 'Already have an account? <a href="#" onclick="toggleAuthMode(event)">Sign in</a>'
+          : 'New here? <a href="#" onclick="toggleAuthMode(event)">Join now</a>';
+      }
+      hideAuthMessage();
+    }
+
+    function showAuthMessage(msg, type) {
+      const el = document.getElementById('authMessage');
+      el.textContent = msg;
+      el.className = 'auth-message' + (type === 'info' ? ' info' : '');
+      el.style.display = 'block';
+    }
+
+    function hideAuthMessage() {
+      document.getElementById('authMessage').style.display = 'none';
+    }
+
+    async function handleAuthSubmit(event) {
+      event.preventDefault();
+      hideAuthMessage();
+
+      const btn = document.getElementById('authSubmitBtn');
+      btn.disabled = true;
+
+      try {
+        if (authMode === 'otp') {
+          btn.textContent = 'Verifying…';
+          const code = document.getElementById('otpCode').value.trim();
+          const { error } = await supabaseClient.auth.verifyOtp({ email: pendingOtpEmail, token: code, type: 'signup' });
+          if (error) throw error;
+          window.location.href = 'dashboard.html';
+          return;
+        }
+
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value;
+
+        if (authMode === 'signup') {
+          btn.textContent = 'Creating account…';
+          const fullName = document.getElementById('fullName').value.trim();
+          const { data, error } = await supabaseClient.auth.signUp({
+            email, password,
+            options: { data: fullName ? { full_name: fullName } : {} }
+          });
+          if (error) throw error;
+
+          if (data.session) {
+            window.location.href = 'dashboard.html';
+            return;
+          }
+          pendingOtpEmail = email;
+          setAuthMode('otp');
+          showAuthMessage('We emailed a 6-digit code to ' + email + '.', 'info');
+        } else {
+          btn.textContent = 'Signing in…';
+          const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+          if (error) {
+            if (/confirm/i.test(error.message || '')) {
+              pendingOtpEmail = email;
+              await supabaseClient.auth.resend({ type: 'signup', email });
+              setAuthMode('otp');
+              showAuthMessage("Your email isn't verified yet — we sent a fresh code to " + email + '.', 'info');
+              return;
+            }
+            throw error;
+          }
+          window.location.href = 'dashboard.html';
+          return;
+        }
+      } catch (err) {
+        showAuthMessage(err.message || 'Something went wrong. Please try again.');
+        btn.textContent = submitButtonLabel();
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    async function handleResendCode(event) {
+      event.preventDefault();
+      if (!pendingOtpEmail) return;
+      try {
+        const { error } = await supabaseClient.auth.resend({ type: 'signup', email: pendingOtpEmail });
+        if (error) throw error;
+        showAuthMessage('Sent a new code to ' + pendingOtpEmail + '.', 'info');
+      } catch (err) {
+        showAuthMessage(err.message || 'Could not resend the code.');
+      }
+    }
+
+    async function handleForgotPassword(event) {
+      event.preventDefault();
+      const email = document.getElementById('email').value.trim();
+      if (!email) {
+        showAuthMessage('Enter your email above first, then click "Forgot password?" again.');
+        return;
+      }
+      try {
+        const { error } = await supabaseClient.auth.resetPasswordForEmail(email);
+        if (error) throw error;
+        showAuthMessage('Password reset email sent. Check your inbox.', 'info');
+      } catch (err) {
+        showAuthMessage(err.message || 'Could not send reset email.');
+      }
+    }
+
+    function handleGoogleSignIn() {
+      alert('Google Sign-In needs a Google OAuth provider configured in your Supabase project (Authentication → Providers). Not set up yet in this demo.');
+    }
+
+    // Deep-link support: CTAs elsewhere in the app link to login.html?mode=signup
+    // so "Start free" / "Start Tracking My Money" style buttons open straight
+    // on the create-account form instead of defaulting to sign-in.
+    (function initModeFromQuery() {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('mode') === 'signup') setAuthMode('signup');
+    })();
+
+    // If already signed in, skip straight to the dashboard.
+    (async function redirectIfSignedIn() {
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (session) window.location.href = 'dashboard.html';
+    })();
+  </script>
+</body>
+</html>

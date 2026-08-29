@@ -31,8 +31,8 @@
       backdrop-filter: blur(10px);
       border-bottom: 1px solid #e2e8f0;
     }
-    .logo { display: flex; align-items: center; gap: 0.75rem; font-size: 1.25rem; font-weight: bold; color: #0f172a; text-decoration: none; }
-    .logo-icon { width: 32px; height: 32px; background: linear-gradient(135deg, #0ea5e9, #10b981); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
+    .logo { display: flex; align-items: center; gap: 0.75rem; font-size: 1.25rem; font-weight: bold; color: #712B13; text-decoration: none; }
+    .logo-icon { width: 32px; height: 32px; flex-shrink: 0; }
     .nav-links { display: flex; gap: 2rem; align-items: center; font-size: 0.95rem; }
     .nav-links a { color: #51636f; text-decoration: none; transition: color 0.3s; display: flex; align-items: center; gap: 0.5rem; }
     .nav-links a:hover { color: #10b981; }
@@ -152,7 +152,10 @@
 <body>
   <nav>
     <a href="index.html" class="logo">
-      <div class="logo-icon">💰</div>
+      <svg class="logo-icon" viewBox="8 8 98 94" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <circle cx="55" cy="55" r="42" fill="none" stroke="#712B13" stroke-width="8" stroke-linecap="round" stroke-dasharray="230 34" stroke-dashoffset="20"/>
+        <path d="M92,33 Q101,45 95,52 Q97,43 89,41 Q86,48 92,53 Q80,50 80,40 Q80,34 92,33 Z" fill="#712B13"/>
+      </svg>
       <span>EnrichMe</span>
     </a>
     <button class="nav-toggle" id="navToggle" aria-label="Menu" aria-expanded="false" onclick="toggleMobileNav()">☰</button>
@@ -162,7 +165,7 @@
       <a href="pricing.html">Pricing</a>
       <a href="resources.html" class="active">Learn</a>
       <a href="services.html">Services</a>
-      <a href="index.html#login" class="nav-signup-btn">Sign In</a>
+      <a href="login.html" class="nav-signup-btn">Sign In</a>
     </div>
   </nav>
 
@@ -179,7 +182,7 @@
   <section class="res-hero">
     <div class="container">
       <h1>Resources to help you get the most out of EnrichMe</h1>
-      <p>Guides, answers and people to talk to — everything outside the app that makes the app more useful.</p>
+      <p>Guides, answers and people to talk to - everything outside the app that makes the app more useful.</p>
     </div>
   </section>
 
@@ -241,8 +244,8 @@
 
   <section class="res-cta-section">
     <h2>Still have a question?</h2>
-    <p>Create a free EnrichMe account and reach out — we read every message.</p>
-    <a href="index.html#login" class="btn-primary">Start Tracking My Money →</a>
+    <p>Create a free EnrichMe account and reach out - we read every message.</p>
+    <a href="login.html?mode=signup" class="btn-primary">Start Tracking My Money →</a>
   </section>
 
   <footer>

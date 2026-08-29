@@ -461,6 +461,7 @@ create table if not exists health_inputs (
   partner_support text not null default 'somewhat' check (partner_support in ('very','somewhat','not_very','conflict')),
   family_time text not null default 'weekly' check (family_time in ('daily','weekly','rarely')),
   intimacy_frequency text not null default 'skip' check (intimacy_frequency in ('rare','1-2','3-4','5plus','skip')),
+  life_expectancy numeric,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
@@ -475,6 +476,10 @@ alter table health_inputs add column if not exists relationship_status text not 
 alter table health_inputs add column if not exists partner_support text not null default 'somewhat' check (partner_support in ('very','somewhat','not_very','conflict'));
 alter table health_inputs add column if not exists family_time text not null default 'weekly' check (family_time in ('daily','weekly','rarely'));
 alter table health_inputs add column if not exists intimacy_frequency text not null default 'skip' check (intimacy_frequency in ('rare','1-2','3-4','5plus','skip'));
+-- Stores the calculator's computed result (not a raw answer), so other pages —
+-- e.g. FIRE Plan's Life Expectancy field — can read a real number instead of
+-- a guess. Backfills onto any health_inputs table created before this addition.
+alter table health_inputs add column if not exists life_expectancy numeric;
 
 alter table health_inputs enable row level security;
 
@@ -1407,3 +1412,163 @@ create policy "medical_reports_storage_insert_own" on storage.objects for insert
 create policy "medical_reports_storage_delete_own" on storage.objects for delete using (
   bucket_id = 'medical-reports' and (storage.foldername(name))[1] = auth.uid()::text
 );
+
+-- ── Will Planner: estate split (as a free-form list of relationships the  ──
+-- ── user can add/remove, not a fixed set) + draft will inputs — one row   ──
+-- ── per user, so both persist across visits instead of resetting to      ──
+-- ── defaults every time the page loads. Shared by will-planner.html      ──
+-- ── (the split) and will-document.html (the drafted document). Not a     ──
+-- ── substitute for a lawyer-executed Will.                               ──
+create table if not exists will_drafts (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null default auth.uid() references auth.users (id) on delete cascade unique,
+  heirs jsonb not null default '[{"label":"Spouse","pct":30},{"label":"Son","pct":25},{"label":"Daughter","pct":25},{"label":"Mother","pct":15},{"label":"Other / Charity","pct":5}]',
+  testator_name text not null default '',
+  testator_parent text not null default '',
+  testator_address text not null default '',
+  executor_name text not null default '',
+  guardian_name text not null default '',
+  bequests text not null default '',
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+-- Migrates a will_drafts table created before the switch from fixed
+-- spouse/son/daughter/mother/other columns to a free-form heirs list —
+-- safe to re-run, and a no-op if the table was already created fresh above.
+-- Wrapped in a DO block with dynamic SQL because a plain UPDATE referencing
+-- spouse_pct etc. would fail to even parse on a fresh install where those
+-- columns never existed, regardless of any WHERE-clause guard.
+alter table will_drafts add column if not exists heirs jsonb not null default '[{"label":"Spouse","pct":30},{"label":"Son","pct":25},{"label":"Daughter","pct":25},{"label":"Mother","pct":15},{"label":"Other / Charity","pct":5}]';
+
+do $$
+begin
+  if exists (select 1 from information_schema.columns where table_name = 'will_drafts' and column_name = 'spouse_pct') then
+    execute $migrate$
+      update will_drafts set heirs = jsonb_build_array(
+        jsonb_build_object('label', 'Spouse', 'pct', spouse_pct),
+        jsonb_build_object('label', 'Son', 'pct', son_pct),
+        jsonb_build_object('label', 'Daughter', 'pct', daughter_pct),
+        jsonb_build_object('label', 'Mother', 'pct', mother_pct),
+        jsonb_build_object('label', 'Other / Charity', 'pct', other_pct)
+      )
+      where heirs = '[{"label":"Spouse","pct":30},{"label":"Son","pct":25},{"label":"Daughter","pct":25},{"label":"Mother","pct":15},{"label":"Other / Charity","pct":5}]'::jsonb
+    $migrate$;
+  end if;
+end $$;
+
+alter table will_drafts drop column if exists spouse_pct;
+alter table will_drafts drop column if exists son_pct;
+alter table will_drafts drop column if exists daughter_pct;
+alter table will_drafts drop column if exists mother_pct;
+alter table will_drafts drop column if exists other_pct;
+
+alter table will_drafts enable row level security;
+
+drop policy if exists "will_drafts_select_own" on will_drafts;
+drop policy if exists "will_drafts_insert_own" on will_drafts;
+drop policy if exists "will_drafts_update_own" on will_drafts;
+drop policy if exists "will_drafts_delete_own" on will_drafts;
+
+create policy "will_drafts_select_own" on will_drafts for select using (auth.uid() = user_id);
+create policy "will_drafts_insert_own" on will_drafts for insert with check (auth.uid() = user_id);
+create policy "will_drafts_update_own" on will_drafts for update using (auth.uid() = user_id);
+create policy "will_drafts_delete_own" on will_drafts for delete using (auth.uid() = user_id);
+
+-- ============================================================================
+-- SaaS admin layer: one profiles row per auth.users row, an is_admin() check
+-- usable in RLS policies, and triggers to keep it in sync automatically.
+-- admin@enrichme.app is auto-flagged as admin the moment it signs up — no
+-- manual SQL needed after that. Every other account (including the existing
+-- str.balaji@gmail.com) only ever gets a profiles row added; nothing about
+-- their auth.users row, password, or any of their existing data is touched.
+-- ============================================================================
+
+create table if not exists profiles (
+  id uuid primary key references auth.users (id) on delete cascade,
+  email text not null,
+  full_name text,
+  is_admin boolean not null default false,
+  last_sign_in_at timestamptz,
+  created_at timestamptz not null default now()
+);
+
+-- security definer, not a self-referencing RLS policy on profiles itself —
+-- a profiles SELECT policy that queries profiles caused a real recursion
+-- headache during the SplitWise build (see project memory); this sidesteps
+-- that entirely since the function body runs with elevated rights and isn't
+-- subject to the RLS policy it's used inside of.
+create or replace function is_admin()
+returns boolean
+language sql
+security definer
+set search_path = public
+stable
+as $$
+  select exists (
+    select 1 from profiles where id = auth.uid() and is_admin = true
+  );
+$$;
+
+alter table profiles enable row level security;
+
+drop policy if exists "profiles_select_own" on profiles;
+drop policy if exists "profiles_select_admin" on profiles;
+
+create policy "profiles_select_own" on profiles for select using (auth.uid() = id);
+create policy "profiles_select_admin" on profiles for select using (is_admin());
+
+-- Auto-create a profiles row for every new signup, flagging admin@enrichme.app.
+create or replace function handle_new_user()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  insert into public.profiles (id, email, full_name, is_admin)
+  values (
+    new.id,
+    new.email,
+    new.raw_user_meta_data ->> 'full_name',
+    new.email = 'admin@enrichme.app'
+  )
+  on conflict (id) do nothing;
+  return new;
+end;
+$$;
+
+drop trigger if exists on_auth_user_created on auth.users;
+create trigger on_auth_user_created
+  after insert on auth.users
+  for each row execute function handle_new_user();
+
+-- Mirror last_sign_in_at so the admin dashboard can show real activity, not
+-- just signup counts.
+create or replace function sync_last_sign_in()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  update public.profiles set last_sign_in_at = new.last_sign_in_at where id = new.id;
+  return new;
+end;
+$$;
+
+drop trigger if exists on_auth_user_sign_in on auth.users;
+create trigger on_auth_user_sign_in
+  after update of last_sign_in_at on auth.users
+  for each row execute function sync_last_sign_in();
+
+-- One-time backfill for accounts that already exist (str.balaji@gmail.com
+-- and admin@enrichme.app if it signed up before this migration ran). Purely
+-- additive — only inserts a profiles row, never touches auth.users.
+insert into public.profiles (id, email, full_name, is_admin, last_sign_in_at, created_at)
+select
+  id, email, raw_user_meta_data ->> 'full_name',
+  email = 'admin@enrichme.app',
+  last_sign_in_at, created_at
+from auth.users
+on conflict (id) do nothing;

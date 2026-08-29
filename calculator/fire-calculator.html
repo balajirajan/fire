@@ -31,8 +31,8 @@
       backdrop-filter: blur(10px);
       border-bottom: 1px solid #e2e8f0;
     }
-    .logo { display: flex; align-items: center; gap: 0.75rem; font-size: 1.25rem; font-weight: bold; color: #0f172a; text-decoration: none; }
-    .logo-icon { width: 32px; height: 32px; background: linear-gradient(135deg, #0ea5e9, #10b981); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
+    .logo { display: flex; align-items: center; gap: 0.75rem; font-size: 1.25rem; font-weight: bold; color: #712B13; text-decoration: none; }
+    .logo-icon { width: 32px; height: 32px; flex-shrink: 0; }
     .nav-links { display: flex; gap: 2rem; align-items: center; font-size: 0.95rem; }
     .nav-links a { color: #51636f; text-decoration: none; transition: color 0.3s; display: flex; align-items: center; gap: 0.5rem; }
     .nav-links a:hover { color: #10b981; }    .nav-toggle { display: none; background: none; border: 1px solid #e2e8f0; border-radius: 0.5rem; width: 40px; height: 40px; align-items: center; justify-content: center; font-size: 1.2rem; color: #364752; cursor: pointer; }
@@ -186,7 +186,10 @@
 <body>
   <nav>
     <a href="../index.html" class="logo">
-      <div class="logo-icon">💰</div>
+      <svg class="logo-icon" viewBox="8 8 98 94" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <circle cx="55" cy="55" r="42" fill="none" stroke="#712B13" stroke-width="8" stroke-linecap="round" stroke-dasharray="230 34" stroke-dashoffset="20"/>
+        <path d="M92,33 Q101,45 95,52 Q97,43 89,41 Q86,48 92,53 Q80,50 80,40 Q80,34 92,33 Z" fill="#712B13"/>
+      </svg>
       <span>EnrichMe</span>
     </a>
     <button class="nav-toggle" id="navToggle" aria-label="Menu" aria-expanded="false" onclick="toggleMobileNav()">☰</button>
@@ -196,7 +199,7 @@
       <a href="../pricing.html">Pricing</a>
       <a href="../resources.html">Learn</a>
       <a href="../services.html">Services</a>
-      <a href="../index.html#login" class="nav-signup-btn">Sign In</a>
+      <a href="../login.html" class="nav-signup-btn">Sign In</a>
     </div>
   </nav>
 
@@ -213,7 +216,7 @@
   <section class="fc-hero">
     <div class="container">
       <h1>FIRE Calculator</h1>
-      <p><b>F</b>inancial <b>I</b>ndependence, <b>R</b>etire <b>E</b>arly — find your number and the savings path to get there, adjusted for Indian inflation.</p>
+      <p><b>F</b>inancial <b>I</b>ndependence, <b>R</b>etire <b>E</b>arly - find your number and the savings path to get there, adjusted for Indian inflation.</p>
     </div>
   </section>
 
@@ -287,8 +290,8 @@
           <div class="fc-snapshot-title">FIRE Snapshot</div>
           <div class="fc-metric-row"><span>Annual Expenses Today</span><strong id="annualExpenseToday">₹0</strong></div>
           <div class="fc-metric-row"><span>Expense at Age <span id="expenseFireAgeLabel">50</span></span><strong id="expenseAtFireAge">₹0</strong></div>
-          <div class="fc-metric-row"><span title="15x your annual expenses. Covers essential living costs with a streamlined lifestyle — the minimum to retire early.">Lean FIRE ⓘ</span><strong id="leanFireValue">₹0</strong></div>
-          <div class="fc-metric-row"><span title="50x your annual expenses. Allows for a higher lifestyle spend — travel, comfort, no compromise.">Fat FIRE ⓘ</span><strong id="fatFireValue">₹0</strong></div>
+          <div class="fc-metric-row"><span title="15x your annual expenses. Covers essential living costs with a streamlined lifestyle - the minimum to retire early.">Lean FIRE ⓘ</span><strong id="leanFireValue">₹0</strong></div>
+          <div class="fc-metric-row"><span title="50x your annual expenses. Allows for a higher lifestyle spend - travel, comfort, no compromise.">Fat FIRE ⓘ</span><strong id="fatFireValue">₹0</strong></div>
         </div>
       </div>
     </div>
@@ -330,7 +333,7 @@
             <div class="proj-metric">
               <div class="proj-metric-label" id="projGapTitle">Gap to Fill</div>
               <div class="proj-metric-value warn" id="projGapValue">₹0</div>
-              <div class="proj-metric-sub" id="projGapSub">Shortfall — additional needed</div>
+              <div class="proj-metric-sub" id="projGapSub">Shortfall - additional needed</div>
             </div>
             <div class="proj-metric">
               <div class="proj-metric-label">Monthly SIP Required</div>
@@ -339,7 +342,7 @@
             </div>
             <div class="proj-metric">
               <div class="proj-metric-label">FIRE Corpus Lasts Until</div>
-              <div class="proj-metric-value warn" id="projSurviveAge">—</div>
+              <div class="proj-metric-value warn" id="projSurviveAge">-</div>
               <div class="proj-metric-sub" id="projSurviveSub"><span class="fc-stat-badge warn" id="projSurviveBadge">⚠️ Depletes Early</span></div>
             </div>
           </div>
@@ -348,7 +351,7 @@
         <div class="fc-card fc-cta-box">
           <p class="title">Your numbers are clear. Now build the plan.</p>
           <p class="sub">Track your real net worth, budget, and FIRE plan together in EnrichMe.</p>
-          <a href="../index.html#login" class="btn-primary">Start tracking in EnrichMe →</a>
+          <a href="../login.html?mode=signup" class="btn-primary">Start tracking in EnrichMe →</a>
         </div>
       </div>
     </div>
@@ -380,13 +383,13 @@
           <div class="fc-stat-card">
             <p class="fc-stat-eyebrow">Your Money Lasts Until</p>
             <span class="fc-stat-badge warn" id="statSurviveBadge">⚠️ Depletes Early</span>
-            <p class="fc-stat-value warn" id="statSurviveAge">—</p>
-            <p class="fc-stat-sub" id="statSurviveSub">—</p>
+            <p class="fc-stat-value warn" id="statSurviveAge">-</p>
+            <p class="fc-stat-sub" id="statSurviveSub">-</p>
           </div>
           <div class="fc-stat-card" style="background: linear-gradient(145deg,#f0fdf7,#e6f9ef); border-color: rgba(16,185,129,0.2);">
             <p class="fc-stat-eyebrow">Years of Financial Freedom</p>
             <p class="fc-stat-value" id="statFreeYears">0 yrs</p>
-            <p class="fc-stat-sub" id="statFreeSub">—</p>
+            <p class="fc-stat-sub" id="statFreeSub">-</p>
           </div>
         </div>
       </div>
@@ -406,24 +409,24 @@
   <section class="fc-content">
     <div class="container" style="max-width: 820px;">
       <h2>What is FIRE?</h2>
-      <p>FIRE stands for Financial Independence, Retire Early. It's a simple idea: build enough wealth to cover your living expenses for life, so that work becomes a choice rather than a necessity — whether that means quitting the 9-to-5 at 45, going part-time, or just knowing you <em>could</em> stop anytime without panic.</p>
+      <p>FIRE stands for Financial Independence, Retire Early. It's a simple idea: build enough wealth to cover your living expenses for life, so that work becomes a choice rather than a necessity - whether that means quitting the 9-to-5 at 45, going part-time, or just knowing you <em>could</em> stop anytime without panic.</p>
 
       <h2>How your FIRE Number is calculated</h2>
       <p>The calculator projects your monthly expenses forward to your target FIRE age using your inflation assumption, then applies the 4% Safe Withdrawal Rate:</p>
       <div class="fc-formula-box">
         <strong>FIRE Number = Annual Expenses at Retirement × 25</strong>
-        <p>The 25× multiple comes from the 4% rule — withdrawing 4% of a well-invested corpus each year is designed to sustain it through a long retirement. Multiplying by 25 is the same as dividing by 4%.</p>
+        <p>The 25× multiple comes from the 4% rule - withdrawing 4% of a well-invested corpus each year is designed to sustain it through a long retirement. Multiplying by 25 is the same as dividing by 4%.</p>
       </div>
-      <p>The portfolio section then checks your progress: it projects your current portfolio and monthly SIP forward to your FIRE age, and shows either the surplus you're on track for, or the gap — and the extra monthly SIP needed to close it.</p>
+      <p>The portfolio section then checks your progress: it projects your current portfolio and monthly SIP forward to your FIRE age, and shows either the surplus you're on track for, or the gap - and the extra monthly SIP needed to close it.</p>
 
       <h2>Lean FIRE, Fat FIRE, and everything in between</h2>
-      <p><strong>Lean FIRE</strong> (15× annual expenses) covers the essentials — housing, food, healthcare — on a streamlined budget. <strong>Fat FIRE</strong> (50× annual expenses) keeps your full lifestyle intact, including travel and discretionary spending. Most people land somewhere between the two; both are shown in your FIRE Snapshot above.</p>
+      <p><strong>Lean FIRE</strong> (15× annual expenses) covers the essentials - housing, food, healthcare - on a streamlined budget. <strong>Fat FIRE</strong> (50× annual expenses) keeps your full lifestyle intact, including travel and discretionary spending. Most people land somewhere between the two; both are shown in your FIRE Snapshot above.</p>
 
       <h2>Is the 4% rule safe for India?</h2>
-      <p>The 4% rule comes from US market data, where inflation has historically run 2–3%. India's long-term inflation averages 6–7%, and healthcare costs rise even faster (12–15% a year). Most Indian planners recommend a more conservative 3–3.5% withdrawal rate — meaning a corpus closer to 28–33× expenses. Treat this calculator's 25× output as a starting point, and build in a 10–15% buffer.</p>
+      <p>The 4% rule comes from US market data, where inflation has historically run 2–3%. India's long-term inflation averages 6–7%, and healthcare costs rise even faster (12–15% a year). Most Indian planners recommend a more conservative 3–3.5% withdrawal rate - meaning a corpus closer to 28–33× expenses. Treat this calculator's 25× output as a starting point, and build in a 10–15% buffer.</p>
 
       <h2>Include your PPF, NPS and EPF</h2>
-      <p>Retirement savings sitting in EPF, PPF, and NPS count toward your FIRE corpus too — don't leave them out. Add your EPF balance, PPF maturity value, and the 60% tax-free NPS lump sum to the <strong>Current Portfolio</strong> field so your gap or surplus reflects reality, not an inflated target.</p>
+      <p>Retirement savings sitting in EPF, PPF, and NPS count toward your FIRE corpus too - don't leave them out. Add your EPF balance, PPF maturity value, and the 60% tax-free NPS lump sum to the <strong>Current Portfolio</strong> field so your gap or surplus reflects reality, not an inflated target.</p>
     </div>
   </section>
 
@@ -433,19 +436,19 @@
       <div class="faq-wrap">
         <details open>
           <summary>What is a good FIRE number in India?</summary>
-          <p>It depends entirely on your lifestyle, future expenses, and retirement age — there's no universal number. Many Indians aiming for early retirement target somewhere between ₹5 crore and ₹12 crore, but the calculator above gives you a figure based on your actual expenses.</p>
+          <p>It depends entirely on your lifestyle, future expenses, and retirement age - there's no universal number. Many Indians aiming for early retirement target somewhere between ₹5 crore and ₹12 crore, but the calculator above gives you a figure based on your actual expenses.</p>
         </details>
         <details>
           <summary>Is FIRE realistic on a regular salary?</summary>
-          <p>Yes. With early planning and a disciplined SIP, even someone earning ₹60,000/month can reach FIRE in 15–20 years. Starting early matters more than starting big — time in the market is the biggest lever you have.</p>
+          <p>Yes. With early planning and a disciplined SIP, even someone earning ₹60,000/month can reach FIRE in 15–20 years. Starting early matters more than starting big - time in the market is the biggest lever you have.</p>
         </details>
         <details>
           <summary>What if I'm already 40 or 45?</summary>
-          <p>Starting now is still better than not starting. You may need to push your target FIRE age or invest more aggressively — use the sliders above to see exactly what changes would close the gap.</p>
+          <p>Starting now is still better than not starting. You may need to push your target FIRE age or invest more aggressively - use the sliders above to see exactly what changes would close the gap.</p>
         </details>
         <details>
           <summary>What happens if markets crash right after I FIRE?</summary>
-          <p>This is called sequence-of-returns risk — a bad market stretch in your first 5–10 retired years can do lasting damage to your corpus. Mitigate it with a 2–3 year cash buffer and a higher debt allocation in early retirement, and lean toward a more conservative withdrawal rate (3–3.5% instead of 4%).</p>
+          <p>This is called sequence-of-returns risk - a bad market stretch in your first 5–10 retired years can do lasting damage to your corpus. Mitigate it with a 2–3 year cash buffer and a higher debt allocation in early retirement, and lean toward a more conservative withdrawal rate (3–3.5% instead of 4%).</p>
         </details>
         <details>
           <summary>Should I plan my kids' education separately?</summary>
@@ -453,7 +456,7 @@
         </details>
         <details>
           <summary>How often should I revisit this number?</summary>
-          <p>Once a year, or after any major life change — a raise, a new expense, a shift in your target retirement age. Your FIRE number moves as your life does.</p>
+          <p>Once a year, or after any major life change - a raise, a new expense, a shift in your target retirement age. Your FIRE number moves as your life does.</p>
         </details>
       </div>
     </div>
@@ -461,8 +464,8 @@
 
   <section class="fc-cta-section">
     <h2>See your full financial picture</h2>
-    <p>One free app for budgets, net worth, portfolio, and your FIRE plan — pick up where this calculator leaves off.</p>
-    <a href="../index.html#login" class="btn-primary">Get Started Free →</a>
+    <p>One free app for budgets, net worth, portfolio, and your FIRE plan - pick up where this calculator leaves off.</p>
+    <a href="../login.html?mode=signup" class="btn-primary">Get Started Free →</a>
   </section>
 
   <footer>
@@ -632,12 +635,12 @@
         gapTitleEl.textContent = 'Projected Surplus';
         gapValueEl.textContent = '+' + formatRupee(gap, true);
         gapValueEl.classList.remove('warn');
-        gapSubEl.textContent = 'Surplus — you are on track';
+        gapSubEl.textContent = 'Surplus - you are on track';
       } else {
         gapTitleEl.textContent = 'Gap to Fill';
         gapValueEl.textContent = '-' + formatRupee(Math.abs(gap), true);
         gapValueEl.classList.add('warn');
-        gapSubEl.textContent = 'Shortfall — additional needed';
+        gapSubEl.textContent = 'Shortfall - additional needed';
       }
 
       var reqSipEl = document.getElementById('projReqSip');
@@ -811,7 +814,7 @@
 
       if (raw === null || isNaN(Number(raw)) || Number(raw) <= 0) {
         if (explicit) {
-          note.innerHTML = 'No budget found yet — build one in the ' + linkHtml + ' first.';
+          note.innerHTML = 'No budget found yet - build one in the ' + linkHtml + ' first.';
         }
         return;
       }

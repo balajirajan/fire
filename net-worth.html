@@ -25,13 +25,14 @@
 
     /* Sidebar */
     .sidebar { background: #ffffff; border-right: 1px solid #e2e8f0; display: flex; flex-direction: column; padding: 1.5rem 1.25rem; }
-    .sidebar-logo { display: flex; align-items: center; gap: 0.65rem; font-size: 1.1rem; font-weight: 800; margin-bottom: 2rem; padding: 0 0.25rem; }
-    .sidebar-logo-icon { width: 30px; height: 30px; background: linear-gradient(135deg, #0ea5e9, #10b981); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; flex-shrink: 0; }
+    .sidebar-logo { display: flex; align-items: center; gap: 0.65rem; font-size: 1.1rem; font-weight: 800; margin-bottom: 2rem; padding: 0 0.25rem; color: #712B13; }
+    .sidebar-logo-icon { width: 30px; height: 30px; flex-shrink: 0; }
     .sidebar-nav { display: flex; flex-direction: column; gap: 0.25rem; }
     .sidebar-nav a { display: flex; align-items: center; gap: 0.75rem; padding: 0.7rem 0.75rem; border-radius: 0.6rem; font-size: 0.9rem; font-weight: 500; color: #364752; }
     .sidebar-nav a:hover { background: #f1f5f9; }
     .sidebar-nav a.active { background: #0f172a; color: #ffffff; font-weight: 600; }
-    .sidebar-nav .nav-icon { font-size: 1rem; width: 20px; text-align: center; flex-shrink: 0; }
+    .sidebar-nav .nav-icon { width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .sidebar-nav .nav-icon .tabler-icon { width: 18px; height: 18px; }
     .sidebar-nav .nav-label { flex: 1; }
     .sidebar-nav .nav-chevron { color: #94a3b8; font-size: 0.85rem; }
     .sidebar-nav .nav-section-label { font-size: 0.66rem; font-weight: 800; letter-spacing: 0.07em; text-transform: uppercase; color: #94a3b8; padding: 0.9rem 0.75rem 0.35rem; }
@@ -75,7 +76,7 @@
     .pbtn.outline { background: #fff; border: 1px solid #cbd5e1; color: #364752; }
     .pbtn.outline:hover { border-color: #10b981; color: #10b981; opacity: 1; }
 
-    /* Overview hero — same dark-gradient theme as every other Networth page */
+    /* Overview hero - same dark-gradient theme as every other Networth page */
     .net-hero {
       background: linear-gradient(135deg, #0f172a, #1e293b);
       border-radius: 1.25rem;
@@ -88,7 +89,7 @@
       justify-content: center;
       gap: 0.5rem;
     }
-    /* Net Worth pictured as a literal equation across six categories —
+    /* Net Worth pictured as a literal equation across six categories -
        ring diameter scales with each term's rupee value (bigger number,
        bigger circle), read left to right with operator glyphs between
        them, instead of a uniform grid of stats. */
@@ -228,9 +229,6 @@
         justify-content: center;
         width: 30px;
         height: 30px;
-        background: linear-gradient(135deg, #0ea5e9, #10b981);
-        border-radius: 8px;
-        font-size: 1.1rem;
         flex-shrink: 0;
       }
 
@@ -244,108 +242,120 @@
     <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleSidebar()"></div>
     <aside class="sidebar" id="sidebar">
       <a href="dashboard.html" class="sidebar-logo">
-        <div class="sidebar-logo-icon">💰</div>
+        <svg class="sidebar-logo-icon" viewBox="8 8 98 94" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <circle cx="55" cy="55" r="42" fill="none" stroke="#712B13" stroke-width="8" stroke-linecap="round" stroke-dasharray="230 34" stroke-dashoffset="20"/>
+          <path d="M92,33 Q101,45 95,52 Q97,43 89,41 Q86,48 92,53 Q80,50 80,40 Q80,34 92,33 Z" fill="#712B13"/>
+        </svg>
         <span>EnrichMe</span>
       </a>
 
       <nav class="sidebar-nav">
         <a href="dashboard.html">
-          <span class="nav-icon">▦</span>
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M5 12l-2 0l9 -9l9 9l-2 0" /><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" /><path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" /></svg></span>
           <span class="nav-label">Dashboard</span>
         </a>
 
         <div class="nav-section-label">Wealth</div>
         <a href="fire-plan.html">
-          <span class="nav-icon">🧭</span>
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M8 16l2 -6l6 -2l-2 6l-6 2" /><path d="M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /><path d="M12 3l0 2" /><path d="M12 19l0 2" /><path d="M3 12l2 0" /><path d="M19 12l2 0" /></svg></span>
           <span class="nav-label">FIRE Plan</span>
           <span class="nav-chevron">›</span>
         </a>
+        <a href="fire-goals.html">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M11 12a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M7 12a5 5 0 1 0 10 0a5 5 0 1 0 -10 0" /><path d="M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /></svg></span>
+          <span class="nav-label">Goal Based Savings</span>
+          <span class="nav-chevron">›</span>
+        </a>
         <a href="net-worth.html" class="nav-group-head open active">
-          <span class="nav-icon">📈</span>
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M3 17l6 -6l4 4l8 -8" /><path d="M14 7l7 0l0 7" /></svg></span>
           <span class="nav-label">Networth</span>
           <span class="nav-chevron">⌄</span>
         </a>
         <div class="sidebar-subnav">
           <a href="portfolio.html">
-            <span class="nav-icon">📊</span>
+            <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M4 7a1 1 0 0 1 1 -1h2a1 1 0 0 1 1 1v3a1 1 0 0 1 -1 1h-2a1 1 0 0 1 -1 -1l0 -3" /><path d="M6 4l0 2" /><path d="M6 11l0 9" /><path d="M10 15a1 1 0 0 1 1 -1h2a1 1 0 0 1 1 1v3a1 1 0 0 1 -1 1h-2a1 1 0 0 1 -1 -1l0 -3" /><path d="M12 4l0 10" /><path d="M12 19l0 1" /><path d="M16 6a1 1 0 0 1 1 -1h2a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-2a1 1 0 0 1 -1 -1l0 -4" /><path d="M18 4l0 1" /><path d="M18 11l0 9" /></svg></span>
             <span class="nav-label">Stocks/MF</span>
           </a>
           <a href="gold.html">
-            <span class="nav-icon">🥇</span>
+            <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /><path d="M14.8 9a2 2 0 0 0 -1.8 -1h-2a2 2 0 1 0 0 4h2a2 2 0 1 1 0 4h-2a2 2 0 0 1 -1.8 -1" /><path d="M12 7v10" /></svg></span>
             <span class="nav-label">Gold + Commodities</span>
           </a>
           <a href="bonds.html">
-            <span class="nav-icon">🏛️</span>
+            <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M8 18l2 -13l2 -2l2 2l2 13" /><path d="M5 21v-3h14v3" /><path d="M3 21l18 0" /></svg></span>
             <span class="nav-label">Government Scheme</span>
           </a>
           <a href="properties.html">
-            <span class="nav-icon">🏠</span>
+            <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M3 21l18 0" /><path d="M9 8l1 0" /><path d="M9 12l1 0" /><path d="M9 16l1 0" /><path d="M14 8l1 0" /><path d="M14 12l1 0" /><path d="M14 16l1 0" /><path d="M5 21v-16a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v16" /></svg></span>
             <span class="nav-label">Properties</span>
           </a>
           <a href="personal-debt.html">
-            <span class="nav-icon">🔄</span>
+            <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M21 17l-18 0" /><path d="M6 10l-3 -3l3 -3" /><path d="M3 7l18 0" /><path d="M18 20l3 -3l-3 -3" /></svg></span>
             <span class="nav-label">Personal Debt & Receivable</span>
           </a>
           <a href="loans.html">
-            <span class="nav-icon">📉</span>
+            <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M3 7l6 6l4 -4l8 8" /><path d="M21 10l0 7l-7 0" /></svg></span>
             <span class="nav-label">Loan / EMI</span>
           </a>
           <a href="bank-balances.html">
-            <span class="nav-icon">🏦</span>
+            <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M3 21l18 0" /><path d="M3 10l18 0" /><path d="M5 6l7 -3l7 3" /><path d="M4 10l0 11" /><path d="M20 10l0 11" /><path d="M8 14l0 3" /><path d="M12 14l0 3" /><path d="M16 14l0 3" /></svg></span>
             <span class="nav-label">Bank Balances</span>
           </a>
         </div>
 
         <div class="nav-section-label">Cash Flow</div>
         <a href="money-required.html">
-          <span class="nav-icon">🪴</span>
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M3 13a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v6a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -6" /><path d="M15 9a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v10a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -10" /><path d="M9 5a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v14a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -14" /><path d="M4 20h14" /></svg></span>
           <span class="nav-label">Monthly CashFlow</span>
           <span class="nav-chevron">›</span>
         </a>
         <a href="income.html">
-          <span class="nav-icon">💵</span>
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M7 15h-3a1 1 0 0 1 -1 -1v-8a1 1 0 0 1 1 -1h12a1 1 0 0 1 1 1v3" /><path d="M7 10a1 1 0 0 1 1 -1h12a1 1 0 0 1 1 1v8a1 1 0 0 1 -1 1h-12a1 1 0 0 1 -1 -1l0 -8" /><path d="M12 14a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /></svg></span>
           <span class="nav-label">Income</span>
         </a>
         <a href="tax-planning.html">
-          <span class="nav-icon">🧾</span>
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M5 21v-16a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v16l-3 -2l-2 2l-2 -2l-2 2l-2 -2l-3 2" /><path d="M14 8h-2.5a1.5 1.5 0 0 0 0 3h1a1.5 1.5 0 0 1 0 3h-2.5m2 0v1.5m0 -9v1.5" /></svg></span>
           <span class="nav-label">Tax Planning</span>
         </a>
 
         <div class="nav-section-label">Protection</div>
         <a href="insurance-tracker.html">
-          <span class="nav-icon">🛡️</span>
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M11.46 20.846a12 12 0 0 1 -7.96 -14.846a12 12 0 0 0 8.5 -3a12 12 0 0 0 8.5 3a12 12 0 0 1 -.09 7.06" /><path d="M15 19l2 2l4 -4" /></svg></span>
           <span class="nav-label">Insurance Tracker</span>
           <span class="nav-chevron">›</span>
         </a>
         <a href="reminders.html">
-          <span class="nav-icon">🔔</span>
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M10 5a2 2 0 1 1 4 0a7 7 0 0 1 4 6v3a4 4 0 0 0 2 3h-16a4 4 0 0 0 2 -3v-3a7 7 0 0 1 4 -6" /><path d="M9 17v1a3 3 0 0 0 6 0v-1" /></svg></span>
           <span class="nav-label">Reminders</span>
         </a>
         <a href="vault-overview.html">
-          <span class="nav-icon">🔒</span>
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M5 13a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v6a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-6" /><path d="M11 16a1 1 0 1 0 2 0a1 1 0 0 0 -2 0" /><path d="M8 11v-4a4 4 0 1 1 8 0v4" /></svg></span>
           <span class="nav-label">Document Vault</span>
           <span class="nav-chevron">›</span>
         </a>
 
         <div class="nav-section-label">Family &amp; Health</div>
         <a href="life-expectancy.html">
-          <span class="nav-icon">❤️</span>
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M19.5 12.572l-7.5 7.428l-7.5 -7.428a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572" /></svg></span>
           <span class="nav-label">Health(is wealth)</span>
           <span class="nav-chevron">›</span>
         </a>
 
         <div class="nav-section-label">More</div>
         <a href="split/dashboard.html">
-          <span class="nav-icon">💸</span>
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M5 7a4 4 0 1 0 8 0a4 4 0 1 0 -8 0" /><path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /><path d="M21 21v-2a4 4 0 0 0 -3 -3.85" /></svg></span>
           <span class="nav-label">SplitExpenses(SplitWise)</span>
         </a>
+        <a href="will-document.html">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2" /><path d="M9 9l1 0" /><path d="M9 13l6 0" /><path d="M9 17l6 0" /></svg></span>
+          <span class="nav-label">Will Planner</span>
+        </a>
         <a href="astrology.html">
-          <span class="nav-icon">🔮</span>
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454l0 .008" /><path d="M17 4a2 2 0 0 0 2 2a2 2 0 0 0 -2 2a2 2 0 0 0 -2 -2a2 2 0 0 0 2 -2" /><path d="M19 11h2m-1 -1v2" /></svg></span>
           <span class="nav-label">Spiritual</span>
         </a>
 
         <a href="#">
-          <span class="nav-icon">⚙️</span>
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M10.325 4.317c.426 -1.756 2.924 -1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543 -.94 3.31 .826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756 .426 1.756 2.924 0 3.35a1.724 1.724 0 0 0 -1.066 2.573c.94 1.543 -.826 3.31 -2.37 2.37a1.724 1.724 0 0 0 -2.572 1.065c-.426 1.756 -2.924 1.756 -3.35 0a1.724 1.724 0 0 0 -2.573 -1.066c-1.543 .94 -3.31 -.826 -2.37 -2.37a1.724 1.724 0 0 0 -1.065 -2.572c-1.756 -.426 -1.756 -2.924 0 -3.35a1.724 1.724 0 0 0 1.066 -2.573c-.94 -1.543 .826 -3.31 2.37 -2.37c1 .608 2.296 .07 2.572 -1.065" /><path d="M9 12a3 3 0 1 0 6 0a3 3 0 0 0 -6 0" /></svg></span>
           <span class="nav-label">Settings</span>
         </a>
       </nav>
@@ -364,7 +374,10 @@
       <div class="topbar">
         <div class="topbar-left">
           <button class="sidebar-toggle" aria-label="Menu" onclick="toggleSidebar()">☰</button>
-          <div class="topbar-mobile-logo">💰</div>
+          <svg class="topbar-mobile-logo" viewBox="8 8 98 94" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <circle cx="55" cy="55" r="42" fill="none" stroke="#712B13" stroke-width="8" stroke-linecap="round" stroke-dasharray="230 34" stroke-dashoffset="20"/>
+            <path d="M92,33 Q101,45 95,52 Q97,43 89,41 Q86,48 92,53 Q80,50 80,40 Q80,34 92,33 Z" fill="#712B13"/>
+          </svg>
           <h1>Net Worth</h1>
         </div>
         <div class="topbar-right">
@@ -382,7 +395,7 @@
       <div class="page-head">
         <div>
           <h2>Net Worth</h2>
-          <p>Calculated automatically from Bank Balances, Stocks/MF, Gold + Commodities, Government Scheme, Properties, Loan/EMI, Personal Debt & Receivable — plus anything else you add below.</p>
+          <p>Calculated automatically from Bank Balances, Stocks/MF, Gold + Commodities, Government Scheme, Properties, Loan/EMI, Personal Debt & Receivable - plus anything else you add below.</p>
         </div>
         <button type="button" class="pbtn" onclick="openAccountModal()">+ Add Other Account</button>
       </div>
@@ -407,7 +420,7 @@
 
         <div class="category-charts-head">
           <h3>By Category</h3>
-          <p>Every named holding within each category — the boxes above show the big picture, these show what's actually in each slice.</p>
+          <p>Every named holding within each category - the boxes above show the big picture, these show what's actually in each slice.</p>
         </div>
         <div class="category-charts-grid">
           <div class="chart-card">
@@ -544,7 +557,7 @@
 
     // Whole-number rounding hides genuinely non-zero small shares as "0%"
     // (e.g. a ₹57,000 slice of a ₹3.7 Cr total rounds to 0). Only switch to
-    // one decimal place when that would otherwise happen — everything
+    // one decimal place when that would otherwise happen - everything
     // meaningfully above 1% stays a plain whole number.
     function fmtPct(value, total) {
       if (!total) return '0%';
@@ -603,7 +616,7 @@
       return (await loadGovSchemeBreakdown()).reduce(function (s, r) { return s + r.value; }, 0);
     }
 
-    // Raw list, not just a {gross, mortgage} total — render() derives both
+    // Raw list, not just a {gross, mortgage} total - render() derives both
     // the aggregate figures AND the per-property / per-mortgage breakdowns
     // from this same query.
     async function loadProperties() {
@@ -612,7 +625,7 @@
       return data;
     }
 
-    // Raw list, not just an {owedToMe, iOwe} total — same reasoning as
+    // Raw list, not just an {owedToMe, iOwe} total - same reasoning as
     // loadProperties() above.
     async function loadPersonalIous() {
       var { data, error } = await supabaseClient.from('personal_ious').select('name, direction, balance');
@@ -621,7 +634,7 @@
     }
 
     // Bank Balances (savings/current/FD/RD/cash) was never previously
-    // pulled into Net Worth at all — same latest-month-total pattern as
+    // pulled into Net Worth at all - same latest-month-total pattern as
     // loadPortfolioBreakdown, just section 'bank' and the plain `amount`
     // column instead of `current_value` (bank items don't track a
     // separate invested-vs-current distinction).
@@ -651,7 +664,7 @@
       return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
     }
 
-    // Standard reducing-balance amortization — identical math to
+    // Standard reducing-balance amortization - identical math to
     // loanRemainingPrincipal() on loans.html, duplicated here (not shared,
     // per this app's no-shared-template convention).
     function loanRemainingPrincipal(principal, monthlyRate, emi, months) {
@@ -664,7 +677,7 @@
     }
 
     // Loan/EMI items (car loans, personal loans, LAP, credit card...) were
-    // never previously pulled into Net Worth's Liabilities either — only
+    // never previously pulled into Net Worth's Liabilities either - only
     // property mortgages and manually-entered "Other Accounts" liabilities
     // were counted. This computes the same outstanding-balance figure
     // loans.html shows per loan, named per loan item.
@@ -713,7 +726,7 @@
       return (await loadLoanOutstandingBreakdown()).reduce(function (s, r) { return s + r.value; }, 0);
     }
 
-    /* ---- "Other" accounts — manual catch-all for anything not covered   ----
+    /* ---- "Other" accounts - manual catch-all for anything not covered   ----
        by a dedicated section (cash in hand, vehicles, personal loans...). ---- */
 
     async function loadAccounts() {
@@ -850,7 +863,7 @@
     /* Net Worth as a literal equation of size-scaled rings. The SVG
        viewBox stays fixed (150) for consistent stroke proportions; the
        wrapper div's own width/height (set inline per ring) is what
-       actually varies — the svg's width:100%/height:100% (see CSS)
+       actually varies - the svg's width:100%/height:100% (see CSS)
        scales it to fit. */
     function buildEquationRing(value, label, color, size, isNegative) {
       var svg = buildProgressDonutSvg(100, 150, 14, color);
@@ -879,7 +892,7 @@
         { value: physicalVal, label: 'Physical Assets', color: '#f59e0b' },
         { value: receivablesVal, label: 'Receivables', color: '#ec4899' }
       ];
-      // Net Worth always leftmost, Liabilities always rightmost — only the
+      // Net Worth always leftmost, Liabilities always rightmost - only the
       // five middle terms reorder themselves, biggest value first.
       middleTerms.sort(function (a, b) { return Math.abs(b.value) - Math.abs(a.value); });
 
@@ -919,7 +932,7 @@
       return '<svg viewBox="0 0 ' + size + ' ' + size + '" class="donut-svg">' + svg + '</svg>';
     }
 
-    // One shared renderer for every donut+legend box on this page — the
+    // One shared renderer for every donut+legend box on this page - the
     // macro "Asset Allocation" card, "Liabilities", and every per-category
     // breakdown box below it all call this with their own segment list.
     var CATEGORY_PALETTE = ['#0ea5e9', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4', '#14b8a6', '#f97316', '#84cc16', '#64748b'];
@@ -995,7 +1008,7 @@
       var totalLiabilities = propMortgageTotal + loanOutstandingTotal + iOweTotal + otherLiabilities;
       var netWorth = totalAssets - totalLiabilities;
 
-      // Six categories, each mapped to real tracked data — every term of
+      // Six categories, each mapped to real tracked data - every term of
       // totalAssets/totalLiabilities above lands in exactly one of these,
       // so the pictured equation always equals the real Net Worth:
       //   Investments  = Stocks/MF + Government Scheme (also where EPF/
@@ -1017,18 +1030,18 @@
         { label: 'Properties', value: propGross, color: ALLOC_COLORS.properties },
         { label: 'Receivable (Owed to Me)', value: owedToMeTotal, color: ALLOC_COLORS.receivable },
         { label: 'Other Assets', value: otherAssets, color: ALLOC_COLORS.other }
-      ], 'No assets yet — add a holding in any Networth section.');
+      ], 'No assets yet - add a holding in any Networth section.');
 
       // Liabilities, itemized per named entry (each mortgage, each loan,
-      // each person you owe, each manual liability) — same granularity as
+      // each person you owe, each manual liability) - same granularity as
       // the five category boxes below, not just the four coarse buckets.
       var liabilitiesBreakdown = propertyMortgageBreakdown.concat(loanBreakdown, iOweBreakdown, otherLiabilitiesBreakdown);
-      renderCategoryDonut('liabilitiesWrap', toCategorySegments(liabilitiesBreakdown), 'No liabilities — nothing dragging your net worth down. 🎉');
+      renderCategoryDonut('liabilitiesWrap', toCategorySegments(liabilitiesBreakdown), 'No liabilities - nothing dragging your net worth down. 🎉');
 
-      renderCategoryDonut('liquidChartWrap', toCategorySegments(liquidBreakdown), 'No bank or cash balances yet — add one on Bank Balances.');
-      renderCategoryDonut('investmentsChartWrap', toCategorySegments(portfolioBreakdown.concat(govBreakdown)), 'No investments yet — add a holding under Stocks/MF or Government Scheme.');
-      renderCategoryDonut('realEstateChartWrap', toCategorySegments(propertiesBreakdown), 'No properties yet — add one on the Properties page.');
-      renderCategoryDonut('physicalChartWrap', toCategorySegments(goldBreakdown.concat(otherAssetsBreakdown)), 'No physical assets yet — add gold or another manual asset.');
+      renderCategoryDonut('liquidChartWrap', toCategorySegments(liquidBreakdown), 'No bank or cash balances yet - add one on Bank Balances.');
+      renderCategoryDonut('investmentsChartWrap', toCategorySegments(portfolioBreakdown.concat(govBreakdown)), 'No investments yet - add a holding under Stocks/MF or Government Scheme.');
+      renderCategoryDonut('realEstateChartWrap', toCategorySegments(propertiesBreakdown), 'No properties yet - add one on the Properties page.');
+      renderCategoryDonut('physicalChartWrap', toCategorySegments(goldBreakdown.concat(otherAssetsBreakdown)), 'No physical assets yet - add gold or another manual asset.');
       renderCategoryDonut('receivablesChartWrap', toCategorySegments(owedToMeBreakdown), 'Nobody owes you anything tracked yet.');
 
       document.getElementById('assetGroupTotal').textContent = fmtRupee(otherAssets);
@@ -1053,7 +1066,7 @@
         return;
       }
       if (entries.length === 1) {
-        container.innerHTML = '<div class="chart-empty">Come back next month to start seeing your trend — today\'s net worth is ' + fmtRupee(entries[0].value, true) + '.</div>';
+        container.innerHTML = '<div class="chart-empty">Come back next month to start seeing your trend - today\'s net worth is ' + fmtRupee(entries[0].value, true) + '.</div>';
         return;
       }
 
@@ -1106,7 +1119,7 @@
     }
 
     (async function init() {
-      var user = await requireAuth('index.html#login');
+      var user = await requireAuth('login.html');
       if (!user) return;
       await loadHistory();
       await refresh();

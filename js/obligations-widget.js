@@ -61,7 +61,7 @@
 
     var badge = document.createElement('a');
     badge.href = 'reminders.html';
-    badge.title = entries.length + ' obligation(s) linked to this — ' + STATUS_LABEL[worst];
+    badge.title = entries.length + ' obligation(s) linked to this - ' + STATUS_LABEL[worst];
     badge.style.display = 'inline-flex';
     badge.style.alignItems = 'center';
     badge.style.gap = '0.3rem';
