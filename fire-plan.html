@@ -80,13 +80,12 @@
     /* FIRE Readiness checklist */
     .fr-card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 1.1rem; padding: 1.4rem 1.6rem; margin-bottom: 1.5rem; box-shadow: 0 4px 16px rgba(15,23,42,0.03); position: relative; }
     .fr-card.fr-pending { border: 1px solid #fde68a; border-left: 5px solid #f59e0b; background: #fffbeb; }
-    .fr-card.fr-pending .fr-pct { color: #b45309; }
-    .fr-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; margin-bottom: 0.9rem; }
-    .fr-head-text strong { font-size: 1rem; font-weight: 800; color: #0f172a; display: block; margin-bottom: 0.25rem; }
-    .fr-head-text p { font-size: 0.82rem; color: #64748b; margin: 0; }
-    .fr-pct { font-size: 1.6rem; font-weight: 800; color: #0f172a; flex-shrink: 0; }
-    .fr-bar { height: 8px; border-radius: 999px; background: #f1f5f9; overflow: hidden; margin-bottom: 1.1rem; }
-    .fr-bar-fill { height: 100%; border-radius: 999px; background: linear-gradient(to right, #0ea5e9, #10b981); transition: width 0.3s ease; }
+    .fr-head { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.1rem; }
+    .fr-ring-wrap { position: relative; width: 52px; height: 52px; flex-shrink: 0; }
+    .fr-ring-wrap svg { width: 52px; height: 52px; display: block; }
+    .fr-ring-pct { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 0.72rem; font-weight: 800; color: #0f172a; }
+    .fr-head-text { font-size: 0.85rem; color: #364752; line-height: 1.55; margin: 0; }
+    .fr-head-text strong { color: #0f172a; font-weight: 800; }
     .fr-rows { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.7rem; }
     @media (max-width: 900px) { .fr-rows { grid-template-columns: repeat(2, 1fr); } }
     @media (max-width: 560px) { .fr-rows { grid-template-columns: 1fr; } }

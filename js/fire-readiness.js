@@ -87,6 +87,21 @@
     return { statusByKey: statusByKey, doneCount: doneCount, total: ITEMS.length, percent: Math.round(doneCount / ITEMS.length * 100) };
   }
 
+  // Same donut-ring construction as fire-plan.html's FIRE-progress ring
+  // (buildProgressDonutSvg), just parameterized for a light card background
+  // instead of the dark hero card.
+  function buildRingSvg(pct, size, strokeW, trackColor, fillColor) {
+    var r = (size - strokeW) / 2;
+    var cx = size / 2, cy = size / 2;
+    var circumference = 2 * Math.PI * r;
+    var len = circumference * Math.max(0, Math.min(1, pct / 100));
+    return '<svg viewBox="0 0 ' + size + ' ' + size + '">' +
+      '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="' + trackColor + '" stroke-width="' + strokeW + '"/>' +
+      '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="' + fillColor + '" stroke-width="' + strokeW + '" ' +
+      'stroke-dasharray="' + len + ' ' + circumference + '" stroke-linecap="round" transform="rotate(-90 ' + cx + ' ' + cy + ')"/>' +
+      '</svg>';
+  }
+
   // Renders into containerEl on every page load, straight from a fresh
   // computeFireReadiness() call - deliberately no sessionStorage/
   // localStorage gating. This used to remember a dismiss or a one-time
@@ -104,10 +119,11 @@
       containerEl.innerHTML =
         '<div class="fr-card fr-done">' +
           '<div class="fr-head" style="margin-bottom:0;">' +
-            '<div class="fr-head-text">' +
-              '<strong>✅ FIRE Readiness Checklist complete</strong>' +
-              '<p>Net Worth, Monthly Cashflow, Income, and Health are all in - your FIRE number now reflects real data.</p>' +
+            '<div class="fr-ring-wrap">' +
+              buildRingSvg(100, 52, 6, 'rgba(16,185,129,0.15)', '#10b981') +
+              '<div class="fr-ring-pct">✓</div>' +
             '</div>' +
+            '<p class="fr-head-text"><strong>✅ FIRE Readiness Checklist complete</strong> - Net Worth, Monthly Cashflow, Income &amp; Health are all in, so your FIRE number now reflects real data.</p>' +
           '</div>' +
         '</div>';
       return;
@@ -126,13 +142,12 @@
     containerEl.innerHTML =
       '<div class="fr-card fr-pending">' +
         '<div class="fr-head">' +
-          '<div class="fr-head-text">' +
-            '<strong>⚠️ Complete your FIRE Readiness Checklist</strong>' +
-            '<p>Your FIRE number is only as accurate as the data behind it - ' + (readiness.total - readiness.doneCount) + ' of ' + readiness.total + ' sections still need real numbers.</p>' +
+          '<div class="fr-ring-wrap">' +
+            buildRingSvg(readiness.percent, 52, 6, 'rgba(180,83,9,0.15)', '#f59e0b') +
+            '<div class="fr-ring-pct">' + readiness.percent + '%</div>' +
           '</div>' +
-          '<div class="fr-pct">' + readiness.percent + '%</div>' +
+          '<p class="fr-head-text"><strong>⚠️ Complete your FIRE Readiness Checklist</strong> - ' + (readiness.total - readiness.doneCount) + ' of ' + readiness.total + ' sections still need real numbers before your FIRE number can be trusted.</p>' +
         '</div>' +
-        '<div class="fr-bar"><div class="fr-bar-fill" style="width:' + readiness.percent + '%"></div></div>' +
         '<div class="fr-rows">' + rowsHtml + '</div>' +
       '</div>';
   }
