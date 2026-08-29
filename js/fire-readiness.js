@@ -88,6 +88,7 @@
   }
 
   var DISMISS_KEY = 'enrichme_fire_readiness_dismissed';
+  var CELEBRATED_KEY = 'enrichme_fire_readiness_celebrated';
 
   function dismissFireReadinessChecklist() {
     try { sessionStorage.setItem(DISMISS_KEY, '1'); } catch (e) {}
@@ -104,8 +105,31 @@
     if (!containerEl || !readiness) return;
 
     if (readiness.percent >= 100) {
-      containerEl.style.display = 'none';
-      containerEl.innerHTML = '';
+      // Show a one-time "you did it" banner instead of just vanishing -
+      // otherwise "hidden because done" and "hidden because something
+      // silently failed" look identical, which is exactly what caused
+      // confusion in practice. Celebrated once (localStorage, persists
+      // across sessions), then stays fully hidden from then on.
+      var celebrated = false;
+      try { celebrated = localStorage.getItem(CELEBRATED_KEY) === '1'; } catch (e) {}
+      if (celebrated) {
+        containerEl.style.display = 'none';
+        containerEl.innerHTML = '';
+        return;
+      }
+      try { localStorage.setItem(CELEBRATED_KEY, '1'); } catch (e) {}
+
+      containerEl.style.display = '';
+      containerEl.innerHTML =
+        '<div class="fr-card fr-done">' +
+          '<button type="button" class="fr-dismiss" onclick="dismissFireReadinessChecklist()" title="Dismiss">✕</button>' +
+          '<div class="fr-head" style="margin-bottom:0;">' +
+            '<div class="fr-head-text">' +
+              '<strong>✅ FIRE Readiness Checklist complete</strong>' +
+              '<p>Net Worth, Monthly Cashflow, Income, and Health are all in - your FIRE number now reflects real data.</p>' +
+            '</div>' +
+          '</div>' +
+        '</div>';
       return;
     }
 

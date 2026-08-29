@@ -99,6 +99,8 @@
     .fr-row.done .fr-row-label { color: #065f46; }
     .fr-row-status { font-size: 0.72rem; font-weight: 700; color: #94a3b8; white-space: nowrap; }
     .fr-row.done .fr-row-status { color: #059669; }
+    .fr-card.fr-done { border-color: #a7f3d0; background: #f0fdf7; }
+    .fr-card.fr-done .fr-head-text strong { color: #065f46; }
 
     .calc-field { margin-bottom: 1.6rem; }
     .calc-field:last-child { margin-bottom: 0; }
@@ -1366,6 +1368,10 @@
       // parallel rather than delaying the FIRE number itself.
       computeFireReadiness().then(function (readiness) {
         renderFireReadinessChecklist(document.getElementById('fireReadinessChecklist'), readiness);
+      }).catch(function (err) {
+        // A failed check must never look identical to "100% done" - log it
+        // instead of silently leaving the checklist hidden either way.
+        console.error('Could not compute FIRE readiness', err);
       });
 
       var results = await Promise.all([
