@@ -87,42 +87,22 @@
     return { statusByKey: statusByKey, doneCount: doneCount, total: ITEMS.length, percent: Math.round(doneCount / ITEMS.length * 100) };
   }
 
-  var DISMISS_KEY = 'enrichme_fire_readiness_dismissed';
-  var CELEBRATED_KEY = 'enrichme_fire_readiness_celebrated';
-
-  function dismissFireReadinessChecklist() {
-    try { sessionStorage.setItem(DISMISS_KEY, '1'); } catch (e) {}
-    var el = document.getElementById('fireReadinessChecklist');
-    if (el) el.style.display = 'none';
-  }
-
-  // Renders into containerEl (expects an empty <div>, hidden by default).
-  // Hides itself entirely once 100% complete, and stays hidden for the rest
-  // of the browser session once dismissed (sessionStorage, not localStorage)
-  // so it reliably reappears next visit while still complete - that's the
-  // point of a reminder, not a one-time toast.
+  // Renders into containerEl on every page load, straight from a fresh
+  // computeFireReadiness() call - deliberately no sessionStorage/
+  // localStorage gating. This used to remember a dismiss or a one-time
+  // "celebrated" flag, but that meant a single click, or a readiness check
+  // that briefly (or wrongly) computed 100%, could hide the checklist on
+  // every later visit even while real data was still missing - exactly the
+  // "shows once then disappears" bug this replaced. A reminder that can
+  // silently disable itself isn't a reminder, so this only ever reflects
+  // whatever is true right now.
   function renderFireReadinessChecklist(containerEl, readiness) {
     if (!containerEl || !readiness) return;
 
     if (readiness.percent >= 100) {
-      // Show a one-time "you did it" banner instead of just vanishing -
-      // otherwise "hidden because done" and "hidden because something
-      // silently failed" look identical, which is exactly what caused
-      // confusion in practice. Celebrated once (localStorage, persists
-      // across sessions), then stays fully hidden from then on.
-      var celebrated = false;
-      try { celebrated = localStorage.getItem(CELEBRATED_KEY) === '1'; } catch (e) {}
-      if (celebrated) {
-        containerEl.style.display = 'none';
-        containerEl.innerHTML = '';
-        return;
-      }
-      try { localStorage.setItem(CELEBRATED_KEY, '1'); } catch (e) {}
-
       containerEl.style.display = '';
       containerEl.innerHTML =
         '<div class="fr-card fr-done">' +
-          '<button type="button" class="fr-dismiss" onclick="dismissFireReadinessChecklist()" title="Dismiss">✕</button>' +
           '<div class="fr-head" style="margin-bottom:0;">' +
             '<div class="fr-head-text">' +
               '<strong>✅ FIRE Readiness Checklist complete</strong>' +
@@ -130,13 +110,6 @@
             '</div>' +
           '</div>' +
         '</div>';
-      return;
-    }
-
-    var dismissed = false;
-    try { dismissed = sessionStorage.getItem(DISMISS_KEY) === '1'; } catch (e) {}
-    if (dismissed) {
-      containerEl.style.display = 'none';
       return;
     }
 
@@ -151,11 +124,10 @@
 
     containerEl.style.display = '';
     containerEl.innerHTML =
-      '<div class="fr-card">' +
-        '<button type="button" class="fr-dismiss" onclick="dismissFireReadinessChecklist()" title="Hide for now">✕</button>' +
+      '<div class="fr-card fr-pending">' +
         '<div class="fr-head">' +
           '<div class="fr-head-text">' +
-            '<strong>Complete your FIRE Readiness Checklist</strong>' +
+            '<strong>⚠️ Complete your FIRE Readiness Checklist</strong>' +
             '<p>Your FIRE number is only as accurate as the data behind it - ' + (readiness.total - readiness.doneCount) + ' of ' + readiness.total + ' sections still need real numbers.</p>' +
           '</div>' +
           '<div class="fr-pct">' + readiness.percent + '%</div>' +
@@ -167,5 +139,4 @@
 
   root.computeFireReadiness = computeFireReadiness;
   root.renderFireReadinessChecklist = renderFireReadinessChecklist;
-  root.dismissFireReadinessChecklist = dismissFireReadinessChecklist;
 })(window);
