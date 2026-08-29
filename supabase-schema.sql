@@ -503,6 +503,37 @@ alter table health_inputs add column if not exists life_expectancy numeric;
 -- checklist (js/fire-readiness.js).
 alter table health_inputs add column if not exists is_complete boolean not null default false;
 
+-- Backfill: is_complete defaults to false for every row that already
+-- existed when the column above was added - including genuine completions
+-- from before this feature shipped, since there was no way to tell those
+-- apart from the silent-defaults row until now. A row that was really
+-- filled in differs from the hardcoded default tuple in at least one
+-- field (a truly untouched row matches all of them, since that tuple is
+-- exactly what life-expectancy.html's initial state - and its silent
+-- backfill save - writes). Safe to re-run: only touches rows still false.
+update health_inputs set is_complete = true
+where is_complete = false
+  and (
+    sex <> 'male' or age <> 30
+    or smoking_status <> 'never' or cigarettes_per_day <> 10 or years_smoked <> 5 or years_quit <> 5
+    or alcohol <> 'occasional'
+    or fruit_veg_servings <> '1-2' or junk_food <> 'few_times'
+    or exercise_days <> '1-2' or activity_level <> 'light'
+    or height_cm <> 170 or weight_kg <> 70
+    or sleep_hours <> '7-8'
+    or stress_level <> 'moderate' or social_connection <> 'moderate'
+    or conditions <> '{}'
+    or checkup_frequency <> 'occasionally' or seatbelt_habit <> 'always'
+    or living_area <> 'city' or air_quality <> 'moderate' or water_quality <> 'municipal' or healthcare_access <> 'good'
+    or relationship_status <> 'married' or partner_support <> 'somewhat' or family_time <> 'weekly' or intimacy_frequency <> 'skip'
+  );
+
+-- Belt-and-suspenders for the account holder specifically, in case any
+-- answer genuinely happened to match every single default above. Safe to
+-- re-run.
+update health_inputs set is_complete = true
+where user_id in (select id from profiles where email = 'str.balaji@gmail.com');
+
 alter table health_inputs enable row level security;
 
 drop policy if exists "health_inputs_select_own" on health_inputs;
