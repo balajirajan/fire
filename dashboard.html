@@ -69,6 +69,29 @@
 
     .welcome-text { color: #64748b; font-size: 0.9rem; margin-bottom: 1.5rem; }
 
+    /* FIRE Readiness checklist */
+    .fr-card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 1.1rem; padding: 1.4rem 1.6rem; margin-bottom: 1.5rem; box-shadow: 0 4px 16px rgba(15,23,42,0.03); position: relative; }
+    .fr-dismiss { position: absolute; top: 1rem; right: 1rem; background: none; border: none; color: #94a3b8; font-size: 0.9rem; cursor: pointer; padding: 0.2rem; line-height: 1; }
+    .fr-dismiss:hover { color: #0f172a; }
+    .fr-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; margin-bottom: 0.9rem; padding-right: 1.5rem; }
+    .fr-head-text strong { font-size: 1rem; font-weight: 800; color: #0f172a; display: block; margin-bottom: 0.25rem; }
+    .fr-head-text p { font-size: 0.82rem; color: #64748b; margin: 0; }
+    .fr-pct { font-size: 1.6rem; font-weight: 800; color: #0f172a; flex-shrink: 0; }
+    .fr-bar { height: 8px; border-radius: 999px; background: #f1f5f9; overflow: hidden; margin-bottom: 1.1rem; }
+    .fr-bar-fill { height: 100%; border-radius: 999px; background: linear-gradient(to right, #0ea5e9, #10b981); transition: width 0.3s ease; }
+    .fr-rows { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.7rem; }
+    @media (max-width: 900px) { .fr-rows { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 560px) { .fr-rows { grid-template-columns: 1fr; } }
+    .fr-row { display: flex; align-items: center; gap: 0.6rem; padding: 0.7rem 0.85rem; border: 1px solid #e2e8f0; border-radius: 0.7rem; text-decoration: none; color: inherit; transition: border-color 0.15s ease, background 0.15s ease; }
+    .fr-row:hover { border-color: #94a3b8; background: #f8fafc; }
+    .fr-row.done { border-color: #a7f3d0; background: #f0fdf7; }
+    .fr-row-icon { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; flex-shrink: 0; background: #f1f5f9; color: #64748b; }
+    .fr-row.done .fr-row-icon { background: #10b981; color: #fff; }
+    .fr-row-label { flex: 1; font-size: 0.83rem; font-weight: 700; color: #364752; min-width: 0; }
+    .fr-row.done .fr-row-label { color: #065f46; }
+    .fr-row-status { font-size: 0.72rem; font-weight: 700; color: #94a3b8; white-space: nowrap; }
+    .fr-row.done .fr-row-status { color: #059669; }
+
     /* Snapshot hero */
     .snap-hero {
       background: linear-gradient(135deg, #0f172a, #1e293b);
@@ -348,6 +371,8 @@
 
       <p class="welcome-text" id="welcomeText">Welcome back</p>
 
+      <div id="fireReadinessChecklist" style="display:none;"></div>
+
       <div class="snap-hero" id="snapHero">
         <div class="snap-hero-stats">
           <div class="snap-hero-stat primary">
@@ -419,6 +444,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-client.js"></script>
+  <script src="js/fire-readiness.js"></script>
   <script>
     function toggleSidebar() {
       var sidebar = document.getElementById('sidebar');
@@ -697,6 +723,10 @@
 
       isAdmin().then(function (admin) {
         if (admin) document.getElementById('adminLink').style.display = 'flex';
+      });
+
+      computeFireReadiness().then(function (readiness) {
+        renderFireReadinessChecklist(document.getElementById('fireReadinessChecklist'), readiness);
       });
 
       var results = await Promise.all([

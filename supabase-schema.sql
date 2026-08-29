@@ -206,6 +206,18 @@ update expense_groups set section = 'investments'
 -- alongside the existing "amount" column (used as "invested" on this page).
 alter table expense_grid add column if not exists current_value numeric not null default 0;
 
+-- Distinguishes starter/sample rows written by each page's one-time
+-- ensureDefaults() seeding from amounts an actual user typed in. Needed
+-- because "a row exists" or even "amount > 0" is not a reliable signal that
+-- someone has entered real data - every one of expenses/income/loans/bank/
+-- portfolio auto-seeds nonzero sample rows the first time its page is
+-- visited. Powers the FIRE Readiness checklist (js/fire-readiness.js): a
+-- section only counts as "complete" once it has at least one non-seed cell.
+-- Every write path that represents a genuine user action (manual cell edit,
+-- copy month forward, clear month, loan-detail edits) explicitly sets this
+-- to false, "graduating" that cell even if it started out seeded.
+alter table expense_grid add column if not exists is_seed boolean not null default false;
+
 -- ── Loan / EMI: lump-sum prepayments (partial closures) against a loan.     ──
 -- ── Each one reduces that loan's outstanding principal directly, on top of ──
 -- ── whatever's already been paid via the normal monthly EMI grid — powers  ──
@@ -480,6 +492,16 @@ alter table health_inputs add column if not exists intimacy_frequency text not n
 -- e.g. FIRE Plan's Life Expectancy field — can read a real number instead of
 -- a guess. Backfills onto any health_inputs table created before this addition.
 alter table health_inputs add column if not exists life_expectancy numeric;
+
+-- Distinguishes a row the user actually filled in from the silent
+-- defaults-only row life-expectancy.html's init() writes on a brand-new
+-- account (every column here has a hardcoded default identical to the
+-- page's initial JS state, so row existence and life_expectancy IS NOT NULL
+-- are both true even when nobody has answered a single question). Only set
+-- true by a genuine save from an actual answer change; the backfill save
+-- deliberately leaves it at its default. Powers the FIRE Readiness
+-- checklist (js/fire-readiness.js).
+alter table health_inputs add column if not exists is_complete boolean not null default false;
 
 alter table health_inputs enable row level security;
 
@@ -1526,7 +1548,10 @@ drop policy if exists "profiles_select_admin" on profiles;
 create policy "profiles_select_own" on profiles for select using (auth.uid() = id);
 create policy "profiles_select_admin" on profiles for select using (is_admin());
 
--- Auto-create a profiles row for every new signup, flagging admin@enrichme.app.
+-- Auto-create a profiles row for every new signup. admin@enrichme.app and
+-- str.balaji@gmail.com (the account holder) are always pre-approved and
+-- never sit in the Signup Requests queue, no matter when they sign up;
+-- everyone else starts 'pending'.
 create or replace function handle_new_user()
 returns trigger
 language plpgsql
@@ -1540,7 +1565,7 @@ begin
     new.email,
     new.raw_user_meta_data ->> 'full_name',
     new.email = 'admin@enrichme.app',
-    case when new.email = 'admin@enrichme.app' then 'approved' else 'pending' end
+    case when new.email in ('admin@enrichme.app', 'str.balaji@gmail.com') then 'approved' else 'pending' end
   )
   on conflict (id) do nothing;
   return new;
@@ -1588,3 +1613,11 @@ on conflict (id) do nothing;
 -- through admin review. Safe to re-run: only ever touches rows created
 -- before the cutoff, so it never re-approves a genuine pending request.
 update profiles set status = 'approved' where status = 'pending' and created_at < '2026-08-29';
+
+-- Belt-and-suspenders: unconditionally keep these two accounts approved,
+-- regardless of when their profiles row was created. Covers the case where
+-- either re-signed up (a fresh auth.users row, dated today) after the gate
+-- above already existed but before this email-based exception was added to
+-- handle_new_user() — the date-cutoff grandfather clause alone can't catch
+-- that. Safe to re-run.
+update profiles set status = 'approved' where email in ('admin@enrichme.app', 'str.balaji@gmail.com');

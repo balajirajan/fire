@@ -1248,7 +1248,14 @@
       return data;
     }
 
-    async function saveInputs() {
+    // backfillOnly=true is used only by init()'s one-time defaults save for
+    // brand-new rows (see below) - it deliberately omits is_complete so a
+    // silent, un-touched save is never mistaken for the user actually
+    // answering the questionnaire (powers the FIRE Readiness checklist).
+    // Every real save - triggered by an actual choice/number-input change
+    // via scheduleSave() - marks is_complete true.
+    async function saveInputs(opts) {
+      opts = opts || {};
       var payload = {
         sex: state.sex, age: Number(state.age),
         smoking_status: state.smokingStatus, cigarettes_per_day: Number(state.cigsPerDay),
@@ -1268,6 +1275,7 @@
         life_expectancy: calculate().lifeExpectancy,
         updated_at: new Date().toISOString()
       };
+      if (!opts.backfillOnly) payload.is_complete = true;
       var { error } = await supabaseClient.from('health_inputs').upsert(payload, { onConflict: 'user_id' });
       if (error) console.error('Could not save health inputs', error);
     }
@@ -1365,7 +1373,7 @@
       // Backfill life_expectancy for rows saved before that column existed,
       // so the FIRE Plan sync has something to read without the user having
       // to re-touch every question just to trigger a save.
-      if (!saved || saved.life_expectancy === null || saved.life_expectancy === undefined) await saveInputs();
+      if (!saved || saved.life_expectancy === null || saved.life_expectancy === undefined) await saveInputs({ backfillOnly: true });
     })();
   </script>
 </body>

@@ -674,7 +674,7 @@
             .filter(function (c) { return !itemRow.invested[c.key]; });
 
           if (missingCells.length) {
-            var cells = missingCells.map(function (c) { return { item_id: itemRow.id, month: c.key, amount: c.invested, current_value: c.current }; });
+            var cells = missingCells.map(function (c) { return { item_id: itemRow.id, month: c.key, amount: c.invested, current_value: c.current, is_seed: true }; });
             var { error: cErr } = await supabaseClient.from('expense_grid').insert(cells);
             if (cErr) { showLoadError('Could not save amounts for "' + it.name + '"', cErr); showToast('Could not create starter data: ' + cErr.message); return; }
             missingCells.forEach(function (c) { itemRow.invested[c.key] = c.invested; itemRow.current[c.key] = c.current; });
@@ -816,7 +816,7 @@
       }
       recomputeTotals();
 
-      var payload = { item_id: itemId, month: key, updated_at: new Date().toISOString() };
+      var payload = { item_id: itemId, month: key, is_seed: false, updated_at: new Date().toISOString() };
       if (field === 'invested') payload.amount = val; else payload.current_value = val;
 
       var { error } = await supabaseClient
@@ -871,7 +871,7 @@
       if (!confirm('Copy ' + fromLabel + '\'s amounts into ' + toLabel + '? This overwrites any existing ' + toLabel + ' values.')) return;
 
       var cells = sourceItems.map(function (it) {
-        return { item_id: it.id, month: toKey, amount: it.invested[fromKey] || 0, current_value: it.current[fromKey] || 0 };
+        return { item_id: it.id, month: toKey, amount: it.invested[fromKey] || 0, current_value: it.current[fromKey] || 0, is_seed: false };
       });
       var { error } = await supabaseClient.from('expense_grid').upsert(cells, { onConflict: 'user_id,item_id,month' });
       if (error) { showToast('Could not copy: ' + error.message); return; }
@@ -898,7 +898,7 @@
       if (!confirm('Clear all amounts entered for ' + label + '? This can\'t be undone.')) return;
 
       var cells = itemsWithValue.map(function (it) {
-        return { item_id: it.id, month: key, amount: 0, current_value: 0 };
+        return { item_id: it.id, month: key, amount: 0, current_value: 0, is_seed: false };
       });
       var { error } = await supabaseClient.from('expense_grid').upsert(cells, { onConflict: 'user_id,item_id,month' });
       if (error) { showToast('Could not clear: ' + error.message); return; }
