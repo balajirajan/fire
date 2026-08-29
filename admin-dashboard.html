@@ -40,15 +40,19 @@
     .page-head h2 { font-size: 1.6rem; font-weight: 800; margin-bottom: 0.3rem; }
     .page-head p { color: #64748b; font-size: 0.9rem; }
 
-    .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; margin-bottom: 1.75rem; }
-    @media (max-width: 700px) { .stats-row { grid-template-columns: 1fr; } }
+    .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem; margin-bottom: 1.75rem; }
+    @media (max-width: 900px) { .stats-row { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 500px) { .stats-row { grid-template-columns: 1fr; } }
     .stat-card { background: linear-gradient(135deg, #0f172a, #1e293b); border-radius: 1.1rem; padding: 1.4rem 1.6rem; color: #fff; }
+    .stat-card.warn { background: linear-gradient(135deg, #7c2d12, #b45309); }
     .stat-label { font-size: 0.75rem; color: #94a3b8; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.5rem; }
+    .stat-card.warn .stat-label { color: rgba(255,255,255,0.72); }
     .stat-value { font-size: 2rem; font-weight: 800; }
 
-    .panel { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 1.1rem; box-shadow: 0 4px 16px rgba(15,23,42,0.03); overflow: hidden; }
+    .panel { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 1.1rem; box-shadow: 0 4px 16px rgba(15,23,42,0.03); overflow: hidden; margin-bottom: 1.5rem; }
     .panel-head { display: flex; align-items: center; justify-content: space-between; padding: 1.1rem 1.4rem; border-bottom: 1px solid #f1f5f9; }
     .panel-head h3 { font-size: 1rem; font-weight: 800; }
+    .panel-head-sub { font-size: 0.78rem; color: #94a3b8; margin-top: 0.15rem; }
 
     .btn-primary { padding: 0.55rem 1.1rem; border: none; border-radius: 0.6rem; background: linear-gradient(135deg, #0ea5e9, #10b981); color: #fff; font-size: 0.83rem; font-weight: 700; cursor: pointer; }
     .btn-primary:hover { opacity: 0.92; }
@@ -66,6 +70,13 @@
     .user-name { color: #64748b; font-size: 0.8rem; margin-top: 0.1rem; }
     .row-actions { display: flex; gap: 0.9rem; align-items: center; }
     .admin-pill { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; color: #712B13; background: rgba(113,43,19,0.1); padding: 0.15rem 0.5rem; border-radius: 999px; margin-left: 0.5rem; }
+    .status-pill { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; padding: 0.15rem 0.5rem; border-radius: 999px; margin-left: 0.5rem; }
+    .status-pill.pending { color: #b45309; background: rgba(180,83,9,0.1); }
+    .status-pill.rejected { color: #991b1b; background: rgba(153,27,27,0.1); }
+    .btn-approve { padding: 0.4rem 0.85rem; border: none; border-radius: 0.5rem; background: #059669; color: #fff; font-size: 0.78rem; font-weight: 700; cursor: pointer; }
+    .btn-approve:hover { opacity: 0.9; }
+    .btn-reject { padding: 0.4rem 0.85rem; border: 1px solid #fecaca; border-radius: 0.5rem; background: #fff; color: #dc2626; font-size: 0.78rem; font-weight: 700; cursor: pointer; }
+    .btn-reject:hover { background: #fef2f2; }
 
     .empty-state, .load-error { text-align: center; padding: 2.5rem 1.5rem; color: #94a3b8; font-size: 0.88rem; }
     .load-error { color: #991b1b; }
@@ -113,7 +124,7 @@
 
     <div class="page-head">
       <h2>Admin Dashboard</h2>
-      <p>Manage accounts and see who's using EnrichMe. Account-level info only — no user's financial data is visible from here.</p>
+      <p>Manage accounts and see who's using EnrichMe. Account-level info only - no user's financial data is visible from here.</p>
     </div>
 
     <div class="stats-row">
@@ -129,6 +140,28 @@
         <div class="stat-label">Active In Last 30 Days</div>
         <div class="stat-value" id="statActive30">–</div>
       </div>
+      <div class="stat-card warn">
+        <div class="stat-label">Pending Requests</div>
+        <div class="stat-value" id="statPending">–</div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div>
+          <h3>Signup Requests</h3>
+          <div class="panel-head-sub">EnrichMe is free for the first 100 users - review each request before it gets access.</div>
+        </div>
+      </div>
+      <div class="user-table-wrap">
+        <table class="user-table" id="requestTable" style="display:none;">
+          <thead>
+            <tr><th>Requested by</th><th>Requested</th><th></th></tr>
+          </thead>
+          <tbody id="requestTableBody"></tbody>
+        </table>
+      </div>
+      <div class="empty-state" id="requestEmptyState" style="display:none;">No pending signup requests.</div>
     </div>
 
     <div class="panel">
@@ -167,7 +200,7 @@
       <div class="modal-field" id="passwordFieldWrap">
         <label id="passwordLabel">Temporary password</label>
         <input type="text" id="modalPassword" placeholder="At least 6 characters">
-        <div class="hint" id="passwordHint">Share this with the user — they can change it after signing in.</div>
+        <div class="hint" id="passwordHint">Share this with the user - they can change it after signing in.</div>
       </div>
       <div class="modal-actions">
         <button type="button" class="btn-outline" onclick="closeUserModal()">Cancel</button>
@@ -183,7 +216,7 @@
     var editingUserId = null; // null while the modal is in "add" mode
 
     function formatDate(iso) {
-      if (!iso) return '—';
+      if (!iso) return '-';
       var d = new Date(iso);
       return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
     }
@@ -207,6 +240,62 @@
 
       var active30 = users.filter(function (u) { var d = daysAgo(u.last_sign_in_at); return d !== null && d <= 30; }).length;
       document.getElementById('statActive30').textContent = active30;
+
+      var pending = users.filter(function (u) { return u.status === 'pending'; }).length;
+      document.getElementById('statPending').textContent = pending;
+    }
+
+    function renderRequestTable() {
+      var table = document.getElementById('requestTable');
+      var empty = document.getElementById('requestEmptyState');
+      var body = document.getElementById('requestTableBody');
+      var pending = users.filter(function (u) { return u.status === 'pending'; });
+
+      if (!pending.length) {
+        table.style.display = 'none';
+        empty.style.display = 'block';
+        return;
+      }
+      table.style.display = '';
+      empty.style.display = 'none';
+
+      body.innerHTML = pending.map(function (u) {
+        return '<tr>' +
+          '<td><div class="user-email">' + escapeHtml(u.email) + '</div>' +
+            '<div class="user-name">' + escapeHtml(u.full_name || 'No name set') + '</div></td>' +
+          '<td>' + formatDate(u.created_at) + '</td>' +
+          '<td><div class="row-actions">' +
+            '<button type="button" class="btn-approve" data-approve="' + u.id + '">Approve</button>' +
+            '<button type="button" class="btn-reject" data-reject="' + u.id + '" data-email="' + escapeHtml(u.email) + '">Reject</button>' +
+          '</div></td>' +
+        '</tr>';
+      }).join('');
+
+      Array.prototype.forEach.call(body.querySelectorAll('[data-approve]'), function (btn) {
+        btn.addEventListener('click', function () { handleApprove(btn.dataset.approve); });
+      });
+      Array.prototype.forEach.call(body.querySelectorAll('[data-reject]'), function (btn) {
+        btn.addEventListener('click', function () { handleReject(btn.dataset.reject, btn.dataset.email); });
+      });
+    }
+
+    async function handleApprove(userId) {
+      var { data, error } = await supabaseClient.functions.invoke('admin-users', { body: { action: 'approve', userId: userId } });
+      if (error || (data && data.error)) {
+        alert('Could not approve this request: ' + (error ? error.message : data.error));
+        return;
+      }
+      await loadUsers();
+    }
+
+    async function handleReject(userId, email) {
+      if (!confirm('Reject the signup request from ' + email + '? They will not be able to access EnrichMe.')) return;
+      var { data, error } = await supabaseClient.functions.invoke('admin-users', { body: { action: 'reject', userId: userId } });
+      if (error || (data && data.error)) {
+        alert('Could not reject this request: ' + (error ? error.message : data.error));
+        return;
+      }
+      await loadUsers();
     }
 
     function renderUserTable() {
@@ -223,8 +312,9 @@
       empty.style.display = 'none';
 
       body.innerHTML = users.map(function (u) {
+        var statusPill = (u.status && u.status !== 'approved') ? '<span class="status-pill ' + u.status + '">' + u.status + '</span>' : '';
         return '<tr>' +
-          '<td><div class="user-email">' + escapeHtml(u.email) + (u.is_admin ? '<span class="admin-pill">Admin</span>' : '') + '</div>' +
+          '<td><div class="user-email">' + escapeHtml(u.email) + (u.is_admin ? '<span class="admin-pill">Admin</span>' : '') + statusPill + '</div>' +
             '<div class="user-name">' + escapeHtml(u.full_name || 'No name set') + '</div></td>' +
           '<td>' + formatDate(u.created_at) + '</td>' +
           '<td>' + formatDate(u.last_sign_in_at) + '</td>' +
@@ -254,6 +344,7 @@
       }
       users = data.users || [];
       renderStats();
+      renderRequestTable();
       renderUserTable();
     }
 
@@ -269,7 +360,7 @@
       document.getElementById('emailFieldWrap').style.display = '';
       document.getElementById('passwordFieldWrap').style.display = '';
       document.getElementById('passwordLabel').textContent = 'Temporary password';
-      document.getElementById('passwordHint').textContent = 'Share this with the user — they can change it after signing in.';
+      document.getElementById('passwordHint').textContent = 'Share this with the user - they can change it after signing in.';
       document.getElementById('userModal').classList.add('show');
     }
 

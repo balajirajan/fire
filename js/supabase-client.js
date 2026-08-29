@@ -14,7 +14,12 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_
 
 // Call at the top of any page that requires a signed-in user.
 // Redirects to the login page if there's no active session, and otherwise
-// resolves with the current user.
+// resolves with the current user. Also enforces the signup-approval gate:
+// an account stuck in 'pending' or 'rejected' (see profiles.status in
+// supabase-schema.sql) never reaches any app page, no matter which one it
+// tries first — it's bounced to pending-approval.html instead. This is the
+// single choke point for that gate, so individual pages don't each need
+// their own approval check.
 async function requireAuth(loginPath) {
   loginPath = loginPath || 'login.html';
   const { data: { session } } = await supabaseClient.auth.getSession();
@@ -22,6 +27,20 @@ async function requireAuth(loginPath) {
     window.location.href = loginPath;
     return null;
   }
+
+  const { data: profile } = await supabaseClient
+    .from('profiles')
+    .select('status')
+    .eq('id', session.user.id)
+    .single();
+  if (profile && profile.status !== 'approved') {
+    // Reuse loginPath's directory depth (e.g. '../' from split/*.html) so
+    // this resolves correctly no matter how deep the calling page is.
+    const loginDir = loginPath.slice(0, loginPath.lastIndexOf('/') + 1);
+    window.location.href = loginDir + 'pending-approval.html';
+    return null;
+  }
+
   return session.user;
 }
 

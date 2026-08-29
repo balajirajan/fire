@@ -1,6 +1,6 @@
-// Admin-only user management: list / create / update / delete Supabase Auth
-// users. Runs server-side because these actions need the service_role key,
-// which must never reach the browser.
+// Admin-only user management: list / create / update / delete / approve /
+// reject Supabase Auth users. Runs server-side because these actions need
+// the service_role key, which must never reach the browser.
 //
 // SUPABASE_URL, SUPABASE_ANON_KEY and SUPABASE_SERVICE_ROLE_KEY are provided
 // automatically in every Edge Function's environment by Supabase — nothing
@@ -64,7 +64,7 @@ Deno.serve(async (req) => {
     if (action === 'list') {
       const { data, error } = await adminClient
         .from('profiles')
-        .select('id, email, full_name, is_admin, last_sign_in_at, created_at')
+        .select('id, email, full_name, is_admin, status, last_sign_in_at, created_at')
         .order('created_at', { ascending: false });
       if (error) throw error;
       return jsonResponse({ users: data });
@@ -81,6 +81,14 @@ Deno.serve(async (req) => {
         user_metadata: fullName ? { full_name: fullName } : {},
       });
       if (error) throw error;
+
+      // An admin creating an account here is itself the approval decision -
+      // don't also make it sit in the Signup Requests queue. The
+      // handle_new_user() trigger defaults every new row to 'pending', so
+      // flip it immediately.
+      if (data.user) {
+        await adminClient.from('profiles').update({ status: 'approved' }).eq('id', data.user.id);
+      }
       return jsonResponse({ user: data.user });
     }
 
@@ -99,6 +107,16 @@ Deno.serve(async (req) => {
         await adminClient.from('profiles').update({ full_name: fullName }).eq('id', userId);
       }
       return jsonResponse({ user: data.user });
+    }
+
+    if (action === 'approve' || action === 'reject') {
+      const { userId } = body as { userId?: string };
+      if (!userId) return jsonResponse({ error: 'userId is required' }, 400);
+
+      const status = action === 'approve' ? 'approved' : 'rejected';
+      const { error } = await adminClient.from('profiles').update({ status }).eq('id', userId);
+      if (error) throw error;
+      return jsonResponse({ ok: true });
     }
 
     if (action === 'delete') {

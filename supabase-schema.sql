@@ -1493,6 +1493,14 @@ create table if not exists profiles (
   created_at timestamptz not null default now()
 );
 
+-- Signup approval gate: EnrichMe is free for its first 100 users, admitted
+-- by hand. Every new signup lands in 'pending' and is invisible to the rest
+-- of the app (see requireAuth() in js/supabase-client.js) until an admin
+-- approves it from the Admin Dashboard's Signup Requests panel.
+alter table profiles add column if not exists status text not null default 'pending';
+alter table profiles drop constraint if exists profiles_status_check;
+alter table profiles add constraint profiles_status_check check (status in ('pending', 'approved', 'rejected'));
+
 -- security definer, not a self-referencing RLS policy on profiles itself —
 -- a profiles SELECT policy that queries profiles caused a real recursion
 -- headache during the SplitWise build (see project memory); this sidesteps
@@ -1526,12 +1534,13 @@ security definer
 set search_path = public
 as $$
 begin
-  insert into public.profiles (id, email, full_name, is_admin)
+  insert into public.profiles (id, email, full_name, is_admin, status)
   values (
     new.id,
     new.email,
     new.raw_user_meta_data ->> 'full_name',
-    new.email = 'admin@enrichme.app'
+    new.email = 'admin@enrichme.app',
+    case when new.email = 'admin@enrichme.app' then 'approved' else 'pending' end
   )
   on conflict (id) do nothing;
   return new;
@@ -1565,10 +1574,17 @@ create trigger on_auth_user_sign_in
 -- One-time backfill for accounts that already exist (str.balaji@gmail.com
 -- and admin@enrichme.app if it signed up before this migration ran). Purely
 -- additive — only inserts a profiles row, never touches auth.users.
-insert into public.profiles (id, email, full_name, is_admin, last_sign_in_at, created_at)
+insert into public.profiles (id, email, full_name, is_admin, status, last_sign_in_at, created_at)
 select
   id, email, raw_user_meta_data ->> 'full_name',
   email = 'admin@enrichme.app',
+  'approved',
   last_sign_in_at, created_at
 from auth.users
 on conflict (id) do nothing;
+
+-- Grandfather in every account that existed before the signup-approval gate
+-- shipped today (2026-08-29) — only signups from this date forward go
+-- through admin review. Safe to re-run: only ever touches rows created
+-- before the cutoff, so it never re-approves a genuine pending request.
+update profiles set status = 'approved' where status = 'pending' and created_at < '2026-08-29';
