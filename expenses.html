@@ -75,6 +75,32 @@
     .page-head { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem; }
     .page-head h2 { font-size: 1.6rem; font-weight: 800; margin-bottom: 0.3rem; }
     .page-head p { color: #64748b; font-size: 0.9rem; }
+
+    /* FIRE Readiness checklist (this category) */
+    .fr-card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 1.1rem; padding: 1.4rem 1.6rem; margin-bottom: 1.5rem; box-shadow: 0 4px 16px rgba(15,23,42,0.03); position: relative; }
+    .fr-card.fr-pending { border: 1px solid #fde68a; border-left: 5px solid #f59e0b; background: #fffbeb; }
+    .fr-head { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.1rem; }
+    .fr-ring-wrap { position: relative; width: 52px; height: 52px; flex-shrink: 0; }
+    .fr-ring-wrap svg { width: 52px; height: 52px; display: block; }
+    .fr-ring-pct { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 0.72rem; font-weight: 800; color: #0f172a; }
+    .fr-head-text { font-size: 0.85rem; color: #364752; line-height: 1.55; margin: 0; }
+    .fr-head-text strong { color: #0f172a; font-weight: 800; }
+    .fr-rows { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.7rem; }
+    @media (max-width: 900px) { .fr-rows { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 560px) { .fr-rows { grid-template-columns: 1fr; } }
+    .fr-row { display: flex; align-items: center; gap: 0.65rem; padding: 0.65rem 0.75rem; border: 1px solid #e2e8f0; border-radius: 0.7rem; text-decoration: none; color: inherit; background: #fff; transition: border-color 0.15s ease, background 0.15s ease; }
+    .fr-row:not(a) { cursor: default; }
+    .fr-row:hover { border-color: #94a3b8; background: #f8fafc; }
+    .fr-row.done { border-color: #a7f3d0; background: #f0fdf7; }
+    .fr-row-ring { position: relative; width: 34px; height: 34px; flex-shrink: 0; }
+    .fr-row-ring svg { width: 34px; height: 34px; display: block; }
+    .fr-row-ring-pct { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 0.62rem; font-weight: 800; color: #364752; }
+    .fr-row.done .fr-row-ring-pct { color: #059669; }
+    .fr-row-label { flex: 1; font-size: 0.83rem; font-weight: 700; color: #364752; min-width: 0; }
+    .fr-row.done .fr-row-label { color: #065f46; }
+    .fr-row-chevron { color: #cbd5e1; font-size: 0.9rem; flex-shrink: 0; }
+    .fr-card.fr-done { border-color: #a7f3d0; background: #f0fdf7; }
+    .fr-card.fr-done .fr-head-text strong { color: #065f46; }
     .head-actions { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
 
     .pbtn { display: inline-flex; align-items: center; gap: 0.45rem; padding: 0.65rem 1.1rem; border-radius: 0.6rem; font-size: 0.85rem; font-weight: 600; cursor: pointer; border: none; background: linear-gradient(to right, #0ea5e9, #10b981); color: #fff; white-space: nowrap; }
@@ -467,6 +493,8 @@
         </div>
       </div>
 
+      <div id="categoryReadinessChecklist" style="display:none;"></div>
+
       <div class="expense-hero" id="expenseHero" style="display:none;">
         <div class="expense-hero-stats">
           <div class="expense-hero-stat expense-hero-stat-primary">
@@ -531,6 +559,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-client.js"></script>
+  <script src="js/fire-readiness.js"></script>
   <script>
     function toggleSidebar() {
       var sidebar = document.getElementById('sidebar');
@@ -1174,6 +1203,14 @@
     (async function init() {
       var user = await requireAuth('login.html');
       if (!user) return;
+
+      computeCategoryDetail('cashflow').then(function (detail) {
+        renderCategoryChecklist(document.getElementById('categoryReadinessChecklist'), detail, {
+          title: 'Monthly Cashflow Readiness',
+          doneText: 'Every category has real numbers - your FIRE number can trust this.'
+        });
+      }).catch(function (err) { console.error('Could not compute cashflow readiness', err); });
+
       await loadAll();
       var deduped = await dedupeDefaults();
       if (deduped) await loadAll();

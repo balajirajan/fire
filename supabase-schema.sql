@@ -534,6 +534,44 @@ where is_complete = false
 update health_inputs set is_complete = true
 where user_id in (select id from profiles where email = 'str.balaji@gmail.com');
 
+-- is_complete/the default-diff heuristic above answer "has this account
+-- touched the questionnaire at all," which is fine for a yes/no gate but
+-- breaks down as a *percentage*: it can't tell "genuinely selected the
+-- default answer" (e.g. really is 30, really picked "moderate" stress)
+-- apart from "never touched this question," so a user who legitimately
+-- matches several defaults reads as incomplete forever. answered_cards
+-- fixes that by recording which of the 12 question cards on
+-- life-expectancy.html were actually interacted with (see
+-- markCardAnswered() there) - a real, unambiguous signal instead of a
+-- guess. Powers both the FIRE Readiness checklist and that page's own
+-- per-category checklist.
+alter table health_inputs add column if not exists answered_cards text[] not null default '{}';
+
+-- One-time backfill for rows that predate this column: maps the same
+-- default-diff heuristic onto specific cards instead of raw field count,
+-- so old accounts start with a reasonable per-card list instead of an
+-- empty one. "Existing Health Conditions" keeps the old ambiguity (an
+-- empty list is a legitimate "no conditions" answer, not a sign of
+-- skipping) - a much smaller blast radius than before, now that it's
+-- one card out of twelve instead of one field out of twenty-five. Only
+-- touches rows with no answered_cards yet; safe to re-run.
+update health_inputs
+set answered_cards = array_remove(ARRAY[
+  case when (sex <> 'male' or age <> 30) then 'about_you' end,
+  case when (smoking_status <> 'never' or cigarettes_per_day <> 10 or years_smoked <> 5 or years_quit <> 5) then 'smoking' end,
+  case when alcohol <> 'occasional' then 'alcohol' end,
+  case when (fruit_veg_servings <> '1-2' or junk_food <> 'few_times') then 'diet' end,
+  case when (exercise_days <> '1-2' or activity_level <> 'light') then 'activity' end,
+  case when (height_cm <> 170 or weight_kg <> 70) then 'weight' end,
+  case when sleep_hours <> '7-8' then 'sleep' end,
+  case when (stress_level <> 'moderate' or social_connection <> 'moderate') then 'mental' end,
+  case when (relationship_status <> 'married' or partner_support <> 'somewhat' or family_time <> 'weekly' or intimacy_frequency <> 'skip') then 'family' end,
+  case when coalesce(array_length(conditions, 1), 0) > 0 then 'conditions' end,
+  case when (checkup_frequency <> 'occasionally' or seatbelt_habit <> 'always') then 'preventive' end,
+  case when (living_area <> 'city' or air_quality <> 'moderate' or water_quality <> 'municipal' or healthcare_access <> 'good') then 'environment' end
+], NULL)
+where coalesce(array_length(answered_cards, 1), 0) = 0;
+
 alter table health_inputs enable row level security;
 
 drop policy if exists "health_inputs_select_own" on health_inputs;

@@ -1,38 +1,48 @@
-// FIRE Readiness checklist: how much real data the signed-in user has
-// entered - across Net Worth, Monthly Cashflow, Income, and Health & Life
-// Expectancy - for fire-plan.html's FIRE number to mean anything, plus a
-// card UI showing a genuine sub-progress percentage per category (not just
-// a yes/no) to nudge them toward finishing the pending ones.
+// FIRE Readiness: how much real data the signed-in user has entered -
+// across Net Worth, Monthly Cashflow, Income, and Health & Life Expectancy
+// - for fire-plan.html's FIRE number to mean anything. Powers two things:
+//   - The summary checklist on Dashboard/FIRE Plan (computeFireReadiness +
+//     renderFireReadinessChecklist), showing all 4 categories at a glance.
+//   - A per-category checklist embedded on each category's own page
+//     (computeCategoryDetail + renderCategoryChecklist), breaking that one
+//     category down into exactly which sub-items are still missing.
 //
 // The tricky part is telling "real data" apart from each page's one-time
 // sample-data seeding: expenses/income/loans/bank/portfolio all auto-insert
 // nonzero starter rows on first visit (see ensureDefaults() in those pages),
 // and life-expectancy.html silently persists its default answers on a
 // brand-new account. "A row exists" or even "amount > 0" is not a reliable
-// completion signal on its own - see expense_grid.is_seed in
-// supabase-schema.sql, which this file relies on to filter that out.
+// completion signal on its own - see expense_grid.is_seed and
+// health_inputs.answered_cards in supabase-schema.sql, which this file
+// relies on to filter that out.
 //
-// Each category's percentage is a genuine fraction of something concrete,
-// not a re-labeled boolean:
-//   - Net Worth: how many of 8 distinct asset/liability sources have any
-//     real data (Accounts, Gold, Government Schemes, Properties, Personal
-//     Debt, Stocks/MF, Bank Balances, Loans).
-//   - Monthly Cashflow / Income: how many of the user's own tracked line
-//     items have a real (non-seed) amount entered in any month.
-//   - Health: how many of the ~25 questionnaire fields differ from their
-//     default answer (health_inputs.conditions is excluded - an empty list
-//     there is a legitimate "no conditions" answer, not a sign of skipping,
-//     so it can't be used as a completion signal).
+// Each category's percentage is a genuine fraction of something concrete:
+//   - Net Worth: how many of 8 distinct sources (Accounts, Gold, Government
+//     Schemes, Properties, Personal Debt, Portfolio, Bank, Loans) have any
+//     real data.
+//   - Monthly Cashflow / Income: how many of the user's own expense/income
+//     CATEGORIES (not every individual line item - see gridSectionDetail)
+//     have a real (non-seed) amount entered anywhere inside them.
+//   - Health: how many of the 12 questionnaire cards were actually
+//     interacted with (health_inputs.answered_cards, recorded by
+//     life-expectancy.html's markCardAnswered) - not a guess from whether
+//     the answer differs from its default, since a genuine default answer
+//     (really is 30, really picked "moderate") is indistinguishable from an
+//     untouched question under that heuristic.
 // A category only counts as done at a literal 100%.
 (function (root) {
   'use strict';
 
   var ITEMS = [
     { key: 'networth', label: 'Net Worth', icon: '📈', href: 'net-worth.html', hint: 'Add an account, investment, property, or balance.' },
-    { key: 'cashflow', label: 'Monthly Cashflow', icon: '🧮', href: 'expenses.html', hint: 'Enter a real amount for every expense you track.' },
-    { key: 'income', label: 'Income', icon: '💵', href: 'income.html', hint: 'Enter a real amount for every income source you track.' },
+    { key: 'cashflow', label: 'Monthly Cashflow', icon: '🧮', href: 'expenses.html', hint: 'Enter a real amount in every category you track.' },
+    { key: 'income', label: 'Income', icon: '💵', href: 'income.html', hint: 'Enter a real amount in every income category you track.' },
     { key: 'health', label: 'Health & Life Expectancy', icon: '❤️', href: 'life-expectancy.html', hint: 'Finish answering the life expectancy questionnaire.' }
   ];
+
+  function escapeHtml(s) {
+    return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
 
   async function hasAnyRow(table, filters) {
     var q = supabaseClient.from(table).select('id').limit(1);
@@ -60,87 +70,103 @@
     return !!(rows && rows.length);
   }
 
+  // The 8 sources that make up Net Worth, with where to go add each one.
+  // Accounts has no href - it's the manual catch-all table, edited
+  // directly on net-worth.html itself, wherever this is rendered.
+  var NET_WORTH_SOURCES = [
+    { label: 'Accounts', href: null, check: function () { return hasAnyRow('accounts'); } },
+    { label: 'Gold Holdings', href: 'gold.html', check: function () { return hasAnyRow('gold_holdings'); } },
+    { label: 'Government Schemes', href: 'bonds.html', check: function () { return hasAnyRow('other_investments', { category: 'Government Scheme' }); } },
+    { label: 'Properties', href: 'properties.html', check: function () { return hasAnyRow('properties'); } },
+    { label: 'Personal Debt / Receivable', href: 'personal-debt.html', check: function () { return hasAnyRow('personal_ious'); } },
+    { label: 'Stocks / Mutual Funds', href: 'portfolio.html', check: function () { return hasRealGridAmount('portfolio'); } },
+    { label: 'Bank Balances', href: 'bank-balances.html', check: function () { return hasRealGridAmount('bank'); } },
+    { label: 'Loans', href: 'loans.html', check: function () { return hasRealGridAmount('loans'); } }
+  ];
+
+  async function netWorthDetail() {
+    var results = await Promise.all(NET_WORTH_SOURCES.map(function (s) { return s.check(); }));
+    var items = NET_WORTH_SOURCES.map(function (s, i) { return { label: s.label, done: results[i], href: s.href }; });
+    var percent = Math.round(results.filter(Boolean).length / results.length * 100);
+    return { percent: percent, items: items };
+  }
+
   // Fraction of this section's own CATEGORIES (expense_groups - e.g.
   // "Everyday spending", "Utility bills") that have at least one real
   // (non-seed, nonzero) amount entered anywhere inside them, in any month.
   // Deliberately category-level, not line-item-level: expenses.html alone
   // seeds ~34 individual items across 4 categories, and almost nobody
   // genuinely spends against every single one of them every month (Jewellery,
-  // Gifts, etc. can be a real, honest zero for a given household). Requiring
-  // every item individually made 100% effectively unreachable and read as a
-  // sync bug ("I added my numbers, why is it still 80%?") when it was really
-  // just measuring the wrong thing. A category counts as covered once any
-  // one of its items has real data - matching how a user actually thinks
-  // about "have I filled in my utility bills," not "have I filled in every
-  // conceivable utility."
-  async function gridSectionProgress(section) {
-    var { data: groups } = await supabaseClient.from('expense_groups').select('id').eq('section', section);
-    if (!groups || !groups.length) return 0;
+  // Gifts, etc. can be a real, honest zero for a given household). A
+  // category counts as covered once any one of its items has real data -
+  // matching how a user actually thinks about "have I filled in my utility
+  // bills," not "have I filled in every conceivable utility." No href on
+  // the items - they're categories on the very page this renders on.
+  async function gridSectionDetail(section) {
+    var { data: groups } = await supabaseClient.from('expense_groups').select('id, name').eq('section', section);
+    if (!groups || !groups.length) return { percent: 0, items: [] };
     var groupIds = groups.map(function (g) { return g.id; });
 
     var { data: items } = await supabaseClient.from('expense_items').select('id, group_id').in('group_id', groupIds);
-    if (!items || !items.length) return 0;
-    var itemIds = items.map(function (i) { return i.id; });
+    var itemIds = (items || []).map(function (i) { return i.id; });
     var groupByItem = {};
-    items.forEach(function (i) { groupByItem[i.id] = i.group_id; });
+    (items || []).forEach(function (i) { groupByItem[i.id] = i.group_id; });
 
-    var { data: rows } = await supabaseClient
-      .from('expense_grid')
-      .select('item_id')
-      .in('item_id', itemIds)
-      .eq('is_seed', false)
-      .gt('amount', 0);
+    var rows = [];
+    if (itemIds.length) {
+      var res = await supabaseClient.from('expense_grid').select('item_id').in('item_id', itemIds).eq('is_seed', false).gt('amount', 0);
+      rows = res.data || [];
+    }
 
     var groupsWithRealData = {};
-    (rows || []).forEach(function (r) {
+    rows.forEach(function (r) {
       var groupId = groupByItem[r.item_id];
       if (groupId) groupsWithRealData[groupId] = true;
     });
-    return Math.round(Object.keys(groupsWithRealData).length / groupIds.length * 100);
+
+    var detailItems = groups.map(function (g) { return { label: g.name, done: !!groupsWithRealData[g.id], href: null }; });
+    var percent = Math.round(Object.keys(groupsWithRealData).length / groups.length * 100);
+    return { percent: percent, items: detailItems };
   }
 
-  async function netWorthProgress() {
-    var checks = await Promise.all([
-      hasAnyRow('accounts'),
-      hasAnyRow('gold_holdings'),
-      hasAnyRow('other_investments', { category: 'Government Scheme' }),
-      hasAnyRow('properties'),
-      hasAnyRow('personal_ious'),
-      hasRealGridAmount('portfolio'),
-      hasRealGridAmount('bank'),
-      hasRealGridAmount('loans')
-    ]);
-    var doneCount = checks.filter(Boolean).length;
-    return Math.round(doneCount / checks.length * 100);
-  }
+  // The 12 question cards on life-expectancy.html, in the order they
+  // appear there. Keys match data-card there and answered_cards' backfill
+  // in supabase-schema.sql exactly.
+  var HEALTH_CARDS = [
+    { key: 'about_you', label: 'About You' },
+    { key: 'smoking', label: 'Smoking' },
+    { key: 'alcohol', label: 'Alcohol' },
+    { key: 'diet', label: 'Diet' },
+    { key: 'activity', label: 'Physical Activity' },
+    { key: 'weight', label: 'Body Weight' },
+    { key: 'sleep', label: 'Sleep' },
+    { key: 'mental', label: 'Mental & Social Wellbeing' },
+    { key: 'family', label: 'Family & Relationships' },
+    { key: 'conditions', label: 'Existing Health Conditions' },
+    { key: 'preventive', label: 'Preventive Care & Safety' },
+    { key: 'environment', label: 'Environment' }
+  ];
 
-  // Same default tuple life-expectancy.html's init() writes on a brand-new
-  // account (and the same one supabase-schema.sql's is_complete backfill
-  // compares against) - a field counts as "answered" once it differs from
-  // this.
-  var HEALTH_DEFAULTS = {
-    sex: 'male', age: 30,
-    smoking_status: 'never', cigarettes_per_day: 10, years_smoked: 5, years_quit: 5,
-    alcohol: 'occasional',
-    fruit_veg_servings: '1-2', junk_food: 'few_times',
-    exercise_days: '1-2', activity_level: 'light',
-    height_cm: 170, weight_kg: 70,
-    sleep_hours: '7-8',
-    stress_level: 'moderate', social_connection: 'moderate',
-    checkup_frequency: 'occasionally', seatbelt_habit: 'always',
-    living_area: 'city', air_quality: 'moderate', water_quality: 'municipal', healthcare_access: 'good',
-    relationship_status: 'married', partner_support: 'somewhat', family_time: 'weekly', intimacy_frequency: 'skip'
-  };
-  var HEALTH_FIELD_KEYS = Object.keys(HEALTH_DEFAULTS);
-
-  async function healthProgress() {
-    var { data } = await supabaseClient.from('health_inputs').select('*').maybeSingle();
-    if (!data) return 0;
-    var touched = 0;
-    HEALTH_FIELD_KEYS.forEach(function (k) {
-      if (data[k] != null && String(data[k]) !== String(HEALTH_DEFAULTS[k])) touched++;
+  async function healthDetail() {
+    var { data } = await supabaseClient.from('health_inputs').select('answered_cards').maybeSingle();
+    var answered = (data && data.answered_cards) || [];
+    var answeredSet = {};
+    answered.forEach(function (k) { answeredSet[k] = true; });
+    var items = HEALTH_CARDS.map(function (c) {
+      return { label: c.label, done: !!answeredSet[c.key], href: 'life-expectancy.html#qcard-' + c.key };
     });
-    return Math.round(touched / HEALTH_FIELD_KEYS.length * 100);
+    var percent = Math.round(answered.length / HEALTH_CARDS.length * 100);
+    return { percent: percent, items: items };
+  }
+
+  // Full breakdown for one category - used to embed a checklist directly
+  // on that category's own page (net-worth.html, expenses.html, etc.).
+  async function computeCategoryDetail(key) {
+    if (key === 'networth') return netWorthDetail();
+    if (key === 'cashflow') return gridSectionDetail('expenses');
+    if (key === 'income') return gridSectionDetail('income');
+    if (key === 'health') return healthDetail();
+    return null;
   }
 
   // Returns { percentByKey: {networth,cashflow,income,health -> 0..100},
@@ -150,15 +176,16 @@
     if (!session) return null;
 
     var results = await Promise.all([
-      netWorthProgress(),
-      gridSectionProgress('expenses'),
-      gridSectionProgress('income'),
-      healthProgress()
+      netWorthDetail(),
+      gridSectionDetail('expenses'),
+      gridSectionDetail('income'),
+      healthDetail()
     ]);
+    var percents = results.map(function (r) { return r.percent; });
 
-    var percentByKey = { networth: results[0], cashflow: results[1], income: results[2], health: results[3] };
-    var overallPercent = Math.round(results.reduce(function (s, p) { return s + p; }, 0) / results.length);
-    var pendingCount = results.filter(function (p) { return p < 100; }).length;
+    var percentByKey = { networth: percents[0], cashflow: percents[1], income: percents[2], health: percents[3] };
+    var overallPercent = Math.round(percents.reduce(function (s, p) { return s + p; }, 0) / percents.length);
+    var pendingCount = percents.filter(function (p) { return p < 100; }).length;
     return { percentByKey: percentByKey, percent: overallPercent, total: ITEMS.length, pendingCount: pendingCount };
   }
 
@@ -232,6 +259,61 @@
       '</div>';
   }
 
+  // Renders a single category's own checklist (embedded directly on that
+  // category's page, e.g. net-worth.html) - same visual language as
+  // renderFireReadinessChecklist, but broken down into that category's
+  // actual sub-items instead of the 4-category summary.
+  function renderCategoryChecklist(containerEl, detail, opts) {
+    if (!containerEl || !detail) return;
+    opts = opts || {};
+    var title = opts.title || 'This section';
+    var doneText = opts.doneText || 'Fully complete.';
+
+    if (detail.percent >= 100) {
+      containerEl.style.display = '';
+      containerEl.innerHTML =
+        '<div class="fr-card fr-done">' +
+          '<div class="fr-head" style="margin-bottom:0;">' +
+            '<div class="fr-ring-wrap">' +
+              buildRingSvg(100, 52, 6, 'rgba(16,185,129,0.15)', '#10b981') +
+              '<div class="fr-ring-pct">✓</div>' +
+            '</div>' +
+            '<p class="fr-head-text"><strong>✅ ' + escapeHtml(title) + ' complete</strong> - ' + escapeHtml(doneText) + '</p>' +
+          '</div>' +
+        '</div>';
+      return;
+    }
+
+    var pendingCount = detail.items.filter(function (it) { return !it.done; }).length;
+    var rowsHtml = detail.items.map(function (it) {
+      var colors = ringColorFor(it.done ? 100 : 0);
+      var tag = it.href ? 'a' : 'div';
+      var hrefAttr = it.href ? ' href="' + it.href + '"' : '';
+      return '<' + tag + ' class="fr-row' + (it.done ? ' done' : '') + '"' + hrefAttr + '>' +
+        '<div class="fr-row-ring">' + buildRingSvg(it.done ? 100 : 0, 34, 4, colors.track, colors.fill) +
+          '<span class="fr-row-ring-pct">' + (it.done ? '✓' : '') + '</span>' +
+        '</div>' +
+        '<span class="fr-row-label">' + escapeHtml(it.label) + '</span>' +
+        (it.href ? '<span class="fr-row-chevron">›</span>' : '') +
+      '</' + tag + '>';
+    }).join('');
+
+    containerEl.style.display = '';
+    containerEl.innerHTML =
+      '<div class="fr-card fr-pending">' +
+        '<div class="fr-head">' +
+          '<div class="fr-ring-wrap">' +
+            buildRingSvg(detail.percent, 52, 6, 'rgba(180,83,9,0.15)', '#f59e0b') +
+            '<div class="fr-ring-pct">' + detail.percent + '%</div>' +
+          '</div>' +
+          '<p class="fr-head-text"><strong>⚠️ ' + escapeHtml(title) + '</strong> - ' + pendingCount + ' of ' + detail.items.length + ' still ' + (pendingCount === 1 ? 'needs' : 'need') + ' real data.</p>' +
+        '</div>' +
+        '<div class="fr-rows">' + rowsHtml + '</div>' +
+      '</div>';
+  }
+
   root.computeFireReadiness = computeFireReadiness;
   root.renderFireReadinessChecklist = renderFireReadinessChecklist;
+  root.computeCategoryDetail = computeCategoryDetail;
+  root.renderCategoryChecklist = renderCategoryChecklist;
 })(window);

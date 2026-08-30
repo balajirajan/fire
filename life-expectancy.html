@@ -76,6 +76,32 @@
     .page-head h2 { font-size: 1.6rem; font-weight: 800; margin-bottom: 0.3rem; }
     .page-head p { color: #64748b; font-size: 0.9rem; }
 
+    /* FIRE Readiness checklist (this category) */
+    .fr-card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 1.1rem; padding: 1.4rem 1.6rem; margin-bottom: 1.5rem; box-shadow: 0 4px 16px rgba(15,23,42,0.03); position: relative; }
+    .fr-card.fr-pending { border: 1px solid #fde68a; border-left: 5px solid #f59e0b; background: #fffbeb; }
+    .fr-head { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.1rem; }
+    .fr-ring-wrap { position: relative; width: 52px; height: 52px; flex-shrink: 0; }
+    .fr-ring-wrap svg { width: 52px; height: 52px; display: block; }
+    .fr-ring-pct { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 0.72rem; font-weight: 800; color: #0f172a; }
+    .fr-head-text { font-size: 0.85rem; color: #364752; line-height: 1.55; margin: 0; }
+    .fr-head-text strong { color: #0f172a; font-weight: 800; }
+    .fr-rows { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.7rem; }
+    @media (max-width: 900px) { .fr-rows { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 560px) { .fr-rows { grid-template-columns: 1fr; } }
+    .fr-row { display: flex; align-items: center; gap: 0.65rem; padding: 0.65rem 0.75rem; border: 1px solid #e2e8f0; border-radius: 0.7rem; text-decoration: none; color: inherit; background: #fff; transition: border-color 0.15s ease, background 0.15s ease; }
+    .fr-row:not(a) { cursor: default; }
+    .fr-row:hover { border-color: #94a3b8; background: #f8fafc; }
+    .fr-row.done { border-color: #a7f3d0; background: #f0fdf7; }
+    .fr-row-ring { position: relative; width: 34px; height: 34px; flex-shrink: 0; }
+    .fr-row-ring svg { width: 34px; height: 34px; display: block; }
+    .fr-row-ring-pct { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 0.62rem; font-weight: 800; color: #364752; }
+    .fr-row.done .fr-row-ring-pct { color: #059669; }
+    .fr-row-label { flex: 1; font-size: 0.83rem; font-weight: 700; color: #364752; min-width: 0; }
+    .fr-row.done .fr-row-label { color: #065f46; }
+    .fr-row-chevron { color: #cbd5e1; font-size: 0.9rem; flex-shrink: 0; }
+    .fr-card.fr-done { border-color: #a7f3d0; background: #f0fdf7; }
+    .fr-card.fr-done .fr-head-text strong { color: #065f46; }
+
     .health-tagline {
       font-size: clamp(1.8rem, 3.4vw, 2.4rem);
       font-weight: 800;
@@ -467,6 +493,8 @@
         <p>Health is the real wealth - answer a few questions to estimate your life expectancy and see which habits move the number most.</p>
       </div>
 
+      <div id="categoryReadinessChecklist" style="display:none;"></div>
+
       <div class="health-hero" id="healthHero">
         <div class="health-hero-stats">
           <div class="health-hero-stat">
@@ -537,7 +565,7 @@
       </div>
 
       <div class="q-grid">
-      <div class="q-card" style="--accent:#64748b;--accent-bg:rgba(100,116,139,0.12);">
+      <div class="q-card" id="qcard-about_you" data-card="about_you" style="--accent:#64748b;--accent-bg:rgba(100,116,139,0.12);">
         <div class="q-card-eyebrow">
           <span class="q-card-icon-badge">👤</span>
           <span class="q-card-title-wrap"><span class="q-card-title">About You</span><span class="q-card-subtitle">Let's start with the basics.</span></span>
@@ -553,7 +581,7 @@
         </div>
       </div>
 
-      <div class="q-card" style="--accent:#f97316;--accent-bg:rgba(249,115,22,0.12);">
+      <div class="q-card" id="qcard-smoking" data-card="smoking" style="--accent:#f97316;--accent-bg:rgba(249,115,22,0.12);">
         <div class="q-card-eyebrow">
           <span class="q-card-icon-badge">🚬</span>
           <span class="q-card-title-wrap"><span class="q-card-title">Smoking</span><span class="q-card-subtitle">Every cigarette-free day adds up.</span></span>
@@ -583,7 +611,7 @@
         </div>
       </div>
 
-      <div class="q-card" style="--accent:#a855f7;--accent-bg:rgba(168,85,247,0.12);">
+      <div class="q-card" id="qcard-alcohol" data-card="alcohol" style="--accent:#a855f7;--accent-bg:rgba(168,85,247,0.12);">
         <div class="q-card-eyebrow">
           <span class="q-card-icon-badge">🍷</span>
           <span class="q-card-title-wrap"><span class="q-card-title">Alcohol</span><span class="q-card-subtitle">Moderation goes a long way.</span></span>
@@ -595,7 +623,7 @@
         </div>
       </div>
 
-      <div class="q-card" style="--accent:#22c55e;--accent-bg:rgba(34,197,94,0.12);">
+      <div class="q-card" id="qcard-diet" data-card="diet" style="--accent:#22c55e;--accent-bg:rgba(34,197,94,0.12);">
         <div class="q-card-eyebrow">
           <span class="q-card-icon-badge">🥗</span>
           <span class="q-card-title-wrap"><span class="q-card-title">Diet</span><span class="q-card-subtitle">You are what you eat - literally.</span></span>
@@ -611,7 +639,7 @@
         </div>
       </div>
 
-      <div class="q-card" style="--accent:#3b82f6;--accent-bg:rgba(59,130,246,0.12);">
+      <div class="q-card" id="qcard-activity" data-card="activity" style="--accent:#3b82f6;--accent-bg:rgba(59,130,246,0.12);">
         <div class="q-card-eyebrow">
           <span class="q-card-icon-badge">🏃</span>
           <span class="q-card-title-wrap"><span class="q-card-title">Physical Activity</span><span class="q-card-subtitle">Movement is medicine.</span></span>
@@ -627,7 +655,7 @@
         </div>
       </div>
 
-      <div class="q-card" style="--accent:#14b8a6;--accent-bg:rgba(20,184,166,0.12);">
+      <div class="q-card" id="qcard-weight" data-card="weight" style="--accent:#14b8a6;--accent-bg:rgba(20,184,166,0.12);">
         <div class="q-card-eyebrow">
           <span class="q-card-icon-badge">⚖️</span>
           <span class="q-card-title-wrap"><span class="q-card-title">Body Weight</span><span class="q-card-subtitle">A healthy balance, not a number game.</span></span>
@@ -646,7 +674,7 @@
         <div class="bmi-readout">Your BMI is <b id="bmiValue">24.2</b><span class="bmi-pill" id="bmiPill">Normal</span></div>
       </div>
 
-      <div class="q-card" style="--accent:#6366f1;--accent-bg:rgba(99,102,241,0.12);">
+      <div class="q-card" id="qcard-sleep" data-card="sleep" style="--accent:#6366f1;--accent-bg:rgba(99,102,241,0.12);">
         <div class="q-card-eyebrow">
           <span class="q-card-icon-badge">😴</span>
           <span class="q-card-title-wrap"><span class="q-card-title">Sleep</span><span class="q-card-subtitle">Recovery happens while you rest.</span></span>
@@ -658,7 +686,7 @@
         </div>
       </div>
 
-      <div class="q-card" style="--accent:#ec4899;--accent-bg:rgba(236,72,153,0.12);">
+      <div class="q-card" id="qcard-mental" data-card="mental" style="--accent:#ec4899;--accent-bg:rgba(236,72,153,0.12);">
         <div class="q-card-eyebrow">
           <span class="q-card-icon-badge">🧠</span>
           <span class="q-card-title-wrap"><span class="q-card-title">Mental &amp; Social Wellbeing</span><span class="q-card-subtitle">Your mind matters as much as your body.</span></span>
@@ -674,7 +702,7 @@
         </div>
       </div>
 
-      <div class="q-card full" style="--accent:#f43f5e;--accent-bg:rgba(244,63,94,0.12);">
+      <div class="q-card full" id="qcard-family" data-card="family" style="--accent:#f43f5e;--accent-bg:rgba(244,63,94,0.12);">
         <div class="q-card-eyebrow">
           <span class="q-card-icon-badge">💞</span>
           <span class="q-card-title-wrap"><span class="q-card-title">Family &amp; Relationships</span><span class="q-card-subtitle">The people around you shape your years.</span></span>
@@ -701,7 +729,7 @@
         </div>
       </div>
 
-      <div class="q-card full" style="--accent:#ef4444;--accent-bg:rgba(239,68,68,0.12);">
+      <div class="q-card full" id="qcard-conditions" data-card="conditions" style="--accent:#ef4444;--accent-bg:rgba(239,68,68,0.12);">
         <div class="q-card-eyebrow">
           <span class="q-card-icon-badge">🩺</span>
           <span class="q-card-title-wrap"><span class="q-card-title">Existing Health Conditions</span><span class="q-card-subtitle">Knowledge is the first step to managing it.</span></span>
@@ -713,7 +741,7 @@
         </div>
       </div>
 
-      <div class="q-card" style="--accent:#06b6d4;--accent-bg:rgba(6,182,212,0.12);">
+      <div class="q-card" id="qcard-preventive" data-card="preventive" style="--accent:#06b6d4;--accent-bg:rgba(6,182,212,0.12);">
         <div class="q-card-eyebrow">
           <span class="q-card-icon-badge">✅</span>
           <span class="q-card-title-wrap"><span class="q-card-title">Preventive Care &amp; Safety</span><span class="q-card-subtitle">An ounce of prevention...</span></span>
@@ -729,7 +757,7 @@
         </div>
       </div>
 
-      <div class="q-card full" style="--accent:#10b981;--accent-bg:rgba(16,185,129,0.12);">
+      <div class="q-card full" id="qcard-environment" data-card="environment" style="--accent:#10b981;--accent-bg:rgba(16,185,129,0.12);">
         <div class="q-card-eyebrow">
           <span class="q-card-icon-badge">🌍</span>
           <span class="q-card-title-wrap"><span class="q-card-title">Environment</span><span class="q-card-subtitle">Your surroundings quietly shape your health.</span></span>
@@ -783,6 +811,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-client.js"></script>
+  <script src="js/fire-readiness.js"></script>
   <script>
     function toggleSidebar() {
       var sidebar = document.getElementById('sidebar');
@@ -936,9 +965,20 @@
       return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
 
+    // Real, persisted signal of "this card was actually interacted with" -
+    // recorded by key (data-card) rather than inferred from whether the
+    // answer differs from its default, since a genuine default answer
+    // (really is 30, really picked "moderate") is indistinguishable from
+    // an untouched question under that heuristic. See answeredCards below
+    // and supabase-schema.sql's answered_cards column.
+    var answeredCards = {};
+
     function markCardAnswered(el) {
       var card = el.closest('.q-card');
-      if (card && !card.classList.contains('answered')) {
+      if (!card) return;
+      var key = card.dataset.card;
+      if (key) answeredCards[key] = true;
+      if (!card.classList.contains('answered')) {
         card.classList.add('answered');
         updateProgress();
       }
@@ -1280,7 +1320,10 @@
         life_expectancy: calculate().lifeExpectancy,
         updated_at: new Date().toISOString()
       };
-      if (!opts.backfillOnly) payload.is_complete = true;
+      if (!opts.backfillOnly) {
+        payload.is_complete = true;
+        payload.answered_cards = Object.keys(answeredCards);
+      }
       var { error } = await supabaseClient.from('health_inputs').upsert(payload, { onConflict: 'user_id' });
       if (error) console.error('Could not save health inputs', error);
     }
@@ -1357,13 +1400,25 @@
       var user = await requireAuth('login.html');
       if (!user) return;
 
+      computeCategoryDetail('health').then(function (detail) {
+        renderCategoryChecklist(document.getElementById('categoryReadinessChecklist'), detail, {
+          title: 'Health Readiness',
+          doneText: 'Every question is answered - your FIRE number can trust this.'
+        });
+      }).catch(function (err) { console.error('Could not compute health readiness', err); });
+
       var saved = await loadSavedInputs();
       if (saved) applySaved(saved);
 
       renderAll();
-      if (saved) {
+      // Restore exactly the cards this account actually answered, not a
+      // blanket "saved exists, so mark everything answered" - a row can
+      // exist (even life_expectancy computed) from the silent backfill
+      // save alone, with nothing really filled in.
+      if (saved && saved.answered_cards && saved.answered_cards.length) {
+        saved.answered_cards.forEach(function (key) { answeredCards[key] = true; });
         Array.prototype.forEach.call(document.querySelectorAll('.q-grid > .q-card'), function (card) {
-          card.classList.add('answered');
+          if (answeredCards[card.dataset.card]) card.classList.add('answered');
         });
         updateProgress();
       }
