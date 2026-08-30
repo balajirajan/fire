@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Property Documents - EnrichMe</title>
+  <title>Settings - EnrichMe</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -24,6 +24,7 @@
     .topbar-mobile-logo { display: none; }
     .topbar-left { display: flex; align-items: center; gap: 0.65rem; }
 
+    /* Sidebar */
     .sidebar { background: #ffffff; border-right: 1px solid #e2e8f0; display: flex; flex-direction: column; padding: 1.5rem 1.25rem; }
     .sidebar-logo { display: flex; align-items: center; gap: 0.65rem; font-size: 1.1rem; font-weight: 800; margin-bottom: 2rem; padding: 0 0.25rem; color: #712B13; }
     .sidebar-logo-icon { width: 30px; height: 30px; flex-shrink: 0; }
@@ -32,14 +33,13 @@
     .sidebar-nav a:hover, .sidebar-nav .nav-group-head:hover { background: #f1f5f9; }
     .sidebar-nav a.active { background: #0f172a; color: #ffffff; font-weight: 600; }
     .sidebar-nav .nav-group-head.open { background: #f1f5f9; font-weight: 700; }
-    .sidebar-nav .nav-group-head.active { background: #0f172a; color: #ffffff; font-weight: 600; }
-    .sidebar-nav .nav-group-head.active .nav-chevron { color: rgba(255,255,255,0.6); }
     .sidebar-nav .nav-icon { width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
     .sidebar-nav .nav-icon .tabler-icon { width: 18px; height: 18px; }
     .sidebar-nav .nav-label { flex: 1; }
     .sidebar-nav .nav-chevron { color: #94a3b8; font-size: 0.85rem; }
     .sidebar-nav .nav-section-label { font-size: 0.66rem; font-weight: 800; letter-spacing: 0.07em; text-transform: uppercase; color: #94a3b8; padding: 0.9rem 0.75rem 0.35rem; }
     .sidebar-nav .nav-section-label:first-of-type { padding-top: 0.2rem; }
+    .sidebar-nav a.active .nav-chevron { color: rgba(255,255,255,0.6); }
     .sidebar-subnav { display: flex; flex-direction: column; gap: 0.2rem; padding-left: 1.6rem; margin: 0.15rem 0 0.3rem; }
     .sidebar-subnav a { display: flex; align-items: center; gap: 0.6rem; padding: 0.55rem 0.6rem; border-radius: 0.5rem; font-size: 0.85rem; font-weight: 500; color: #364752; }
     .sidebar-subnav a:hover { background: #f1f5f9; }
@@ -52,11 +52,14 @@
     .feedback-card a { display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; width: 100%; padding: 0.55rem; border: 1px solid #cbd5e1; border-radius: 0.5rem; font-size: 0.8rem; font-weight: 600; color: #364752; }
     .feedback-card a:hover { border-color: #10b981; color: #10b981; }
 
+    /* Main */
     .main { padding: 1.5rem 2.5rem 3rem; min-width: 0; }
     .topbar { display: flex; align-items: center; justify-content: space-between; padding-bottom: 1.25rem; border-bottom: 1px solid #e2e8f0; margin-bottom: 1.5rem; }
     .topbar h1 { font-size: 1.4rem; font-weight: 700; }
     .topbar-right { display: flex; align-items: center; gap: 0.85rem; }
     .language-selector { display: flex; align-items: center; gap: 0.5rem; background: #ffffff; padding: 0.5rem 0.9rem; border-radius: 0.5rem; color: #51636f; border: 1px solid #e2e8f0; cursor: pointer; font-size: 0.85rem; }
+    .admin-link { display: flex; align-items: center; gap: 0.4rem; font-size: 0.8rem; font-weight: 700; color: #712B13; background: rgba(113,43,19,0.1); padding: 0.5rem 0.9rem; border-radius: 0.5rem; }
+    .admin-link:hover { background: rgba(113,43,19,0.18); }
     .user-menu { position: relative; list-style: none; }
     .user-menu > summary { cursor: pointer; list-style: none; width: 34px; height: 34px; border-radius: 50%; background: #eef2f7; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; font-size: 1rem; }
     .user-menu > summary::-webkit-details-marker { display: none; }
@@ -64,59 +67,31 @@
     .user-menu-panel a { display: block; padding: 0.55rem 0.7rem; border-radius: 0.5rem; font-size: 0.85rem; color: #364752; font-weight: 500; }
     .user-menu-panel a:hover { background: #f1f5f9; color: #10b981; }
 
-    .page-head { margin-bottom: 1rem; }
+    .page-head { margin-bottom: 1.5rem; max-width: 60ch; }
     .page-head h2 { font-size: 1.6rem; font-weight: 800; margin-bottom: 0.3rem; }
     .page-head p { color: #64748b; font-size: 0.9rem; }
-    .back-link { font-size: 0.85rem; font-weight: 600; color: #0ea5e9; margin-bottom: 0.75rem; display: inline-block; }
 
-    .lock-btn { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.5rem 0.9rem; border: 1px solid #cbd5e1; border-radius: 0.6rem; background: #fff; font-size: 0.8rem; font-weight: 600; color: #364752; cursor: pointer; }
-    .lock-btn:hover { border-color: #94a3b8; }
+    .settings-card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 1.1rem; padding: 1.75rem; max-width: 640px; box-shadow: 0 4px 16px rgba(15,23,42,0.03); }
+    .settings-section-title { font-size: 0.78rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; margin: 1.6rem 0 1rem; padding-top: 1.3rem; border-top: 1px solid #f1f5f9; }
+    .settings-section-title:first-child { margin-top: 0; padding-top: 0; border-top: none; }
+    .settings-section-hint { font-size: 0.78rem; color: #94a3b8; margin: -0.6rem 0 1.1rem; line-height: 1.5; }
 
-    .vault-locked { background: linear-gradient(135deg, #0f172a, #1e293b); border-radius: 1.25rem; padding: 3rem 2rem; text-align: center; color: #fff; }
-    .vault-locked .vl-icon { font-size: 2.5rem; margin-bottom: 1rem; }
-    .vault-locked h3 { font-size: 1.2rem; font-weight: 800; margin-bottom: 0.5rem; }
-    .vault-locked p { font-size: 0.85rem; color: #94a3b8; margin-bottom: 1.5rem; max-width: 420px; margin-left: auto; margin-right: auto; }
-    .vault-locked input { width: 100%; max-width: 320px; padding: 0.7rem 0.9rem; border-radius: 0.6rem; border: 1px solid #334155; background: #1e293b; color: #fff; font-size: 0.9rem; margin-bottom: 0.9rem; }
-    .vault-locked .btn-primary { max-width: 320px; width: 100%; }
-    .vault-error { font-size: 0.8rem; color: #fca5a5; font-weight: 600; margin-bottom: 0.9rem; max-width: 320px; margin-left: auto; margin-right: auto; }
-    .warn-box { background: rgba(245,158,11,0.12); border: 1px solid rgba(245,158,11,0.35); border-radius: 0.65rem; padding: 0.75rem 1rem; font-size: 0.78rem; color: #fcd34d; text-align: left; max-width: 380px; margin: 0 auto 1.2rem; line-height: 1.5; }
-
-    .btn-primary { padding: 0.6rem 1.1rem; border: none; border-radius: 0.6rem; background: linear-gradient(135deg, #0ea5e9, #10b981); color: #fff; font-size: 0.85rem; font-weight: 700; cursor: pointer; }
-    .btn-primary:hover { opacity: 0.92; }
-    .btn-secondary { padding: 0.55rem 1rem; border: 1px solid #cbd5e1; border-radius: 0.6rem; background: #fff; color: #364752; font-size: 0.83rem; font-weight: 600; cursor: pointer; }
-    .btn-secondary:hover { border-color: #94a3b8; }
-    .btn-danger-text { color: #dc2626; font-size: 0.78rem; font-weight: 700; cursor: pointer; background: none; border: none; }
-
-    .section-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
-    .section-head h3 { font-size: 1.05rem; font-weight: 800; }
-
-    .empty-state { background: #ffffff; border: 1px dashed #cbd5e1; border-radius: 1rem; padding: 2.5rem 1.5rem; text-align: center; color: #94a3b8; font-size: 0.9rem; }
-
-    .doc-list { display: flex; flex-direction: column; gap: 0.9rem; }
-    .doc-row { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 1rem; padding: 1.1rem 1.3rem; box-shadow: 0 4px 16px rgba(15,23,42,0.03); display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
-    .doc-icon { width: 42px; height: 42px; border-radius: 0.7rem; background: #eff6ff; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; }
-    .doc-info { flex: 1; min-width: 180px; }
-    .doc-name { font-size: 0.9rem; font-weight: 700; word-break: break-word; }
-    .doc-meta { font-size: 0.76rem; color: #94a3b8; margin-top: 0.2rem; }
-    .expiry-pill { font-size: 0.72rem; font-weight: 700; padding: 0.25rem 0.6rem; border-radius: 999px; }
-    .expiry-pill.ok { background: rgba(16,185,129,0.12); color: #059669; }
-    .expiry-pill.soon { background: rgba(245,158,11,0.12); color: #b45309; }
-    .expiry-pill.expired { background: rgba(220,38,38,0.12); color: #dc2626; }
-    .doc-actions { display: flex; gap: 0.5rem; }
-
-    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.55); align-items: center; justify-content: center; z-index: 50; padding: 1rem; }
-    .modal-overlay.show { display: flex; }
-    .modal-box { background: #fff; border-radius: 1.1rem; padding: 1.6rem 1.75rem; width: 100%; max-width: 460px; max-height: 90vh; overflow-y: auto; }
-    .modal-box h3 { font-size: 1.1rem; font-weight: 800; margin-bottom: 1.1rem; }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    @media (max-width: 560px) { .field-row { grid-template-columns: 1fr; } }
+    .field-block { margin-bottom: 1.1rem; }
     .field-label { font-size: 0.83rem; font-weight: 600; color: #0f172a; margin-bottom: 0.4rem; display: block; }
-    .field-input { width: 100%; padding: 0.6rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 0.55rem; font-size: 0.88rem; font-family: inherit; color: #0f172a; margin-bottom: 0.9rem; background: #fff; }
+    .field-input { width: 100%; padding: 0.6rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 0.55rem; font-size: 0.88rem; font-family: inherit; color: #0f172a; background: #fff; }
     .field-input:focus { outline: none; border-color: #10b981; box-shadow: 0 0 0 2px rgba(16,185,129,0.15); }
-    .modal-actions { display: flex; gap: 0.7rem; margin-top: 0.5rem; }
-    .modal-actions button { flex: 1; }
-    .form-error { font-size: 0.8rem; color: #dc2626; font-weight: 600; margin-bottom: 0.7rem; }
+    .field-input:disabled { background: #f8fafc; color: #94a3b8; }
 
-    .disclaimer { font-size: 0.78rem; color: #94a3b8; line-height: 1.6; padding: 1rem 1.2rem; background: #f8fafc; border-radius: 0.75rem; margin-top: 1.5rem; }
-    /* Mobile sidebar (kept last so it wins the cascade over the base rules above) */
+    .save-row { display: flex; align-items: center; gap: 1rem; margin-top: 0.5rem; }
+    .btn-primary { padding: 0.7rem 1.4rem; border: none; border-radius: 0.6rem; background: linear-gradient(135deg, #0ea5e9, #10b981); color: #fff; font-size: 0.88rem; font-weight: 700; cursor: pointer; }
+    .btn-primary:hover { opacity: 0.92; }
+    .btn-primary:disabled { opacity: 0.6; cursor: default; }
+    .save-message { font-size: 0.82rem; font-weight: 600; }
+    .save-message.success { color: #059669; }
+    .save-message.error { color: #dc2626; }
+
     @media (max-width: 860px) {
       .app-shell { grid-template-columns: 1fr; }
 
@@ -232,45 +207,11 @@
           <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M10 5a2 2 0 1 1 4 0a7 7 0 0 1 4 6v3a4 4 0 0 0 2 3h-16a4 4 0 0 0 2 -3v-3a7 7 0 0 1 4 -6" /><path d="M9 17v1a3 3 0 0 0 6 0v-1" /></svg></span>
           <span class="nav-label">Reminders</span>
         </a>
-        <a href="vault-overview.html" class="nav-group-head open">
+        <a href="vault-overview.html">
           <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M5 13a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v6a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-6" /><path d="M11 16a1 1 0 1 0 2 0a1 1 0 0 0 -2 0" /><path d="M8 11v-4a4 4 0 1 1 8 0v4" /></svg></span>
           <span class="nav-label">Document Vault</span>
-          <span class="nav-chevron">⌄</span>
+          <span class="nav-chevron">›</span>
         </a>
-        <div class="sidebar-subnav">
-          <a href="vault-bank-locker.html">
-            <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M16.555 3.843l3.602 3.602a2.877 2.877 0 0 1 0 4.069l-2.643 2.643a2.877 2.877 0 0 1 -4.069 0l-.301 -.301l-6.558 6.558a2 2 0 0 1 -1.239 .578l-.175 .008h-1.172a1 1 0 0 1 -.993 -.883l-.007 -.117v-1.172a2 2 0 0 1 .467 -1.284l.119 -.13l.414 -.414h2v-2h2v-2l2.144 -2.144l-.301 -.301a2.877 2.877 0 0 1 0 -4.069l2.643 -2.643a2.877 2.877 0 0 1 4.069 0" /><path d="M15 9h.01" /></svg></span>
-            <span class="nav-label">Bank Locker</span>
-          </a>
-          <a href="vault-property.html" class="active">
-            <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M3 21l18 0" /><path d="M9 8l1 0" /><path d="M9 12l1 0" /><path d="M9 16l1 0" /><path d="M14 8l1 0" /><path d="M14 12l1 0" /><path d="M14 16l1 0" /><path d="M5 21v-16a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v16" /></svg></span>
-            <span class="nav-label">Property Documents</span>
-          </a>
-          <a href="vault-bonds.html">
-            <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M5 8v-3a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2h-5" /><path d="M3 14a3 3 0 1 0 6 0a3 3 0 1 0 -6 0" /><path d="M4.5 17l-1.5 5l3 -1.5l3 1.5l-1.5 -5" /></svg></span>
-            <span class="nav-label">Bond Documents</span>
-          </a>
-          <a href="vault-government.html">
-            <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M12 15a3 3 0 1 0 6 0a3 3 0 1 0 -6 0" /><path d="M13 17.5v4.5l2 -1.5l2 1.5v-4.5" /><path d="M10 19h-5a2 2 0 0 1 -2 -2v-10c0 -1.1 .9 -2 2 -2h14a2 2 0 0 1 2 2v10a2 2 0 0 1 -1 1.73" /><path d="M6 9l12 0" /><path d="M6 12l3 0" /><path d="M6 15l2 0" /></svg></span>
-            <span class="nav-label">Government Documents</span>
-          </a>
-          <a href="vault-vehicle.html">
-            <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M5 17a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M15 17a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M5 17h-2v-6l2 -5h9l4 5h1a2 2 0 0 1 2 2v4h-2m-4 0h-6m-6 -6h15m-6 0v-5" /></svg></span>
-            <span class="nav-label">Vehicle Documents</span>
-          </a>
-          <a href="vault-education.html">
-            <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M22 9l-10 -4l-10 4l10 4l10 -4v6" /><path d="M6 10.6v5.4a6 3 0 0 0 12 0v-5.4" /></svg></span>
-            <span class="nav-label">Education Certificates</span>
-          </a>
-          <a href="vault-insurance.html">
-            <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M12 3a12 12 0 0 0 8.5 3a12 12 0 0 1 -8.5 15a12 12 0 0 1 -8.5 -15a12 12 0 0 0 8.5 -3" /></svg></span>
-            <span class="nav-label">Insurance Documents</span>
-          </a>
-          <a href="vault-legal.html">
-            <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M13 10l7.383 7.418c.823 .82 .823 2.148 0 2.967a2.11 2.11 0 0 1 -2.976 0l-7.407 -7.385" /><path d="M6 9l4 4" /><path d="M13 10l-4 -4" /><path d="M3 21h7" /><path d="M6.793 15.793l-3.586 -3.586a1 1 0 0 1 0 -1.414l2.293 -2.293l.5 .5l3 -3l-.5 -.5l2.293 -2.293a1 1 0 0 1 1.414 0l3.586 3.586a1 1 0 0 1 0 1.414l-2.293 2.293l-.5 -.5l-3 3l.5 .5l-2.293 2.293a1 1 0 0 1 -1.414 0" /></svg></span>
-            <span class="nav-label">Legal & Estate Documents</span>
-          </a>
-        </div>
 
         <div class="nav-section-label">Family &amp; Health</div>
         <a href="life-expectancy.html">
@@ -293,7 +234,7 @@
           <span class="nav-label">Spiritual</span>
         </a>
 
-        <a href="settings.html">
+        <a href="settings.html" class="active">
           <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M10.325 4.317c.426 -1.756 2.924 -1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543 -.94 3.31 .826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756 .426 1.756 2.924 0 3.35a1.724 1.724 0 0 0 -1.066 2.573c.94 1.543 -.826 3.31 -2.37 2.37a1.724 1.724 0 0 0 -2.572 1.065c-.426 1.756 -2.924 1.756 -3.35 0a1.724 1.724 0 0 0 -2.573 -1.066c-1.543 .94 -3.31 -.826 -2.37 -2.37a1.724 1.724 0 0 0 -1.065 -2.572c-1.756 -.426 -1.756 -2.924 0 -3.35a1.724 1.724 0 0 0 1.066 -2.573c-.94 -1.543 .826 -3.31 2.37 -2.37c1 .608 2.296 .07 2.572 -1.065" /><path d="M9 12a3 3 0 1 0 6 0a3 3 0 0 0 -6 0" /></svg></span>
           <span class="nav-label">Settings</span>
         </a>
@@ -317,9 +258,10 @@
             <circle cx="55" cy="55" r="42" fill="none" stroke="#712B13" stroke-width="8" stroke-linecap="round" stroke-dasharray="230 34" stroke-dashoffset="20"/>
             <path d="M92,33 Q101,45 95,52 Q97,43 89,41 Q86,48 92,53 Q80,50 80,40 Q80,34 92,33 Z" fill="#712B13"/>
           </svg>
-          <h1>Document Vault</h1>
+          <h1>Settings</h1>
         </div>
         <div class="topbar-right">
+          <a href="admin-dashboard.html" class="admin-link" id="adminLink" style="display:none;">🛡️ Admin Dashboard</a>
           <div class="language-selector">🌐 English ▾</div>
           <details class="user-menu">
             <summary>👤</summary>
@@ -331,19 +273,49 @@
         </div>
       </div>
 
-      <a href="vault-overview.html" class="back-link">← Vault Overview</a>
-
       <div class="page-head">
-        <h2>🏠 Property Documents</h2>
-        <p>Sale deeds, tax receipts, encumbrance certificates and anything else for the properties you own - coming soon.</p>
+        <h2>Account Settings</h2>
+        <p>Your name and birth details - used across EnrichMe wherever they're needed, from how we greet you to your Vedic Astrology chart.</p>
       </div>
 
-            <div class="vault-locked">
-        <div class="vl-icon">ð§</div>
-        <h3>Document Vault is Coming Soon</h3>
-        <p>Secure, encrypted document storage is on its way. We’re building it right, not fast - check back soon.</p>
-      </div>
+      <form class="settings-card" id="settingsForm">
+        <div class="settings-section-title">Your Details</div>
 
+        <div class="field-block">
+          <label class="field-label">Email</label>
+          <input type="email" class="field-input" id="emailDisplay" disabled>
+        </div>
+
+        <div class="field-row">
+          <div class="field-block">
+            <label class="field-label">First Name</label>
+            <input type="text" class="field-input" id="firstNameInput" placeholder="e.g. Priya" autocomplete="given-name">
+          </div>
+          <div class="field-block">
+            <label class="field-label">Last Name</label>
+            <input type="text" class="field-input" id="lastNameInput" placeholder="e.g. Sharma" autocomplete="family-name">
+          </div>
+        </div>
+
+        <div class="settings-section-title">Date &amp; Time of Birth</div>
+        <p class="settings-section-hint">Powers your Vedic Astrology chart (Rashi, Nakshatra, Lagna) - the same details you'd enter on the Spiritual page, kept in one place.</p>
+
+        <div class="field-row">
+          <div class="field-block">
+            <label class="field-label">Date of Birth</label>
+            <input type="date" class="field-input" id="dobInput">
+          </div>
+          <div class="field-block">
+            <label class="field-label">Time of Birth</label>
+            <input type="time" class="field-input" id="birthTimeInput">
+          </div>
+        </div>
+
+        <div class="save-row">
+          <button type="submit" class="btn-primary" id="saveBtn">Save Changes</button>
+          <span class="save-message" id="saveMessage"></span>
+        </div>
+      </form>
     </main>
   </div>
 
@@ -357,9 +329,95 @@
       backdrop.classList.toggle('open', isOpen);
     }
 
+    async function handleSave(event) {
+      event.preventDefault();
+      var msgEl = document.getElementById('saveMessage');
+      var btn = document.getElementById('saveBtn');
+      msgEl.textContent = '';
+      msgEl.className = 'save-message';
+
+      var firstName = document.getElementById('firstNameInput').value.trim();
+      var lastName = document.getElementById('lastNameInput').value.trim();
+      var dob = document.getElementById('dobInput').value || null;
+      var birthTime = document.getElementById('birthTimeInput').value || null;
+
+      if (!firstName) {
+        msgEl.textContent = 'Please enter at least your first name.';
+        msgEl.className = 'save-message error';
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Saving…';
+
+      var fullName = (firstName + ' ' + lastName).trim();
+      var { data: { session } } = await supabaseClient.auth.getSession();
+      var userId = session.user.id;
+
+      var { error: profErr } = await supabaseClient
+        .from('profiles')
+        .update({ first_name: firstName, last_name: lastName || null, full_name: fullName })
+        .eq('id', userId);
+
+      var { error: astroErr } = await supabaseClient
+        .from('astrology_inputs')
+        .upsert({ dob: dob, birth_time: birthTime, updated_at: new Date().toISOString() }, { onConflict: 'user_id' });
+
+      // Keeps the session's own copy in sync so "Welcome back, X" on the
+      // dashboard reflects the new name immediately, without a re-login.
+      if (!profErr) await supabaseClient.auth.updateUser({ data: { full_name: fullName } });
+
+      btn.disabled = false;
+      btn.textContent = 'Save Changes';
+
+      if (profErr || astroErr) {
+        var err = profErr || astroErr;
+        msgEl.textContent = 'Could not save: ' + err.message;
+        msgEl.className = 'save-message error';
+        return;
+      }
+      msgEl.textContent = '✓ Saved';
+      msgEl.className = 'save-message success';
+    }
+
     (async function init() {
       var user = await requireAuth('login.html');
       if (!user) return;
+
+      isAdmin().then(function (admin) {
+        if (admin) document.getElementById('adminLink').style.display = 'flex';
+      });
+
+      document.getElementById('emailDisplay').value = user.email;
+
+      var { data: profile } = await supabaseClient
+        .from('profiles')
+        .select('first_name, last_name, full_name')
+        .eq('id', user.id)
+        .maybeSingle();
+
+      var { data: astro } = await supabaseClient
+        .from('astrology_inputs')
+        .select('dob, birth_time')
+        .maybeSingle();
+
+      var firstName = profile && profile.first_name;
+      var lastName = profile && profile.last_name;
+      // One-time convenience for accounts that signed up before this page
+      // existed: split the single full_name they already gave at signup
+      // into a starting first/last, rather than making them retype it.
+      if (!firstName && !lastName && profile && profile.full_name) {
+        var parts = profile.full_name.trim().split(/\s+/);
+        firstName = parts[0] || '';
+        lastName = parts.slice(1).join(' ');
+      }
+
+      document.getElementById('firstNameInput').value = firstName || '';
+      document.getElementById('lastNameInput').value = lastName || '';
+      document.getElementById('dobInput').value = (astro && astro.dob) || '';
+      document.getElementById('birthTimeInput').value = (astro && astro.birth_time) ? astro.birth_time.slice(0, 5) : '';
+
+      document.getElementById('settingsForm').addEventListener('submit', handleSave);
     })();
   </script>
 </body>

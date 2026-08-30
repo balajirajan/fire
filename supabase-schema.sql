@@ -1554,6 +1554,16 @@ alter table profiles add column if not exists status text not null default 'pend
 alter table profiles drop constraint if exists profiles_status_check;
 alter table profiles add constraint profiles_status_check check (status in ('pending', 'approved', 'rejected'));
 
+-- Split name fields for settings.html. full_name is kept in sync (computed
+-- as first + last on save) so existing displays that already read it -
+-- dashboard.html's welcome text, the Admin Dashboard user table - keep
+-- working without changes. Date/time of birth are deliberately NOT stored
+-- here: astrology_inputs (dob, birth_time) already exists for the Vedic
+-- Astrology feature, so settings.html reads/writes that table directly
+-- instead of creating a second, driftable copy of the same two fields.
+alter table profiles add column if not exists first_name text;
+alter table profiles add column if not exists last_name text;
+
 -- security definer, not a self-referencing RLS policy on profiles itself —
 -- a profiles SELECT policy that queries profiles caused a real recursion
 -- headache during the SplitWise build (see project memory); this sidesteps
@@ -1575,9 +1585,20 @@ alter table profiles enable row level security;
 
 drop policy if exists "profiles_select_own" on profiles;
 drop policy if exists "profiles_select_admin" on profiles;
+drop policy if exists "profiles_update_own" on profiles;
 
 create policy "profiles_select_own" on profiles for select using (auth.uid() = id);
 create policy "profiles_select_admin" on profiles for select using (is_admin());
+
+-- Lets a signed-in user edit their own name from settings.html, without
+-- opening the door to also self-editing is_admin or status (which would
+-- let anyone bypass the signup-approval gate or grant themselves admin).
+-- The row-level policy alone can't express that column-level distinction,
+-- so it's paired with an explicit column grant narrower than the blanket
+-- table-level grant Supabase's default setup gives `authenticated`.
+create policy "profiles_update_own" on profiles for update using (auth.uid() = id) with check (auth.uid() = id);
+revoke update on profiles from authenticated;
+grant update (first_name, last_name, full_name) on profiles to authenticated;
 
 -- Auto-create a profiles row for every new signup. admin@enrichme.app and
 -- str.balaji@gmail.com (the account holder) are always pre-approved and
