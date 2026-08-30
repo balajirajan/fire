@@ -1,24 +1,37 @@
-// FIRE Readiness checklist: whether the signed-in user has entered enough
-// real data - across Net Worth, Monthly Cashflow, Income, and Health & Life
+// FIRE Readiness checklist: how much real data the signed-in user has
+// entered - across Net Worth, Monthly Cashflow, Income, and Health & Life
 // Expectancy - for fire-plan.html's FIRE number to mean anything, plus a
-// dismissible-per-session card UI to nudge them toward the pending ones.
+// card UI showing a genuine sub-progress percentage per category (not just
+// a yes/no) to nudge them toward finishing the pending ones.
 //
 // The tricky part is telling "real data" apart from each page's one-time
 // sample-data seeding: expenses/income/loans/bank/portfolio all auto-insert
 // nonzero starter rows on first visit (see ensureDefaults() in those pages),
 // and life-expectancy.html silently persists its default answers on a
 // brand-new account. "A row exists" or even "amount > 0" is not a reliable
-// completion signal on its own - see expense_grid.is_seed and
-// health_inputs.is_complete in supabase-schema.sql, which this file relies
-// on to filter that out.
+// completion signal on its own - see expense_grid.is_seed in
+// supabase-schema.sql, which this file relies on to filter that out.
+//
+// Each category's percentage is a genuine fraction of something concrete,
+// not a re-labeled boolean:
+//   - Net Worth: how many of 8 distinct asset/liability sources have any
+//     real data (Accounts, Gold, Government Schemes, Properties, Personal
+//     Debt, Stocks/MF, Bank Balances, Loans).
+//   - Monthly Cashflow / Income: how many of the user's own tracked line
+//     items have a real (non-seed) amount entered in any month.
+//   - Health: how many of the ~25 questionnaire fields differ from their
+//     default answer (health_inputs.conditions is excluded - an empty list
+//     there is a legitimate "no conditions" answer, not a sign of skipping,
+//     so it can't be used as a completion signal).
+// A category only counts as done at a literal 100%.
 (function (root) {
   'use strict';
 
   var ITEMS = [
     { key: 'networth', label: 'Net Worth', icon: '📈', href: 'net-worth.html', hint: 'Add an account, investment, property, or balance.' },
-    { key: 'cashflow', label: 'Monthly Cashflow', icon: '🧮', href: 'expenses.html', hint: 'Enter a real expense amount for any month.' },
-    { key: 'income', label: 'Income', icon: '💵', href: 'income.html', hint: 'Enter a real income amount for any month.' },
-    { key: 'health', label: 'Health & Life Expectancy', icon: '❤️', href: 'life-expectancy.html', hint: 'Answer the life expectancy questionnaire.' }
+    { key: 'cashflow', label: 'Monthly Cashflow', icon: '🧮', href: 'expenses.html', hint: 'Enter a real amount for every expense you track.' },
+    { key: 'income', label: 'Income', icon: '💵', href: 'income.html', hint: 'Enter a real amount for every income source you track.' },
+    { key: 'health', label: 'Health & Life Expectancy', icon: '❤️', href: 'life-expectancy.html', hint: 'Finish answering the life expectancy questionnaire.' }
   ];
 
   async function hasAnyRow(table, filters) {
@@ -28,9 +41,6 @@
     return !!(data && data.length);
   }
 
-  // True when this section (expenses/income/loans/bank/portfolio) has at
-  // least one grid cell the user actually entered - i.e. not seed data, and
-  // a nonzero amount.
   async function hasRealGridAmount(section) {
     var { data: groups } = await supabaseClient.from('expense_groups').select('id').eq('section', section);
     if (!groups || !groups.length) return false;
@@ -50,7 +60,31 @@
     return !!(rows && rows.length);
   }
 
-  async function hasNetWorthData() {
+  // Fraction of this section's own line items (whatever the user is
+  // actually tracking, seeded or custom) that have at least one real
+  // (non-seed, nonzero) amount entered in any month.
+  async function gridSectionProgress(section) {
+    var { data: groups } = await supabaseClient.from('expense_groups').select('id').eq('section', section);
+    if (!groups || !groups.length) return 0;
+    var groupIds = groups.map(function (g) { return g.id; });
+
+    var { data: items } = await supabaseClient.from('expense_items').select('id').in('group_id', groupIds);
+    if (!items || !items.length) return 0;
+    var itemIds = items.map(function (i) { return i.id; });
+
+    var { data: rows } = await supabaseClient
+      .from('expense_grid')
+      .select('item_id')
+      .in('item_id', itemIds)
+      .eq('is_seed', false)
+      .gt('amount', 0);
+
+    var itemsWithRealData = {};
+    (rows || []).forEach(function (r) { itemsWithRealData[r.item_id] = true; });
+    return Math.round(Object.keys(itemsWithRealData).length / items.length * 100);
+  }
+
+  async function netWorthProgress() {
     var checks = await Promise.all([
       hasAnyRow('accounts'),
       hasAnyRow('gold_holdings'),
@@ -61,30 +95,56 @@
       hasRealGridAmount('bank'),
       hasRealGridAmount('loans')
     ]);
-    return checks.some(Boolean);
+    var doneCount = checks.filter(Boolean).length;
+    return Math.round(doneCount / checks.length * 100);
   }
 
-  async function hasHealthData() {
-    var { data } = await supabaseClient.from('health_inputs').select('is_complete').maybeSingle();
-    return !!(data && data.is_complete);
+  // Same default tuple life-expectancy.html's init() writes on a brand-new
+  // account (and the same one supabase-schema.sql's is_complete backfill
+  // compares against) - a field counts as "answered" once it differs from
+  // this.
+  var HEALTH_DEFAULTS = {
+    sex: 'male', age: 30,
+    smoking_status: 'never', cigarettes_per_day: 10, years_smoked: 5, years_quit: 5,
+    alcohol: 'occasional',
+    fruit_veg_servings: '1-2', junk_food: 'few_times',
+    exercise_days: '1-2', activity_level: 'light',
+    height_cm: 170, weight_kg: 70,
+    sleep_hours: '7-8',
+    stress_level: 'moderate', social_connection: 'moderate',
+    checkup_frequency: 'occasionally', seatbelt_habit: 'always',
+    living_area: 'city', air_quality: 'moderate', water_quality: 'municipal', healthcare_access: 'good',
+    relationship_status: 'married', partner_support: 'somewhat', family_time: 'weekly', intimacy_frequency: 'skip'
+  };
+  var HEALTH_FIELD_KEYS = Object.keys(HEALTH_DEFAULTS);
+
+  async function healthProgress() {
+    var { data } = await supabaseClient.from('health_inputs').select('*').maybeSingle();
+    if (!data) return 0;
+    var touched = 0;
+    HEALTH_FIELD_KEYS.forEach(function (k) {
+      if (data[k] != null && String(data[k]) !== String(HEALTH_DEFAULTS[k])) touched++;
+    });
+    return Math.round(touched / HEALTH_FIELD_KEYS.length * 100);
   }
 
-  // Returns { statusByKey: {networth,cashflow,income,health -> bool},
-  // doneCount, total, percent } or null if there's no signed-in session.
+  // Returns { percentByKey: {networth,cashflow,income,health -> 0..100},
+  // percent (average), total, pendingCount } or null with no session.
   async function computeFireReadiness() {
     var { data: { session } } = await supabaseClient.auth.getSession();
     if (!session) return null;
 
     var results = await Promise.all([
-      hasNetWorthData(),
-      hasRealGridAmount('expenses'),
-      hasRealGridAmount('income'),
-      hasHealthData()
+      netWorthProgress(),
+      gridSectionProgress('expenses'),
+      gridSectionProgress('income'),
+      healthProgress()
     ]);
 
-    var statusByKey = { networth: results[0], cashflow: results[1], income: results[2], health: results[3] };
-    var doneCount = results.filter(Boolean).length;
-    return { statusByKey: statusByKey, doneCount: doneCount, total: ITEMS.length, percent: Math.round(doneCount / ITEMS.length * 100) };
+    var percentByKey = { networth: results[0], cashflow: results[1], income: results[2], health: results[3] };
+    var overallPercent = Math.round(results.reduce(function (s, p) { return s + p; }, 0) / results.length);
+    var pendingCount = results.filter(function (p) { return p < 100; }).length;
+    return { percentByKey: percentByKey, percent: overallPercent, total: ITEMS.length, pendingCount: pendingCount };
   }
 
   // Same donut-ring construction as fire-plan.html's FIRE-progress ring
@@ -102,15 +162,16 @@
       '</svg>';
   }
 
+  function ringColorFor(pct) {
+    if (pct >= 100) return { fill: '#10b981', track: 'rgba(16,185,129,0.15)' };
+    if (pct > 0) return { fill: '#f59e0b', track: 'rgba(180,83,9,0.15)' };
+    return { fill: '#94a3b8', track: 'rgba(148,163,184,0.18)' };
+  }
+
   // Renders into containerEl on every page load, straight from a fresh
   // computeFireReadiness() call - deliberately no sessionStorage/
-  // localStorage gating. This used to remember a dismiss or a one-time
-  // "celebrated" flag, but that meant a single click, or a readiness check
-  // that briefly (or wrongly) computed 100%, could hide the checklist on
-  // every later visit even while real data was still missing - exactly the
-  // "shows once then disappears" bug this replaced. A reminder that can
-  // silently disable itself isn't a reminder, so this only ever reflects
-  // whatever is true right now.
+  // localStorage gating, so it always reflects whatever is true right now
+  // rather than a stale dismissed/celebrated flag.
   function renderFireReadinessChecklist(containerEl, readiness) {
     if (!containerEl || !readiness) return;
 
@@ -123,18 +184,22 @@
               buildRingSvg(100, 52, 6, 'rgba(16,185,129,0.15)', '#10b981') +
               '<div class="fr-ring-pct">✓</div>' +
             '</div>' +
-            '<p class="fr-head-text"><strong>✅ FIRE Readiness Checklist complete</strong> - Net Worth, Monthly Cashflow, Income &amp; Health are all in, so your FIRE number now reflects real data.</p>' +
+            '<p class="fr-head-text"><strong>✅ FIRE Readiness Checklist complete</strong> - Net Worth, Monthly Cashflow, Income &amp; Health are all fully in, so your FIRE number now reflects real data.</p>' +
           '</div>' +
         '</div>';
       return;
     }
 
     var rowsHtml = ITEMS.map(function (item) {
-      var done = readiness.statusByKey[item.key];
-      return '<a class="fr-row' + (done ? ' done' : '') + '" href="' + item.href + '" title="' + (done ? 'Done' : item.hint) + '">' +
-        '<span class="fr-row-icon">' + (done ? '✓' : item.icon) + '</span>' +
+      var pct = readiness.percentByKey[item.key];
+      var done = pct >= 100;
+      var colors = ringColorFor(pct);
+      return '<a class="fr-row' + (done ? ' done' : '') + '" href="' + item.href + '" title="' + (done ? 'Complete' : item.hint) + '">' +
+        '<div class="fr-row-ring">' + buildRingSvg(pct, 34, 4, colors.track, colors.fill) +
+          '<span class="fr-row-ring-pct">' + (done ? '✓' : pct) + '</span>' +
+        '</div>' +
         '<span class="fr-row-label">' + item.label + '</span>' +
-        '<span class="fr-row-status">' + (done ? 'Done' : 'Add data →') + '</span>' +
+        '<span class="fr-row-chevron">›</span>' +
       '</a>';
     }).join('');
 
@@ -146,7 +211,7 @@
             buildRingSvg(readiness.percent, 52, 6, 'rgba(180,83,9,0.15)', '#f59e0b') +
             '<div class="fr-ring-pct">' + readiness.percent + '%</div>' +
           '</div>' +
-          '<p class="fr-head-text"><strong>⚠️ Complete your FIRE Readiness Checklist</strong> - ' + (readiness.total - readiness.doneCount) + ' of ' + readiness.total + ' sections still need real numbers before your FIRE number can be trusted.</p>' +
+          '<p class="fr-head-text"><strong>⚠️ Complete your FIRE Readiness Checklist</strong> - ' + readiness.pendingCount + ' of ' + readiness.total + ' sections aren\'t fully in yet, so your FIRE number can\'t be fully trusted.</p>' +
         '</div>' +
         '<div class="fr-rows">' + rowsHtml + '</div>' +
       '</div>';
