@@ -59,6 +59,7 @@
     .language-selector { display: flex; align-items: center; gap: 0.5rem; background: #ffffff; padding: 0.5rem 0.9rem; border-radius: 0.5rem; color: #51636f; border: 1px solid #e2e8f0; cursor: pointer; font-size: 0.85rem; }
     .user-menu { position: relative; list-style: none; }
     .user-menu > summary { cursor: pointer; list-style: none; width: 34px; height: 34px; border-radius: 50%; background: #eef2f7; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; font-size: 1rem; }
+    .user-menu > summary.user-avatar-initials { background: linear-gradient(135deg, #0ea5e9, #10b981); color: #fff; font-weight: 800; font-size: 0.82rem; letter-spacing: 0.02em; border-color: transparent; }
     .user-menu > summary::-webkit-details-marker { display: none; }
     .user-menu-panel { position: absolute; top: calc(100% + 0.6rem); right: 0; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 0.75rem; box-shadow: 0 10px 30px rgba(15,23,42,0.12); padding: 0.4rem; min-width: 150px; z-index: 20; }
     .user-menu-panel a { display: block; padding: 0.55rem 0.7rem; border-radius: 0.5rem; font-size: 0.85rem; color: #364752; font-weight: 500; }
@@ -330,9 +331,8 @@
           <h1>Spiritual</h1>
         </div>
         <div class="topbar-right">
-          <div class="language-selector">🌐 English ▾</div>
           <details class="user-menu">
-            <summary>👤</summary>
+            <summary id="userAvatar">👤</summary>
             <div class="user-menu-panel">
               <a href="settings.html">Settings</a>
               <a href="#" onclick="signOutAndRedirect('index.html'); return false;">Log Out</a>

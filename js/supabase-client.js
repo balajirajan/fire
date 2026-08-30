@@ -10,7 +10,18 @@
 const SUPABASE_URL = 'https://vtmfgmmxmoptjflhprbi.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_SZZIcM3u7MTzTqH-YPfy2A_klixehI5';
 
-const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// auth options spelled out explicitly (rather than relying on the library's
+// defaults) so a session survives closing the tab/browser entirely, not
+// just a page reload: persisted to localStorage, and silently refreshed
+// via the stored refresh token next time the app loads.
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  auth: {
+    persistSession: true,
+    autoRefreshToken: true,
+    detectSessionInUrl: true,
+    storage: window.localStorage
+  }
+});
 
 // Call at the top of any page that requires a signed-in user.
 // Redirects to the login page if there's no active session, and otherwise
@@ -30,7 +41,7 @@ async function requireAuth(loginPath) {
 
   const { data: profile } = await supabaseClient
     .from('profiles')
-    .select('status')
+    .select('status, first_name, last_name, full_name')
     .eq('id', session.user.id)
     .single();
   if (profile && profile.status !== 'approved') {
@@ -41,7 +52,38 @@ async function requireAuth(loginPath) {
     return null;
   }
 
+  applyUserAvatar(profile, session.user.email);
+
   return session.user;
+}
+
+// Fills the topbar avatar (id="userAvatar" on the user-menu <summary>, if
+// the page has one) with the signed-in user's initials instead of a generic
+// person icon - "BR" for Balaji Rajan, falling back to full_name (older
+// accounts that predate settings.html's first/last name fields), then to
+// the email's first letter if there's no name on file at all. No-ops
+// silently if the page doesn't have that element.
+function applyUserAvatar(profile, fallbackEmail) {
+  const el = document.getElementById('userAvatar');
+  if (!el) return;
+
+  var initials = '', title = '';
+  if (profile && (profile.first_name || profile.last_name)) {
+    initials = ((profile.first_name || '').charAt(0) + (profile.last_name || '').charAt(0)).toUpperCase();
+    title = [profile.first_name, profile.last_name].filter(Boolean).join(' ');
+  } else if (profile && profile.full_name) {
+    var parts = profile.full_name.trim().split(/\s+/);
+    initials = (parts[0].charAt(0) + (parts[1] ? parts[1].charAt(0) : '')).toUpperCase();
+    title = profile.full_name;
+  } else if (fallbackEmail) {
+    initials = fallbackEmail.charAt(0).toUpperCase();
+    title = fallbackEmail;
+  }
+  if (!initials) return;
+
+  el.textContent = initials;
+  el.classList.add('user-avatar-initials');
+  el.title = title;
 }
 
 async function signOutAndRedirect(redirectPath) {
