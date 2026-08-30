@@ -9,6 +9,7 @@
 // Deploy: npx supabase functions deploy admin-users
 
 import { createClient } from 'npm:@supabase/supabase-js@2';
+import { sendMail, escapeHtml } from '../_shared/mailgun.ts';
 
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
@@ -114,9 +115,33 @@ Deno.serve(async (req) => {
       if (!userId) return jsonResponse({ error: 'userId is required' }, 400);
 
       const status = action === 'approve' ? 'approved' : 'rejected';
-      const { error } = await adminClient.from('profiles').update({ status }).eq('id', userId);
+      const { data: updated, error } = await adminClient
+        .from('profiles')
+        .update({ status })
+        .eq('id', userId)
+        .select('email, full_name')
+        .single();
       if (error) throw error;
-      return jsonResponse({ ok: true });
+
+      // Only on approve, and never lets an email hiccup turn a successful
+      // approval into an error response - the account is active either
+      // way, this is just the courtesy notice.
+      let emailResult: unknown = null;
+      if (action === 'approve' && updated?.email) {
+        const appUrl = Deno.env.get('APP_URL') || 'https://enrichme.app';
+        const safeName = escapeHtml(updated.full_name || '');
+        emailResult = await sendMail({
+          to: updated.email,
+          subject: 'Your EnrichMe account is active',
+          html:
+            `<p>Hi${safeName ? ' ' + safeName : ''},</p>` +
+            '<p>Good news - your EnrichMe account has been activated. You can sign in now:</p>' +
+            `<p><a href="${appUrl}/login.html">${appUrl}/login.html</a></p>` +
+            '<p>Welcome aboard!</p>',
+        });
+      }
+
+      return jsonResponse({ ok: true, email: emailResult });
     }
 
     if (action === 'delete') {
