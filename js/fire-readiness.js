@@ -60,17 +60,29 @@
     return !!(rows && rows.length);
   }
 
-  // Fraction of this section's own line items (whatever the user is
-  // actually tracking, seeded or custom) that have at least one real
-  // (non-seed, nonzero) amount entered in any month.
+  // Fraction of this section's own CATEGORIES (expense_groups - e.g.
+  // "Everyday spending", "Utility bills") that have at least one real
+  // (non-seed, nonzero) amount entered anywhere inside them, in any month.
+  // Deliberately category-level, not line-item-level: expenses.html alone
+  // seeds ~34 individual items across 4 categories, and almost nobody
+  // genuinely spends against every single one of them every month (Jewellery,
+  // Gifts, etc. can be a real, honest zero for a given household). Requiring
+  // every item individually made 100% effectively unreachable and read as a
+  // sync bug ("I added my numbers, why is it still 80%?") when it was really
+  // just measuring the wrong thing. A category counts as covered once any
+  // one of its items has real data - matching how a user actually thinks
+  // about "have I filled in my utility bills," not "have I filled in every
+  // conceivable utility."
   async function gridSectionProgress(section) {
     var { data: groups } = await supabaseClient.from('expense_groups').select('id').eq('section', section);
     if (!groups || !groups.length) return 0;
     var groupIds = groups.map(function (g) { return g.id; });
 
-    var { data: items } = await supabaseClient.from('expense_items').select('id').in('group_id', groupIds);
+    var { data: items } = await supabaseClient.from('expense_items').select('id, group_id').in('group_id', groupIds);
     if (!items || !items.length) return 0;
     var itemIds = items.map(function (i) { return i.id; });
+    var groupByItem = {};
+    items.forEach(function (i) { groupByItem[i.id] = i.group_id; });
 
     var { data: rows } = await supabaseClient
       .from('expense_grid')
@@ -79,9 +91,12 @@
       .eq('is_seed', false)
       .gt('amount', 0);
 
-    var itemsWithRealData = {};
-    (rows || []).forEach(function (r) { itemsWithRealData[r.item_id] = true; });
-    return Math.round(Object.keys(itemsWithRealData).length / items.length * 100);
+    var groupsWithRealData = {};
+    (rows || []).forEach(function (r) {
+      var groupId = groupByItem[r.item_id];
+      if (groupId) groupsWithRealData[groupId] = true;
+    });
+    return Math.round(Object.keys(groupsWithRealData).length / groupIds.length * 100);
   }
 
   async function netWorthProgress() {
