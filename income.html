@@ -155,7 +155,22 @@
        scrollbars, not a long flat list, and lets the header row +
        category column stay pinned via position:sticky relative to this
        ancestor instead of the page. */
-    .grid-scroll { overflow: auto; max-height: 68vh; }
+    .grid-scroll { position: relative; overflow: auto; max-height: 68vh; }
+    /* Fill handle: the small square at the selection's bottom-right corner
+       you drag to copy values down a column or across a row, the same way
+       Google Sheets' fill handle works. Positioned in JS against the
+       scroll wrapper so it scrolls along with the grid content. */
+    .fill-handle {
+      display: none;
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background: #1a73e8;
+      border: 1px solid #fff;
+      cursor: crosshair;
+      z-index: 5;
+    }
+    table.expense-grid td.cell-fill-preview { background: #f1f5f9; box-shadow: inset 0 0 0 1px #94a3b8 !important; }
     .grid-hint { padding: 0.85rem 1.3rem; font-size: 0.78rem; color: #64748b; border-bottom: 1px solid #f1f5f9; }
     .load-error { display: none; padding: 0.85rem 1.3rem; font-size: 0.8rem; color: #991b1b; background: #fef2f2; border-bottom: 1px solid #fecaca; }
     .load-error.show { display: block; }
@@ -199,6 +214,10 @@
        double up between adjacent selected cells). */
     table.expense-grid td.cell-in-range { background: #e8f0fe; }
     table.expense-grid td:has(.grid-cell-input) { padding: 0; }
+    /* Row labels and month headers are click targets for selecting a
+       whole row/column, like clicking a Sheets row/column header. */
+    tr.item-row td:first-child { cursor: pointer; }
+    table.expense-grid thead th { cursor: pointer; }
     .month-head { display: inline-flex; align-items: center; gap: 0.2rem; }
     .month-menu { position: relative; list-style: none; }
     .month-menu > summary { cursor: pointer; list-style: none; color: #94a3b8; font-size: 0.85rem; font-weight: 700; padding: 0 0.1rem; line-height: 1; }
@@ -549,6 +568,7 @@
               </tr>
             </tfoot>
           </table>
+          <div class="fill-handle" id="fillHandle" title="Drag to fill"></div>
         </div>
         <div class="empty-groups" id="emptyGroups" style="display:none;">
           <p>No categories yet - add your first one to start tracking.</p>
@@ -878,6 +898,7 @@
 
     function applySelectionClasses() {
       clearSelectionClasses();
+      positionFillHandle();
       if (!gridSel) return;
       var r1 = Math.min(gridSel.r1, gridSel.r2), r2 = Math.max(gridSel.r1, gridSel.r2);
       var c1 = Math.min(gridSel.c1, gridSel.c2), c2 = Math.max(gridSel.c1, gridSel.c2);
@@ -896,15 +917,58 @@
       });
     }
 
+    // Positions the fill-handle square at the bottom-right corner of the
+    // current selection. It lives inside #gridScrollWrap (position:
+    // relative) so it scrolls along with the grid's own content.
+    function positionFillHandle() {
+      var handle = document.getElementById('fillHandle');
+      if (!handle) return;
+      if (!gridSel || gridRowCount === 0) { handle.style.display = 'none'; return; }
+      var r2 = Math.max(gridSel.r1, gridSel.r2), c2 = Math.max(gridSel.c1, gridSel.c2);
+      var cell = findCell(r2, c2);
+      var td = cell && cell.closest('td');
+      var wrap = document.getElementById('gridScrollWrap');
+      if (!td || !wrap) { handle.style.display = 'none'; return; }
+      var tdRect = td.getBoundingClientRect();
+      var wrapRect = wrap.getBoundingClientRect();
+      handle.style.left = (tdRect.right - wrapRect.left + wrap.scrollLeft - 5) + 'px';
+      handle.style.top = (tdRect.bottom - wrapRect.top + wrap.scrollTop - 5) + 'px';
+      handle.style.display = 'block';
+    }
+
+    var suppressFocusReset = false; // true while a row/column-header click is programmatically focusing a cell
+
     function onCellFocus(input) {
       highlightCell(input, true);
-      if (gridDragging) return;
+      if (gridDragging || suppressFocusReset) return;
       var r = Number(input.dataset.row), c = Number(input.dataset.month);
       gridSel = { r1: r, c1: c, r2: r, c2: c, activeR: r, activeC: c };
       applySelectionClasses();
     }
     function onCellBlur(input) {
       highlightCell(input, false);
+    }
+
+    // Click a row's category-name cell (or a month's column header) to
+    // select the whole row/column, the same way Google Sheets' row and
+    // column headers work.
+    function selectWholeRow(r) {
+      if (gridRowCount === 0) return;
+      gridSel = { r1: r, c1: 0, r2: r, c2: 11, activeR: r, activeC: 0 };
+      suppressFocusReset = true;
+      var inp = findCell(r, 0);
+      if (inp) inp.focus();
+      suppressFocusReset = false;
+      applySelectionClasses();
+    }
+    function selectWholeColumn(c) {
+      if (gridRowCount === 0) return;
+      gridSel = { r1: 0, c1: c, r2: gridRowCount - 1, c2: c, activeR: 0, activeC: c };
+      suppressFocusReset = true;
+      var inp = findCell(0, c);
+      if (inp) inp.focus();
+      suppressFocusReset = false;
+      applySelectionClasses();
     }
 
     // "You are here" highlight: lights up this cell's row label and this
@@ -966,7 +1030,48 @@
         else moveActiveCell(rowDelta, colDelta);
         return;
       }
-      if (key === 'Enter') { event.preventDefault(); moveActiveCell(event.shiftKey ? -1 : 1, 0); }
+      if (key === 'Enter') { event.preventDefault(); moveActiveCell(event.shiftKey ? -1 : 1, 0); return; }
+      if ((key === 'Delete' || key === 'Backspace') && gridSel) {
+        var dr1 = Math.min(gridSel.r1, gridSel.r2), dr2 = Math.max(gridSel.r1, gridSel.r2);
+        var dc1 = Math.min(gridSel.c1, gridSel.c2), dc2 = Math.max(gridSel.c1, gridSel.c2);
+        if (dr1 !== dr2 || dc1 !== dc2) { event.preventDefault(); clearSelectedRange(); }
+        // single cell: leave Delete/Backspace to edit the text normally
+        return;
+      }
+      if ((event.ctrlKey || event.metaKey) && key.toLowerCase() === 'a' && gridSel) {
+        event.preventDefault();
+        gridSel.r1 = 0; gridSel.c1 = 0; gridSel.r2 = gridRowCount - 1; gridSel.c2 = 11;
+        applySelectionClasses();
+      }
+    }
+
+    async function clearSelectedRange() {
+      var r1 = Math.min(gridSel.r1, gridSel.r2), r2 = Math.max(gridSel.r1, gridSel.r2);
+      var c1 = Math.min(gridSel.c1, gridSel.c2), c2 = Math.max(gridSel.c1, gridSel.c2);
+      var updates = [];
+      for (var r = r1; r <= r2; r++) {
+        for (var c = c1; c <= c2; c++) {
+          var inp = findCell(r, c);
+          if (!inp) continue;
+          inp.value = 0;
+          applyCellValueToState(inp, 0);
+          updates.push(inp);
+        }
+      }
+      if (updates.length === 0) return;
+      recomputeTotals();
+
+      var cells = updates.map(function (inp) {
+        return {
+          item_id: inp.dataset.item,
+          month: monthKey(currentYear, Number(inp.dataset.month)),
+          amount: 0,
+          is_seed: false,
+          updated_at: new Date().toISOString(),
+        };
+      });
+      var { error } = await supabaseClient.from('expense_grid').upsert(cells, { onConflict: 'user_id,item_id,month' });
+      if (error) showToast('Could not clear: ' + error.message);
     }
 
     function autoScrollGridDuringDrag(e) {
@@ -979,11 +1084,108 @@
       else if (rect.right - e.clientX < margin) wrap.scrollLeft += speed;
     }
 
+    var fillDragging = false;
+    var fillOrigin = null;   // the selection rectangle the fill started from
+    var fillTarget = null;   // { r2, c2 } the fill would extend to if dropped now
+
+    function clearFillPreview() {
+      document.querySelectorAll('#gridTable td.cell-fill-preview').forEach(function (td) {
+        td.classList.remove('cell-fill-preview');
+      });
+    }
+
+    function showFillPreview(targetR, targetC) {
+      clearFillPreview();
+      if (!fillOrigin) return;
+      var vertical = Math.abs(targetR - fillOrigin.r2) >= Math.abs(targetC - fillOrigin.c2);
+      if (vertical && targetR > fillOrigin.r2) {
+        for (var r = fillOrigin.r2 + 1; r <= targetR; r++) {
+          for (var c = fillOrigin.c1; c <= fillOrigin.c2; c++) {
+            var cell = findCell(r, c);
+            if (cell) cell.closest('td').classList.add('cell-fill-preview');
+          }
+        }
+      } else if (!vertical && targetC > fillOrigin.c2) {
+        for (var c2 = fillOrigin.c2 + 1; c2 <= targetC; c2++) {
+          for (var r2 = fillOrigin.r1; r2 <= fillOrigin.r2; r2++) {
+            var cell2 = findCell(r2, c2);
+            if (cell2) cell2.closest('td').classList.add('cell-fill-preview');
+          }
+        }
+      }
+    }
+
+    // Fills forward (down or across) from the selection, repeating the
+    // selected values if the drag goes further than one row/column - the
+    // same tiling behavior as Google Sheets' fill handle.
+    async function commitFill(targetR, targetC) {
+      clearFillPreview();
+      if (!fillOrigin) return;
+      var o = fillOrigin;
+      var height = o.r2 - o.r1 + 1;
+      var width = o.c2 - o.c1 + 1;
+      var vertical = Math.abs(targetR - o.r2) >= Math.abs(targetC - o.c2);
+      var updates = [];
+
+      if (vertical && targetR > o.r2) {
+        for (var r = o.r2 + 1; r <= targetR; r++) {
+          for (var c = o.c1; c <= o.c2; c++) {
+            var srcR = o.r1 + ((r - o.r1) % height);
+            var src = findCell(srcR, c), dst = findCell(r, c);
+            if (src && dst) updates.push({ dst: dst, amount: Number(src.value) || 0 });
+          }
+        }
+      } else if (!vertical && targetC > o.c2) {
+        for (var c2 = o.c2 + 1; c2 <= targetC; c2++) {
+          for (var r2 = o.r1; r2 <= o.r2; r2++) {
+            var srcC = o.c1 + ((c2 - o.c1) % width);
+            var src2 = findCell(r2, srcC), dst2 = findCell(r2, c2);
+            if (src2 && dst2) updates.push({ dst: dst2, amount: Number(src2.value) || 0 });
+          }
+        }
+      }
+      if (updates.length === 0) { fillOrigin = null; return; }
+
+      updates.forEach(function (u) { u.dst.value = u.amount; applyCellValueToState(u.dst, u.amount); });
+      recomputeTotals();
+
+      var cells = updates.map(function (u) {
+        return {
+          item_id: u.dst.dataset.item,
+          month: monthKey(currentYear, Number(u.dst.dataset.month)),
+          amount: u.amount,
+          is_seed: false,
+          updated_at: new Date().toISOString(),
+        };
+      });
+      var { error } = await supabaseClient.from('expense_grid').upsert(cells, { onConflict: 'user_id,item_id,month' });
+      if (error) { showToast('Could not save filled values: ' + error.message); fillOrigin = null; return; }
+
+      gridSel = { r1: o.r1, c1: o.c1, r2: vertical ? targetR : o.r2, c2: vertical ? o.c2 : targetC, activeR: targetR, activeC: targetC };
+      applySelectionClasses();
+      showToast('Filled ' + updates.length + ' cell' + (updates.length === 1 ? '' : 's') + '.');
+      fillOrigin = null;
+    }
+
     (function wireGridSelection() {
       var table = document.getElementById('gridTable');
+      var wrap = document.getElementById('gridScrollWrap');
+      var handle = document.getElementById('fillHandle');
       if (!table) return;
 
+      handle.addEventListener('mousedown', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (!gridSel) return;
+        fillOrigin = {
+          r1: Math.min(gridSel.r1, gridSel.r2), c1: Math.min(gridSel.c1, gridSel.c2),
+          r2: Math.max(gridSel.r1, gridSel.r2), c2: Math.max(gridSel.c1, gridSel.c2),
+        };
+        fillDragging = true;
+      });
+
       table.addEventListener('mousedown', function (e) {
+        if (e.target === handle) return;
         var input = e.target.closest('.grid-cell-input');
         if (!input) return;
         var r = Number(input.dataset.row), c = Number(input.dataset.month);
@@ -996,7 +1198,23 @@
         applySelectionClasses();
       });
 
+      table.addEventListener('click', function (e) {
+        if (e.target.closest('button') || e.target.closest('.grid-cell-input') || e.target.closest('.month-menu')) return;
+        var headerTh = e.target.closest('thead th[data-month]');
+        if (headerTh) { selectWholeColumn(Number(headerTh.dataset.month)); return; }
+        var tr = e.target.closest('tbody tr.item-row[data-row-idx]');
+        if (tr && e.target.closest('td') === tr.children[0]) selectWholeRow(Number(tr.dataset.rowIdx));
+      });
+
       table.addEventListener('mouseover', function (e) {
+        if (fillDragging) {
+          autoScrollGridDuringDrag(e);
+          var fillInput = e.target.closest('.grid-cell-input');
+          if (!fillInput || !fillOrigin) return;
+          fillTarget = { r: Number(fillInput.dataset.row), c: Number(fillInput.dataset.month) };
+          showFillPreview(fillTarget.r, fillTarget.c);
+          return;
+        }
         if (!gridDragging || !gridSel) return;
         autoScrollGridDuringDrag(e);
         var input = e.target.closest('.grid-cell-input');
@@ -1008,7 +1226,15 @@
         applySelectionClasses();
       });
 
-      document.addEventListener('mouseup', function () { gridDragging = false; });
+      document.addEventListener('mouseup', function () {
+        gridDragging = false;
+        if (fillDragging) {
+          fillDragging = false;
+          if (fillTarget) commitFill(fillTarget.r, fillTarget.c);
+          else { clearFillPreview(); fillOrigin = null; }
+          fillTarget = null;
+        }
+      });
 
       document.addEventListener('copy', function (e) {
         var active = document.activeElement;
@@ -1091,7 +1317,7 @@
         var copyItem = m > 0
           ? '<button type="button" onclick="copyMonthForward(' + (m - 1) + ')">📋 Copy from ' + monthLabels[m - 1] + '</button>'
           : '';
-        headHtml += '<th><span class="month-head">' + monthLabels[m] +
+        headHtml += '<th data-month="' + m + '"><span class="month-head">' + monthLabels[m] +
           '<details class="month-menu"><summary title="Month options">⋮</summary>' +
           '<div class="month-menu-panel">' + copyItem +
           '<button type="button" onclick="clearMonth(' + m + ')">🗑 Clear ' + monthLabels[m] + '</button>' +
@@ -1193,12 +1419,12 @@
         html += '</tr>';
 
         g.items.forEach(function (it) {
-          html += '<tr class="item-row" data-item="' + it.id + '">' +
+          var itemRowIdx = __gridRowIdx++;
+          html += '<tr class="item-row" data-item="' + it.id + '" data-row-idx="' + itemRowIdx + '">' +
             '<td><span class="row-name">' + escapeHtml(it.name) +
               ' <button type="button" class="row-icon-btn edit-btn" data-id="' + it.id + '" data-name="' + escapeHtml(it.name) + '" onclick="renameItem(this.dataset.id, this.dataset.name)" title="Rename">✎</button>' +
               ' <button type="button" class="row-icon-btn delete-btn" data-id="' + it.id + '" data-name="' + escapeHtml(it.name) + '" onclick="deleteItem(this.dataset.id, this.dataset.name)" title="Delete">✕</button>' +
             '</span></td>';
-          var itemRowIdx = __gridRowIdx++;
           for (var mi = 0; mi < 12; mi++) {
             var key = monthKey(currentYear, mi);
             var val = it.amounts[key] || 0;
