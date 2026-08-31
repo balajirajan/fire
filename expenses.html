@@ -195,6 +195,13 @@
        Google Sheets highlights the active row/column headers. */
     table.expense-grid td.cell-active-row { background: #eff6ff !important; }
     table.expense-grid th.cell-active-col { background: #dbeafe !important; color: #1d4ed8 !important; }
+    /* Multi-cell range selection, Google-Sheets style: a light blue wash
+       across every selected cell, with a solid blue border traced only
+       around the outside edge of the selected rectangle (each cell's own
+       box-shadow draws just the edges it sits on, so the borders never
+       double up between adjacent selected cells). */
+    table.expense-grid td.cell-in-range { background: #e8f0fe; }
+    table.expense-grid td:has(.grid-cell-input) { padding: 0; }
     .month-head { display: inline-flex; align-items: center; gap: 0.2rem; }
     .month-menu { position: relative; list-style: none; }
     .month-menu > summary { cursor: pointer; list-style: none; color: #94a3b8; font-size: 0.85rem; font-weight: 700; padding: 0 0.1rem; line-height: 1; }
@@ -246,22 +253,22 @@
 
     .grid-cell-input {
       width: 100%;
+      height: 100%;
+      min-height: 2.15rem;
       box-sizing: border-box;
-      padding: 0.35rem 0.2rem;
+      padding: 0.5rem 0.52rem;
+      margin: 0;
       border: none;
       border-radius: 0;
-      background: #ffffff;
-      font-size: 0.8rem;
+      background: transparent;
+      font-size: 0.83rem;
       font-family: inherit;
       text-align: right;
       color: #0f172a;
       display: block;
     }
-    .grid-cell-input:hover { background: #f0fdf7; }
-    .grid-cell-input:focus { outline: 2px solid #10b981; outline-offset: -2px; background: #fff; }
-    .grid-cell-input::-webkit-outer-spin-button,
-    .grid-cell-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-    .grid-cell-input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
+    .grid-cell-input:hover { background: #f8fafc; }
+    .grid-cell-input:focus { outline: 2px solid #1a73e8; outline-offset: -2px; background: #fff; position: relative; z-index: 1; }
 
     tr.add-group-row td { background: #f8fafc; border-bottom: none; padding-top: 0.4rem; padding-bottom: 0.4rem; }
     .add-group-input {
@@ -912,52 +919,102 @@
 
     /* ---- Amount cell editing ---- */
 
-    async function handleCellChange(input) {
+    function applyCellValueToState(input, amount) {
       var itemId = input.dataset.item;
-      var m = Number(input.dataset.month);
-      var key = monthKey(currentYear, m);
-      var amount = Number(input.value) || 0;
-
+      var key = monthKey(currentYear, Number(input.dataset.month));
       var item = null;
       groups.forEach(function (g) { g.items.forEach(function (it) { if (it.id === itemId) item = it; }); });
       if (item) item.amounts[key] = amount;
+    }
+
+    async function handleCellChange(input) {
+      var amount = Number(input.value) || 0;
+      input.value = amount;
+      applyCellValueToState(input, amount);
       recomputeTotals();
 
+      var itemId = input.dataset.item;
+      var key = monthKey(currentYear, Number(input.dataset.month));
       var { error } = await supabaseClient
         .from('expense_grid')
         .upsert({ item_id: itemId, month: key, amount: amount, is_seed: false, updated_at: new Date().toISOString() }, { onConflict: 'user_id,item_id,month' });
       if (error) showToast('Could not save: ' + error.message);
     }
 
-    /* ---- Spreadsheet-style cell navigation, mirroring Google Sheets:  ----
-       Up/Down (and Enter/Shift+Enter) hop between rows in the same month
-       column; Left/Right and Tab are left as the browser's native cursor/
-       focus movement, since type="number" inputs don't reliably support
-       reading cursor position across browsers to tell "move within the
-       number" from "move to the next cell" - Tab already does the latter
-       for free. Arrow-key Up/Down would otherwise just nudge the number
-       itself (native spinner behavior), so it's overridden here.        ---- */
-    function focusGridCell(fromInput, rowDelta) {
-      var td = fromInput.closest('td');
-      var tr = td && td.closest('tr');
-      if (!td || !tr) return;
-
-      var itemRows = Array.prototype.slice.call(document.querySelectorAll('#gridTable tbody tr.item-row'));
-      var rowIdx = itemRows.indexOf(tr);
-      if (rowIdx === -1) return;
-
-      var targetRow = itemRows[rowIdx + rowDelta];
-      if (!targetRow) return;
-
-      var targetTd = targetRow.children[td.cellIndex];
-      var targetInput = targetTd && targetTd.querySelector('.grid-cell-input');
-      if (targetInput) { targetInput.focus(); targetInput.select(); }
+    // The cell is type="text" (not "number") so that arrow-key cursor
+    // position and multi-cell range selection work reliably - Chrome and
+    // Safari both throw on selectionStart/selectionEnd for type="number".
+    // This keeps the typed value numeric-only, one decimal point max.
+    function sanitizeCellInput(input) {
+      var v = input.value;
+      var cleaned = v.replace(/[^0-9.]/g, '');
+      var firstDot = cleaned.indexOf('.');
+      if (firstDot !== -1) cleaned = cleaned.slice(0, firstDot + 1) + cleaned.slice(firstDot + 1).replace(/\./g, '');
+      if (cleaned !== v) {
+        var pos = Math.max(0, input.selectionStart - (v.length - cleaned.length));
+        input.value = cleaned;
+        try { input.setSelectionRange(pos, pos); } catch (e) {}
+      }
     }
 
-    function handleCellKeydown(event, input) {
-      if (event.key === 'ArrowUp') { event.preventDefault(); focusGridCell(input, -1); }
-      else if (event.key === 'ArrowDown') { event.preventDefault(); focusGridCell(input, 1); }
-      else if (event.key === 'Enter') { event.preventDefault(); focusGridCell(input, event.shiftKey ? -1 : 1); }
+    /* ---- Spreadsheet-style selection, navigation, copy/paste, mirroring
+       Google Sheets: click-drag (or shift+click / shift+arrow) selects a
+       rectangular range of cells across rows and months; plain arrow keys
+       move the active cell; Ctrl/Cmd+C and Ctrl/Cmd+V copy and paste the
+       whole range as tab/newline-separated values, the same format real
+       spreadsheets use, so copying to or from an actual Google Sheet
+       works too.                                                       ---- */
+    var gridSel = null;    // { r1, c1, r2, c2, activeR, activeC } - r/c are grid coords, not DOM indices
+    var gridDragging = false;
+    var gridRowCount = 0;  // set by render()
+
+    function findCell(r, c) {
+      return document.querySelector('#gridTable .grid-cell-input[data-row="' + r + '"][data-month="' + c + '"]');
+    }
+    function allGridCells() {
+      return Array.prototype.slice.call(document.querySelectorAll('#gridTable .grid-cell-input'));
+    }
+    function clampCell(r, c) {
+      return { r: Math.max(0, Math.min(gridRowCount - 1, r)), c: Math.max(0, Math.min(11, c)) };
+    }
+
+    function clearSelectionClasses() {
+      allGridCells().forEach(function (inp) {
+        var td = inp.closest('td');
+        td.classList.remove('cell-in-range');
+        td.style.boxShadow = '';
+      });
+    }
+
+    function applySelectionClasses() {
+      clearSelectionClasses();
+      if (!gridSel) return;
+      var r1 = Math.min(gridSel.r1, gridSel.r2), r2 = Math.max(gridSel.r1, gridSel.r2);
+      var c1 = Math.min(gridSel.c1, gridSel.c2), c2 = Math.max(gridSel.c1, gridSel.c2);
+      if (r1 === r2 && c1 === c2) return; // single cell: the :focus outline alone is enough
+      allGridCells().forEach(function (inp) {
+        var r = Number(inp.dataset.row), c = Number(inp.dataset.month);
+        if (r < r1 || r > r2 || c < c1 || c > c2) return;
+        var td = inp.closest('td');
+        td.classList.add('cell-in-range');
+        var edges = [];
+        if (r === r1) edges.push('inset 0 2px 0 0 #1a73e8');
+        if (r === r2) edges.push('inset 0 -2px 0 0 #1a73e8');
+        if (c === c1) edges.push('inset 2px 0 0 0 #1a73e8');
+        if (c === c2) edges.push('inset -2px 0 0 0 #1a73e8');
+        td.style.boxShadow = edges.join(', ');
+      });
+    }
+
+    function onCellFocus(input) {
+      highlightCell(input, true);
+      if (gridDragging) return;
+      var r = Number(input.dataset.row), c = Number(input.dataset.month);
+      gridSel = { r1: r, c1: c, r2: r, c2: c, activeR: r, activeC: c };
+      applySelectionClasses();
+    }
+    function onCellBlur(input) {
+      highlightCell(input, false);
     }
 
     // "You are here" highlight: lights up this cell's row label and this
@@ -974,6 +1031,165 @@
       var headerRow = document.querySelector('#gridTable thead tr');
       var headerCell = headerRow && headerRow.children[td.cellIndex];
       if (headerCell) headerCell.classList.toggle('cell-active-col', on);
+    }
+
+    function moveActiveCell(rowDelta, colDelta) {
+      if (!gridSel) return;
+      var target = clampCell(gridSel.activeR + rowDelta, gridSel.activeC + colDelta);
+      var inp = findCell(target.r, target.c);
+      if (!inp) return;
+      gridSel = { r1: target.r, c1: target.c, r2: target.r, c2: target.c, activeR: target.r, activeC: target.c };
+      inp.focus();
+      inp.select();
+      applySelectionClasses();
+    }
+
+    function extendSelection(rowDelta, colDelta) {
+      if (!gridSel) return;
+      var target = clampCell(gridSel.activeR + rowDelta, gridSel.activeC + colDelta);
+      gridSel.activeR = target.r;
+      gridSel.activeC = target.c;
+      gridSel.r2 = target.r;
+      gridSel.c2 = target.c;
+      var inp = findCell(target.r, target.c);
+      if (inp) inp.focus();
+      applySelectionClasses();
+    }
+
+    function handleCellKeydown(event, input) {
+      var key = event.key;
+      var isArrow = key === 'ArrowUp' || key === 'ArrowDown' || key === 'ArrowLeft' || key === 'ArrowRight';
+      if (isArrow) {
+        if (key === 'ArrowLeft' || key === 'ArrowRight') {
+          // Only hop cells once the cursor is already at that edge of the
+          // number, so the arrow keys can still move within a multi-digit
+          // value before they start moving between cells.
+          var atStart = input.selectionStart === 0 && input.selectionEnd === 0;
+          var atEnd = input.selectionStart === input.value.length && input.selectionEnd === input.value.length;
+          if (key === 'ArrowLeft' && !atStart) return;
+          if (key === 'ArrowRight' && !atEnd) return;
+        }
+        event.preventDefault();
+        var rowDelta = key === 'ArrowUp' ? -1 : key === 'ArrowDown' ? 1 : 0;
+        var colDelta = key === 'ArrowLeft' ? -1 : key === 'ArrowRight' ? 1 : 0;
+        if (event.shiftKey) extendSelection(rowDelta, colDelta);
+        else moveActiveCell(rowDelta, colDelta);
+        return;
+      }
+      if (key === 'Enter') { event.preventDefault(); moveActiveCell(event.shiftKey ? -1 : 1, 0); }
+    }
+
+    function autoScrollGridDuringDrag(e) {
+      var wrap = document.getElementById('gridScrollWrap');
+      var rect = wrap.getBoundingClientRect();
+      var margin = 40, speed = 18;
+      if (e.clientY - rect.top < margin) wrap.scrollTop -= speed;
+      else if (rect.bottom - e.clientY < margin) wrap.scrollTop += speed;
+      if (e.clientX - rect.left < margin) wrap.scrollLeft -= speed;
+      else if (rect.right - e.clientX < margin) wrap.scrollLeft += speed;
+    }
+
+    (function wireGridSelection() {
+      var table = document.getElementById('gridTable');
+      if (!table) return;
+
+      table.addEventListener('mousedown', function (e) {
+        var input = e.target.closest('.grid-cell-input');
+        if (!input) return;
+        var r = Number(input.dataset.row), c = Number(input.dataset.month);
+        if (e.shiftKey && gridSel) {
+          gridSel.activeR = r; gridSel.activeC = c; gridSel.r2 = r; gridSel.c2 = c;
+        } else {
+          gridSel = { r1: r, c1: c, r2: r, c2: c, activeR: r, activeC: c };
+        }
+        gridDragging = true;
+        applySelectionClasses();
+      });
+
+      table.addEventListener('mouseover', function (e) {
+        if (!gridDragging || !gridSel) return;
+        autoScrollGridDuringDrag(e);
+        var input = e.target.closest('.grid-cell-input');
+        if (!input) return;
+        gridSel.r2 = Number(input.dataset.row);
+        gridSel.c2 = Number(input.dataset.month);
+        gridSel.activeR = gridSel.r2;
+        gridSel.activeC = gridSel.c2;
+        applySelectionClasses();
+      });
+
+      document.addEventListener('mouseup', function () { gridDragging = false; });
+
+      document.addEventListener('copy', function (e) {
+        var active = document.activeElement;
+        if (!gridSel || !active || !active.classList || !active.classList.contains('grid-cell-input')) return;
+        e.preventDefault();
+        var r1 = Math.min(gridSel.r1, gridSel.r2), r2 = Math.max(gridSel.r1, gridSel.r2);
+        var c1 = Math.min(gridSel.c1, gridSel.c2), c2 = Math.max(gridSel.c1, gridSel.c2);
+        var rows = [];
+        for (var r = r1; r <= r2; r++) {
+          var cols = [];
+          for (var c = c1; c <= c2; c++) {
+            var inp = findCell(r, c);
+            cols.push(inp ? (inp.value || '0') : '0');
+          }
+          rows.push(cols.join('\t'));
+        }
+        e.clipboardData.setData('text/plain', rows.join('\n'));
+      });
+
+      document.addEventListener('paste', function (e) {
+        var active = document.activeElement;
+        if (!gridSel || !active || !active.classList || !active.classList.contains('grid-cell-input')) return;
+        var text = (e.clipboardData || window.clipboardData).getData('text/plain');
+        if (!text) return;
+        e.preventDefault();
+        pasteGridText(text);
+      });
+    })();
+
+    async function pasteGridText(text) {
+      var lines = text.replace(/\r/g, '').split('\n');
+      if (lines.length && lines[lines.length - 1] === '') lines.pop();
+      var rows = lines.map(function (line) { return line.split('\t'); });
+      if (rows.length === 0) return;
+
+      var startR = gridSel.activeR, startC = gridSel.activeC;
+      var updates = [];
+      var lastR = startR, lastC = startC;
+      for (var i = 0; i < rows.length; i++) {
+        var r = startR + i;
+        if (r > gridRowCount - 1) break;
+        for (var j = 0; j < rows[i].length; j++) {
+          var c = startC + j;
+          if (c > 11) break;
+          var inp = findCell(r, c);
+          if (!inp) continue;
+          var amount = Number(String(rows[i][j]).replace(/[^0-9.\-]/g, '')) || 0;
+          inp.value = amount;
+          applyCellValueToState(inp, amount);
+          updates.push(inp);
+          lastR = r; lastC = c;
+        }
+      }
+      if (updates.length === 0) return;
+      recomputeTotals();
+
+      var cells = updates.map(function (inp) {
+        return {
+          item_id: inp.dataset.item,
+          month: monthKey(currentYear, Number(inp.dataset.month)),
+          amount: Number(inp.value) || 0,
+          is_seed: false,
+          updated_at: new Date().toISOString(),
+        };
+      });
+      var { error } = await supabaseClient.from('expense_grid').upsert(cells, { onConflict: 'user_id,item_id,month' });
+      if (error) { showToast('Could not save pasted values: ' + error.message); return; }
+
+      gridSel = { r1: startR, c1: startC, r2: lastR, c2: lastC, activeR: lastR, activeC: lastC };
+      applySelectionClasses();
+      showToast('Pasted ' + updates.length + ' cell' + (updates.length === 1 ? '' : 's') + '.');
     }
 
     /* ---- Rendering ---- */
@@ -1070,6 +1286,8 @@
       wrap.style.display = '';
       emptyEl.style.display = 'none';
 
+      gridSel = null;
+      var __gridRowIdx = 0;
       var html = '';
       groups.forEach(function (g) {
         if (g.auto) {
@@ -1114,18 +1332,21 @@
               ' <button type="button" class="row-icon-btn edit-btn" data-id="' + it.id + '" data-name="' + escapeHtml(it.name) + '" onclick="renameItem(this.dataset.id, this.dataset.name)" title="Rename sub-category">✎</button>' +
               ' <button type="button" class="row-icon-btn delete-btn" data-id="' + it.id + '" data-name="' + escapeHtml(it.name) + '" onclick="deleteItem(this.dataset.id, this.dataset.name)" title="Delete sub-category">✕</button>' +
             '</span></td>';
+          var itemRowIdx = __gridRowIdx++;
           for (var mi = 0; mi < 12; mi++) {
             var key = monthKey(currentYear, mi);
             var val = it.amounts[key] || 0;
-            html += '<td><input type="number" min="0" step="1" class="grid-cell-input" value="' + val + '" ' +
-              'data-item="' + it.id + '" data-month="' + mi + '" onchange="handleCellChange(this)" ' +
-              'onkeydown="handleCellKeydown(event, this)" onfocus="highlightCell(this, true)" onblur="highlightCell(this, false)"></td>';
+            html += '<td><input type="text" inputmode="decimal" autocomplete="off" class="grid-cell-input" value="' + val + '" ' +
+              'data-item="' + it.id + '" data-row="' + itemRowIdx + '" data-month="' + mi + '" ' +
+              'oninput="sanitizeCellInput(this)" onchange="handleCellChange(this)" ' +
+              'onkeydown="handleCellKeydown(event, this)" onfocus="onCellFocus(this)" onblur="onCellBlur(this)"></td>';
           }
           html += '<td class="row-total" id="itemTotal-' + it.id + '">₹0</td>';
           html += '</tr>';
         });
       });
 
+      gridRowCount = __gridRowIdx;
       html += '<tr class="add-group-row">' +
         '<td><input type="text" class="add-group-input" placeholder="+ Add master category…" onkeydown="handleAddGroupKey(event, this)"></td>' +
         '<td colspan="13"></td>' +
