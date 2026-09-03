@@ -12,10 +12,24 @@
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
+    :root {
+      --bg: #ffffff;
+      --bg-alt: #f5f4f1;
+      --ink: #16130f;
+      --ink-soft: #5c584f;
+      --ink-faint: #8a857a;
+      --border: #e7e3dc;
+      --accent: #de3341;
+      --accent-dark: #a3202b;
+      --accent-tint: #fdeceb;
+      --black: #16130f;
+      --black-hover: #322d26;
+    }
+
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #f8fafc;
-      color: #0f172a;
+      background: var(--bg-alt);
+      color: var(--ink);
       min-height: 100vh;
       overflow-x: hidden;
     }
@@ -68,10 +82,11 @@
     .page-head p { color: #64748b; font-size: 0.9rem; }
 
     .split-hero {
-      background: linear-gradient(135deg, #0f172a, #1e293b);
+      background: var(--bg);
+      border: 1px solid var(--border);
       border-radius: 1.25rem;
       padding: 1.75rem 2rem;
-      color: #fff;
+      color: var(--ink);
       margin-bottom: 1.5rem;
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -79,28 +94,61 @@
     }
     @media (max-width: 700px) { .split-hero { grid-template-columns: 1fr; } }
     .split-hero-stat { text-align: center; }
-    .split-hero-label { font-size: 0.75rem; color: #94a3b8; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.4rem; }
+    .split-hero-label { font-size: 0.75rem; color: var(--ink-faint); font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.4rem; }
     .split-hero-value { font-size: 1.75rem; font-weight: 800; }
-    .split-hero-value.positive { color: #6ee7b7; }
-    .split-hero-value.negative { color: #fca5a5; }
+    .split-hero-value.positive { color: #059669; }
+    .split-hero-value.negative { color: var(--accent); }
+
+    .view-tabs { display: flex; gap: 0.4rem; margin-bottom: 1.25rem; border-bottom: 1px solid var(--border); }
+    .view-tab { padding: 0.65rem 0.3rem; margin-right: 1.25rem; font-size: 0.88rem; font-weight: 700; color: var(--ink-faint); background: none; border: none; border-bottom: 2px solid transparent; cursor: pointer; }
+    .view-tab:hover { color: var(--ink); }
+    .view-tab.active { color: var(--ink); border-bottom-color: var(--accent); }
+    .view-panel { display: none; }
+    .view-panel.active { display: block; }
 
     .section-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
     .section-head h3 { font-size: 1.05rem; font-weight: 800; }
     .btn-primary {
-      padding: 0.6rem 1.1rem; border: none; border-radius: 0.6rem; background: linear-gradient(135deg, #0ea5e9, #10b981);
+      padding: 0.65rem 1.2rem; border: none; border-radius: 999px; background: var(--black);
       color: #fff; font-size: 0.85rem; font-weight: 700; cursor: pointer;
     }
-    .btn-primary:hover { opacity: 0.92; }
+    .btn-primary:hover { background: var(--black-hover); }
     .btn-secondary {
-      padding: 0.55rem 1rem; border: 1px solid #cbd5e1; border-radius: 0.6rem; background: #fff;
-      color: #364752; font-size: 0.83rem; font-weight: 600; cursor: pointer;
+      padding: 0.6rem 1.1rem; border: 1.5px solid var(--ink); border-radius: 999px; background: transparent;
+      color: var(--ink); font-size: 0.83rem; font-weight: 600; cursor: pointer;
     }
-    .btn-secondary:hover { border-color: #94a3b8; }
+    .btn-secondary:hover { background: var(--ink); color: #fff; }
 
-    .empty-state { background: #ffffff; border: 1px dashed #cbd5e1; border-radius: 1rem; padding: 2.5rem 1.5rem; text-align: center; color: #94a3b8; font-size: 0.9rem; margin-bottom: 1.5rem; }
+    .settled-toggle { text-align: center; margin: -0.5rem 0 1.5rem; }
+    .settled-toggle button { background: none; border: none; color: var(--accent); font-weight: 700; font-size: 0.83rem; cursor: pointer; }
+    .settled-toggle button:hover { color: var(--accent-dark); }
+
+    .friends-list, .activity-list { background: var(--bg); border: 1px solid var(--border); border-radius: 1.1rem; padding: 0.4rem 1.5rem; }
+    .friend-row { display: flex; align-items: center; justify-content: space-between; gap: 0.8rem; padding: 0.9rem 0; border-bottom: 1px solid var(--border); cursor: pointer; }
+    .friend-row:last-child { border-bottom: none; }
+    .friend-row:hover { opacity: 0.75; }
+    .friend-row-name { display: flex; align-items: center; gap: 0.7rem; font-size: 0.9rem; font-weight: 700; color: var(--ink); }
+    .friend-row-value { text-align: right; }
+    .friend-row-amount { font-size: 0.88rem; font-weight: 800; }
+    .friend-row-amount.positive { color: #059669; }
+    .friend-row-amount.negative { color: var(--accent); }
+    .friend-row-amount.settled { color: var(--ink-faint); }
+    .friend-row-label { font-size: 0.7rem; color: var(--ink-faint); font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em; }
+
+    .activity-row { display: flex; align-items: flex-start; gap: 0.9rem; padding: 0.95rem 0; border-bottom: 1px solid var(--border); }
+    .activity-row:last-child { border-bottom: none; }
+    .activity-icon { width: 36px; height: 36px; border-radius: 0.65rem; background: var(--bg-alt); display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; }
+    .activity-text { font-size: 0.87rem; color: var(--ink); line-height: 1.5; }
+    .activity-text b { font-weight: 700; }
+    .activity-amount { font-weight: 700; }
+    .activity-amount.positive { color: #059669; }
+    .activity-amount.negative { color: var(--accent); }
+    .activity-time { font-size: 0.75rem; color: var(--ink-faint); margin-top: 0.15rem; }
+
+    .empty-state { background: var(--bg); border: 1px dashed var(--border); border-radius: 1rem; padding: 2.5rem 1.5rem; text-align: center; color: var(--ink-faint); font-size: 0.9rem; margin-bottom: 1.5rem; }
 
     .groups-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.1rem; margin-bottom: 1.5rem; }
-    .group-card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 1rem; padding: 1.3rem 1.4rem; box-shadow: 0 4px 16px rgba(15,23,42,0.03); cursor: pointer; transition: box-shadow 0.15s ease, transform 0.15s ease; }
+    .group-card { background: var(--bg); border: 1px solid var(--border); border-radius: 1rem; padding: 1.3rem 1.4rem; box-shadow: 0 4px 16px rgba(22,19,15,0.03); cursor: pointer; transition: box-shadow 0.15s ease, transform 0.15s ease; }
     .group-card:hover { box-shadow: 0 10px 25px rgba(15,23,42,0.08); transform: translateY(-2px); }
     .group-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 0.4rem; margin-bottom: 0.5rem; }
     .group-card-name { font-size: 1rem; font-weight: 800; }
@@ -132,23 +180,30 @@
     .group-card-balance-value.negative { color: #dc2626; }
     .group-card-balance-value.settled { color: #94a3b8; }
 
-    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.55); align-items: center; justify-content: center; z-index: 50; padding: 1rem; }
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(22,19,15,0.55); align-items: center; justify-content: center; z-index: 50; padding: 1rem; }
     .modal-overlay.show { display: flex; }
-    .modal-box { background: #fff; border-radius: 1.1rem; padding: 1.6rem 1.75rem; width: 100%; max-width: 460px; max-height: 90vh; overflow-y: auto; }
+    .modal-box { background: var(--bg); border-radius: 1.1rem; padding: 1.6rem 1.75rem; width: 100%; max-width: 460px; max-height: 90vh; overflow-y: auto; }
     .modal-box h3 { font-size: 1.1rem; font-weight: 800; margin-bottom: 1.1rem; }
-    .field-label { font-size: 0.83rem; font-weight: 600; color: #0f172a; margin-bottom: 0.4rem; display: block; }
+    .field-label { font-size: 0.83rem; font-weight: 600; color: var(--ink); margin-bottom: 0.4rem; display: block; }
     .field-input {
-      width: 100%; padding: 0.6rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 0.55rem;
-      font-size: 0.88rem; font-family: inherit; color: #0f172a; margin-bottom: 0.9rem;
+      width: 100%; padding: 0.6rem 0.75rem; border: 1px solid var(--border); border-radius: 0.55rem;
+      font-size: 0.88rem; font-family: inherit; color: var(--ink); margin-bottom: 0.9rem; background: var(--bg);
     }
-    .field-input:focus { outline: none; border-color: #10b981; box-shadow: 0 0 0 2px rgba(16,185,129,0.15); }
+    .field-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-tint); }
     .member-row { display: flex; gap: 0.5rem; margin-bottom: 0.6rem; }
     .member-row .field-input { margin-bottom: 0; flex: 1; }
-    .member-row-remove { flex-shrink: 0; width: 34px; height: 34px; border-radius: 0.5rem; border: 1px solid #fecaca; background: #fef2f2; color: #dc2626; font-weight: 800; cursor: pointer; }
-    .add-member-link { font-size: 0.82rem; font-weight: 700; color: #10b981; cursor: pointer; margin-bottom: 1rem; display: inline-block; }
+    .member-row-remove { flex-shrink: 0; width: 34px; height: 34px; border-radius: 0.5rem; border: 1px solid var(--border); background: var(--bg-alt); color: var(--accent); font-weight: 800; cursor: pointer; }
+    .add-member-link { font-size: 0.82rem; font-weight: 700; color: var(--accent); cursor: pointer; margin-bottom: 1rem; display: inline-block; }
     .modal-actions { display: flex; gap: 0.7rem; margin-top: 0.5rem; }
     .modal-actions button { flex: 1; }
-    .form-error { font-size: 0.8rem; color: #dc2626; font-weight: 600; margin-bottom: 0.7rem; }
+    .form-error { font-size: 0.8rem; color: var(--accent); font-weight: 600; margin-bottom: 0.7rem; }
+
+    .type-picker { display: flex; gap: 0.5rem; margin-bottom: 0.9rem; flex-wrap: wrap; }
+    .type-btn { flex: 1; min-width: 90px; padding: 0.6rem 0.4rem; border: 1.5px solid var(--border); border-radius: 0.6rem; text-align: center; font-size: 0.8rem; font-weight: 600; cursor: pointer; color: var(--ink-soft); }
+    .type-btn.selected { border-color: var(--accent); background: var(--accent-tint); color: var(--accent-dark); }
+    .trip-dates-toggle { display: flex; align-items: center; justify-content: space-between; padding: 0.6rem 0; margin-bottom: 0.6rem; font-size: 0.85rem; font-weight: 600; }
+    .trip-dates-row { display: none; grid-template-columns: 1fr 1fr; gap: 0.7rem; }
+    .trip-dates-row.show { display: grid; }
     /* Mobile sidebar (kept last so it wins the cascade over the base rules above) */
     @media (max-width: 860px) {
       .app-shell { grid-template-columns: 1fr; }
@@ -359,13 +414,40 @@
         </div>
       </div>
 
-      <div class="section-head">
-        <h3>Your Groups</h3>
-        <button type="button" class="btn-primary" id="newGroupBtn">+ New Group</button>
+      <div class="view-tabs">
+        <button type="button" class="view-tab active" data-view="groups">Groups</button>
+        <button type="button" class="view-tab" data-view="friends">Friends</button>
+        <button type="button" class="view-tab" data-view="activity">Activity</button>
       </div>
 
-      <div class="empty-state" id="emptyState" style="display:none;">No groups yet. Create one to start splitting expenses with family or friends.</div>
-      <div class="groups-grid" id="groupsGrid"></div>
+      <div class="view-panel active" id="viewGroups">
+        <div class="section-head">
+          <h3>Your Groups</h3>
+          <button type="button" class="btn-primary" id="newGroupBtn">+ New Group</button>
+        </div>
+
+        <div class="empty-state" id="emptyState" style="display:none;">No groups yet. Create one to start splitting expenses with family or friends.</div>
+        <div class="groups-grid" id="groupsGrid"></div>
+        <div class="settled-toggle" id="settledToggleWrap" style="display:none;">
+          <button type="button" id="settledToggleBtn"></button>
+        </div>
+        <div class="groups-grid" id="settledGroupsGrid" style="display:none;"></div>
+      </div>
+
+      <div class="view-panel" id="viewFriends">
+        <div class="section-head">
+          <h3>Friends</h3>
+          <button type="button" class="btn-primary" id="newDirectExpenseBtn">+ Add Expense</button>
+        </div>
+        <div class="empty-state" id="friendsEmptyState" style="display:none;">No shared expenses with anyone yet. Add a group expense, or start a direct one above.</div>
+        <div class="friends-list" id="friendsList" style="display:none;"></div>
+      </div>
+
+      <div class="view-panel" id="viewActivity">
+        <div class="section-head"><h3>Recent Activity</h3></div>
+        <div class="empty-state" id="activityEmptyState" style="display:none;">Nothing here yet - add an expense to see it show up.</div>
+        <div class="activity-list" id="activityList" style="display:none;"></div>
+      </div>
     </main>
   </div>
 
@@ -375,12 +457,53 @@
       <div class="form-error" id="groupFormError"></div>
       <label class="field-label">Group name</label>
       <input type="text" class="field-input" id="groupNameInput" placeholder="e.g. Family, Goa Trip 2026">
+      <label class="field-label">Type</label>
+      <div class="type-picker" id="groupTypePicker">
+        <div class="type-btn selected" data-type="trip">✈️ Trip</div>
+        <div class="type-btn" data-type="home">🏠 Home</div>
+        <div class="type-btn" data-type="couple">❤️ Couple</div>
+        <div class="type-btn" data-type="other">📋 Other</div>
+      </div>
+      <div class="trip-dates-toggle" id="tripDatesToggle">
+        <span>Add trip dates</span>
+        <label style="display:inline-flex;align-items:center;gap:0.4rem;font-weight:400;cursor:pointer;">
+          <input type="checkbox" id="tripDatesCheck">
+        </label>
+      </div>
+      <div class="trip-dates-row" id="tripDatesRow">
+        <div>
+          <label class="field-label">Start</label>
+          <input type="date" class="field-input" id="tripStartInput">
+        </div>
+        <div>
+          <label class="field-label">End</label>
+          <input type="date" class="field-input" id="tripEndInput">
+        </div>
+      </div>
       <label class="field-label">Members</label>
       <div id="memberRows"></div>
       <span class="add-member-link" id="addMemberLink">+ Add another member</span>
       <div class="modal-actions">
         <button type="button" class="btn-secondary" id="cancelGroupBtn">Cancel</button>
         <button type="button" class="btn-primary" id="createGroupBtn">Create Group</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="directExpenseModal">
+    <div class="modal-box">
+      <h3>Add a Direct Expense</h3>
+      <div class="form-error" id="directFormError"></div>
+      <label class="field-label">Split with</label>
+      <input type="text" class="field-input" id="directFriendName" placeholder="Friend's name">
+      <input type="email" class="field-input" id="directFriendEmail" placeholder="Email (optional, links their account if they sign up)">
+      <label class="field-label">Description</label>
+      <input type="text" class="field-input" id="directDescInput" placeholder="e.g. Movie tickets">
+      <label class="field-label">Amount (₹)</label>
+      <input type="number" class="field-input" id="directAmountInput" min="0" step="0.01">
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" id="cancelDirectBtn">Cancel</button>
+        <button type="button" class="btn-primary" id="startDirectBtn">Continue</button>
       </div>
     </div>
   </div>
@@ -424,9 +547,20 @@
       container.appendChild(row);
     }
 
+    var selectedGroupType = 'trip';
+
     function openNewGroupModal() {
       document.getElementById('groupFormError').textContent = '';
       document.getElementById('groupNameInput').value = '';
+      selectedGroupType = 'trip';
+      Array.prototype.forEach.call(document.querySelectorAll('#groupTypePicker .type-btn'), function (b) {
+        b.classList.toggle('selected', b.dataset.type === 'trip');
+      });
+      document.getElementById('tripDatesToggle').style.display = '';
+      document.getElementById('tripDatesCheck').checked = false;
+      document.getElementById('tripDatesRow').classList.remove('show');
+      document.getElementById('tripStartInput').value = '';
+      document.getElementById('tripEndInput').value = '';
       var rows = document.getElementById('memberRows');
       rows.innerHTML = '';
       renderMemberRow(rows, 'Friend or family member name');
@@ -449,7 +583,13 @@
         };
       }).filter(function (m) { return m.name; });
 
-      var { data: group, error: groupErr } = await supabaseClient.from('split_groups').insert({ name: name }).select().single();
+      var groupPayload = { name: name, group_type: selectedGroupType };
+      if (selectedGroupType === 'trip' && document.getElementById('tripDatesCheck').checked) {
+        groupPayload.start_date = document.getElementById('tripStartInput').value || null;
+        groupPayload.end_date = document.getElementById('tripEndInput').value || null;
+      }
+
+      var { data: group, error: groupErr } = await supabaseClient.from('split_groups').insert(groupPayload).select().single();
       if (groupErr) { errEl.textContent = 'Could not create group: ' + groupErr.message; console.error(groupErr); return; }
 
       var selfName = displayNameForSelf();
@@ -471,6 +611,23 @@
         .update({ user_id: currentUser.id, is_shadow: false })
         .eq('email', currentUser.email)
         .is('user_id', null);
+    }
+
+    function wireGroupTypePicker() {
+      Array.prototype.forEach.call(document.querySelectorAll('#groupTypePicker .type-btn'), function (btn) {
+        btn.addEventListener('click', function () {
+          selectedGroupType = btn.dataset.type;
+          Array.prototype.forEach.call(document.querySelectorAll('#groupTypePicker .type-btn'), function (b) { b.classList.toggle('selected', b === btn); });
+          document.getElementById('tripDatesToggle').style.display = selectedGroupType === 'trip' ? '' : 'none';
+          if (selectedGroupType !== 'trip') {
+            document.getElementById('tripDatesCheck').checked = false;
+            document.getElementById('tripDatesRow').classList.remove('show');
+          }
+        });
+      });
+      document.getElementById('tripDatesCheck').addEventListener('change', function () {
+        document.getElementById('tripDatesRow').classList.toggle('show', this.checked);
+      });
     }
 
     async function renameGroupPrompt(id, currentName) {
@@ -539,44 +696,101 @@
       return card;
     }
 
-    async function loadDashboard() {
-      var { data: groups, error: groupsErr } = await supabaseClient.from('split_groups').select('*').order('created_at', { ascending: false });
-      if (groupsErr) { console.error('Could not load groups', groupsErr); return; }
+    // Cached across tabs so switching to Friends/Activity after Groups has
+    // already loaded doesn't re-fetch everything from scratch.
+    var dataCache = null;
 
-      if (!groups.length) {
-        document.getElementById('emptyState').style.display = 'block';
-        return;
-      }
+    async function loadAllSplitData() {
+      var { data: groups, error: groupsErr } = await supabaseClient.from('split_groups').select('*').order('created_at', { ascending: false });
+      if (groupsErr) { console.error('Could not load groups', groupsErr); return null; }
+      if (!groups.length) return { groups: [], members: [], expenses: [], shares: [], settlements: [] };
 
       var groupIds = groups.map(function (g) { return g.id; });
-
       var { data: members } = await supabaseClient.from('split_group_members').select('*').in('group_id', groupIds);
       var { data: expenses } = await supabaseClient.from('split_expenses').select('*').in('group_id', groupIds);
       var expenseIds = (expenses || []).map(function (e) { return e.id; });
       var { data: shares } = expenseIds.length ? await supabaseClient.from('split_expense_shares').select('*').in('expense_id', expenseIds) : { data: [] };
       var { data: settlements } = await supabaseClient.from('split_settlements').select('*').in('group_id', groupIds);
 
+      return { groups: groups, members: members || [], expenses: expenses || [], shares: shares || [], settlements: settlements || [] };
+    }
+
+    function forGroup(data, groupId) {
+      var groupMembers = data.members.filter(function (m) { return m.group_id === groupId; });
+      var groupExpenses = data.expenses.filter(function (e) { return e.group_id === groupId; });
+      var groupExpenseIds = groupExpenses.map(function (e) { return e.id; });
+      var groupShares = data.shares.filter(function (s) { return groupExpenseIds.indexOf(s.expense_id) !== -1; });
+      var groupSettlements = data.settlements.filter(function (s) { return s.group_id === groupId; });
+      return { members: groupMembers, expenses: groupExpenses, shares: groupShares, settlements: groupSettlements };
+    }
+
+    async function loadDashboard() {
+      dataCache = await loadAllSplitData();
+      if (!dataCache) return;
+
+      var visibleGroups = dataCache.groups.filter(function (g) { return !g.is_direct; });
+      if (!visibleGroups.length) {
+        document.getElementById('emptyState').style.display = 'block';
+        document.getElementById('totalOwedToYou').textContent = formatRupees(0);
+        document.getElementById('totalYouOwe').textContent = formatRupees(0);
+        document.getElementById('netBalance').textContent = formatRupees(0);
+        return;
+      }
+      document.getElementById('emptyState').style.display = 'none';
+
       var totalOwedToYou = 0, totalYouOwe = 0;
-      var grid = document.getElementById('groupsGrid');
-      grid.innerHTML = '';
+      var activeGrid = document.getElementById('groupsGrid');
+      var settledGrid = document.getElementById('settledGroupsGrid');
+      activeGrid.innerHTML = '';
+      settledGrid.innerHTML = '';
 
-      groups.forEach(function (group) {
-        var groupMembers = (members || []).filter(function (m) { return m.group_id === group.id; });
-        var myMember = groupMembers.filter(function (m) { return m.user_id === currentUser.id; })[0];
+      var sevenDaysAgo = new Date();
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+      var settledCount = 0;
 
-        var groupExpenses = (expenses || []).filter(function (e) { return e.group_id === group.id; });
-        var groupExpenseIds = groupExpenses.map(function (e) { return e.id; });
-        var groupShares = (shares || []).filter(function (s) { return groupExpenseIds.indexOf(s.expense_id) !== -1; });
-        var groupSettlements = (settlements || []).filter(function (s) { return s.group_id === group.id; });
+      visibleGroups.forEach(function (group) {
+        var g = forGroup(dataCache, group.id);
+        var myMember = g.members.filter(function (m) { return m.user_id === currentUser.id; })[0];
 
-        var balances = computeGroupBalances(groupMembers, groupExpenses, groupShares, groupSettlements);
+        var balances = computeGroupBalances(g.members, g.expenses, g.shares, g.settlements);
         var myBalance = myMember ? (balances[myMember.id] || 0) : 0;
 
         if (myBalance > 0) totalOwedToYou += myBalance;
         else totalYouOwe += -myBalance;
 
-        grid.appendChild(renderGroupCard(group, groupMembers, myBalance));
+        // "Settled for 7+ days": a zero balance AND the last thing that
+        // happened in this group (an expense or a settlement) was more
+        // than 7 days ago. A brand-new, empty group is never collapsed -
+        // there's nothing to hide it *from* yet.
+        var activityDates = g.expenses.map(function (e) { return e.expense_date; })
+          .concat(g.settlements.map(function (s) { return s.settled_date; }));
+        var lastActivity = activityDates.length ? new Date(activityDates.sort().pop()) : null;
+        var isSettledOld = Math.abs(myBalance) < 0.5 && lastActivity && lastActivity < sevenDaysAgo;
+
+        var card = renderGroupCard(group, g.members, myBalance);
+        if (isSettledOld) { settledCount++; settledGrid.appendChild(card); }
+        else activeGrid.appendChild(card);
       });
+
+      var toggleWrap = document.getElementById('settledToggleWrap');
+      var toggleBtn = document.getElementById('settledToggleBtn');
+      if (settledCount > 0) {
+        toggleWrap.style.display = 'block';
+        toggleBtn.textContent = settledGrid.style.display === 'none' || !settledGrid.classList.contains('shown')
+          ? 'Show ' + settledCount + ' settled-up group' + (settledCount === 1 ? '' : 's')
+          : 'Hide settled-up groups';
+        toggleBtn.onclick = function () {
+          var shown = settledGrid.classList.toggle('shown');
+          settledGrid.style.display = shown ? 'grid' : 'none';
+          toggleBtn.textContent = shown ? 'Hide settled-up groups' : 'Show ' + settledCount + ' settled-up group' + (settledCount === 1 ? '' : 's');
+        };
+      } else {
+        toggleWrap.style.display = 'none';
+      }
+
+      if (!activeGrid.children.length && !settledCount) {
+        document.getElementById('emptyState').style.display = 'block';
+      }
 
       document.getElementById('totalOwedToYou').textContent = formatRupees(totalOwedToYou);
       document.getElementById('totalYouOwe').textContent = formatRupees(totalYouOwe);
@@ -584,6 +798,225 @@
       var netEl = document.getElementById('netBalance');
       netEl.textContent = (net >= 0 ? '' : '-') + formatRupees(Math.abs(net));
       netEl.className = 'split-hero-value ' + (net >= 0 ? 'positive' : 'negative');
+    }
+
+    // A friend's identity for cross-group aggregation: their user_id if
+    // they have an account, else their lowercased email, else there's no
+    // reliable way to know "the Priya in Goa Trip" is "the Priya in
+    // Flatmates" - such shadow members without an email stay group-scoped
+    // only (visible in that group's Balances tab, just not aggregated here).
+    function friendIdentity(member) {
+      if (member.user_id) return 'u:' + member.user_id;
+      if (member.email) return 'e:' + member.email.toLowerCase();
+      return null;
+    }
+
+    async function loadFriends() {
+      if (!dataCache) dataCache = await loadAllSplitData();
+      var list = document.getElementById('friendsList');
+      var emptyEl = document.getElementById('friendsEmptyState');
+      if (!dataCache || !dataCache.groups.length) { list.style.display = 'none'; emptyEl.style.display = 'block'; return; }
+
+      var friends = {}; // identity -> { name, memberIds: [], netBalance }
+      dataCache.groups.forEach(function (group) {
+        var g = forGroup(dataCache, group.id);
+        var myMember = g.members.filter(function (m) { return m.user_id === currentUser.id; })[0];
+        if (!myMember) return;
+        var balances = computeGroupBalances(g.members, g.expenses, g.shares, g.settlements);
+        var myBalance = balances[myMember.id] || 0;
+        if (Math.abs(myBalance) < 0.01) return;
+
+        g.members.forEach(function (m) {
+          if (m.id === myMember.id) return;
+          var identity = friendIdentity(m);
+          if (!identity) return;
+          // My balance is split evenly against however many "other" people
+          // are in this group's ledger for this purpose - for a 2-person
+          // (or direct) group that's exactly their share of my balance.
+          var otherCount = g.members.length - 1;
+          if (!otherCount) return;
+          if (!friends[identity]) friends[identity] = { name: m.display_name, netBalance: 0 };
+          friends[identity].netBalance += myBalance / otherCount;
+        });
+      });
+
+      var rows = Object.keys(friends).map(function (id) { return friends[id]; })
+        .filter(function (f) { return Math.abs(f.netBalance) >= 0.5; })
+        .sort(function (a, b) { return Math.abs(b.netBalance) - Math.abs(a.netBalance); });
+
+      if (!rows.length) { list.style.display = 'none'; emptyEl.style.display = 'block'; return; }
+      emptyEl.style.display = 'none';
+      list.style.display = 'block';
+
+      list.innerHTML = rows.map(function (f) {
+        var cls = f.netBalance > 0 ? 'positive' : 'negative';
+        var label = f.netBalance > 0 ? 'owes you' : 'you owe';
+        return '<div class="friend-row" data-name="' + escapeHtml(f.name).replace(/"/g, '&quot;') + '">' +
+          '<div class="friend-row-name"><span class="avatar" style="background:' + colorForName(f.name) + ';width:30px;height:30px;">' + initialsForName(f.name) + '</span>' + escapeHtml(f.name) + '</div>' +
+          '<div class="friend-row-value"><div class="friend-row-label">' + label + '</div><div class="friend-row-amount ' + cls + '">' + formatRupees(Math.abs(f.netBalance)) + '</div></div>' +
+        '</div>';
+      }).join('');
+
+      Array.prototype.forEach.call(list.querySelectorAll('.friend-row'), function (row) {
+        row.addEventListener('click', function () { openFriendThread(row.dataset.name); });
+      });
+    }
+
+    // Opens (creating if needed) the 1:1 direct thread with this friend by
+    // name - used for both "already have a balance with them" (Friends
+    // list) and "never split anything with them yet" (+ Add Expense).
+    async function openFriendThread(name, email) {
+      var groupId = await findOrCreateDirectGroup(name, email);
+      if (groupId) window.location.href = 'group.html?id=' + groupId;
+    }
+
+    async function findOrCreateDirectGroup(friendName, friendEmail) {
+      // Reuse an existing direct group with this friend if one's already
+      // there, matched by email since that's the only identity a
+      // freshly-typed name/email pair can be matched against.
+      if (friendEmail) {
+        var directGroups = (dataCache ? dataCache.groups : []).filter(function (g) { return g.is_direct; });
+        for (var i = 0; i < directGroups.length; i++) {
+          var g = forGroup(dataCache, directGroups[i].id);
+          var match = g.members.filter(function (m) { return m.email && m.email.toLowerCase() === friendEmail.toLowerCase(); })[0];
+          if (match) return directGroups[i].id;
+        }
+      }
+
+      var { data: group, error: groupErr } = await supabaseClient.from('split_groups')
+        .insert({ name: friendName, group_type: 'other', is_direct: true }).select().single();
+      if (groupErr) { alert('Could not start this with ' + friendName + ': ' + groupErr.message); return null; }
+
+      var membersToInsert = [
+        { group_id: group.id, user_id: currentUser.id, display_name: displayNameForSelf(), email: currentUser.email, is_shadow: false, added_by: currentUser.id },
+        { group_id: group.id, display_name: friendName, email: friendEmail || null, is_shadow: true, added_by: currentUser.id }
+      ];
+      var { error: memberErr } = await supabaseClient.from('split_group_members').insert(membersToInsert);
+      if (memberErr) { alert('Could not add ' + friendName + ': ' + memberErr.message); return null; }
+
+      return group.id;
+    }
+
+    function openDirectExpenseModal() {
+      document.getElementById('directFormError').textContent = '';
+      document.getElementById('directFriendName').value = '';
+      document.getElementById('directFriendEmail').value = '';
+      document.getElementById('directDescInput').value = '';
+      document.getElementById('directAmountInput').value = '';
+      document.getElementById('directExpenseModal').classList.add('show');
+    }
+
+    function closeDirectExpenseModal() {
+      document.getElementById('directExpenseModal').classList.remove('show');
+    }
+
+    async function startDirectExpense() {
+      var errEl = document.getElementById('directFormError');
+      var name = document.getElementById('directFriendName').value.trim();
+      var email = document.getElementById('directFriendEmail').value.trim();
+      var desc = document.getElementById('directDescInput').value.trim();
+      var amount = Number(document.getElementById('directAmountInput').value);
+      if (!name) { errEl.textContent = 'Please enter who you split this with.'; return; }
+      if (!desc) { errEl.textContent = 'Please enter a description.'; return; }
+      if (!amount || amount <= 0) { errEl.textContent = 'Please enter a valid amount.'; return; }
+
+      var groupId = await findOrCreateDirectGroup(name, email);
+      if (!groupId) return;
+
+      dataCache = await loadAllSplitData();
+      var g = forGroup(dataCache, groupId);
+      var myMember = g.members.filter(function (m) { return m.user_id === currentUser.id; })[0];
+      var friendMember = g.members.filter(function (m) { return m.id !== myMember.id; })[0];
+
+      var { data: expense, error: expErr } = await supabaseClient.from('split_expenses').insert({
+        group_id: groupId, description: desc, amount: amount, category: 'other',
+        paid_by_member_id: myMember.id, split_type: 'equal', created_by: currentUser.id
+      }).select().single();
+      if (expErr) { errEl.textContent = 'Could not save this expense: ' + expErr.message; return; }
+
+      var shares = computeEqualShares(amount, [myMember.id, friendMember.id]);
+      var { error: shareErr } = await supabaseClient.from('split_expense_shares').insert([
+        { expense_id: expense.id, member_id: myMember.id, share_amount: shares[0] },
+        { expense_id: expense.id, member_id: friendMember.id, share_amount: shares[1] }
+      ]);
+      if (shareErr) { errEl.textContent = 'Expense saved, but splitting the share failed.'; return; }
+
+      closeDirectExpenseModal();
+      window.location.href = 'group.html?id=' + groupId;
+    }
+
+    var ACTIVITY_ICONS = { food: '🍔', groceries: '🛒', travel: '✈️', utilities: '💡', rent: '🏠', entertainment: '🎬', shopping: '🛍️', other: '📦' };
+
+    async function loadActivity() {
+      if (!dataCache) dataCache = await loadAllSplitData();
+      var list = document.getElementById('activityList');
+      var emptyEl = document.getElementById('activityEmptyState');
+      if (!dataCache || (!dataCache.expenses.length && !dataCache.settlements.length)) {
+        list.style.display = 'none'; emptyEl.style.display = 'block'; return;
+      }
+
+      var groupsById = {};
+      dataCache.groups.forEach(function (g) { groupsById[g.id] = g; });
+      var membersById = {};
+      dataCache.members.forEach(function (m) { membersById[m.id] = m; });
+
+      var events = [];
+      dataCache.expenses.forEach(function (e) {
+        var edited = e.updated_at && (new Date(e.updated_at) - new Date(e.created_at)) > 5000;
+        events.push({
+          time: edited ? e.updated_at : e.created_at,
+          icon: ACTIVITY_ICONS[e.category] || '📦',
+          verb: edited ? 'updated' : 'added',
+          desc: e.description,
+          groupName: (groupsById[e.group_id] || {}).name || 'a group',
+          amount: e.amount,
+          isMine: e.created_by === currentUser.id
+        });
+      });
+      dataCache.settlements.forEach(function (s) {
+        var fromName = (membersById[s.from_member_id] || {}).display_name || 'Someone';
+        var toName = (membersById[s.to_member_id] || {}).display_name || 'someone';
+        events.push({
+          time: s.created_at,
+          icon: '💸',
+          verb: 'settled',
+          desc: fromName + ' paid ' + toName,
+          groupName: (groupsById[s.group_id] || {}).name || 'a group',
+          amount: s.amount,
+          isMine: s.created_by === currentUser.id
+        });
+      });
+
+      events.sort(function (a, b) { return new Date(b.time) - new Date(a.time); });
+
+      if (!events.length) { list.style.display = 'none'; emptyEl.style.display = 'block'; return; }
+      emptyEl.style.display = 'none';
+      list.style.display = 'block';
+
+      list.innerHTML = events.slice(0, 50).map(function (ev) {
+        var who = ev.isMine ? 'You' : 'Someone';
+        var verbPhrase = ev.verb === 'settled' ? ev.desc : (who + ' ' + ev.verb + ' "' + escapeHtml(ev.desc) + '"');
+        return '<div class="activity-row">' +
+          '<div class="activity-icon">' + ev.icon + '</div>' +
+          '<div>' +
+            '<div class="activity-text">' + verbPhrase + ' in <b>' + escapeHtml(ev.groupName) + '</b> - <span class="activity-amount">' + formatRupees(ev.amount) + '</span></div>' +
+            '<div class="activity-time">' + new Date(ev.time).toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' }) + '</div>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+    }
+
+    function wireTabs() {
+      Array.prototype.forEach.call(document.querySelectorAll('.view-tab'), function (tab) {
+        tab.addEventListener('click', function () {
+          Array.prototype.forEach.call(document.querySelectorAll('.view-tab'), function (t) { t.classList.toggle('active', t === tab); });
+          Array.prototype.forEach.call(document.querySelectorAll('.view-panel'), function (p) { p.classList.remove('active'); });
+          var view = tab.dataset.view;
+          document.getElementById('view' + view.charAt(0).toUpperCase() + view.slice(1)).classList.add('active');
+          if (view === 'friends') loadFriends();
+          else if (view === 'activity') loadActivity();
+        });
+      });
     }
 
     (async function init() {
@@ -604,7 +1037,16 @@
       document.getElementById('newGroupModal').addEventListener('click', function (e) {
         if (e.target === this) closeNewGroupModal();
       });
+      wireGroupTypePicker();
 
+      document.getElementById('newDirectExpenseBtn').addEventListener('click', openDirectExpenseModal);
+      document.getElementById('cancelDirectBtn').addEventListener('click', closeDirectExpenseModal);
+      document.getElementById('startDirectBtn').addEventListener('click', startDirectExpense);
+      document.getElementById('directExpenseModal').addEventListener('click', function (e) {
+        if (e.target === this) closeDirectExpenseModal();
+      });
+
+      wireTabs();
       await loadDashboard();
     })();
   </script>

@@ -12,10 +12,24 @@
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
+    :root {
+      --bg: #ffffff;
+      --bg-alt: #f5f4f1;
+      --ink: #16130f;
+      --ink-soft: #5c584f;
+      --ink-faint: #8a857a;
+      --border: #e7e3dc;
+      --accent: #de3341;
+      --accent-dark: #a3202b;
+      --accent-tint: #fdeceb;
+      --black: #16130f;
+      --black-hover: #322d26;
+    }
+
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #f8fafc;
-      color: #0f172a;
+      background: var(--bg-alt);
+      color: var(--ink);
       min-height: 100vh;
       overflow-x: hidden;
     }
@@ -55,7 +69,7 @@
     .topbar h1 { font-size: 1.4rem; font-weight: 700; }
     .topbar-right { display: flex; align-items: center; gap: 0.85rem; }
     .language-selector { display: flex; align-items: center; gap: 0.5rem; background: #ffffff; padding: 0.5rem 0.9rem; border-radius: 0.5rem; color: #51636f; border: 1px solid #e2e8f0; cursor: pointer; font-size: 0.85rem; }
-    .back-link { font-size: 0.85rem; font-weight: 600; color: #0ea5e9; margin-bottom: 0.75rem; display: inline-block; }
+    .back-link { font-size: 0.85rem; font-weight: 600; color: var(--accent); margin-bottom: 0.75rem; display: inline-block; }
     .user-menu { position: relative; list-style: none; }
     .user-menu > summary { cursor: pointer; list-style: none; width: 34px; height: 34px; border-radius: 50%; background: #eef2f7; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; font-size: 1rem; }
     .user-menu > summary.user-avatar-initials { background: linear-gradient(135deg, #0ea5e9, #10b981); color: #fff; font-weight: 800; font-size: 0.82rem; letter-spacing: 0.02em; border-color: transparent; }
@@ -73,30 +87,30 @@
     .member-chip { display: flex; align-items: center; gap: 0.35rem; background: #f8fafc; border-radius: 999px; padding: 0.25rem 0.35rem 0.25rem 0.25rem; font-size: 0.8rem; font-weight: 600; color: #364752; }
     .icon-btn { display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 0.4rem; border: 1px solid #e2e8f0; background: #fff; color: #64748b; font-size: 0.72rem; cursor: pointer; flex-shrink: 0; }
     .icon-btn:hover { border-color: #94a3b8; color: #364752; }
-    .btn-secondary.danger { border-color: #fecaca; color: #dc2626; }
-    .btn-secondary.danger:hover { border-color: #dc2626; background: #fef2f2; }
+    .btn-secondary.danger { border-color: var(--accent); color: var(--accent); }
+    .btn-secondary.danger:hover { background: var(--accent); color: #fff; }
     .member-chip-actions { display: inline-flex; gap: 0.15rem; margin-left: 0.1rem; }
     .member-chip-btn { width: 18px; height: 18px; border-radius: 50%; border: none; background: rgba(15,23,42,0.06); color: #64748b; font-size: 0.58rem; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; line-height: 1; flex-shrink: 0; }
     .member-chip-btn:hover { background: rgba(15,23,42,0.12); color: #364752; }
     .member-chip-btn.danger:hover { background: #fee2e2; color: #dc2626; }
 
-    .split-hero { background: linear-gradient(135deg, #0f172a, #1e293b); border-radius: 1.25rem; padding: 1.75rem 2rem; color: #fff; margin-bottom: 1.5rem; }
-    .split-hero-label { font-size: 0.75rem; color: #94a3b8; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.4rem; }
+    .split-hero { background: var(--bg); border: 1px solid var(--border); border-radius: 1.25rem; padding: 1.75rem 2rem; color: var(--ink); margin-bottom: 1.5rem; }
+    .split-hero-label { font-size: 0.75rem; color: var(--ink-faint); font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.4rem; }
     .split-hero-value { font-size: 2rem; font-weight: 800; }
-    .split-hero-value.positive { color: #6ee7b7; }
-    .split-hero-value.negative { color: #fca5a5; }
-    .split-hero-sub { font-size: 0.82rem; color: #94a3b8; margin-top: 0.4rem; }
+    .split-hero-value.positive { color: #059669; }
+    .split-hero-value.negative { color: var(--accent); }
+    .split-hero-sub { font-size: 0.82rem; color: var(--ink-faint); margin-top: 0.4rem; }
 
     .two-col { display: grid; grid-template-columns: 1.4fr 1fr; gap: 1.5rem; align-items: start; }
     @media (max-width: 900px) { .two-col { grid-template-columns: 1fr; } }
 
-    .card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 1.1rem; padding: 1.5rem 1.6rem; margin-bottom: 1.5rem; box-shadow: 0 4px 16px rgba(15,23,42,0.03); }
+    .card { background: var(--bg); border: 1px solid var(--border); border-radius: 1.1rem; padding: 1.5rem 1.6rem; margin-bottom: 1.5rem; box-shadow: 0 4px 16px rgba(22,19,15,0.03); }
     .card-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.1rem; }
     .card-head h3 { font-size: 1rem; font-weight: 800; }
-    .btn-primary { padding: 0.55rem 1rem; border: none; border-radius: 0.6rem; background: linear-gradient(135deg, #0ea5e9, #10b981); color: #fff; font-size: 0.83rem; font-weight: 700; cursor: pointer; }
-    .btn-primary:hover { opacity: 0.92; }
-    .btn-secondary { padding: 0.55rem 1rem; border: 1px solid #cbd5e1; border-radius: 0.6rem; background: #fff; color: #364752; font-size: 0.83rem; font-weight: 600; cursor: pointer; }
-    .btn-secondary:hover { border-color: #94a3b8; }
+    .btn-primary { padding: 0.6rem 1.15rem; border: none; border-radius: 999px; background: var(--black); color: #fff; font-size: 0.83rem; font-weight: 700; cursor: pointer; }
+    .btn-primary:hover { background: var(--black-hover); }
+    .btn-secondary { padding: 0.55rem 1rem; border: 1.5px solid var(--ink); border-radius: 999px; background: transparent; color: var(--ink); font-size: 0.83rem; font-weight: 600; cursor: pointer; }
+    .btn-secondary:hover { background: var(--ink); color: #fff; }
     .btn-small { padding: 0.35rem 0.75rem; font-size: 0.75rem; }
 
     .empty-mini { color: #94a3b8; font-size: 0.85rem; padding: 1rem 0; text-align: center; }
@@ -130,20 +144,20 @@
     .settle-row-text b { color: #0f172a; }
 
     /* Modals */
-    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.55); align-items: center; justify-content: center; z-index: 50; padding: 1rem; }
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(22,19,15,0.55); align-items: center; justify-content: center; z-index: 50; padding: 1rem; }
     .modal-overlay.show { display: flex; }
-    .modal-box { background: #fff; border-radius: 1.1rem; padding: 1.6rem 1.75rem; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; }
+    .modal-box { background: var(--bg); border-radius: 1.1rem; padding: 1.6rem 1.75rem; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; }
     .modal-box h3 { font-size: 1.1rem; font-weight: 800; margin-bottom: 1.1rem; }
-    .field-label { font-size: 0.83rem; font-weight: 600; color: #0f172a; margin-bottom: 0.4rem; display: block; }
+    .field-label { font-size: 0.83rem; font-weight: 600; color: var(--ink); margin-bottom: 0.4rem; display: block; }
     .field-input, .field-select {
-      width: 100%; padding: 0.6rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 0.55rem;
-      font-size: 0.88rem; font-family: inherit; color: #0f172a; margin-bottom: 0.9rem; background: #fff;
+      width: 100%; padding: 0.6rem 0.75rem; border: 1px solid var(--border); border-radius: 0.55rem;
+      font-size: 0.88rem; font-family: inherit; color: var(--ink); margin-bottom: 0.9rem; background: var(--bg);
     }
-    .field-input:focus, .field-select:focus { outline: none; border-color: #10b981; box-shadow: 0 0 0 2px rgba(16,185,129,0.15); }
+    .field-input:focus, .field-select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-tint); }
     .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
     .split-type-toggle { display: flex; gap: 0.5rem; margin-bottom: 0.9rem; }
     .split-type-btn { flex: 1; padding: 0.55rem; border: 1.5px solid #e2e8f0; border-radius: 0.55rem; text-align: center; font-size: 0.83rem; font-weight: 600; cursor: pointer; }
-    .split-type-btn.selected { border-color: #10b981; background: #ecfdf5; color: #059669; }
+    .split-type-btn.selected { border-color: var(--accent); background: var(--accent-tint); color: var(--accent-dark); }
     .member-select-row { display: flex; align-items: center; gap: 0.6rem; padding: 0.5rem 0; border-bottom: 1px solid #f1f5f9; }
     .member-select-row:last-child { border-bottom: none; }
     .member-select-row label { flex: 1; font-size: 0.85rem; font-weight: 600; color: #364752; display: flex; align-items: center; gap: 0.5rem; }
@@ -438,6 +452,8 @@
         <div class="split-type-btn" data-type="exact">Exact amounts</div>
       </div>
       <div id="expenseMemberList"></div>
+      <label class="field-label">Note (optional)</label>
+      <input type="text" class="field-input" id="expenseNoteInput" placeholder="e.g. Split the last bill differently">
       <div class="modal-actions">
         <button type="button" class="btn-secondary" id="cancelExpenseBtn">Cancel</button>
         <button type="button" class="btn-primary" id="saveExpenseBtn">Save Expense</button>
@@ -451,7 +467,7 @@
       <h3>Add Member</h3>
       <div class="form-error" id="addMemberFormError"></div>
       <div id="newMemberRows"></div>
-      <span class="add-member-link" id="addAnotherMemberLink" style="font-size:0.82rem;font-weight:700;color:#10b981;cursor:pointer;margin-bottom:1rem;display:inline-block;">+ Add another</span>
+      <span class="add-member-link" id="addAnotherMemberLink" style="font-size:0.82rem;font-weight:700;color:var(--accent);cursor:pointer;margin-bottom:1rem;display:inline-block;">+ Add another</span>
       <div class="modal-actions">
         <button type="button" class="btn-secondary" id="cancelAddMemberBtn">Cancel</button>
         <button type="button" class="btn-primary" id="saveMembersBtn">Add to Group</button>
@@ -643,6 +659,10 @@
 
     function renderExpenseFeed() {
       var feed = document.getElementById('expenseFeed');
+      if (state.members.length <= 1) {
+        feed.innerHTML = '<div class="empty-mini">You\'re the only one here! Add a member or share an invite link before splitting an expense.</div>';
+        return;
+      }
       if (!state.expenses.length) { feed.innerHTML = '<div class="empty-mini">No expenses yet.</div>'; return; }
 
       var me = myMember();
@@ -661,7 +681,7 @@
           '<div class="expense-icon">' + (CATEGORY_ICONS[e.category] || '📦') + '</div>' +
           '<div class="expense-info">' +
             '<div class="expense-desc">' + escapeHtml(e.description) + '</div>' +
-            '<div class="expense-meta">Paid by ' + escapeHtml(memberName(e.paid_by_member_id)) + ' · ' + e.expense_date + '</div>' +
+            '<div class="expense-meta">Paid by ' + escapeHtml(memberName(e.paid_by_member_id)) + ' · ' + e.expense_date + (e.note ? ' · ' + escapeHtml(e.note) : '') + '</div>' +
           '</div>' +
           '<div class="expense-amount">' +
             '<div class="expense-amount-total">' + formatRupees(e.amount) + '</div>' +
@@ -761,6 +781,7 @@
       document.getElementById('expenseAmountInput').value = expense ? expense.amount : '';
       document.getElementById('expenseCategoryInput').value = expense ? expense.category : 'other';
       document.getElementById('expenseDateInput').value = expense ? expense.expense_date : todayStr();
+      document.getElementById('expenseNoteInput').value = expense ? (expense.note || '') : '';
       state.expenseSplitType = expense ? expense.split_type : 'equal';
       Array.prototype.forEach.call(document.querySelectorAll('.split-type-btn'), function (b) {
         b.classList.toggle('selected', b.dataset.type === state.expenseSplitType);
@@ -795,6 +816,7 @@
       var category = document.getElementById('expenseCategoryInput').value;
       var paidBy = document.getElementById('expensePaidByInput').value;
       var date = document.getElementById('expenseDateInput').value || todayStr();
+      var note = document.getElementById('expenseNoteInput').value.trim();
 
       if (!description) { errEl.textContent = 'Please enter a description.'; return; }
       if (!amount || amount <= 0) { errEl.textContent = 'Please enter a valid amount.'; return; }
@@ -819,8 +841,9 @@
 
       if (editId) {
         var { error: updErr } = await supabaseClient.from('split_expenses').update({
-          description: description, amount: amount, category: category,
-          paid_by_member_id: paidBy, split_type: state.expenseSplitType, expense_date: date
+          description: description, amount: amount, category: category, note: note || null,
+          paid_by_member_id: paidBy, split_type: state.expenseSplitType, expense_date: date,
+          updated_at: new Date().toISOString()
         }).eq('id', editId);
         if (updErr) { errEl.textContent = 'Could not save changes. Please try again.'; console.error(updErr); return; }
 
@@ -832,7 +855,7 @@
         if (editShareErr) { errEl.textContent = 'Split updated, but saving shares failed.'; console.error(editShareErr); return; }
       } else {
         var { data: expense, error: expErr } = await supabaseClient.from('split_expenses').insert({
-          group_id: groupId, description: description, amount: amount, category: category,
+          group_id: groupId, description: description, amount: amount, category: category, note: note || null,
           paid_by_member_id: paidBy, split_type: state.expenseSplitType, expense_date: date, created_by: currentUser.id
         }).select().single();
         if (expErr) { errEl.textContent = 'Could not save expense. Please try again.'; console.error(expErr); return; }

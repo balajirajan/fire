@@ -688,6 +688,43 @@ create table if not exists split_expenses (
   created_at timestamptz not null default now()
 );
 
+-- group_type widened for the Trip/Home/Couple/Other picker on "Create a
+-- Group" (split/dashboard.html) - old values kept legal too so existing
+-- rows (all created under the old 'friends' default, since the UI never
+-- actually exposed a picker before) don't need a backfill.
+alter table split_groups drop constraint if exists split_groups_group_type_check;
+alter table split_groups add constraint split_groups_group_type_check
+  check (group_type in ('family','friends','colleagues','custom','trip','home','couple','other'));
+alter table split_groups alter column group_type set default 'other';
+
+-- Trip groups can optionally carry dates (split/dashboard.html's "Add trip
+-- dates" toggle, shown only when type = trip).
+alter table split_groups add column if not exists start_date date;
+alter table split_groups add column if not exists end_date date;
+
+-- A "direct" group is a hidden, auto-created 1:1 group between the current
+-- user and one friend, used for splitting an expense with someone without
+-- first creating a named group - see findOrCreateDirectGroup() in
+-- split/shared.js. It's a real split_groups row (so every existing
+-- balance/RLS/expense/settlement code path just works unmodified), just
+-- filtered out of the normal groups grid and given the friend's own name
+-- instead of a group name. This is why split_expenses.group_id was kept
+-- NOT NULL rather than made nullable for "no group" expenses - reusing the
+-- existing group-scoped RLS policies for direct expenses is far less
+-- surface area than a parallel non-group participant/RLS model.
+alter table split_groups add column if not exists is_direct boolean not null default false;
+
+-- Multi-currency itself is out of scope for now (EnrichMe targets India/INR
+-- only) - this column exists so the data model doesn't need another
+-- migration when that changes, but every expense is written as 'INR' today
+-- with no currency picker in the UI.
+alter table split_expenses add column if not exists currency text not null default 'INR';
+alter table split_expenses add column if not exists note text;
+-- Lets the activity feed distinguish "added" from "edited" without a full
+-- edit-history table - touched on every update in split/group.html's
+-- saveExpense() edit path.
+alter table split_expenses add column if not exists updated_at timestamptz not null default now();
+
 create table if not exists split_expense_shares (
   id uuid primary key default gen_random_uuid(),
   expense_id uuid not null references split_expenses (id) on delete cascade,
