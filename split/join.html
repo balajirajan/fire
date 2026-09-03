@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" href="/assets/icons/icon-192.png" type="image/png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#712B13">
+  <title>Join Group - SplitExpenses(SplitWise) - EnrichMe</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #ffffff;
+      --bg-alt: #f5f4f1;
+      --ink: #16130f;
+      --ink-soft: #5c584f;
+      --ink-faint: #8a857a;
+      --border: #e7e3dc;
+      --accent: #de3341;
+      --accent-dark: #a3202b;
+      --accent-tint: #fdeceb;
+      --black: #16130f;
+      --black-hover: #322d26;
+      --logo-brown: #712b13;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      color: var(--ink);
+      min-height: 100dvh;
+      overflow-x: hidden;
+    }
+
+    a, button { color: inherit; font-family: inherit; }
+
+    .auth-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.25rem 2.5rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+    }
+
+    .logo { display: flex; align-items: center; gap: 0.65rem; font-size: 1.15rem; font-weight: 700; color: var(--logo-brown); text-decoration: none; }
+    .logo-icon { width: 30px; height: 30px; flex-shrink: 0; }
+
+    .back-home { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.85rem; font-weight: 600; color: var(--ink-soft); text-decoration: none; transition: color 0.2s; background: none; border: none; cursor: pointer; }
+    .back-home:hover { color: var(--accent); }
+
+    @media (max-width: 700px) { .auth-topbar { padding: 1.1rem 1.5rem; } }
+
+    .status-shell { min-height: calc(100dvh - 65px); display: flex; align-items: center; justify-content: center; background: var(--bg-alt); padding: 2.5rem 2rem; }
+
+    .status-box { background: #ffffff; border: 1px solid var(--border); border-radius: 1rem; padding: 2.75rem 2.5rem; width: 100%; max-width: 440px; box-shadow: 0 10px 40px rgba(22, 19, 15, 0.06); text-align: center; }
+
+    .status-icon { width: 52px; height: 52px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin: 0 auto 1.25rem; }
+    .status-icon.invite { background: #ecfdf5; }
+    .status-icon.rejected { background: #f1f5f9; }
+
+    .status-box h2 { font-size: 1.4rem; font-weight: 800; margin-bottom: 0.75rem; }
+    .status-box p { color: var(--ink-soft); font-size: 0.92rem; line-height: 1.6; margin-bottom: 0.9rem; }
+    .status-box p:last-of-type { margin-bottom: 1.75rem; }
+    .status-box a { color: var(--accent); font-weight: 600; text-decoration: none; }
+    .status-box a:hover { color: var(--accent-dark); }
+
+    .status-actions { display: flex; flex-direction: column; gap: 0.65rem; }
+
+    .btn-check { width: 100%; padding: 0.8rem; background: var(--black); color: white; border: none; border-radius: 999px; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: all 0.2s; display: block; text-decoration: none; text-align: center; }
+    .btn-check:hover { background: var(--black-hover); }
+    .btn-check:disabled { opacity: 0.6; cursor: default; }
+
+    .btn-signout { width: 100%; padding: 0.75rem; background: transparent; border: 1px solid var(--border); color: var(--ink); border-radius: 999px; font-size: 0.9rem; font-weight: 600; cursor: pointer; display: block; text-decoration: none; text-align: center; }
+    .btn-signout:hover { border-color: var(--ink); }
+  </style>
+</head>
+<body>
+  <div class="auth-topbar">
+    <a href="../index.html" class="logo">
+      <svg class="logo-icon" viewBox="8 8 98 94" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <circle cx="55" cy="55" r="42" fill="none" stroke="#712B13" stroke-width="8" stroke-linecap="round" stroke-dasharray="230 34" stroke-dashoffset="20"/>
+        <g fill="none" stroke="#712B13" stroke-width="6" stroke-linecap="round" opacity="0.65">
+          <path d="M32,38 L65,38"/>
+          <path d="M32,55 L54,55"/>
+          <path d="M32,72 L65,72"/>
+        </g>
+        <path d="M92,33 Q101,45 95,52 Q97,43 89,41 Q86,48 92,53 Q80,50 80,40 Q80,34 92,33 Z" fill="#712B13"/>
+      </svg>
+      <span>EnrichMe</span>
+    </a>
+    <button type="button" class="back-home" onclick="signOutAndRedirect('../index.html')">← Sign out</button>
+  </div>
+
+  <div class="status-shell">
+    <div class="status-box" id="joinBox">
+      <p style="margin:0;color:var(--ink-faint);">Loading invite…</p>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabase-client.js"></script>
+  <script src="shared.js"></script>
+  <script>
+    var currentUser = null;
+    var groupId = new URLSearchParams(window.location.search).get('group');
+
+    function renderError(msg) {
+      document.getElementById('joinBox').innerHTML =
+        '<div class="status-icon rejected">✕</div>' +
+        '<h2>Invite link not valid</h2>' +
+        '<p>' + escapeHtml(msg) + '</p>' +
+        '<div class="status-actions">' +
+          '<a href="dashboard.html" class="btn-check">Go to SplitExpenses</a>' +
+        '</div>';
+    }
+
+    function profileDisplayName(profile) {
+      if (profile && (profile.first_name || profile.last_name)) return [profile.first_name, profile.last_name].filter(Boolean).join(' ');
+      if (profile && profile.full_name) return profile.full_name;
+      return null;
+    }
+
+    function renderConfirm(preview) {
+      var memberLine = preview.member_count
+        ? ' with ' + preview.member_count + ' member' + (Number(preview.member_count) === 1 ? '' : 's')
+        : '';
+      document.getElementById('joinBox').innerHTML =
+        '<div class="status-icon invite">🤝</div>' +
+        '<h2>Join "' + escapeHtml(preview.name) + '"?</h2>' +
+        '<p>You have been invited to split expenses in this group' + memberLine + '.</p>' +
+        '<div class="status-actions">' +
+          '<button type="button" class="btn-check" id="joinBtn">Join Group</button>' +
+          '<a href="dashboard.html" class="btn-signout">Not now</a>' +
+        '</div>';
+      document.getElementById('joinBtn').addEventListener('click', doJoin);
+    }
+
+    async function doJoin() {
+      var btn = document.getElementById('joinBtn');
+      btn.disabled = true;
+      btn.textContent = 'Joining…';
+
+      var { data: profile } = await supabaseClient.from('profiles').select('first_name, last_name, full_name').eq('id', currentUser.id).single();
+      var displayName = profileDisplayName(profile) || (currentUser.email || 'You').split('@')[0];
+
+      var { error } = await supabaseClient.from('split_group_members').insert({
+        group_id: groupId, user_id: currentUser.id, display_name: displayName,
+        email: currentUser.email, is_shadow: false, added_by: currentUser.id
+      });
+      if (error) { renderError('Could not join this group: ' + error.message); return; }
+
+      window.location.href = 'group.html?id=' + groupId;
+    }
+
+    (async function init() {
+      if (!groupId) { renderError('This invite link is missing its group.'); return; }
+
+      var { data: { session } } = await supabaseClient.auth.getSession();
+      if (!session) {
+        var next = '/split/join.html?group=' + encodeURIComponent(groupId);
+        window.location.href = '../login.html?next=' + encodeURIComponent(next);
+        return;
+      }
+
+      currentUser = await requireAuth('../login.html');
+      if (!currentUser) return;
+
+      var { data: existing } = await supabaseClient
+        .from('split_group_members')
+        .select('id')
+        .eq('group_id', groupId)
+        .eq('user_id', currentUser.id);
+      if (existing && existing.length) { window.location.href = 'group.html?id=' + groupId; return; }
+
+      var { data: preview, error } = await supabaseClient
+        .rpc('get_group_preview_for_join', { check_group_id: groupId })
+        .single();
+      if (error || !preview || !preview.name) {
+        renderError("This invite link isn't valid, or the group may have been deleted.");
+        return;
+      }
+
+      renderConfirm(preview);
+    })();
+  </script>
+</body>
+</html>

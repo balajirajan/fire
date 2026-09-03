@@ -813,6 +813,48 @@ create policy "split_settlements_insert_member" on split_settlements for insert 
 create policy "split_settlements_update_member" on split_settlements for update using (is_split_group_member(group_id));
 create policy "split_settlements_delete_member" on split_settlements for delete using (is_split_group_member(group_id));
 
+-- Invite links (split/join.html): "Share Invite Link" on a group hands out
+-- a URL containing nothing but the group's own uuid - there's no separate
+-- invite-code table, the uuid itself (122 bits, practically unguessable)
+-- is the secret, the same trust model any "anyone with the link can join"
+-- feature uses. Two things a non-member needs that no existing policy
+-- allows:
+--
+-- 1. A permissive INSERT policy letting a signed-in user add *themselves*
+--    (not anyone else) to any group, regardless of prior membership -
+--    RLS policies for the same command are OR'd together, so this simply
+--    adds a second way in alongside split_group_members_insert_member's
+--    "existing members can add others" rule, it doesn't loosen it.
+drop policy if exists "split_group_members_self_join" on split_group_members;
+create policy "split_group_members_self_join" on split_group_members for insert
+  with check (user_id = auth.uid());
+
+-- Belt-and-suspenders: without this, a double-click or revisiting an old
+-- invite link race-inserts a second membership row for the same person,
+-- double-counting them in every balance. NULL user_id (shadow members)
+-- never conflicts with itself or anything else under a unique index.
+create unique index if not exists split_group_members_group_user_uq
+  on split_group_members (group_id, user_id) where user_id is not null;
+
+-- 2. A way to preview *just* the group's name and member count before
+--    joining ("You've been invited to join 'Goa Trip 2026' - 3 members"),
+--    without a blanket "select any group" policy that would let every
+--    signed-in user browse every group in the database (split_groups has
+--    no such policy on purpose). security definer + a narrow return type
+--    keeps this to "one named group, its name and a count" only - same
+--    pattern as is_split_group_member() below it.
+create or replace function get_group_preview_for_join(check_group_id uuid)
+returns table(name text, member_count bigint)
+language sql
+security definer
+set search_path = public
+stable
+as $$
+  select g.name, (select count(*) from split_group_members m where m.group_id = g.id)
+  from split_groups g
+  where g.id = check_group_id;
+$$;
+
 -- ── MoneyOS: Tax Planning, Insurance Tracker, Goals Planner, Document       ──
 -- ── Vault — four single-user features under one sidebar section. Powers    ──
 -- ── moneyos-tax.html, moneyos-insurance.html, moneyos-goals.html and       ──

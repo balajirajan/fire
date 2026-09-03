@@ -355,6 +355,7 @@
           <div class="group-head-members" id="groupMembersChips"></div>
         </div>
         <div class="group-head-actions">
+          <button type="button" class="btn-secondary" id="shareInviteBtn">🔗 Share Invite Link</button>
           <button type="button" class="btn-secondary" id="addMemberBtn">+ Add Member</button>
           <button type="button" class="btn-secondary danger" id="deleteGroupBtn" style="display:none;">Delete Group</button>
         </div>
@@ -554,6 +555,25 @@
       }).join('');
 
       document.getElementById('deleteGroupBtn').style.display = state.group.created_by === currentUser.id ? '' : 'none';
+    }
+
+    // Anyone with this URL can join the group (the group's own uuid is the
+    // invite secret - see split_group_members_self_join in the schema), so
+    // there's nothing server-side to generate here, just the link itself.
+    async function shareInviteLink() {
+      var url = window.location.origin + '/split/join.html?group=' + groupId;
+      var shareData = { title: 'Join "' + state.group.name + '" on EnrichMe', text: 'Split expenses with me in "' + state.group.name + '" on EnrichMe.', url: url };
+
+      if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
+        try { await navigator.share(shareData); return; } catch (e) { /* user cancelled - fall through to copy */ }
+      }
+
+      try {
+        await navigator.clipboard.writeText(url);
+        alert('Invite link copied! Share it with friends to add them to this group:\n\n' + url);
+      } catch (e) {
+        prompt('Copy this invite link to share with friends:', url);
+      }
     }
 
     async function renameGroupName() {
@@ -951,6 +971,7 @@
         else if (btn.dataset.action === 'remove-member') removeMemberPrompt(btn.dataset.id, btn.dataset.name);
       });
 
+      document.getElementById('shareInviteBtn').addEventListener('click', shareInviteLink);
       document.getElementById('addMemberBtn').addEventListener('click', openAddMemberModal);
       document.getElementById('cancelAddMemberBtn').addEventListener('click', closeAddMemberModal);
       document.getElementById('saveMembersBtn').addEventListener('click', saveNewMembers);

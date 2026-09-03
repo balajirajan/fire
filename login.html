@@ -574,7 +574,7 @@
           const code = document.getElementById('otpCode').value.trim();
           const { error } = await supabaseClient.auth.verifyOtp({ email: pendingOtpEmail, token: code, type: 'signup' });
           if (error) throw error;
-          window.location.href = 'dashboard.html';
+          window.location.href = redirectNext || 'dashboard.html';
           return;
         }
 
@@ -597,7 +597,7 @@
           supabaseClient.functions.invoke('notify-signup-request', { body: { email, fullName } }).catch(function () {});
 
           if (data.session) {
-            window.location.href = 'dashboard.html';
+            window.location.href = redirectNext || 'dashboard.html';
             return;
           }
           pendingOtpEmail = email;
@@ -616,7 +616,7 @@
             }
             throw error;
           }
-          window.location.href = 'dashboard.html';
+          window.location.href = redirectNext || 'dashboard.html';
           return;
         }
       } catch (err) {
@@ -645,16 +645,25 @@
 
     // Deep-link support: CTAs elsewhere in the app link to login.html?mode=signup
     // so "Start free" / "Start Tracking My Money" style buttons open straight
-    // on the create-account form instead of defaulting to sign-in.
+    // on the create-account form instead of defaulting to sign-in. A ?next=
+    // (e.g. from a SplitExpenses invite link) is honored after sign-in
+    // instead of always landing on dashboard.html - see the four redirects
+    // above, and split/join.html which is what sets it.
+    var redirectNext = null;
     (function initModeFromQuery() {
       const params = new URLSearchParams(window.location.search);
       if (params.get('mode') === 'signup') setAuthMode('signup');
+      const next = params.get('next');
+      // Must be a same-site absolute path - "//evil.com" also starts with a
+      // single "/" but browsers treat it as protocol-relative to another
+      // origin, so that's rejected too, not just bare "http(s)://" values.
+      if (next && next.startsWith('/') && !next.startsWith('//')) redirectNext = next;
     })();
 
-    // If already signed in, skip straight to the dashboard.
+    // If already signed in, skip straight to the dashboard (or ?next=).
     (async function redirectIfSignedIn() {
       const { data: { session } } = await supabaseClient.auth.getSession();
-      if (session) window.location.href = 'dashboard.html';
+      if (session) window.location.href = redirectNext || 'dashboard.html';
     })();
   </script>
 </body>
