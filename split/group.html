@@ -65,10 +65,20 @@
     .user-menu-panel a:hover { background: #f1f5f9; color: #10b981; }
 
     .group-head-card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 1.1rem; padding: 1.4rem 1.6rem; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; box-shadow: 0 4px 16px rgba(15,23,42,0.03); }
-    .group-head-name { font-size: 1.3rem; font-weight: 800; margin-bottom: 0.5rem; }
+    .group-head-name-row { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; }
+    .group-head-name { font-size: 1.3rem; font-weight: 800; }
     .group-head-members { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; }
+    .group-head-actions { display: flex; gap: 0.6rem; flex-wrap: wrap; }
     .avatar { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 800; color: #fff; flex-shrink: 0; }
-    .member-chip { display: flex; align-items: center; gap: 0.4rem; background: #f8fafc; border-radius: 999px; padding: 0.25rem 0.7rem 0.25rem 0.25rem; font-size: 0.8rem; font-weight: 600; color: #364752; }
+    .member-chip { display: flex; align-items: center; gap: 0.35rem; background: #f8fafc; border-radius: 999px; padding: 0.25rem 0.35rem 0.25rem 0.25rem; font-size: 0.8rem; font-weight: 600; color: #364752; }
+    .icon-btn { display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 0.4rem; border: 1px solid #e2e8f0; background: #fff; color: #64748b; font-size: 0.72rem; cursor: pointer; flex-shrink: 0; }
+    .icon-btn:hover { border-color: #94a3b8; color: #364752; }
+    .btn-secondary.danger { border-color: #fecaca; color: #dc2626; }
+    .btn-secondary.danger:hover { border-color: #dc2626; background: #fef2f2; }
+    .member-chip-actions { display: inline-flex; gap: 0.15rem; margin-left: 0.1rem; }
+    .member-chip-btn { width: 18px; height: 18px; border-radius: 50%; border: none; background: rgba(15,23,42,0.06); color: #64748b; font-size: 0.58rem; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; line-height: 1; flex-shrink: 0; }
+    .member-chip-btn:hover { background: rgba(15,23,42,0.12); color: #364752; }
+    .member-chip-btn.danger:hover { background: #fee2e2; color: #dc2626; }
 
     .split-hero { background: linear-gradient(135deg, #0f172a, #1e293b); border-radius: 1.25rem; padding: 1.75rem 2rem; color: #fff; margin-bottom: 1.5rem; }
     .split-hero-label { font-size: 0.75rem; color: #94a3b8; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.4rem; }
@@ -102,6 +112,10 @@
     .expense-amount-share { font-size: 0.74rem; margin-top: 0.15rem; }
     .expense-amount-share.positive { color: #059669; }
     .expense-amount-share.negative { color: #dc2626; }
+    .expense-row-actions { display: flex; gap: 0.3rem; flex-shrink: 0; }
+    .row-icon-btn { width: 26px; height: 26px; border-radius: 0.4rem; border: 1px solid #e2e8f0; background: #fff; color: #64748b; font-size: 0.7rem; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }
+    .row-icon-btn:hover { border-color: #94a3b8; color: #364752; }
+    .row-icon-btn.danger:hover { border-color: #dc2626; background: #fef2f2; color: #dc2626; }
 
     .balance-row { display: flex; align-items: center; justify-content: space-between; padding: 0.6rem 0; border-bottom: 1px solid #f1f5f9; }
     .balance-row:last-child { border-bottom: none; }
@@ -334,10 +348,16 @@
 
       <div class="group-head-card">
         <div>
-          <div class="group-head-name" id="groupName">Loading…</div>
+          <div class="group-head-name-row">
+            <div class="group-head-name" id="groupName">Loading…</div>
+            <button type="button" class="icon-btn" id="renameGroupBtn" title="Rename group">✎</button>
+          </div>
           <div class="group-head-members" id="groupMembersChips"></div>
         </div>
-        <button type="button" class="btn-secondary" id="addMemberBtn">+ Add Member</button>
+        <div class="group-head-actions">
+          <button type="button" class="btn-secondary" id="addMemberBtn">+ Add Member</button>
+          <button type="button" class="btn-secondary danger" id="deleteGroupBtn" style="display:none;">Delete Group</button>
+        </div>
       </div>
 
       <div class="split-hero">
@@ -378,7 +398,7 @@
   <!-- Add Expense modal -->
   <div class="modal-overlay" id="expenseModal">
     <div class="modal-box">
-      <h3>Add Expense</h3>
+      <h3 id="expenseModalTitle">Add Expense</h3>
       <div class="form-error" id="expenseFormError"></div>
       <label class="field-label">Description</label>
       <input type="text" class="field-input" id="expenseDescInput" placeholder="e.g. Dinner, Groceries, Cab">
@@ -487,7 +507,7 @@
 
     var currentUser = null;
     var groupId = new URLSearchParams(window.location.search).get('id');
-    var state = { group: null, members: [], expenses: [], shares: [], settlements: [], balances: {}, expenseSplitType: 'equal' };
+    var state = { group: null, members: [], expenses: [], shares: [], settlements: [], balances: {}, expenseSplitType: 'equal', editingExpenseId: null };
 
     function todayStr() {
       return new Date().toISOString().slice(0, 10);
@@ -524,8 +544,52 @@
       document.title = state.group.name + ' - SplitExpenses(SplitWise) - EnrichMe';
       document.getElementById('groupName').textContent = state.group.name;
       document.getElementById('groupMembersChips').innerHTML = state.members.map(function (m) {
-        return '<span class="member-chip"><span class="avatar" style="background:' + colorForName(m.display_name) + ';width:22px;height:22px;font-size:0.6rem;">' + initialsForName(m.display_name) + '</span>' + escapeHtml(m.display_name) + '</span>';
+        var safeName = escapeHtml(m.display_name).replace(/"/g, '&quot;');
+        return '<span class="member-chip"><span class="avatar" style="background:' + colorForName(m.display_name) + ';width:22px;height:22px;font-size:0.6rem;">' + initialsForName(m.display_name) + '</span>' + escapeHtml(m.display_name) +
+          '<span class="member-chip-actions">' +
+            '<button type="button" class="member-chip-btn" data-action="rename-member" data-id="' + m.id + '" data-name="' + safeName + '" title="Rename">✎</button>' +
+            '<button type="button" class="member-chip-btn danger" data-action="remove-member" data-id="' + m.id + '" data-name="' + safeName + '" title="Remove">✕</button>' +
+          '</span>' +
+        '</span>';
       }).join('');
+
+      document.getElementById('deleteGroupBtn').style.display = state.group.created_by === currentUser.id ? '' : 'none';
+    }
+
+    async function renameGroupName() {
+      var name = prompt('Rename group:', state.group.name);
+      if (!name || !name.trim() || name.trim() === state.group.name) return;
+      var { error } = await supabaseClient.from('split_groups').update({ name: name.trim() }).eq('id', groupId);
+      if (error) { alert('Could not rename group: ' + error.message); return; }
+      await loadGroupData();
+      renderAll();
+    }
+
+    async function deleteGroup() {
+      if (!confirm('Delete "' + state.group.name + '"? This removes all its expenses and settlements too. This can\'t be undone.')) return;
+      var { error } = await supabaseClient.from('split_groups').delete().eq('id', groupId);
+      if (error) { alert('Could not delete group: ' + error.message); return; }
+      window.location.href = 'dashboard.html';
+    }
+
+    async function renameMemberPrompt(id, currentName) {
+      var name = prompt('Rename member:', currentName);
+      if (!name || !name.trim() || name.trim() === currentName) return;
+      var { error } = await supabaseClient.from('split_group_members').update({ display_name: name.trim() }).eq('id', id);
+      if (error) { alert('Could not rename member: ' + error.message); return; }
+      await loadGroupData();
+      renderAll();
+    }
+
+    async function removeMemberPrompt(id, name) {
+      if (!confirm('Remove "' + name + '" from this group?')) return;
+      var { error } = await supabaseClient.from('split_group_members').delete().eq('id', id);
+      if (error) {
+        alert("Can't remove " + name + " - they're linked to expenses or payments in this group. Settle up or remove those first.");
+        return;
+      }
+      await loadGroupData();
+      renderAll();
     }
 
     function myMember() {
@@ -573,7 +637,7 @@
             shareHtml = '<div class="expense-amount-share negative">you owe ' + formatRupees(myShare.share_amount) + '</div>';
           }
         }
-        return '<div class="expense-row">' +
+        return '<div class="expense-row" data-expense-id="' + e.id + '">' +
           '<div class="expense-icon">' + (CATEGORY_ICONS[e.category] || '📦') + '</div>' +
           '<div class="expense-info">' +
             '<div class="expense-desc">' + escapeHtml(e.description) + '</div>' +
@@ -582,6 +646,10 @@
           '<div class="expense-amount">' +
             '<div class="expense-amount-total">' + formatRupees(e.amount) + '</div>' +
             shareHtml +
+          '</div>' +
+          '<div class="expense-row-actions">' +
+            '<button type="button" class="row-icon-btn" data-action="edit-expense" title="Edit">✎</button>' +
+            '<button type="button" class="row-icon-btn danger" data-action="delete-expense" title="Delete">✕</button>' +
           '</div>' +
         '</div>';
       }).join('');
@@ -629,39 +697,58 @@
     /* ── Add Expense modal ─────────────────────────────────────────────── */
 
     function renderExpenseMemberList() {
+      var editId = state.editingExpenseId;
       var amount = Number(document.getElementById('expenseAmountInput').value) || 0;
       var wrap = document.getElementById('expenseMemberList');
       var isExact = state.expenseSplitType === 'exact';
 
+      var existingShares = editId ? state.shares.filter(function (s) { return s.expense_id === editId; }) : [];
+      var shareByMember = {};
+      existingShares.forEach(function (s) { shareByMember[s.member_id] = s.share_amount; });
+      var hasExisting = existingShares.length > 0;
+
       wrap.innerHTML = state.members.map(function (m) {
+        var checked = hasExisting ? shareByMember.hasOwnProperty(m.id) : true;
+        var prefill = shareByMember.hasOwnProperty(m.id) ? shareByMember[m.id] : '';
         return '<div class="member-select-row' + (isExact ? ' exact' : '') + '" data-member-id="' + m.id + '">' +
-          '<label><input type="checkbox" class="expense-member-check" checked> ' + escapeHtml(m.display_name) + '</label>' +
-          '<input type="number" class="exact-amount-input" min="0" step="0.01" placeholder="₹0">' +
+          '<label><input type="checkbox" class="expense-member-check"' + (checked ? ' checked' : '') + '> ' + escapeHtml(m.display_name) + '</label>' +
+          '<input type="number" class="exact-amount-input" min="0" step="0.01" placeholder="₹0" value="' + prefill + '">' +
         '</div>';
       }).join('');
 
       if (isExact) {
-        var checkedIds = state.members.map(function (m) { return m.id; });
-        var equalGuess = computeEqualShares(amount, checkedIds);
-        Array.prototype.forEach.call(wrap.querySelectorAll('.member-select-row'), function (row, i) {
-          row.querySelector('.exact-amount-input').value = equalGuess[i];
+        var checkedRows = Array.prototype.filter.call(wrap.querySelectorAll('.member-select-row'), function (row) {
+          return row.querySelector('.expense-member-check').checked;
         });
+        var blankRows = checkedRows.filter(function (row) { return !row.querySelector('.exact-amount-input').value; });
+        if (blankRows.length) {
+          var guess = computeEqualShares(amount, blankRows.map(function (r) { return r.dataset.memberId; }));
+          blankRows.forEach(function (row, i) { row.querySelector('.exact-amount-input').value = guess[i]; });
+        }
       }
     }
 
-    function openExpenseModal() {
+    // editId omitted -> "add expense". Passed -> reopens prefilled with
+    // that expense's values (including which members it was split with)
+    // so editing doesn't mean deleting and re-adding.
+    function openExpenseModal(editId) {
+      state.editingExpenseId = editId || null;
+      var expense = editId ? state.expenses.filter(function (e) { return e.id === editId; })[0] : null;
+
+      document.getElementById('expenseModalTitle').textContent = expense ? 'Edit Expense' : 'Add Expense';
       document.getElementById('expenseFormError').textContent = '';
-      document.getElementById('expenseDescInput').value = '';
-      document.getElementById('expenseAmountInput').value = '';
-      document.getElementById('expenseCategoryInput').value = 'other';
-      document.getElementById('expenseDateInput').value = todayStr();
-      state.expenseSplitType = 'equal';
+      document.getElementById('expenseDescInput').value = expense ? expense.description : '';
+      document.getElementById('expenseAmountInput').value = expense ? expense.amount : '';
+      document.getElementById('expenseCategoryInput').value = expense ? expense.category : 'other';
+      document.getElementById('expenseDateInput').value = expense ? expense.expense_date : todayStr();
+      state.expenseSplitType = expense ? expense.split_type : 'equal';
       Array.prototype.forEach.call(document.querySelectorAll('.split-type-btn'), function (b) {
-        b.classList.toggle('selected', b.dataset.type === 'equal');
+        b.classList.toggle('selected', b.dataset.type === state.expenseSplitType);
       });
 
       var paidBySelect = document.getElementById('expensePaidByInput');
       paidBySelect.innerHTML = state.members.map(function (m) { return '<option value="' + m.id + '">' + escapeHtml(m.display_name) + '</option>'; }).join('');
+      if (expense) paidBySelect.value = expense.paid_by_member_id;
 
       renderExpenseMemberList();
       document.getElementById('expenseModal').classList.add('show');
@@ -669,6 +756,16 @@
 
     function closeExpenseModal() {
       document.getElementById('expenseModal').classList.remove('show');
+      state.editingExpenseId = null;
+    }
+
+    async function deleteExpense(id) {
+      var expense = state.expenses.filter(function (e) { return e.id === id; })[0];
+      if (!confirm('Delete "' + (expense ? expense.description : 'this expense') + '"? This can\'t be undone.')) return;
+      var { error } = await supabaseClient.from('split_expenses').delete().eq('id', id);
+      if (error) { alert('Could not delete expense: ' + error.message); return; }
+      await loadGroupData();
+      renderAll();
     }
 
     async function saveExpense() {
@@ -698,15 +795,32 @@
         if (Math.abs(sum - amount) > 0.5) { errEl.textContent = 'Exact amounts (₹' + sum + ') must add up to the total (₹' + amount + ').'; return; }
       }
 
-      var { data: expense, error: expErr } = await supabaseClient.from('split_expenses').insert({
-        group_id: groupId, description: description, amount: amount, category: category,
-        paid_by_member_id: paidBy, split_type: state.expenseSplitType, expense_date: date, created_by: currentUser.id
-      }).select().single();
-      if (expErr) { errEl.textContent = 'Could not save expense. Please try again.'; console.error(expErr); return; }
+      var editId = state.editingExpenseId;
 
-      var shareRows = memberIds.map(function (id, i) { return { expense_id: expense.id, member_id: id, share_amount: shareAmounts[i] }; });
-      var { error: shareErr } = await supabaseClient.from('split_expense_shares').insert(shareRows);
-      if (shareErr) { errEl.textContent = 'Expense saved, but splitting shares failed.'; console.error(shareErr); return; }
+      if (editId) {
+        var { error: updErr } = await supabaseClient.from('split_expenses').update({
+          description: description, amount: amount, category: category,
+          paid_by_member_id: paidBy, split_type: state.expenseSplitType, expense_date: date
+        }).eq('id', editId);
+        if (updErr) { errEl.textContent = 'Could not save changes. Please try again.'; console.error(updErr); return; }
+
+        var { error: delShareErr } = await supabaseClient.from('split_expense_shares').delete().eq('expense_id', editId);
+        if (delShareErr) { errEl.textContent = 'Could not update the split. Please try again.'; console.error(delShareErr); return; }
+
+        var editShareRows = memberIds.map(function (id, i) { return { expense_id: editId, member_id: id, share_amount: shareAmounts[i] }; });
+        var { error: editShareErr } = await supabaseClient.from('split_expense_shares').insert(editShareRows);
+        if (editShareErr) { errEl.textContent = 'Split updated, but saving shares failed.'; console.error(editShareErr); return; }
+      } else {
+        var { data: expense, error: expErr } = await supabaseClient.from('split_expenses').insert({
+          group_id: groupId, description: description, amount: amount, category: category,
+          paid_by_member_id: paidBy, split_type: state.expenseSplitType, expense_date: date, created_by: currentUser.id
+        }).select().single();
+        if (expErr) { errEl.textContent = 'Could not save expense. Please try again.'; console.error(expErr); return; }
+
+        var shareRows = memberIds.map(function (id, i) { return { expense_id: expense.id, member_id: id, share_amount: shareAmounts[i] }; });
+        var { error: shareErr } = await supabaseClient.from('split_expense_shares').insert(shareRows);
+        if (shareErr) { errEl.textContent = 'Expense saved, but splitting shares failed.'; console.error(shareErr); return; }
+      }
 
       closeExpenseModal();
       await loadGroupData();
@@ -807,7 +921,7 @@
       if (!ok) return;
       renderAll();
 
-      document.getElementById('addExpenseBtn').addEventListener('click', openExpenseModal);
+      document.getElementById('addExpenseBtn').addEventListener('click', function () { openExpenseModal(); });
       document.getElementById('cancelExpenseBtn').addEventListener('click', closeExpenseModal);
       document.getElementById('saveExpenseBtn').addEventListener('click', saveExpense);
       document.getElementById('expenseAmountInput').addEventListener('input', renderExpenseMemberList);
@@ -818,6 +932,23 @@
           Array.prototype.forEach.call(document.querySelectorAll('.split-type-btn'), function (b) { b.classList.toggle('selected', b === btn); });
           renderExpenseMemberList();
         });
+      });
+      document.getElementById('expenseFeed').addEventListener('click', function (e) {
+        var btn = e.target.closest('button[data-action]');
+        if (!btn) return;
+        var row = btn.closest('.expense-row');
+        var id = row.dataset.expenseId;
+        if (btn.dataset.action === 'edit-expense') openExpenseModal(id);
+        else if (btn.dataset.action === 'delete-expense') deleteExpense(id);
+      });
+
+      document.getElementById('renameGroupBtn').addEventListener('click', renameGroupName);
+      document.getElementById('deleteGroupBtn').addEventListener('click', deleteGroup);
+      document.getElementById('groupMembersChips').addEventListener('click', function (e) {
+        var btn = e.target.closest('button[data-action]');
+        if (!btn) return;
+        if (btn.dataset.action === 'rename-member') renameMemberPrompt(btn.dataset.id, btn.dataset.name);
+        else if (btn.dataset.action === 'remove-member') removeMemberPrompt(btn.dataset.id, btn.dataset.name);
       });
 
       document.getElementById('addMemberBtn').addEventListener('click', openAddMemberModal);

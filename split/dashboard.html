@@ -102,7 +102,27 @@
     .groups-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.1rem; margin-bottom: 1.5rem; }
     .group-card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 1rem; padding: 1.3rem 1.4rem; box-shadow: 0 4px 16px rgba(15,23,42,0.03); cursor: pointer; transition: box-shadow 0.15s ease, transform 0.15s ease; }
     .group-card:hover { box-shadow: 0 10px 25px rgba(15,23,42,0.08); transform: translateY(-2px); }
-    .group-card-name { font-size: 1rem; font-weight: 800; margin-bottom: 0.5rem; }
+    .group-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 0.4rem; margin-bottom: 0.5rem; }
+    .group-card-name { font-size: 1rem; font-weight: 800; }
+    .group-card-menu { position: relative; list-style: none; flex-shrink: 0; }
+    .group-card-menu > summary { cursor: pointer; list-style: none; color: #94a3b8; font-size: 1.05rem; font-weight: 700; padding: 0.1rem 0.4rem; line-height: 1.4; border-radius: 0.4rem; }
+    .group-card-menu > summary:hover { color: #364752; background: #f1f5f9; }
+    .group-card-menu > summary::-webkit-details-marker { display: none; }
+    .group-card-menu-panel {
+      position: absolute; top: calc(100% + 0.3rem); right: 0;
+      background: #ffffff; border: 1px solid #e2e8f0; border-radius: 0.5rem;
+      box-shadow: 0 10px 30px rgba(15,23,42,0.15);
+      padding: 0.3rem; min-width: 150px; z-index: 10;
+      display: flex; flex-direction: column; gap: 0.15rem;
+    }
+    .group-card-menu-panel button {
+      text-align: left; padding: 0.45rem 0.6rem; border-radius: 0.4rem;
+      font-size: 0.8rem; font-weight: 600; color: #364752;
+      background: none; border: none; cursor: pointer;
+    }
+    .group-card-menu-panel button:hover { background: #f1f5f9; }
+    .group-card-menu-panel button.danger { color: #dc2626; }
+    .group-card-menu-panel button.danger:hover { background: #fef2f2; }
     .group-card-members { display: flex; margin-bottom: 0.9rem; }
     .avatar { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.68rem; font-weight: 800; color: #fff; border: 2px solid #fff; margin-left: -8px; flex-shrink: 0; }
     .avatar:first-child { margin-left: 0; }
@@ -377,6 +397,19 @@
     }
 
     var currentUser = null;
+    var currentProfile = null;
+
+    // First/last name from Settings, falling back to full_name, falling
+    // back to the email's local part - only reached for accounts that
+    // never filled in Settings. Used so "you" show up in a group under
+    // your real name instead of e.g. "admin" from admin@enrichme.app.
+    function displayNameForSelf() {
+      if (currentProfile && (currentProfile.first_name || currentProfile.last_name)) {
+        return [currentProfile.first_name, currentProfile.last_name].filter(Boolean).join(' ');
+      }
+      if (currentProfile && currentProfile.full_name) return currentProfile.full_name;
+      return (currentUser.email || 'You').split('@')[0];
+    }
 
     function renderMemberRow(container, placeholder) {
       var row = document.createElement('div');
@@ -419,7 +452,7 @@
       var { data: group, error: groupErr } = await supabaseClient.from('split_groups').insert({ name: name }).select().single();
       if (groupErr) { errEl.textContent = 'Could not create group: ' + groupErr.message; console.error(groupErr); return; }
 
-      var selfName = (currentUser.email || 'You').split('@')[0];
+      var selfName = displayNameForSelf();
       var membersToInsert = [{ group_id: group.id, user_id: currentUser.id, display_name: selfName, email: currentUser.email, is_shadow: false, added_by: currentUser.id }];
       memberInputs.forEach(function (m) {
         membersToInsert.push({ group_id: group.id, display_name: m.name, email: m.email || null, is_shadow: true, added_by: currentUser.id });
@@ -440,6 +473,21 @@
         .is('user_id', null);
     }
 
+    async function renameGroupPrompt(id, currentName) {
+      var name = prompt('Rename group:', currentName);
+      if (!name || !name.trim() || name.trim() === currentName) return;
+      var { error } = await supabaseClient.from('split_groups').update({ name: name.trim() }).eq('id', id);
+      if (error) { alert('Could not rename group: ' + error.message); return; }
+      await loadDashboard();
+    }
+
+    async function deleteGroupPrompt(id, name) {
+      if (!confirm('Delete "' + name + '"? This removes all its expenses and settlements too. This can\'t be undone.')) return;
+      var { error } = await supabaseClient.from('split_groups').delete().eq('id', id);
+      if (error) { alert('Could not delete group: ' + error.message); return; }
+      await loadDashboard();
+    }
+
     function renderGroupCard(group, members, myBalance) {
       var card = document.createElement('div');
       card.className = 'group-card';
@@ -452,11 +500,37 @@
       var balLabel = myBalance > 0.5 ? 'You are owed' : (myBalance < -0.5 ? 'You owe' : 'Settled up');
       var balValue = formatRupees(Math.abs(myBalance));
 
+      var isCreator = group.created_by === currentUser.id;
+      var safeName = escapeHtml(group.name).replace(/'/g, '&#39;');
+
       card.innerHTML =
-        '<div class="group-card-name">' + escapeHtml(group.name) + '</div>' +
+        '<div class="group-card-top">' +
+          '<div class="group-card-name">' + escapeHtml(group.name) + '</div>' +
+          '<details class="group-card-menu">' +
+            '<summary title="Group options">⋮</summary>' +
+            '<div class="group-card-menu-panel">' +
+              '<button type="button" data-action="rename">✎ Rename</button>' +
+              (isCreator ? '<button type="button" class="danger" data-action="delete">✕ Delete</button>' : '') +
+            '</div>' +
+          '</details>' +
+        '</div>' +
         '<div class="group-card-members">' + avatarsHtml + '</div>' +
         '<div class="group-card-balance-label">' + balLabel + '</div>' +
         '<div class="group-card-balance-value ' + balClass + '">' + (balClass === 'settled' ? '₹0' : balValue) + '</div>';
+
+      var menu = card.querySelector('.group-card-menu');
+      menu.addEventListener('click', function (e) { e.stopPropagation(); });
+      menu.querySelector('[data-action="rename"]').addEventListener('click', function () {
+        menu.removeAttribute('open');
+        renameGroupPrompt(group.id, group.name);
+      });
+      var deleteBtn = menu.querySelector('[data-action="delete"]');
+      if (deleteBtn) {
+        deleteBtn.addEventListener('click', function () {
+          menu.removeAttribute('open');
+          deleteGroupPrompt(group.id, group.name);
+        });
+      }
 
       card.addEventListener('click', function () {
         window.location.href = 'group.html?id=' + group.id;
@@ -515,6 +589,9 @@
     (async function init() {
       currentUser = await requireAuth('../login.html');
       if (!currentUser) return;
+
+      var { data: profile } = await supabaseClient.from('profiles').select('first_name, last_name, full_name').eq('id', currentUser.id).single();
+      currentProfile = profile;
 
       await claimShadowMemberships();
 
