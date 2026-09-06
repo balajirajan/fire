@@ -11,6 +11,20 @@ function formatRupees(amount) {
   return '₹' + n.toLocaleString('en-IN', { maximumFractionDigits: 2 });
 }
 
+// When a Supabase call's underlying fetch() never gets a response at all
+// (dropped wifi/cellular, DNS hiccup, etc.), the client surfaces it as a
+// raw "TypeError: Failed to fetch" rather than a normal database error -
+// technically accurate but not helpful to read on a save-failed banner.
+// Everything else (constraint violations, RLS rejections, etc.) passes
+// through unchanged since those messages are already meaningful.
+function friendlyErrorMessage(err) {
+  var msg = (err && err.message) || String(err);
+  if (/Failed to fetch|NetworkError|Load failed/i.test(msg)) {
+    return 'Network error — check your connection and try again.';
+  }
+  return msg;
+}
+
 var AVATAR_COLORS = ['#059669', '#0d9488', '#0891b2', '#2563eb', '#7c3aed', '#c026d3', '#db2777', '#ea580c', '#ca8a04'];
 
 function colorForName(name) {
