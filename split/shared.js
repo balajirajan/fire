@@ -48,6 +48,7 @@ function computeGroupBalances(members, expenses, shares, settlements) {
   members.forEach(function (m) { balances[m.id] = 0; });
 
   expenses.forEach(function (e) {
+    if (e.category === 'advance') return; // a personal loan/prepayment, not a group cost - nobody owes the payer for this
     balances[e.paid_by_member_id] = (balances[e.paid_by_member_id] || 0) + Number(e.amount);
   });
   shares.forEach(function (s) {

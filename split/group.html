@@ -150,6 +150,12 @@
     .settle-row:last-child { border-bottom: none; }
     .settle-row-text b { color: #0f172a; }
 
+    .cost-summary-label { font-size: 0.8rem; color: var(--ink-faint); margin-bottom: 0.9rem; }
+    .cost-summary { display: flex; flex-wrap: wrap; gap: 0.8rem; margin-bottom: 1.3rem; padding-bottom: 1.3rem; border-bottom: 1px solid var(--border); }
+    .cost-summary-item { display: flex; align-items: center; gap: 0.6rem; background: var(--bg-alt); border-radius: 0.8rem; padding: 0.65rem 1rem; }
+    .cost-summary-name { font-size: 0.8rem; font-weight: 600; color: var(--ink-soft); }
+    .cost-summary-value { font-size: 1.05rem; font-weight: 800; color: var(--ink); }
+
     .table-scroll { overflow-x: auto; }
     .breakdown-table { width: 100%; border-collapse: collapse; font-size: 0.83rem; }
     .breakdown-table th, .breakdown-table td { padding: 0.6rem 0.9rem; border-bottom: 1px solid var(--border); text-align: right; white-space: nowrap; }
@@ -452,6 +458,8 @@
 
       <div class="card" id="breakdownCard" style="display:none;">
         <div class="card-head"><h3>Expense Breakdown by Member</h3></div>
+        <p class="cost-summary-label">What this trip actually cost each member (their share of the group's real spending, not what they happened to pay up front):</p>
+        <div class="cost-summary" id="costSummaryList"></div>
         <div class="table-scroll">
           <table class="breakdown-table" id="breakdownTable"></table>
         </div>
@@ -481,6 +489,7 @@
             <option value="rent">🏠 Rent</option>
             <option value="entertainment">🎬 Entertainment</option>
             <option value="shopping">🛍️ Shopping</option>
+            <option value="advance">💰 Advance (not split)</option>
             <option value="other">📦 Other</option>
           </select>
         </div>
@@ -495,12 +504,15 @@
           <input type="date" class="field-input" id="expenseDateInput">
         </div>
       </div>
-      <label class="field-label">Split</label>
-      <div class="split-type-toggle">
-        <div class="split-type-btn selected" data-type="equal">Equal</div>
-        <div class="split-type-btn" data-type="exact">Exact amounts</div>
+      <div id="expenseSplitSection">
+        <label class="field-label">Split</label>
+        <div class="split-type-toggle">
+          <div class="split-type-btn selected" data-type="equal">Equal</div>
+          <div class="split-type-btn" data-type="exact">Exact amounts</div>
+        </div>
+        <div id="expenseMemberList"></div>
       </div>
-      <div id="expenseMemberList"></div>
+      <div class="empty-mini" id="expenseAdvanceNote" style="display:none; text-align:left; padding:0.6rem 0 0.9rem;">💰 This is a personal advance, not a group cost - it's logged here for the record, but won't be split among members or count toward anyone's balance.</div>
       <label class="field-label">Note (optional)</label>
       <input type="text" class="field-input" id="expenseNoteInput" placeholder="e.g. Split the last bill differently">
       <div class="modal-actions">
@@ -588,7 +600,7 @@
       backdrop.classList.toggle('open', isOpen);
     }
 
-    var CATEGORY_ICONS = { food: '🍔', groceries: '🛒', travel: '✈️', utilities: '💡', rent: '🏠', entertainment: '🎬', shopping: '🛍️', other: '📦' };
+    var CATEGORY_ICONS = { food: '🍔', groceries: '🛒', travel: '✈️', utilities: '💡', rent: '🏠', entertainment: '🎬', shopping: '🛍️', advance: '💰', other: '📦' };
 
     var currentUser = null;
     var groupId = new URLSearchParams(window.location.search).get('id');
@@ -867,9 +879,12 @@
     }
 
     function renderHero() {
-      var totalSpent = state.expenses.reduce(function (s, e) { return s + Number(e.amount); }, 0);
+      // Advances aren't group spending, so they're excluded here too -
+      // same rule as computeGroupBalances (split/shared.js).
+      var realExpenses = state.expenses.filter(function (e) { return e.category !== 'advance'; });
+      var totalSpent = realExpenses.reduce(function (s, e) { return s + Number(e.amount); }, 0);
       var isTrip = state.group.group_type === 'trip';
-      var countLabel = state.expenses.length + (state.expenses.length === 1 ? ' expense logged' : ' expenses logged');
+      var countLabel = realExpenses.length + (realExpenses.length === 1 ? ' expense logged' : ' expenses logged');
       document.getElementById('totalSpentLabel').textContent = isTrip ? 'Total Spent on This Trip' : 'Total Spent';
       document.getElementById('totalSpentValue').textContent = formatRupees(totalSpent);
       document.getElementById('totalSpentSub').textContent = isTrip ? (countLabel + ' so far') : countLabel;
@@ -922,7 +937,7 @@
           '<div class="expense-icon">' + (CATEGORY_ICONS[e.category] || '📦') + '</div>' +
           '<div class="expense-info">' +
             '<div class="expense-desc">' + escapeHtml(e.description) + '</div>' +
-            '<div class="expense-meta">Paid by ' + escapeHtml(memberName(e.paid_by_member_id)) + ' · ' + e.expense_date + (e.note ? ' · ' + escapeHtml(e.note) : '') + '</div>' +
+            '<div class="expense-meta">' + (e.category === 'advance' ? '<b>Advance</b> (not split) · ' : '') + 'Paid by ' + escapeHtml(memberName(e.paid_by_member_id)) + ' · ' + e.expense_date + (e.note ? ' · ' + escapeHtml(e.note) : '') + '</div>' +
           '</div>' +
           '<div class="expense-amount">' +
             '<div class="expense-amount-total">' + formatRupees(e.amount) + '</div>' +
@@ -1015,19 +1030,23 @@
       });
     }
 
-    var CATEGORY_LABELS = { food: 'Food', groceries: 'Groceries', travel: 'Travel', utilities: 'Utilities', rent: 'Rent', entertainment: 'Entertainment', shopping: 'Shopping', other: 'Other' };
-    var CATEGORY_ORDER = ['food', 'groceries', 'travel', 'utilities', 'rent', 'entertainment', 'shopping', 'other'];
+    var CATEGORY_LABELS = { food: 'Food', groceries: 'Groceries', travel: 'Travel', utilities: 'Utilities', rent: 'Rent', entertainment: 'Entertainment', shopping: 'Shopping', advance: 'Advance', other: 'Other' };
+    var CATEGORY_ORDER = ['food', 'groceries', 'travel', 'utilities', 'rent', 'entertainment', 'shopping', 'advance', 'other'];
 
     // Who paid for what, by category - only the categories actually used
     // in this group get a column, so a trip that's mostly food/travel
     // doesn't drag in 6 empty columns for categories nobody logged.
     function renderExpenseBreakdown() {
       var card = document.getElementById('breakdownCard');
-      if (!state.expenses.length) { card.style.display = 'none'; return; }
+      // Advances are excluded from this whole card, same as the hero's
+      // Total Spent and the balance math - they're personal money, not
+      // part of what the group actually split between everyone.
+      var realExpenses = state.expenses.filter(function (e) { return e.category !== 'advance'; });
+      if (!realExpenses.length) { card.style.display = 'none'; return; }
       card.style.display = 'block';
 
       var categoriesUsed = [];
-      state.expenses.forEach(function (e) {
+      realExpenses.forEach(function (e) {
         if (categoriesUsed.indexOf(e.category) === -1) categoriesUsed.push(e.category);
       });
       categoriesUsed.sort(function (a, b) { return CATEGORY_ORDER.indexOf(a) - CATEGORY_ORDER.indexOf(b); });
@@ -1035,7 +1054,7 @@
       var amounts = {};
       var shareTotals = {};
       state.members.forEach(function (m) { amounts[m.id] = {}; shareTotals[m.id] = 0; });
-      state.expenses.forEach(function (e) {
+      realExpenses.forEach(function (e) {
         if (!amounts[e.paid_by_member_id]) return; // paid by someone no longer in the member list - already flagged by the untracked-balance note above
         amounts[e.paid_by_member_id][e.category] = (amounts[e.paid_by_member_id][e.category] || 0) + Number(e.amount);
       });
@@ -1081,6 +1100,17 @@
 
       document.getElementById('breakdownTable').innerHTML =
         '<thead><tr>' + headHtml + '</tr></thead><tbody>' + bodyHtml + '</tbody><tfoot><tr>' + footHtml + '</tr></tfoot>';
+
+      // A quick-glance answer to "what did this trip cost me" - the same
+      // Their Share figure as the table's column, just pulled up front and
+      // sized to actually read at a glance instead of being one cell in a
+      // wide table.
+      document.getElementById('costSummaryList').innerHTML = state.members.map(function (m) {
+        return '<div class="cost-summary-item">' +
+          '<span class="avatar" style="background:' + colorForName(m.display_name) + ';width:28px;height:28px;font-size:0.68rem;">' + initialsForName(m.display_name) + '</span>' +
+          '<div><div class="cost-summary-name">' + escapeHtml(m.display_name) + '</div><div class="cost-summary-value">' + formatRupees(shareTotals[m.id] || 0) + '</div></div>' +
+        '</div>';
+      }).join('');
     }
 
     function renderAll() {
@@ -1126,6 +1156,15 @@
       }
     }
 
+    // An "advance" isn't split among the group, so the whole Split section
+    // (equal/exact toggle + member checklist) is irrelevant for it - hide
+    // it and show an explanatory note instead.
+    function toggleAdvanceFields() {
+      var isAdvance = document.getElementById('expenseCategoryInput').value === 'advance';
+      document.getElementById('expenseSplitSection').style.display = isAdvance ? 'none' : '';
+      document.getElementById('expenseAdvanceNote').style.display = isAdvance ? 'block' : 'none';
+    }
+
     // editId omitted -> "add expense". Passed -> reopens prefilled with
     // that expense's values (including which members it was split with)
     // so editing doesn't mean deleting and re-adding.
@@ -1167,6 +1206,7 @@
       }
 
       renderExpenseMemberList();
+      toggleAdvanceFields();
       document.getElementById('expenseModal').classList.add('show');
     }
 
@@ -1211,20 +1251,25 @@
       if (!description) { errEl.textContent = 'Please enter a description.'; return; }
       if (!amount || amount <= 0) { errEl.textContent = 'Please enter a valid amount.'; return; }
 
-      var rows = Array.prototype.filter.call(document.querySelectorAll('.member-select-row'), function (row) {
-        return row.querySelector('.expense-member-check').checked;
-      });
-      if (!rows.length) { errEl.textContent = 'Select at least one member to split with.'; return; }
+      // An advance isn't split, so there's no member selection to validate
+      // and no shares to compute - it's just logged against whoever paid it.
+      var isAdvance = category === 'advance';
+      var memberIds = [], shareAmounts = [];
+      if (!isAdvance) {
+        var rows = Array.prototype.filter.call(document.querySelectorAll('.member-select-row'), function (row) {
+          return row.querySelector('.expense-member-check').checked;
+        });
+        if (!rows.length) { errEl.textContent = 'Select at least one member to split with.'; return; }
 
-      var memberIds = rows.map(function (row) { return row.dataset.memberId; });
-      var shareAmounts;
+        memberIds = rows.map(function (row) { return row.dataset.memberId; });
 
-      if (state.expenseSplitType === 'equal') {
-        shareAmounts = computeEqualShares(amount, memberIds);
-      } else {
-        shareAmounts = rows.map(function (row) { return Number(row.querySelector('.exact-amount-input').value) || 0; });
-        var sum = Math.round(shareAmounts.reduce(function (s, v) { return s + v; }, 0) * 100) / 100;
-        if (Math.abs(sum - amount) > 0.5) { errEl.textContent = 'Exact amounts (₹' + sum + ') must add up to the total (₹' + amount + ').'; return; }
+        if (state.expenseSplitType === 'equal') {
+          shareAmounts = computeEqualShares(amount, memberIds);
+        } else {
+          shareAmounts = rows.map(function (row) { return Number(row.querySelector('.exact-amount-input').value) || 0; });
+          var sum = Math.round(shareAmounts.reduce(function (s, v) { return s + v; }, 0) * 100) / 100;
+          if (Math.abs(sum - amount) > 0.5) { errEl.textContent = 'Exact amounts (₹' + sum + ') must add up to the total (₹' + amount + ').'; return; }
+        }
       }
 
       var editId = state.editingExpenseId;
@@ -1237,12 +1282,17 @@
         }).eq('id', editId);
         if (updErr) { errEl.textContent = 'Could not save changes: ' + friendlyErrorMessage(updErr); console.error(updErr); return; }
 
+        // Unconditional delete even for an advance: if this expense used to
+        // be a real split and just got switched to "advance" on this edit,
+        // its old shares need to go - this is a harmless no-op otherwise.
         var { error: delShareErr } = await supabaseClient.from('split_expense_shares').delete().eq('expense_id', editId);
         if (delShareErr) { errEl.textContent = 'Could not update the split: ' + friendlyErrorMessage(delShareErr); console.error(delShareErr); return; }
 
-        var editShareRows = memberIds.map(function (id, i) { return { expense_id: editId, member_id: id, share_amount: shareAmounts[i] }; });
-        var { error: editShareErr } = await supabaseClient.from('split_expense_shares').insert(editShareRows);
-        if (editShareErr) { errEl.textContent = 'Split updated, but saving shares failed: ' + friendlyErrorMessage(editShareErr); console.error(editShareErr); return; }
+        if (!isAdvance) {
+          var editShareRows = memberIds.map(function (id, i) { return { expense_id: editId, member_id: id, share_amount: shareAmounts[i] }; });
+          var { error: editShareErr } = await supabaseClient.from('split_expense_shares').insert(editShareRows);
+          if (editShareErr) { errEl.textContent = 'Split updated, but saving shares failed: ' + friendlyErrorMessage(editShareErr); console.error(editShareErr); return; }
+        }
       } else {
         var { data: expense, error: expErr } = await supabaseClient.from('split_expenses').insert({
           group_id: groupId, description: description, amount: amount, category: category, note: note || null,
@@ -1250,9 +1300,11 @@
         }).select().single();
         if (expErr) { errEl.textContent = 'Could not save expense: ' + friendlyErrorMessage(expErr); console.error(expErr); return; }
 
-        var shareRows = memberIds.map(function (id, i) { return { expense_id: expense.id, member_id: id, share_amount: shareAmounts[i] }; });
-        var { error: shareErr } = await supabaseClient.from('split_expense_shares').insert(shareRows);
-        if (shareErr) { errEl.textContent = 'Expense saved, but splitting shares failed: ' + friendlyErrorMessage(shareErr); console.error(shareErr); return; }
+        if (!isAdvance) {
+          var shareRows = memberIds.map(function (id, i) { return { expense_id: expense.id, member_id: id, share_amount: shareAmounts[i] }; });
+          var { error: shareErr } = await supabaseClient.from('split_expense_shares').insert(shareRows);
+          if (shareErr) { errEl.textContent = 'Expense saved, but splitting shares failed: ' + friendlyErrorMessage(shareErr); console.error(shareErr); return; }
+        }
       }
 
       closeExpenseModal();
@@ -1394,6 +1446,7 @@
       document.getElementById('cancelExpenseBtn').addEventListener('click', closeExpenseModal);
       document.getElementById('saveExpenseBtn').addEventListener('click', saveExpense);
       document.getElementById('expenseAmountInput').addEventListener('input', renderExpenseMemberList);
+      document.getElementById('expenseCategoryInput').addEventListener('change', toggleAdvanceFields);
       document.getElementById('expenseModal').addEventListener('click', function (e) { if (e.target === this) closeExpenseModal(); });
       Array.prototype.forEach.call(document.querySelectorAll('.split-type-btn'), function (btn) {
         btn.addEventListener('click', function () {

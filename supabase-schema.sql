@@ -680,7 +680,7 @@ create table if not exists split_expenses (
   group_id uuid not null references split_groups (id) on delete cascade,
   description text not null,
   amount numeric not null,
-  category text not null default 'other' check (category in ('food','groceries','travel','utilities','rent','entertainment','shopping','other')),
+  category text not null default 'other' check (category in ('food','groceries','travel','utilities','rent','entertainment','shopping','advance','other')),
   paid_by_member_id uuid not null references split_group_members (id),
   split_type text not null default 'equal' check (split_type in ('equal','exact')),
   expense_date date not null default current_date,
@@ -701,6 +701,16 @@ alter table split_groups alter column group_type set default 'other';
 -- dates" toggle, shown only when type = trip).
 alter table split_groups add column if not exists start_date date;
 alter table split_groups add column if not exists end_date date;
+
+-- "Advance" is a personal loan/prepayment logged for the record (e.g. "I
+-- gave Saravanan Rs5,000 up front") - not a group cost, so it's tracked in
+-- the expense feed but deliberately excluded from splitting: saveExpense()
+-- never creates split_expense_shares rows for it, and computeGroupBalances()
+-- (split/shared.js) skips its amount entirely rather than crediting the
+-- payer with money nobody owes them for.
+alter table split_expenses drop constraint if exists split_expenses_category_check;
+alter table split_expenses add constraint split_expenses_category_check
+  check (category in ('food','groceries','travel','utilities','rent','entertainment','shopping','advance','other'));
 
 -- A "direct" group is a hidden, auto-created 1:1 group between the current
 -- user and one friend, used for splitting an expense with someone without
