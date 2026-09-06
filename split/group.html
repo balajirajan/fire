@@ -649,10 +649,50 @@
     async function removeMemberPrompt(id, name) {
       if (!confirm('Remove "' + name + '" from this group?')) return;
       var { error } = await supabaseClient.from('split_group_members').delete().eq('id', id);
-      if (error) {
-        alert("Can't remove " + name + " - they're linked to expenses or payments in this group. Use \"Merge duplicate\" instead if this is a duplicate, or settle up and remove those first.");
+      if (!error) {
+        await loadGroupData();
+        renderManageMembersModal();
+        renderAll();
         return;
       }
+
+      // Blocked by a foreign key: this person paid for something, is
+      // included in a split, or is on a settlement. Show exactly what's
+      // linked and offer to force it - unlike Merge, there's nowhere for
+      // this history to go, so it's actually deleted, not reassigned.
+      var paidExpenses = state.expenses.filter(function (e) { return e.paid_by_member_id === id; });
+      var otherShareExpenseIds = state.shares
+        .filter(function (s) { return s.member_id === id; })
+        .map(function (s) { return s.expense_id; })
+        .filter(function (eid) { return paidExpenses.every(function (e) { return e.id !== eid; }); });
+      var settlementCount = state.settlements.filter(function (s) { return s.from_member_id === id || s.to_member_id === id; }).length;
+
+      var lines = [];
+      if (paidExpenses.length) {
+        lines.push('- Permanently delete ' + paidExpenses.length + ' expense' + (paidExpenses.length === 1 ? '' : 's') +
+          ' they paid for (' + paidExpenses.map(function (e) { return '"' + e.description + '"'; }).join(', ') + ')' +
+          ' - including everyone else\'s share of ' + (paidExpenses.length === 1 ? 'it' : 'them') + ', not just ' + name + '\'s');
+      }
+      if (otherShareExpenseIds.length) lines.push('- Remove ' + name + '\'s share from ' + otherShareExpenseIds.length + ' other expense' + (otherShareExpenseIds.length === 1 ? '' : 's') + ' (those expenses themselves stay, just recalculated without ' + name + ')');
+      if (settlementCount) lines.push('- Delete ' + settlementCount + ' settlement' + (settlementCount === 1 ? '' : 's') + ' involving ' + name);
+
+      var msg = name + ' is linked to this group\'s history. Force-removing them will:\n\n' + lines.join('\n') + '\n\nThis can\'t be undone. Force remove ' + name + '?';
+      if (!confirm(msg)) return;
+
+      var errEl = document.getElementById('manageMembersError');
+      if (paidExpenses.length) {
+        var { error: expDelErr } = await supabaseClient.from('split_expenses').delete().in('id', paidExpenses.map(function (e) { return e.id; }));
+        if (expDelErr) { errEl.textContent = 'Could not force-remove: ' + expDelErr.message; return; }
+      }
+      var { error: shareDelErr } = await supabaseClient.from('split_expense_shares').delete().eq('member_id', id);
+      if (shareDelErr) { errEl.textContent = 'Could not force-remove: ' + shareDelErr.message; return; }
+      var { error: settleDelErr1 } = await supabaseClient.from('split_settlements').delete().eq('from_member_id', id);
+      var { error: settleDelErr2 } = await supabaseClient.from('split_settlements').delete().eq('to_member_id', id);
+      if (settleDelErr1 || settleDelErr2) { errEl.textContent = 'Could not force-remove: ' + ((settleDelErr1 || settleDelErr2).message); return; }
+
+      var { error: finalErr } = await supabaseClient.from('split_group_members').delete().eq('id', id);
+      if (finalErr) { errEl.textContent = 'Cleared their history, but could not remove the member row: ' + finalErr.message; return; }
+
       await loadGroupData();
       renderManageMembersModal();
       renderAll();
