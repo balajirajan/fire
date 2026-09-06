@@ -132,6 +132,7 @@
     .row-icon-btn.danger:hover { border-color: #dc2626; background: #fef2f2; color: #dc2626; }
 
     .balance-row { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; padding: 0.6rem 0; border-bottom: 1px solid #f1f5f9; }
+    .balance-row-right { display: flex; align-items: center; gap: 0.6rem; flex-shrink: 0; }
     .balance-row:last-child { border-bottom: none; }
     .balance-row-info { display: flex; flex-direction: column; gap: 0.15rem; min-width: 0; }
     .balance-row-name { display: flex; align-items: center; gap: 0.6rem; font-size: 0.85rem; font-weight: 600; color: #364752; }
@@ -532,8 +533,15 @@
           <input type="date" class="field-input" id="settleDateInput">
         </div>
       </div>
+      <label class="field-label">Paid via</label>
+      <select class="field-select" id="settleMethodInput">
+        <option value="cash">💵 Cash</option>
+        <option value="upi">📱 UPI (Google Pay, PhonePe, etc.)</option>
+        <option value="bank_transfer">🏦 Bank Transfer</option>
+        <option value="other">💳 Other</option>
+      </select>
       <label class="field-label">Note (optional)</label>
-      <input type="text" class="field-input" id="settleNoteInput" placeholder="e.g. Paid via UPI">
+      <input type="text" class="field-input" id="settleNoteInput" placeholder="e.g. Split the cab fare separately">
       <div class="modal-actions">
         <button type="button" class="btn-secondary" id="cancelSettlementBtn">Cancel</button>
         <button type="button" class="btn-primary" id="saveSettlementBtn">Record Payment</button>
@@ -886,20 +894,41 @@
       state.expenses.forEach(function (e) {
         spentByMember[e.paid_by_member_id] = (spentByMember[e.paid_by_member_id] || 0) + Number(e.amount);
       });
+      // The exact who-pays-whom pairs, so a per-member "Settle Up" button
+      // can prefill the real suggested transaction instead of guessing -
+      // in a 3+ person group, "Priya owes ₹1,600 overall" doesn't by
+      // itself say who she owes it to.
+      var suggestions = simplifyDebts(state.balances, state.members);
 
       list.innerHTML = state.members.map(function (m) {
         var bal = state.balances[m.id] || 0;
         var cls = bal > 0.5 ? 'positive' : (bal < -0.5 ? 'negative' : 'settled');
         var label = Math.abs(bal) < 0.5 ? 'settled up' : (bal > 0 ? 'gets back ' + formatRupees(bal) : 'owes ' + formatRupees(-bal));
         var spent = spentByMember[m.id] || 0;
+
+        var settleBtn = '';
+        if (cls !== 'settled') {
+          var match = suggestions.filter(function (t) { return t.fromId === m.id || t.toId === m.id; })[0];
+          var attrs = match
+            ? ' data-from="' + match.fromId + '" data-to="' + match.toId + '" data-amount="' + match.amount + '"'
+            : (bal < 0 ? ' data-from="' + m.id + '" data-amount="' + (-bal) + '"' : ' data-to="' + m.id + '" data-amount="' + bal + '"');
+          settleBtn = '<button type="button" class="btn-secondary btn-small" data-action="settle-member"' + attrs + '>Settle Up</button>';
+        }
+
         return '<div class="balance-row">' +
           '<div class="balance-row-info">' +
             '<div class="balance-row-name"><span class="avatar" style="background:' + colorForName(m.display_name) + ';width:26px;height:26px;font-size:0.65rem;">' + initialsForName(m.display_name) + '</span>' + escapeHtml(m.display_name) + '</div>' +
             '<div class="balance-row-spent">Spent ' + formatRupees(spent) + ' total</div>' +
           '</div>' +
-          '<div class="balance-row-value ' + cls + '">' + label + '</div>' +
+          '<div class="balance-row-right"><div class="balance-row-value ' + cls + '">' + label + '</div>' + settleBtn + '</div>' +
         '</div>';
       }).join('');
+
+      Array.prototype.forEach.call(list.querySelectorAll('[data-action="settle-member"]'), function (btn) {
+        btn.addEventListener('click', function () {
+          openSettlementModal(btn.dataset.from, btn.dataset.to, btn.dataset.amount);
+        });
+      });
     }
 
     function renderSettleSuggestions() {
@@ -1146,6 +1175,7 @@
       if (prefillToId) toSelect.value = prefillToId;
       document.getElementById('settleAmountInput').value = prefillAmount || '';
       document.getElementById('settleDateInput').value = todayStr();
+      document.getElementById('settleMethodInput').value = 'upi';
       document.getElementById('settleNoteInput').value = '';
       document.getElementById('settlementModal').classList.add('show');
     }
@@ -1160,13 +1190,14 @@
       var toId = document.getElementById('settleToInput').value;
       var amount = Number(document.getElementById('settleAmountInput').value);
       var date = document.getElementById('settleDateInput').value || todayStr();
+      var method = document.getElementById('settleMethodInput').value;
       var note = document.getElementById('settleNoteInput').value.trim();
 
       if (fromId === toId) { errEl.textContent = 'From and To must be different members.'; return; }
       if (!amount || amount <= 0) { errEl.textContent = 'Please enter a valid amount.'; return; }
 
       var { error } = await supabaseClient.from('split_settlements').insert({
-        group_id: groupId, from_member_id: fromId, to_member_id: toId, amount: amount, settled_date: date, note: note || null, created_by: currentUser.id
+        group_id: groupId, from_member_id: fromId, to_member_id: toId, amount: amount, settled_date: date, method: method, note: note || null, created_by: currentUser.id
       });
       if (error) { errEl.textContent = 'Could not record payment. Please try again.'; console.error(error); return; }
 

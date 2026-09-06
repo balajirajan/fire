@@ -984,14 +984,16 @@
           isMine: e.created_by === currentUser.id
         });
       });
+      var METHOD_LABELS = { cash: 'cash', upi: 'UPI', bank_transfer: 'bank transfer', other: 'another method' };
       dataCache.settlements.forEach(function (s) {
         var fromName = (membersById[s.from_member_id] || {}).display_name || 'Someone';
         var toName = (membersById[s.to_member_id] || {}).display_name || 'someone';
+        var methodLabel = METHOD_LABELS[s.method];
         events.push({
           time: s.created_at,
           icon: '💸',
           verb: 'settled',
-          desc: fromName + ' paid ' + toName,
+          desc: fromName + ' paid ' + toName + (methodLabel ? ' via ' + methodLabel : ''),
           groupName: (groupsById[s.group_id] || {}).name || 'a group',
           amount: s.amount,
           isMine: s.created_by === currentUser.id

@@ -739,10 +739,19 @@ create table if not exists split_settlements (
   to_member_id uuid not null references split_group_members (id),
   amount numeric not null,
   settled_date date not null default current_date,
+  method text check (method is null or method in ('cash','upi','bank_transfer','other')),
   note text,
   created_by uuid not null default auth.uid() references auth.users (id),
   created_at timestamptz not null default now()
 );
+
+-- Existing installs: split_settlements predates the "Paid via" field on
+-- Record Payment (split/group.html) - add it without touching past rows,
+-- which just show no method rather than a guessed one.
+alter table split_settlements add column if not exists method text;
+alter table split_settlements drop constraint if exists split_settlements_method_check;
+alter table split_settlements add constraint split_settlements_method_check
+  check (method is null or method in ('cash','upi','bank_transfer','other'));
 
 -- security definer + owned by the table owner so it bypasses RLS internally —
 -- avoids a self-referencing RLS policy on split_group_members (which risks
