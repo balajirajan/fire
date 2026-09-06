@@ -155,6 +155,7 @@
     .cost-summary-item { display: flex; align-items: center; gap: 0.6rem; background: var(--bg-alt); border-radius: 0.8rem; padding: 0.65rem 1rem; }
     .cost-summary-name { font-size: 0.8rem; font-weight: 600; color: var(--ink-soft); }
     .cost-summary-value { font-size: 1.05rem; font-weight: 800; color: var(--ink); }
+    .cost-summary-formula { font-size: 0.7rem; color: var(--ink-faint); }
 
     .table-scroll { overflow-x: auto; }
     .breakdown-table { width: 100%; border-collapse: collapse; font-size: 0.83rem; }
@@ -1106,9 +1107,28 @@
       // sized to actually read at a glance instead of being one cell in a
       // wide table.
       document.getElementById('costSummaryList').innerHTML = state.members.map(function (m) {
+        var paid = amounts[m.id] ? Object.keys(amounts[m.id]).reduce(function (s, c) { return s + amounts[m.id][c]; }, 0) : 0;
+        var totalCost = shareTotals[m.id] || 0;
+        // Same number either way, spelled out so it's obviously right
+        // rather than one opaque figure you have to take on faith: what
+        // they paid up front, adjusted by what they still owe or will get
+        // back once everyone settles up.
+        var adjustment = Math.round((totalCost - paid) * 100) / 100;
+        var formula;
+        if (Math.abs(adjustment) < 0.5) {
+          formula = 'Paid ' + formatRupees(paid) + ' - already settled';
+        } else if (adjustment > 0) {
+          formula = 'Paid ' + formatRupees(paid) + ' + owes ' + formatRupees(adjustment);
+        } else {
+          formula = 'Paid ' + formatRupees(paid) + ' - gets back ' + formatRupees(-adjustment);
+        }
         return '<div class="cost-summary-item">' +
           '<span class="avatar" style="background:' + colorForName(m.display_name) + ';width:28px;height:28px;font-size:0.68rem;">' + initialsForName(m.display_name) + '</span>' +
-          '<div><div class="cost-summary-name">' + escapeHtml(m.display_name) + '</div><div class="cost-summary-value">' + formatRupees(shareTotals[m.id] || 0) + '</div></div>' +
+          '<div>' +
+            '<div class="cost-summary-name">' + escapeHtml(m.display_name) + '</div>' +
+            '<div class="cost-summary-value">' + formatRupees(totalCost) + '</div>' +
+            '<div class="cost-summary-formula">' + formula + '</div>' +
+          '</div>' +
         '</div>';
       }).join('');
     }
