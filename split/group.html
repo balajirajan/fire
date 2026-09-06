@@ -926,7 +926,7 @@
       if (Math.abs(state.untrackedBalance) > 1) {
         noteEl.style.display = 'block';
         noteEl.textContent = '⚠️ ' + formatRupees(Math.abs(state.untrackedBalance)) +
-          " in this group's expenses is tied to a member who's no longer in the member list below — the owes/gets-back figures here won't fully settle until that's resolved (check Manage Members, or an expense may need its payer or split reassigned).";
+          " in this group's expenses is tied to a member who's no longer in the member list below - the owes/gets-back figures here won't fully settle until that's resolved (check Manage Members, or an expense may need its payer or split reassigned).";
       } else {
         noteEl.style.display = 'none';
       }
@@ -1100,6 +1100,21 @@
     }
 
     async function saveExpense() {
+      // Guards against a slow response + an impatient double-tap firing
+      // this twice - without it, the second call inserts a second set of
+      // shares for the same expense (that's exactly how the "MS stay" /
+      // "Advance amt to saravanan" duplicate-share bug happened).
+      var btn = document.getElementById('saveExpenseBtn');
+      if (btn.disabled) return;
+      btn.disabled = true;
+      try {
+        await saveExpenseInner();
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    async function saveExpenseInner() {
       var errEl = document.getElementById('expenseFormError');
       var description = document.getElementById('expenseDescInput').value.trim();
       var amount = Number(document.getElementById('expenseAmountInput').value);
@@ -1184,6 +1199,17 @@
     }
 
     async function saveNewMembers() {
+      var btn = document.getElementById('saveMembersBtn');
+      if (btn.disabled) return;
+      btn.disabled = true;
+      try {
+        await saveNewMembersInner();
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    async function saveNewMembersInner() {
       var errEl = document.getElementById('addMemberFormError');
       var inputs = Array.prototype.map.call(document.querySelectorAll('#newMemberRows .member-row'), function (row) {
         return { name: row.querySelector('.new-member-name').value.trim(), email: row.querySelector('.new-member-email').value.trim() };
@@ -1235,6 +1261,17 @@
     }
 
     async function saveSettlement() {
+      var btn = document.getElementById('saveSettlementBtn');
+      if (btn.disabled) return;
+      btn.disabled = true;
+      try {
+        await saveSettlementInner();
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    async function saveSettlementInner() {
       var errEl = document.getElementById('settlementFormError');
       var fromId = document.getElementById('settleFromInput').value;
       var toId = document.getElementById('settleToInput').value;

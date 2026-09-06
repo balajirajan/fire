@@ -572,6 +572,17 @@
     }
 
     async function createGroup() {
+      var btn = document.getElementById('createGroupBtn');
+      if (btn.disabled) return;
+      btn.disabled = true;
+      try {
+        await createGroupInner();
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    async function createGroupInner() {
       var errEl = document.getElementById('groupFormError');
       var name = document.getElementById('groupNameInput').value.trim();
       if (!name) { errEl.textContent = 'Please enter a group name.'; return; }
@@ -922,6 +933,17 @@
     }
 
     async function startDirectExpense() {
+      var btn = document.getElementById('startDirectBtn');
+      if (btn.disabled) return;
+      btn.disabled = true;
+      try {
+        await startDirectExpenseInner();
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    async function startDirectExpenseInner() {
       var errEl = document.getElementById('directFormError');
       var name = document.getElementById('directFriendName').value.trim();
       var email = document.getElementById('directFriendEmail').value.trim();
