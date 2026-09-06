@@ -94,12 +94,14 @@
     .member-chip-btn:hover { background: rgba(15,23,42,0.12); color: #364752; }
     .member-chip-btn.danger:hover { background: #fee2e2; color: #dc2626; }
 
-    .split-hero { background: var(--bg); border: 1px solid var(--border); border-radius: 1.25rem; padding: 1.75rem 2rem; color: var(--ink); margin-bottom: 1.5rem; }
+    .split-hero { background: var(--bg); border: 1px solid var(--border); border-radius: 1.25rem; padding: 1.75rem 2rem; color: var(--ink); margin-bottom: 1.5rem; display: flex; flex-wrap: wrap; gap: 2rem; }
+    .split-hero-stat { flex: 1; min-width: 200px; }
     .split-hero-label { font-size: 0.75rem; color: var(--ink-faint); font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.4rem; }
     .split-hero-value { font-size: 2rem; font-weight: 800; }
     .split-hero-value.positive { color: #059669; }
     .split-hero-value.negative { color: var(--accent); }
     .split-hero-sub { font-size: 0.82rem; color: var(--ink-faint); margin-top: 0.4rem; }
+    @media (max-width: 560px) { .split-hero { flex-direction: column; gap: 1.25rem; } }
 
     .two-col { display: grid; grid-template-columns: 1.4fr 1fr; gap: 1.5rem; align-items: start; }
     @media (max-width: 900px) { .two-col { grid-template-columns: 1fr; } }
@@ -397,9 +399,16 @@
       </div>
 
       <div class="split-hero">
-        <div class="split-hero-label">Your Balance in This Group</div>
-        <div class="split-hero-value" id="myBalanceValue">₹0</div>
-        <div class="split-hero-sub" id="myBalanceSub"></div>
+        <div class="split-hero-stat">
+          <div class="split-hero-label" id="totalSpentLabel">Total Spent</div>
+          <div class="split-hero-value" id="totalSpentValue">₹0</div>
+          <div class="split-hero-sub" id="totalSpentSub"></div>
+        </div>
+        <div class="split-hero-stat">
+          <div class="split-hero-label">Your Balance in This Group</div>
+          <div class="split-hero-value" id="myBalanceValue">₹0</div>
+          <div class="split-hero-sub" id="myBalanceSub"></div>
+        </div>
       </div>
 
       <div class="two-col">
@@ -826,6 +835,13 @@
     }
 
     function renderHero() {
+      var totalSpent = state.expenses.reduce(function (s, e) { return s + Number(e.amount); }, 0);
+      var isTrip = state.group.group_type === 'trip';
+      var countLabel = state.expenses.length + (state.expenses.length === 1 ? ' expense logged' : ' expenses logged');
+      document.getElementById('totalSpentLabel').textContent = isTrip ? 'Total Spent on This Trip' : 'Total Spent';
+      document.getElementById('totalSpentValue').textContent = formatRupees(totalSpent);
+      document.getElementById('totalSpentSub').textContent = isTrip ? (countLabel + ' so far') : countLabel;
+
       var me = myMember();
       var myBalance = me ? (state.balances[me.id] || 0) : 0;
       var el = document.getElementById('myBalanceValue');
