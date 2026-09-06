@@ -807,8 +807,11 @@ create policy "split_group_members_update_member" on split_group_members for upd
 -- Lets a user link a shadow (no-account) member row to their own account by
 -- matching their verified login email — this is how claimShadowMemberships()
 -- works. `with check` forces user_id to become their own, nothing else.
+-- Case-insensitive on purpose (lower() both sides) - whoever added this
+-- person as a shadow member may not have typed their email in the exact
+-- case they later sign in with.
 create policy "split_group_members_claim_own_email" on split_group_members for update
-  using (email = (auth.jwt() ->> 'email') and user_id is null)
+  using (lower(email) = lower(auth.jwt() ->> 'email') and user_id is null)
   with check (user_id = auth.uid());
 create policy "split_group_members_delete_member" on split_group_members for delete using (is_split_group_member(group_id));
 
@@ -891,6 +894,85 @@ as $$
   from split_groups g
   where g.id = check_group_id;
 $$;
+
+-- One-time cleanup for a real bug: split/join.html used to insert a brand
+-- new member row on every join instead of claiming the shadow (name/email,
+-- no account yet) row the group's creator had already added for that
+-- person - so anyone who joined via an invite link before the fix above
+-- ended up listed twice in their group, with their balance split across
+-- both rows. This merges every such pair (or run) back into one row per
+-- group per email, safe to run more than once (a group with no
+-- duplicates left just does nothing on a second run).
+--
+-- Preview first, with no changes made - run this SELECT on its own to see
+-- exactly which rows would be affected before running the DO block below:
+--
+--   select group_id, lower(email) as email, count(*), array_agg(display_name)
+--   from split_group_members
+--   where email is not null
+--   group by group_id, lower(email)
+--   having count(*) > 1;
+do $$
+declare
+  dup record;
+  canonical_id uuid;
+begin
+  for dup in
+    select group_id, lower(email) as email_lc
+    from split_group_members
+    where email is not null
+    group by group_id, lower(email)
+    having count(*) > 1
+  loop
+    -- The row with a real account wins (keeps that person's own name and
+    -- account link); if nobody's claimed it yet, the oldest row wins.
+    select id into canonical_id
+    from split_group_members
+    where group_id = dup.group_id and lower(email) = dup.email_lc
+    order by (user_id is not null) desc, created_at asc
+    limit 1;
+
+    -- If both the canonical row and a duplicate somehow have a share on
+    -- the very same expense, drop the duplicate's - re-pointing it would
+    -- otherwise create two share rows for one person on one expense and
+    -- double-count them in that expense's split.
+    delete from split_expense_shares dup_share
+    using split_group_members dup_m
+    where dup_share.member_id = dup_m.id
+      and dup_m.group_id = dup.group_id and lower(dup_m.email) = dup.email_lc and dup_m.id <> canonical_id
+      and exists (
+        select 1 from split_expense_shares canon_share
+        where canon_share.expense_id = dup_share.expense_id and canon_share.member_id = canonical_id
+      );
+
+    -- Re-point every real reference to the duplicate row(s) onto the
+    -- canonical one before deleting them, so no expense/settlement history
+    -- is lost in the merge.
+    update split_expenses set paid_by_member_id = canonical_id
+      where paid_by_member_id in (
+        select id from split_group_members
+        where group_id = dup.group_id and lower(email) = dup.email_lc and id <> canonical_id
+      );
+    update split_expense_shares set member_id = canonical_id
+      where member_id in (
+        select id from split_group_members
+        where group_id = dup.group_id and lower(email) = dup.email_lc and id <> canonical_id
+      );
+    update split_settlements set from_member_id = canonical_id
+      where from_member_id in (
+        select id from split_group_members
+        where group_id = dup.group_id and lower(email) = dup.email_lc and id <> canonical_id
+      );
+    update split_settlements set to_member_id = canonical_id
+      where to_member_id in (
+        select id from split_group_members
+        where group_id = dup.group_id and lower(email) = dup.email_lc and id <> canonical_id
+      );
+
+    delete from split_group_members
+    where group_id = dup.group_id and lower(email) = dup.email_lc and id <> canonical_id;
+  end loop;
+end $$;
 
 -- ── MoneyOS: Tax Planning, Insurance Tracker, Goals Planner, Document       ──
 -- ── Vault — four single-user features under one sidebar section. Powers    ──

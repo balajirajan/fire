@@ -146,10 +146,35 @@
       var { data: profile } = await supabaseClient.from('profiles').select('first_name, last_name, full_name').eq('id', currentUser.id).single();
       var displayName = profileDisplayName(profile) || (currentUser.email || 'You').split('@')[0];
 
-      var { error } = await supabaseClient.from('split_group_members').insert({
-        group_id: groupId, user_id: currentUser.id, display_name: displayName,
-        email: currentUser.email, is_shadow: false, added_by: currentUser.id
-      });
+      // The group's creator may have already added this person by name/email
+      // as a placeholder (a "shadow" member) before they ever signed up -
+      // claim that existing row instead of inserting a second one, or this
+      // person shows up twice in the group and their balance gets split
+      // across two rows.
+      var shadowId = null;
+      if (currentUser.email) {
+        var { data: shadowRows } = await supabaseClient
+          .from('split_group_members')
+          .select('id')
+          .eq('group_id', groupId)
+          .is('user_id', null)
+          .ilike('email', currentUser.email);
+        if (shadowRows && shadowRows.length) shadowId = shadowRows[0].id;
+      }
+
+      var error;
+      if (shadowId) {
+        var updRes = await supabaseClient.from('split_group_members')
+          .update({ user_id: currentUser.id, display_name: displayName, is_shadow: false })
+          .eq('id', shadowId);
+        error = updRes.error;
+      } else {
+        var insRes = await supabaseClient.from('split_group_members').insert({
+          group_id: groupId, user_id: currentUser.id, display_name: displayName,
+          email: currentUser.email, is_shadow: false, added_by: currentUser.id
+        });
+        error = insRes.error;
+      }
       if (error) { renderError('Could not join this group: ' + error.message); return; }
 
       window.location.href = 'group.html?id=' + groupId;

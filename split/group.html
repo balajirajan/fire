@@ -779,7 +779,15 @@
       document.getElementById('expenseFormError').textContent = '';
       document.getElementById('expenseDescInput').value = expense ? expense.description : '';
       document.getElementById('expenseAmountInput').value = expense ? expense.amount : '';
-      document.getElementById('expenseCategoryInput').value = expense ? expense.category : 'other';
+      var categoryInput = document.getElementById('expenseCategoryInput');
+      categoryInput.value = expense ? expense.category : 'other';
+      // If the stored category isn't one of the current dropdown options (an
+      // older row saved under a category that's since been renamed/removed),
+      // setting .value leaves nothing selected — .value then silently reads
+      // back as "" and saving fails the category CHECK constraint. Falling
+      // back to 'other' keeps the field always in a savable state.
+      if (categoryInput.value !== (expense ? expense.category : 'other')) categoryInput.value = 'other';
+
       document.getElementById('expenseDateInput').value = expense ? expense.expense_date : todayStr();
       document.getElementById('expenseNoteInput').value = expense ? (expense.note || '') : '';
       state.expenseSplitType = expense ? expense.split_type : 'equal';
@@ -789,7 +797,16 @@
 
       var paidBySelect = document.getElementById('expensePaidByInput');
       paidBySelect.innerHTML = state.members.map(function (m) { return '<option value="' + m.id + '">' + escapeHtml(m.display_name) + '</option>'; }).join('');
-      if (expense) paidBySelect.value = expense.paid_by_member_id;
+      if (expense) {
+        paidBySelect.value = expense.paid_by_member_id;
+        // Same defensive fallback as category above - if the original payer
+        // somehow isn't in the current member list, .value silently becomes
+        // "" (an invalid, non-null UUID column) rather than throwing here,
+        // and saving would fail later with a much less obvious error.
+        if (paidBySelect.value !== expense.paid_by_member_id && paidBySelect.options.length) {
+          paidBySelect.selectedIndex = 0;
+        }
+      }
 
       renderExpenseMemberList();
       document.getElementById('expenseModal').classList.add('show');
@@ -901,9 +918,21 @@
 
       if (!inputs.length) { errEl.textContent = 'Please enter at least one name.'; return; }
 
+      var existingEmails = state.members.map(function (m) { return m.email ? m.email.toLowerCase() : null; }).filter(Boolean);
+      var seenEmails = {};
+      var skipped = [];
+      inputs = inputs.filter(function (m) {
+        var key = m.email ? m.email.toLowerCase() : null;
+        if (key && (existingEmails.indexOf(key) !== -1 || seenEmails[key])) { skipped.push(m.name); return false; }
+        if (key) seenEmails[key] = true;
+        return true;
+      });
+      if (!inputs.length) { errEl.textContent = skipped.length ? (skipped.join(', ') + ' - already in this group.') : 'Please enter at least one name.'; return; }
+
       var rows = inputs.map(function (m) { return { group_id: groupId, display_name: m.name, email: m.email || null, is_shadow: true, added_by: currentUser.id }; });
       var { error } = await supabaseClient.from('split_group_members').insert(rows);
       if (error) { errEl.textContent = 'Could not add members. Please try again.'; console.error(error); return; }
+      if (skipped.length) alert(skipped.join(', ') + ' - already in this group, skipped.');
 
       closeAddMemberModal();
       await loadGroupData();

@@ -576,12 +576,19 @@
       var name = document.getElementById('groupNameInput').value.trim();
       if (!name) { errEl.textContent = 'Please enter a group name.'; return; }
 
+      var seenEmails = {};
       var memberInputs = Array.prototype.map.call(document.querySelectorAll('.member-row'), function (row) {
         return {
           name: row.querySelector('.member-name-input').value.trim(),
           email: row.querySelector('.member-email-input').value.trim()
         };
-      }).filter(function (m) { return m.name; });
+      }).filter(function (m) {
+        if (!m.name) return false;
+        var key = m.email ? m.email.toLowerCase() : null;
+        if (key && seenEmails[key]) return false; // same email typed twice - keep the first
+        if (key) seenEmails[key] = true;
+        return true;
+      });
 
       var groupPayload = { name: name, group_type: selectedGroupType };
       if (selectedGroupType === 'trip' && document.getElementById('tripDatesCheck').checked) {
@@ -607,9 +614,13 @@
 
     async function claimShadowMemberships() {
       if (!currentUser.email) return;
+      // Case-insensitive on purpose: whoever added this person as a shadow
+      // member may not have typed their email in the exact same case they
+      // later sign in with, and email addresses are conventionally treated
+      // as case-insensitive everywhere else.
       await supabaseClient.from('split_group_members')
         .update({ user_id: currentUser.id, is_shadow: false })
-        .eq('email', currentUser.email)
+        .ilike('email', currentUser.email)
         .is('user_id', null);
     }
 
