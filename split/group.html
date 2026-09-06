@@ -862,24 +862,24 @@
           paid_by_member_id: paidBy, split_type: state.expenseSplitType, expense_date: date,
           updated_at: new Date().toISOString()
         }).eq('id', editId);
-        if (updErr) { errEl.textContent = 'Could not save changes. Please try again.'; console.error(updErr); return; }
+        if (updErr) { errEl.textContent = 'Could not save changes: ' + updErr.message; console.error(updErr); return; }
 
         var { error: delShareErr } = await supabaseClient.from('split_expense_shares').delete().eq('expense_id', editId);
-        if (delShareErr) { errEl.textContent = 'Could not update the split. Please try again.'; console.error(delShareErr); return; }
+        if (delShareErr) { errEl.textContent = 'Could not update the split: ' + delShareErr.message; console.error(delShareErr); return; }
 
         var editShareRows = memberIds.map(function (id, i) { return { expense_id: editId, member_id: id, share_amount: shareAmounts[i] }; });
         var { error: editShareErr } = await supabaseClient.from('split_expense_shares').insert(editShareRows);
-        if (editShareErr) { errEl.textContent = 'Split updated, but saving shares failed.'; console.error(editShareErr); return; }
+        if (editShareErr) { errEl.textContent = 'Split updated, but saving shares failed: ' + editShareErr.message; console.error(editShareErr); return; }
       } else {
         var { data: expense, error: expErr } = await supabaseClient.from('split_expenses').insert({
           group_id: groupId, description: description, amount: amount, category: category, note: note || null,
           paid_by_member_id: paidBy, split_type: state.expenseSplitType, expense_date: date, created_by: currentUser.id
         }).select().single();
-        if (expErr) { errEl.textContent = 'Could not save expense. Please try again.'; console.error(expErr); return; }
+        if (expErr) { errEl.textContent = 'Could not save expense: ' + expErr.message; console.error(expErr); return; }
 
         var shareRows = memberIds.map(function (id, i) { return { expense_id: expense.id, member_id: id, share_amount: shareAmounts[i] }; });
         var { error: shareErr } = await supabaseClient.from('split_expense_shares').insert(shareRows);
-        if (shareErr) { errEl.textContent = 'Expense saved, but splitting shares failed.'; console.error(shareErr); return; }
+        if (shareErr) { errEl.textContent = 'Expense saved, but splitting shares failed: ' + shareErr.message; console.error(shareErr); return; }
       }
 
       closeExpenseModal();
