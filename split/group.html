@@ -1033,19 +1033,27 @@
       categoriesUsed.sort(function (a, b) { return CATEGORY_ORDER.indexOf(a) - CATEGORY_ORDER.indexOf(b); });
 
       var amounts = {};
-      state.members.forEach(function (m) { amounts[m.id] = {}; });
+      var shareTotals = {};
+      state.members.forEach(function (m) { amounts[m.id] = {}; shareTotals[m.id] = 0; });
       state.expenses.forEach(function (e) {
         if (!amounts[e.paid_by_member_id]) return; // paid by someone no longer in the member list - already flagged by the untracked-balance note above
         amounts[e.paid_by_member_id][e.category] = (amounts[e.paid_by_member_id][e.category] || 0) + Number(e.amount);
       });
+      // Their actual portion of the group's spending, regardless of who
+      // fronted the money - this is what "after splitting" means: what
+      // they paid for isn't the same as what they personally owe for.
+      state.shares.forEach(function (s) {
+        if (shareTotals[s.member_id] === undefined) return;
+        shareTotals[s.member_id] += Number(s.share_amount);
+      });
 
       var headHtml = '<th>Member</th>' + categoriesUsed.map(function (c) {
         return '<th>' + (CATEGORY_ICONS[c] || '📦') + ' ' + CATEGORY_LABELS[c] + '</th>';
-      }).join('') + '<th>Total</th>';
+      }).join('') + '<th>Total Paid</th><th>Their Share</th><th>Net (after split)</th>';
 
       var colTotals = {};
       categoriesUsed.forEach(function (c) { colTotals[c] = 0; });
-      var grandTotal = 0;
+      var grandTotal = 0, grandShareTotal = 0;
 
       var bodyHtml = state.members.map(function (m) {
         var rowTotal = 0;
@@ -1056,10 +1064,20 @@
           return '<td>' + (amt ? formatRupees(amt) : '<span style="color:var(--ink-faint)">-</span>') + '</td>';
         }).join('');
         grandTotal += rowTotal;
-        return '<tr><td class="breakdown-member-cell"><span class="avatar" style="background:' + colorForName(m.display_name) + ';width:22px;height:22px;font-size:0.58rem;">' + initialsForName(m.display_name) + '</span>' + escapeHtml(m.display_name) + '</td>' + cells + '<td><b>' + formatRupees(rowTotal) + '</b></td></tr>';
+        var shareTotal = shareTotals[m.id] || 0;
+        grandShareTotal += shareTotal;
+        var net = rowTotal - shareTotal;
+        var netCls = net > 0.5 ? 'positive' : (net < -0.5 ? 'negative' : 'settled');
+        var netLabel = Math.abs(net) < 0.5 ? formatRupees(0) : (net > 0 ? '+' + formatRupees(net) : '-' + formatRupees(-net));
+        return '<tr><td class="breakdown-member-cell"><span class="avatar" style="background:' + colorForName(m.display_name) + ';width:22px;height:22px;font-size:0.58rem;">' + initialsForName(m.display_name) + '</span>' + escapeHtml(m.display_name) + '</td>' + cells +
+          '<td>' + formatRupees(rowTotal) + '</td>' +
+          '<td>' + formatRupees(shareTotal) + '</td>' +
+          '<td class="balance-row-value ' + netCls + '"><b>' + netLabel + '</b></td>' +
+        '</tr>';
       }).join('');
 
-      var footHtml = '<td>Total</td>' + categoriesUsed.map(function (c) { return '<td>' + formatRupees(colTotals[c]) + '</td>'; }).join('') + '<td>' + formatRupees(grandTotal) + '</td>';
+      var footHtml = '<td>Total</td>' + categoriesUsed.map(function (c) { return '<td>' + formatRupees(colTotals[c]) + '</td>'; }).join('') +
+        '<td>' + formatRupees(grandTotal) + '</td><td>' + formatRupees(grandShareTotal) + '</td><td></td>';
 
       document.getElementById('breakdownTable').innerHTML =
         '<thead><tr>' + headHtml + '</tr></thead><tbody>' + bodyHtml + '</tbody><tfoot><tr>' + footHtml + '</tr></tfoot>';
