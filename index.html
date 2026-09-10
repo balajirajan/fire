@@ -288,6 +288,10 @@
       z-index: 2;
     }
 
+    .hero-container > * {
+      min-width: 0;
+    }
+
     @media (max-width: 1024px) {
       .hero-container {
         grid-template-columns: 1fr;
@@ -405,6 +409,7 @@
       box-shadow: 0 30px 70px rgba(22, 19, 15, 0.14), 0 4px 14px rgba(22, 19, 15, 0.05);
       max-width: 480px;
       width: 100%;
+      min-width: 0;
     }
 
     .hero-visual-frame img {
@@ -453,10 +458,111 @@
       position: relative;
     }
 
-    @media (max-width: 700px) {
-      .hub-diagram > div[style*="grid-template-columns"] {
-        grid-template-columns: 1fr !important;
-      }
+    .hub-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .hub-grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .hub-tile {
+      background: var(--bg-alt);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.35rem 1.4rem;
+    }
+
+    .hub-tile-accent {
+      background: var(--accent-tint);
+      border-color: rgba(222, 51, 65, 0.18);
+    }
+
+    .hub-tile-head {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      margin-bottom: 1rem;
+    }
+
+    .hub-tile-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 0.6rem;
+      background: var(--ink);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .hub-tile-accent .hub-tile-icon {
+      background: var(--accent);
+    }
+
+    .hub-tile-icon svg { width: 18px; height: 18px; }
+
+    .hub-tile-name {
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: var(--ink);
+    }
+
+    .hub-tile-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+    }
+
+    .hub-tile-list li {
+      font-size: 0.87rem;
+      color: var(--ink-soft);
+      padding-left: 1rem;
+      position: relative;
+    }
+
+    .hub-tile-list li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0.5em;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--ink-faint);
+    }
+
+    .hub-tile-accent .hub-tile-list li::before {
+      background: var(--accent);
+    }
+
+    .hub-final {
+      background: #712B13;
+      border-radius: 14px;
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .hub-final svg { width: 28px; height: 28px; flex-shrink: 0; }
+    .hub-final-title { color: #ffffff; font-weight: 700; font-size: 1.1rem; }
+    .hub-final-sub { color: #f0997b; font-size: 0.82rem; }
+
+    @media (max-width: 900px) {
+      .hub-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 560px) {
+      .hub-grid, .hub-grid-2 { grid-template-columns: 1fr; }
     }
 
     /* Feature Showcase (alternating text/screenshot) */
@@ -475,8 +581,8 @@
       align-items: center;
     }
 
-    .showcase-section.reverse .showcase-grid {
-      grid-template-columns: 1fr 1fr;
+    .showcase-grid > * {
+      min-width: 0;
     }
 
     .showcase-section.reverse .showcase-text { order: 2; }
@@ -551,6 +657,7 @@
       box-shadow: 0 18px 44px rgba(22, 19, 15, 0.08);
       max-width: 420px;
       width: 100%;
+      min-width: 0;
     }
 
     .showcase-visual-frame img {
@@ -686,14 +793,34 @@
       line-height: 1.6;
     }
 
-    .features-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.25rem 3rem;
+    .features-group {
+      margin-bottom: 2.75rem;
     }
 
+    .features-group:last-child {
+      margin-bottom: 0;
+    }
+
+    .features-group-label {
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1.1rem;
+    }
+
+    .features-group-grid {
+      display: grid;
+      gap: 0.25rem 2.5rem;
+    }
+
+    .features-group-grid.cols-2 { grid-template-columns: 1fr 1fr; }
+    .features-group-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+
     @media (max-width: 700px) {
-      .features-grid { grid-template-columns: 1fr; }
+      .features-group-grid.cols-2,
+      .features-group-grid.cols-3 { grid-template-columns: 1fr; }
     }
 
     .feature-card {
@@ -730,6 +857,10 @@
     .feature-card:hover .feature-icon {
       transform: scale(1.08);
       background: var(--accent);
+    }
+
+    .feature-text {
+      min-width: 0;
     }
 
     .feature-card h3 {
@@ -1019,11 +1150,11 @@
         Build Your Wealth.<br>
         <span class="gradient">Reach Your Freedom.</span>
       </h1>
-      <p>The all-in-one personal finance app for FIRE planning, net worth tracking, budgeting, and portfolio analysis.</p>
+      <p>The all-in-one app for FIRE planning, net worth tracking, budgeting, and family health, in one dashboard.</p>
 
       <div class="hero-buttons">
         <a href="login.html?mode=signup" class="btn btn-primary">
-          Start your free trial
+          Start Free
         </a>
       </div>
     </section>
@@ -1039,22 +1170,77 @@
   <section class="hub-section">
     <p class="hub-eyebrow">Everything connected</p>
     <h2 class="hub-heading">Your Household, One Place</h2>
-    <p class="hub-subtext">Every tool in EnrichMe feeds the same picture of your money - nothing lives in its own silo.</p>
+    <p class="hub-subtext">Wealth and health, tracked side by side - nothing lives in its own silo.</p>
 
     <div class="hub-diagram" id="hubDiagram">
-      <h3 style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">EnrichMe's fourteen features flow through three stages, tracking your money, planning with it, and protecting it, arriving at your FIRE number.</h3>
+      <h3 style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">EnrichMe organizes fourteen features into five areas: Wealth, Cash Flow, Protection, Family and Health, and more, all feeding your FIRE number.</h3>
 
-      <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;">
-<div style="background:var(--bg-alt);border:0.5px solid var(--border);border-radius:12px;padding:1rem;"><div style="font-size:13px;font-weight:500;color:#993C1D;text-transform:uppercase;letter-spacing:0.03em;margin-bottom:12px;">Track</div><div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:14px;"><svg viewBox="0 0 24 24" fill="none" stroke="#993C1D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;flex-shrink:0;margin-top:2px;"><path d="M7 10h14l-4 -4" /><path d="M17 14h-14l4 4" /></svg><div><div style="font-weight:500;font-size:14px;">Monthly cashflow</div><div style="font-size:13px;color:var(--ink-soft);">In and out each month</div></div></div><div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:14px;"><svg viewBox="0 0 24 24" fill="none" stroke="#993C1D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;flex-shrink:0;margin-top:2px;"><path d="M17 8v-3a1 1 0 0 0 -1 -1h-10a2 2 0 0 0 0 4h12a1 1 0 0 1 1 1v3m0 4v3a1 1 0 0 1 -1 1h-12a2 2 0 0 1 -2 -2v-12" /><path d="M20 12v4h-4a2 2 0 0 1 0 -4h4" /></svg><div><div style="font-weight:500;font-size:14px;">Income</div><div style="font-size:13px;color:var(--ink-soft);">All income sources</div></div></div><div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:14px;"><svg viewBox="0 0 24 24" fill="none" stroke="#993C1D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;flex-shrink:0;margin-top:2px;"><path d="M3 13a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v6a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -6" /><path d="M15 9a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v10a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -10" /><path d="M9 5a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v14a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -14" /><path d="M4 20h14" /></svg><div><div style="font-weight:500;font-size:14px;">Net worth</div><div style="font-size:13px;color:var(--ink-soft);">Assets minus debts</div></div></div><div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:14px;"><svg viewBox="0 0 24 24" fill="none" stroke="#993C1D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;flex-shrink:0;margin-top:2px;"><path d="M3 17l6 -6l4 4l8 -8" /><path d="M14 7l7 0l0 7" /></svg><div><div style="font-weight:500;font-size:14px;">Net worth trend</div><div style="font-size:13px;color:var(--ink-soft);">Growth over time</div></div></div><div style="display:flex;gap:10px;align-items:flex-start;"><svg viewBox="0 0 24 24" fill="none" stroke="#993C1D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;flex-shrink:0;margin-top:2px;"><path d="M5 7a4 4 0 1 0 8 0a4 4 0 1 0 -8 0" /><path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /><path d="M21 21v-2a4 4 0 0 0 -3 -3.85" /></svg><div><div style="font-weight:500;font-size:14px;">Split expenses</div><div style="font-size:13px;color:var(--ink-soft);">Among family</div></div></div></div>
-<div style="background:var(--bg-alt);border:0.5px solid var(--border);border-radius:12px;padding:1rem;"><div style="font-size:13px;font-weight:500;color:#993C1D;text-transform:uppercase;letter-spacing:0.03em;margin-bottom:12px;">Plan</div><div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:14px;"><svg viewBox="0 0 24 24" fill="none" stroke="#993C1D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;flex-shrink:0;margin-top:2px;"><path d="M11 12a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M7 12a5 5 0 1 0 10 0a5 5 0 1 0 -10 0" /><path d="M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /></svg><div><div style="font-weight:500;font-size:14px;">Goals</div><div style="font-size:13px;color:var(--ink-soft);">Track savings goals</div></div></div><div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:14px;"><svg viewBox="0 0 24 24" fill="none" stroke="#993C1D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;flex-shrink:0;margin-top:2px;"><path d="M10 3.2a9 9 0 1 0 10.8 10.8a1 1 0 0 0 -1 -1h-6.8a2 2 0 0 1 -2 -2v-7a.9 .9 0 0 0 -1 -.8" /><path d="M15 3.5a9 9 0 0 1 5.5 5.5h-4.5a1 1 0 0 1 -1 -1v-4.5" /></svg><div><div style="font-weight:500;font-size:14px;">Portfolio view</div><div style="font-size:13px;color:var(--ink-soft);">See your allocation</div></div></div><div style="display:flex;gap:10px;align-items:flex-start;"><svg viewBox="0 0 24 24" fill="none" stroke="#993C1D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;flex-shrink:0;margin-top:2px;"><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2" /><path d="M9 9l1 0" /><path d="M9 13l6 0" /><path d="M9 17l6 0" /></svg><div><div style="font-weight:500;font-size:14px;">Tax planning</div><div style="font-size:13px;color:var(--ink-soft);">Plan ahead for filing</div></div></div></div>
-<div style="background:var(--bg-alt);border:0.5px solid var(--border);border-radius:12px;padding:1rem;"><div style="font-size:13px;font-weight:500;color:#993C1D;text-transform:uppercase;letter-spacing:0.03em;margin-bottom:12px;">Protect</div><div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:14px;"><svg viewBox="0 0 24 24" fill="none" stroke="#993C1D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;flex-shrink:0;margin-top:2px;"><path d="M12 3a12 12 0 0 0 8.5 3a12 12 0 0 1 -8.5 15a12 12 0 0 1 -8.5 -15a12 12 0 0 0 8.5 -3" /></svg><div><div style="font-weight:500;font-size:14px;">Insurance tracker</div><div style="font-size:13px;color:var(--ink-soft);">Spot the gaps</div></div></div><div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:14px;"><svg viewBox="0 0 24 24" fill="none" stroke="#993C1D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;flex-shrink:0;margin-top:2px;"><path d="M10 5a2 2 0 1 1 4 0a7 7 0 0 1 4 6v3a4 4 0 0 0 2 3h-16a4 4 0 0 0 2 -3v-3a7 7 0 0 1 4 -6" /><path d="M9 17v1a3 3 0 0 0 6 0v-1" /></svg><div><div style="font-weight:500;font-size:14px;">Reminders</div><div style="font-size:13px;color:var(--ink-soft);">Never miss a renewal</div></div></div><div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:14px;"><svg viewBox="0 0 24 24" fill="none" stroke="#993C1D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;flex-shrink:0;margin-top:2px;"><path d="M5 13a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v6a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-6" /><path d="M11 16a1 1 0 1 0 2 0a1 1 0 0 0 -2 0" /><path d="M8 11v-4a4 4 0 1 1 8 0v4" /></svg><div><div style="font-weight:500;font-size:14px;">Document vault</div><div style="font-size:13px;color:var(--ink-soft);">Keep key papers safe</div></div></div><div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:14px;"><svg viewBox="0 0 24 24" fill="none" stroke="#993C1D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;flex-shrink:0;margin-top:2px;"><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2" /><path d="M9 17h6" /><path d="M9 13h6" /></svg><div><div style="font-weight:500;font-size:14px;">Will planner</div><div style="font-size:13px;color:var(--ink-soft);">Plan for the future</div></div></div><div style="display:flex;gap:10px;align-items:flex-start;"><svg viewBox="0 0 24 24" fill="none" stroke="#993C1D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;flex-shrink:0;margin-top:2px;"><path d="M19.5 12.572l-7.5 7.428l-7.5 -7.428a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572" /></svg><div><div style="font-weight:500;font-size:14px;">Health</div><div style="font-size:13px;color:var(--ink-soft);">Meds and vaccine log</div></div></div></div>
+      <div class="hub-grid">
+        <div class="hub-tile">
+          <div class="hub-tile-head">
+            <span class="hub-tile-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6 -6l4 4l8 -8" /><path d="M14 7l7 0l0 7" /></svg></span>
+            <span class="hub-tile-name">Wealth</span>
+          </div>
+          <ul class="hub-tile-list">
+            <li>FIRE Plan &amp; Goal Based Savings</li>
+            <li>Net Worth across every account</li>
+            <li>Portfolio, gold and property</li>
+          </ul>
+        </div>
+        <div class="hub-tile">
+          <div class="hub-tile-head">
+            <span class="hub-tile-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-14" /><path d="M3 10h18" /><path d="M10 3v18" /></svg></span>
+            <span class="hub-tile-name">Cash Flow</span>
+          </div>
+          <ul class="hub-tile-list">
+            <li>Monthly budgeting grid</li>
+            <li>Income and daily expenses</li>
+            <li>Tax planning across deductions</li>
+          </ul>
+        </div>
+        <div class="hub-tile">
+          <div class="hub-tile-head">
+            <span class="hub-tile-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a12 12 0 0 0 8.5 3a12 12 0 0 1 -8.5 15a12 12 0 0 1 -8.5 -15a12 12 0 0 0 8.5 -3" /></svg></span>
+            <span class="hub-tile-name">Protection</span>
+          </div>
+          <ul class="hub-tile-list">
+            <li>Insurance tracker</li>
+            <li>Renewal reminders</li>
+            <li>Encrypted document vault</li>
+          </ul>
+        </div>
       </div>
 
-      <div style="background:#712B13;border-radius:12px;padding:1.25rem 1.5rem;display:flex;align-items:center;justify-content:center;gap:12px;margin-top:16px;">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:28px;height:28px;flex-shrink:0;margin-top:2px;"><path d="M12 10.941c2.333 -3.308 .167 -7.823 -1 -8.941c0 3.395 -2.235 5.299 -3.667 6.706c-1.43 1.408 -2.333 3.294 -2.333 5.588c0 3.704 3.134 6.706 7 6.706c3.866 0 7 -3.002 7 -6.706c0 -1.712 -1.232 -4.403 -2.333 -5.588c-2.084 3.353 -3.257 3.353 -4.667 2.235" /></svg>
+      <div class="hub-grid-2">
+        <div class="hub-tile hub-tile-accent">
+          <div class="hub-tile-head">
+            <span class="hub-tile-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19.5 12.572l-7.5 7.428l-7.5 -7.428a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572" /></svg></span>
+            <span class="hub-tile-name">Family &amp; Health</span>
+          </div>
+          <ul class="hub-tile-list">
+            <li>Life expectancy calculator</li>
+            <li>Medicine and vaccination tracker</li>
+            <li>Checkup report history</li>
+          </ul>
+        </div>
+        <div class="hub-tile">
+          <div class="hub-tile-head">
+            <span class="hub-tile-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7a4 4 0 1 0 8 0a4 4 0 1 0 -8 0" /><path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /><path d="M21 21v-2a4 4 0 0 0 -3 -3.85" /></svg></span>
+            <span class="hub-tile-name">More</span>
+          </div>
+          <ul class="hub-tile-list">
+            <li>Split expenses with family</li>
+            <li>Will planner</li>
+            <li>Vedic astrology, for tradition</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="hub-final">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 10.941c2.333 -3.308 .167 -7.823 -1 -8.941c0 3.395 -2.235 5.299 -3.667 6.706c-1.43 1.408 -2.333 3.294 -2.333 5.588c0 3.704 3.134 6.706 7 6.706c3.866 0 7 -3.002 7 -6.706c0 -1.712 -1.232 -4.403 -2.333 -5.588c-2.084 3.353 -3.257 3.353 -4.667 2.235" /></svg>
         <div>
-          <div style="color:#FFFFFF;font-weight:500;font-size:18px;">FIRE plan</div>
-          <div style="color:#F0997B;font-size:13px;">Your target number</div>
+          <div class="hub-final-title">All five, in one FIRE number</div>
+          <div class="hub-final-sub">Wealth built and years to enjoy it</div>
         </div>
       </div>
     </div>
@@ -1070,6 +1256,7 @@
           <li>Lean, Standard and Fat FIRE targets side by side</li>
           <li>Built around Indian inflation and post-retirement returns</li>
           <li>Pulls in your real tracked expenses with one click</li>
+          <li>Plans for the years you're likely to live, not a flat age 90</li>
         </ul>
         <a href="calculator/fire-calculator.html" class="btn btn-primary">Try the FIRE Calculator →</a>
       </div>
@@ -1105,76 +1292,141 @@
   <!-- Features -->
   <section class="features-section" id="features">
     <p class="features-eyebrow">Everything in one place</p>
-    <h2 class="features-heading">One app for your entire financial life</h2>
+    <h2 class="features-heading">One App For Your Wealth And Your Health</h2>
     <p class="features-subtext">
-      From daily spending to decades-long FIRE plans, every part of your money - tracked, planned and protected in one place.
+      Not just your financial life - your net worth, your medicines, your policies, your family's documents. Fourteen tools, one dashboard.
     </p>
 
-    <div class="features-grid">
-      <div class="feature-card">
-        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M8 16l2 -6l6 -2l-2 6l-6 2" /><path d="M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /><path d="M12 3l0 2" /><path d="M12 19l0 2" /><path d="M3 12l2 0" /><path d="M19 12l2 0" /></svg></div>
-        <h3>FIRE Planning &amp; Goals</h3>
-        <p>Model the exact year work becomes optional, and track goal-based savings - education, a wedding, a home down payment - against real linked accounts.</p>
-      </div>
+    <div class="features-group">
+      <p class="features-group-label">Wealth</p>
+      <div class="features-group-grid cols-2">
+        <div class="feature-card">
+          <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M8 16l2 -6l6 -2l-2 6l-6 2" /><path d="M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /><path d="M12 3l0 2" /><path d="M12 19l0 2" /><path d="M3 12l2 0" /><path d="M19 12l2 0" /></svg></div>
+          <div class="feature-text">
+            <h3>FIRE Planning &amp; Goals</h3>
 
-      <div class="feature-card">
-        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M3 17l6 -6l4 4l8 -8" /><path d="M14 7l7 0l0 7" /></svg></div>
-        <h3>Net Worth Tracking</h3>
-        <p>Every account, investment, gold holding and property in one live number - no more scattered spreadsheets.</p>
-      </div>
+            <p>Model the exact year work becomes optional, and track goal-based savings - education, a wedding, a home down payment - against real linked accounts.</p>
+          </div>
+        </div>
 
-      <div class="feature-card">
-        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M13 3l0 7l6 0l-8 11l0 -7l-6 0l8 -11" /></svg></div>
-        <h3>Daily Expense Capture</h3>
-        <p>Log a spend in under 15 seconds. Smart pre-fill learns your habits - category, payment method, who paid - from your own history.</p>
-      </div>
+        <div class="feature-card">
+          <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M3 17l6 -6l4 4l8 -8" /><path d="M14 7l7 0l0 7" /></svg></div>
+          <div class="feature-text">
+            <h3>Net Worth Tracking</h3>
 
-      <div class="feature-card">
-        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M3 5a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-14" /><path d="M3 10h18" /><path d="M10 3v18" /></svg></div>
-        <h3>Monthly Budgeting</h3>
-        <p>A month-by-month grid for expenses, income, loans and bank balances, with automatic category breakdowns.</p>
+            <p>Every account, investment, gold holding and property in one live number - no more scattered spreadsheets.</p>
+          </div>
+        </div>
       </div>
+    </div>
 
-      <div class="feature-card">
-        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M5 21v-16a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v16l-3 -2l-2 2l-2 -2l-2 2l-2 -2l-3 2" /><path d="M14 8h-2.5a1.5 1.5 0 0 0 0 3h1a1.5 1.5 0 0 1 0 3h-2.5m2 0v1.5m0 -9v1.5" /></svg></div>
-        <h3>Tax Planning</h3>
-        <p>Estimate your tax liability and track deductions across 80C, 80D, NPS, home loan interest and more.</p>
+    <div class="features-group">
+      <p class="features-group-label">Cash Flow</p>
+      <div class="features-group-grid cols-3">
+        <div class="feature-card">
+          <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M13 3l0 7l6 0l-8 11l0 -7l-6 0l8 -11" /></svg></div>
+          <div class="feature-text">
+            <h3>Daily Expense Capture</h3>
+
+            <p>Log a spend in under 15 seconds. Smart pre-fill learns your habits from your own history.</p>
+          </div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M3 5a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-14" /><path d="M3 10h18" /><path d="M10 3v18" /></svg></div>
+          <div class="feature-text">
+            <h3>Monthly Budgeting</h3>
+
+            <p>A month-by-month grid for expenses, income, loans and bank balances, with automatic category breakdowns.</p>
+          </div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M5 21v-16a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v16l-3 -2l-2 2l-2 -2l-2 2l-2 -2l-3 2" /><path d="M14 8h-2.5a1.5 1.5 0 0 0 0 3h1a1.5 1.5 0 0 1 0 3h-2.5m2 0v1.5m0 -9v1.5" /></svg></div>
+          <div class="feature-text">
+            <h3>Tax Planning</h3>
+
+            <p>Estimate your tax liability and track deductions across 80C, 80D, NPS, home loan interest and more.</p>
+          </div>
+        </div>
       </div>
+    </div>
 
-      <div class="feature-card">
-        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M11.46 20.846a12 12 0 0 1 -7.96 -14.846a12 12 0 0 0 8.5 -3a12 12 0 0 0 8.5 3a12 12 0 0 1 -.09 7.06" /><path d="M15 19l2 2l4 -4" /></svg></div>
-        <h3>Insurance Tracker</h3>
-        <p>Every policy - term, health, vehicle - with premiums, sums assured and renewal dates in one list.</p>
+    <div class="features-group">
+      <p class="features-group-label">Protection</p>
+      <div class="features-group-grid cols-2">
+        <div class="feature-card">
+          <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M11.46 20.846a12 12 0 0 1 -7.96 -14.846a12 12 0 0 0 8.5 -3a12 12 0 0 0 8.5 3a12 12 0 0 1 -.09 7.06" /><path d="M15 19l2 2l4 -4" /></svg></div>
+          <div class="feature-text">
+            <h3>Insurance Tracker</h3>
+
+            <p>Every policy - term, health, vehicle - with premiums, sums assured and renewal dates in one list.</p>
+          </div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M5 13a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v6a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-6" /><path d="M11 16a1 1 0 1 0 2 0a1 1 0 0 0 -2 0" /><path d="M8 11v-4a4 4 0 1 1 8 0v4" /></svg></div>
+          <div class="feature-text">
+            <h3>Document Vault</h3>
+
+            <p>Bank-grade AES-256 encryption for your most sensitive documents, locked with a passphrase only you know - not even we can read them.</p>
+          </div>
+        </div>
       </div>
+    </div>
 
-      <div class="feature-card">
-        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M5 13a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v6a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-6" /><path d="M11 16a1 1 0 1 0 2 0a1 1 0 0 0 -2 0" /><path d="M8 11v-4a4 4 0 1 1 8 0v4" /></svg></div>
-        <h3>Document Vault</h3>
-        <p>Bank-grade AES-256 encryption for your most sensitive documents, locked with a passphrase only you know - not even we can read them.</p>
+    <div class="features-group">
+      <p class="features-group-label">Family &amp; Health</p>
+      <div class="features-group-grid cols-2">
+        <div class="feature-card">
+          <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M19.5 12.572l-7.5 7.428l-7.5 -7.428a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572" /></svg></div>
+          <div class="feature-text">
+            <h3>Health &amp; Longevity</h3>
+
+            <p>Estimate your life expectancy from real health inputs, so your financial plan accounts for the years you're actually planning for.</p>
+          </div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M4.5 12.5l8 -8a4.94 4.94 0 0 1 7 7l-8 8a4.94 4.94 0 0 1 -7 -7" /><path d="M8.5 8.5l7 7" /></svg></div>
+          <div class="feature-text">
+            <h3>Medicine Tracker</h3>
+
+            <p>Medication, pill and supplement schedules, plus vaccination records, for the whole family.</p>
+          </div>
+        </div>
       </div>
+    </div>
 
-      <div class="feature-card">
-        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M5 7a4 4 0 1 0 8 0a4 4 0 1 0 -8 0" /><path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /><path d="M21 21v-2a4 4 0 0 0 -3 -3.85" /></svg></div>
-        <h3>SplitExpenses(SplitWise)</h3>
-        <p>Split group expenses with friends and family, track balances, and settle up - right inside your EnrichMe dashboard.</p>
-      </div>
+    <div class="features-group">
+      <p class="features-group-label">More</p>
+      <div class="features-group-grid cols-3">
+        <div class="feature-card">
+          <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M5 7a4 4 0 1 0 8 0a4 4 0 1 0 -8 0" /><path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /><path d="M21 21v-2a4 4 0 0 0 -3 -3.85" /></svg></div>
+          <div class="feature-text">
+            <h3>SplitExpenses(SplitWise)</h3>
 
-      <div class="feature-card">
-        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M19.5 12.572l-7.5 7.428l-7.5 -7.428a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572" /></svg></div>
-        <h3>Health &amp; Longevity</h3>
-        <p>Estimate your life expectancy from real health inputs, so your financial plan accounts for the years you're actually planning for.</p>
-      </div>
+            <p>Split group expenses with friends and family, track balances, and settle up - right inside your EnrichMe dashboard.</p>
+          </div>
+        </div>
 
-      <div class="feature-card">
-        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454l0 .008" /><path d="M17 4a2 2 0 0 0 2 2a2 2 0 0 0 -2 2a2 2 0 0 0 -2 -2a2 2 0 0 0 2 -2" /><path d="M19 11h2m-1 -1v2" /></svg></div>
-        <h3>Vedic Astrology</h3>
-        <p>Rashi, Nakshatra and Lagna, for the tradition of it - a bit of fun alongside the numbers, never a financial prediction.</p>
-      </div>
+        <div class="feature-card">
+          <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454l0 .008" /><path d="M17 4a2 2 0 0 0 2 2a2 2 0 0 0 -2 2a2 2 0 0 0 -2 -2a2 2 0 0 0 2 -2" /><path d="M19 11h2m-1 -1v2" /></svg></div>
+          <div class="feature-text">
+            <h3>Vedic Astrology</h3>
 
-      <div class="feature-card">
-        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M4 5a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2l0 -14" /><path d="M8 8a1 1 0 0 1 1 -1h6a1 1 0 0 1 1 1v1a1 1 0 0 1 -1 1h-6a1 1 0 0 1 -1 -1l0 -1" /><path d="M8 14l0 .01" /><path d="M12 14l0 .01" /><path d="M16 14l0 .01" /><path d="M8 17l0 .01" /><path d="M12 17l0 .01" /><path d="M16 17l0 .01" /></svg></div>
-        <h3>Financial Calculators</h3>
-        <p>A full suite of free calculators - SIP, EMI, compound interest and more - no login required.</p>
+            <p>Rashi, Nakshatra and Lagna, for the tradition of it - a bit of fun alongside the numbers, never a financial prediction.</p>
+          </div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M4 5a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2l0 -14" /><path d="M8 8a1 1 0 0 1 1 -1h6a1 1 0 0 1 1 1v1a1 1 0 0 1 -1 1h-6a1 1 0 0 1 -1 -1l0 -1" /><path d="M8 14l0 .01" /><path d="M12 14l0 .01" /><path d="M16 14l0 .01" /><path d="M8 17l0 .01" /><path d="M12 17l0 .01" /><path d="M16 17l0 .01" /></svg></div>
+          <div class="feature-text">
+            <h3>Financial Calculators</h3>
+
+            <p>A full suite of free calculators - SIP, EMI, compound interest and more - no login required.</p>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -1185,7 +1437,7 @@
     <h2 class="path-heading">Live the Life You Want</h2>
     <p class="path-subtext">
       Maybe it's more time with your kids. A year of travel. Work you choose because you want to,
-      not because you have to. Whatever your freedom looks like, EnrichMe gets you there in three steps.
+      not because you have to. Whatever your freedom looks like, EnrichMe gets you there in four steps.
     </p>
 
     <div class="path-timeline">
@@ -1227,12 +1479,22 @@
         </div>
       </div>
 
+      <div class="path-stage">
+        <div class="path-stage-icon">🩺</div>
+        <div class="path-stage-content">
+          <span class="path-stage-chip">14 tools, one family</span>
+          <h3>Protect it, and live it together</h3>
+          <p>Insurance, your will and documents locked away safe - plus medicine schedules for your parents and split bills with your partner, all in the same app that tracks your FIRE number.</p>
+          <a href="#features" class="path-stage-link">See Family &amp; Health tools →</a>
+        </div>
+      </div>
+
       <div class="path-stage path-stage-final">
         <div class="path-stage-icon">🚩</div>
         <div class="path-stage-content path-final-card">
           <h3>Reach Your Freedom</h3>
           <p>The first step takes about two minutes. Everything after that is just watching the number move.</p>
-          <a href="login.html?mode=signup" class="btn btn-primary">Start your path →</a>
+          <a href="login.html?mode=signup" class="btn btn-primary">Start Free →</a>
         </div>
       </div>
     </div>
@@ -1268,7 +1530,7 @@
   <section class="get-started-section">
     <h2>Start tracking your money today</h2>
     <p>Free forever on Basic. No credit card required.</p>
-    <a href="login.html?mode=signup" class="btn btn-primary">Get Started Free →</a>
+    <a href="login.html?mode=signup" class="btn btn-primary">Start Free →</a>
   </section>
 
   <footer>
