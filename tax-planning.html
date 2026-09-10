@@ -34,6 +34,8 @@
     .sidebar { background: #ffffff; border-right: 1px solid #e2e8f0; display: flex; flex-direction: column; padding: 1.5rem 1.25rem; }
     .sidebar-logo { display: flex; align-items: center; gap: 0.65rem; font-size: 1.1rem; font-weight: 800; margin-bottom: 2rem; padding: 0 0.25rem; color: #712B13; }
     .sidebar-logo-icon { width: 30px; height: 30px; flex-shrink: 0; }
+    .sidebar-logo-text { display: flex; flex-direction: column; gap: 0.05rem; line-height: 1.2; }
+    .sidebar-logo-tagline { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase; color: #94a3b8; }
     .sidebar-nav { display: flex; flex-direction: column; gap: 0.25rem; }
     .sidebar-nav a, .sidebar-nav .nav-group-head { display: flex; align-items: center; gap: 0.75rem; padding: 0.7rem 0.75rem; border-radius: 0.6rem; font-size: 0.9rem; font-weight: 500; color: #364752; }
     .sidebar-nav a:hover, .sidebar-nav .nav-group-head:hover { background: #f1f5f9; }
@@ -285,7 +287,10 @@
           </g>
           <path d="M92,33 Q101,45 95,52 Q97,43 89,41 Q86,48 92,53 Q80,50 80,40 Q80,34 92,33 Z" fill="#712B13"/>
         </svg>
-        <span>EnrichMe</span>
+        <span class="sidebar-logo-text">
+          <span class="sidebar-logo-name">EnrichMe</span>
+          <span class="sidebar-logo-tagline">Personal Life &amp; Wealth OS</span>
+        </span>
       </a>
 
       <nav class="sidebar-nav">

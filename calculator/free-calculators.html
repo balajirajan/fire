@@ -52,6 +52,8 @@
       height: 32px;
       flex-shrink: 0;
     }
+    .logo-text { display: flex; flex-direction: column; gap: 0.05rem; line-height: 1.2; }
+    .logo-tagline { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase; color: #8a857a; }
 
     .nav-links {
       display: flex;
@@ -425,7 +427,10 @@
         </g>
         <path d="M92,33 Q101,45 95,52 Q97,43 89,41 Q86,48 92,53 Q80,50 80,40 Q80,34 92,33 Z" fill="#712B13"/>
       </svg>
-      <span>EnrichMe</span>
+      <span class="logo-text">
+        <span class="logo-name">EnrichMe</span>
+        <span class="logo-tagline">Personal Life &amp; Wealth OS</span>
+      </span>
     </a>
     <button class="nav-toggle" id="navToggle" aria-label="Menu" aria-expanded="false" onclick="toggleMobileNav()">☰</button>
     <div class="nav-links" id="navLinks">

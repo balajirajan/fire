@@ -8,7 +8,8 @@
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#712B13">
-  <title>EnrichMe - Track. Build. Freedom.</title>
+  <meta name="description" content="Build wealth. Protect what matters. Live better. EnrichMe is your Personal Life &amp; Wealth OS for FIRE planning, net worth, budgeting, insurance and family health, in one dashboard.">
+  <title>EnrichMe - Your Money. Your Health. Your Family. Your Freedom.</title>
   <style>
     * {
       margin: 0;
@@ -65,6 +66,8 @@
       height: 34px;
       flex-shrink: 0;
     }
+    .logo-text { display: flex; flex-direction: column; gap: 0.05rem; line-height: 1.2; }
+    .logo-tagline { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase; color: #8a857a; }
 
     .nav-links {
       display: flex;
@@ -310,6 +313,15 @@
     @media (max-width: 1024px) {
       .hero { padding: 0; }
       .hero-buttons { justify-content: center; }
+    }
+
+    .hero-eyebrow {
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.9rem;
     }
 
     .hero h1 {
@@ -1186,7 +1198,10 @@
         </g>
         <path d="M92,33 Q101,45 95,52 Q97,43 89,41 Q86,48 92,53 Q80,50 80,40 Q80,34 92,33 Z" fill="#712B13"/>
       </svg>
-      <span>EnrichMe</span>
+      <span class="logo-text">
+        <span class="logo-name">EnrichMe</span>
+        <span class="logo-tagline">Personal Life &amp; Wealth OS</span>
+      </span>
     </div>
     <button class="nav-toggle" id="navToggle" aria-label="Menu" aria-expanded="false" onclick="toggleMobileNav()">☰</button>
     <div class="nav-links" id="navLinks">
@@ -1250,12 +1265,13 @@
   <!-- Hero -->
   <div class="hero-container">
     <section class="hero">
+      <p class="hero-eyebrow">Personal Life &amp; Wealth OS</p>
       <h1>
-        Track Your Money.<br>
-        Build Your Wealth.<br>
-        <span class="gradient">Reach Your Freedom.</span>
+        Your Money. Your Health.<br>
+        Your Family.<br>
+        <span class="gradient">Your Freedom.</span>
       </h1>
-      <p>The all-in-one app for FIRE planning, net worth tracking, budgeting, and family health, in one dashboard.</p>
+      <p>Build wealth. Protect what matters. Live better. EnrichMe brings FIRE planning, net worth tracking, budgeting, and family health into one dashboard.</p>
 
       <div class="hero-buttons">
         <a href="login.html?mode=signup" class="btn btn-primary">
