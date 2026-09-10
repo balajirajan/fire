@@ -870,6 +870,122 @@
       line-height: 1.6;
     }
 
+    /* Layer stack diagram (One App section) */
+    .stack-caption {
+      text-align: center;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      margin-bottom: 1.25rem;
+    }
+
+    .stack-diagram {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+      margin: 0 auto 4rem;
+      max-width: 980px;
+    }
+
+    .stack-layer {
+      width: 100%;
+      border: 1px solid var(--border);
+      background: var(--bg-alt);
+      border-radius: 1.1rem;
+      padding: 1.1rem 1.6rem;
+    }
+
+    .stack-layer[data-tier="protection"] { width: 92%; background: rgba(222, 51, 65, 0.05); border-color: rgba(222, 51, 65, 0.16); }
+    .stack-layer[data-tier="wealth"] { width: 80%; background: rgba(222, 51, 65, 0.1); border-color: rgba(222, 51, 65, 0.2); }
+    .stack-layer[data-tier="health"] { width: 66%; background: rgba(222, 51, 65, 0.16); border-color: rgba(222, 51, 65, 0.26); }
+    .stack-layer[data-tier="more"] { width: 50%; background: rgba(222, 51, 65, 0.22); border-color: rgba(222, 51, 65, 0.32); }
+
+    .stack-layer-title {
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: 0.45rem;
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: var(--ink);
+      margin-bottom: 0.75rem;
+    }
+
+    .stack-layer-title span {
+      font-size: 0.76rem;
+      font-weight: 600;
+      color: var(--ink-faint);
+    }
+
+    .stack-layer-pills {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .stack-pill {
+      display: inline-flex;
+      align-items: center;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 0.4rem 0.95rem;
+      font-size: 0.83rem;
+      font-weight: 600;
+      color: var(--ink);
+      white-space: nowrap;
+    }
+
+    .stack-layer-cap {
+      width: auto;
+      max-width: 360px;
+      background: var(--black);
+      border-color: var(--black);
+      text-align: center;
+      padding: 1.4rem 1.8rem;
+    }
+
+    .stack-cap-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 0.7rem;
+      background: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 0.75rem;
+    }
+
+    .stack-cap-icon svg { width: 20px; height: 20px; }
+
+    .stack-layer-cap strong {
+      display: block;
+      color: #ffffff;
+      font-size: 1.05rem;
+      margin-bottom: 0.3rem;
+    }
+
+    .stack-layer-cap p {
+      color: #cfc9c1;
+      font-size: 0.83rem;
+      max-width: 32ch;
+      margin: 0 auto;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 640px) {
+      .stack-layer,
+      .stack-layer[data-tier] {
+        width: 100% !important;
+      }
+      .stack-layer-cap { max-width: 100% !important; }
+      .stack-pill { font-size: 0.78rem; padding: 0.35rem 0.8rem; }
+    }
+
     /* Path to Freedom Section */
     .path-section {
       position: relative;
@@ -1300,6 +1416,61 @@
     <p class="features-subtext">
       Not just your financial life - your net worth, your medicines, your policies, your family's documents. Fourteen tools, one dashboard.
     </p>
+
+    <p class="stack-caption">Bottom to top: how it all builds up</p>
+    <div class="stack-diagram">
+      <div class="stack-layer stack-layer-cap">
+        <span class="stack-cap-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 10.941c2.333 -3.308 .167 -7.823 -1 -8.941c0 3.395 -2.235 5.299 -3.667 6.706c-1.43 1.408 -2.333 3.294 -2.333 5.588c0 3.704 3.134 6.706 7 6.706c3.866 0 7 -3.002 7 -6.706c0 -1.712 -1.232 -4.403 -2.333 -5.588c-2.084 3.353 -3.257 3.353 -4.667 2.235" /></svg></span>
+        <strong>One FIRE Number. One Dashboard.</strong>
+        <p>Every layer below rolls up into a single number you can check anytime.</p>
+      </div>
+
+      <div class="stack-layer" data-tier="more">
+        <p class="stack-layer-title">More <span>· addon features</span></p>
+        <div class="stack-layer-pills">
+          <span class="stack-pill">Split Expenses</span>
+          <span class="stack-pill">Will Planner</span>
+          <span class="stack-pill">Vedic Astrology</span>
+        </div>
+      </div>
+
+      <div class="stack-layer" data-tier="health">
+        <p class="stack-layer-title">Family &amp; Health</p>
+        <div class="stack-layer-pills">
+          <span class="stack-pill">Medicine Tracker</span>
+          <span class="stack-pill">Checkup Reports</span>
+          <span class="stack-pill">Life Expectancy</span>
+        </div>
+      </div>
+
+      <div class="stack-layer" data-tier="wealth">
+        <p class="stack-layer-title">Wealth</p>
+        <div class="stack-layer-pills">
+          <span class="stack-pill">Net Worth</span>
+          <span class="stack-pill">Portfolio, Gold &amp; Property</span>
+          <span class="stack-pill">FIRE Planning &amp; Goals</span>
+        </div>
+      </div>
+
+      <div class="stack-layer" data-tier="protection">
+        <p class="stack-layer-title">Protection</p>
+        <div class="stack-layer-pills">
+          <span class="stack-pill">Insurance Tracker</span>
+          <span class="stack-pill">Renewal Reminders</span>
+          <span class="stack-pill">Encrypted Document Vault</span>
+        </div>
+      </div>
+
+      <div class="stack-layer" data-tier="cashflow">
+        <p class="stack-layer-title">Cash Flow <span>· the foundation</span></p>
+        <div class="stack-layer-pills">
+          <span class="stack-pill">Daily Expense Capture</span>
+          <span class="stack-pill">Monthly Budgeting</span>
+          <span class="stack-pill">Income</span>
+          <span class="stack-pill">Tax Planning</span>
+        </div>
+      </div>
+    </div>
 
     <div class="features-group">
       <p class="features-group-label">Wealth</p>
