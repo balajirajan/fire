@@ -8,7 +8,7 @@
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#712B13">
-  <title>All Features - EnrichMe</title>
+  <title>More - EnrichMe</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -28,6 +28,7 @@
     .sidebar-backdrop { display: none; }
     .topbar-mobile-logo { display: none; }
     .topbar-left { display: flex; align-items: center; gap: 0.65rem; }
+    .topbar-mobile-brand { display: none; }
 
     /* Sidebar */
     .sidebar { background: #ffffff; border-right: 1px solid #e2e8f0; display: flex; flex-direction: column; padding: 1.5rem 1.25rem; }
@@ -144,7 +145,8 @@
         flex-shrink: 0;
       }
 
-      .topbar h1 { font-size: 1.15rem; }
+      .topbar h1 { display: none; }
+      .topbar-mobile-brand { display: block; font-size: 1.15rem; font-weight: 700; }
     }
 
     .mobile-bottom-nav { display: none; }
@@ -303,12 +305,10 @@
             </g>
             <path d="M92,33 Q101,45 95,52 Q97,43 89,41 Q86,48 92,53 Q80,50 80,40 Q80,34 92,33 Z" fill="#712B13"/>
           </svg>
-          <h1>All Features</h1>
+          <h1>More</h1>
+          <span class="topbar-mobile-brand">EnrichMe</span>
         </div>
         <div class="topbar-right">
-          <a href="features.html" class="menu-link" title="All Features">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M4 4m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z" /><path d="M4 14m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z" /><path d="M14 4m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z" /><path d="M14 14m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z" /></svg>
-          </a>
           <a href="admin-dashboard.html" class="admin-link" id="adminLink" style="display:none;">🛡️ Admin Dashboard</a>
           <details class="user-menu">
             <summary id="userAvatar">👤</summary>
@@ -321,116 +321,11 @@
       </div>
 
       <div class="page-head">
-        <h2>All Features</h2>
-        <p>Everything EnrichMe can do for you, in one place. Tap anything to jump straight there.</p>
+        <h2>More</h2>
+        <p>A few more ways EnrichMe helps your family - beyond wealth and cash flow.</p>
       </div>
 
       <div class="feat-section">
-        <div class="feat-section-label">Wealth</div>
-        <div class="feat-grid">
-          <a class="feat-card" href="fire-plan.html">
-            <div class="feat-card-head">
-              <div class="feat-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M8 16l2 -6l6 -2l-2 6l-6 2" /><path d="M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /><path d="M12 3l0 2" /><path d="M12 19l0 2" /><path d="M3 12l2 0" /><path d="M19 12l2 0" /></svg></div>
-              <div class="feat-card-title">FIRE Plan</div>
-              <div class="feat-card-arrow">›</div>
-            </div>
-            <div class="feat-card-desc">Find your FIRE number and the savings path to get there.</div>
-          </a>
-          <a class="feat-card" href="fire-goals.html">
-            <div class="feat-card-head">
-              <div class="feat-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M11 12a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M7 12a5 5 0 1 0 10 0a5 5 0 1 0 -10 0" /><path d="M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /></svg></div>
-              <div class="feat-card-title">Goal Based Savings</div>
-              <div class="feat-card-arrow">›</div>
-            </div>
-            <div class="feat-card-desc">Set and track savings goals for the specific things you're saving for.</div>
-          </a>
-          <a class="feat-card" href="net-worth.html">
-            <div class="feat-card-head">
-              <div class="feat-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M3 17l6 -6l4 4l8 -8" /><path d="M14 7l7 0l0 7" /></svg></div>
-              <div class="feat-card-title">Networth</div>
-              <div class="feat-card-arrow">›</div>
-            </div>
-            <div class="feat-card-desc">Everything you own and owe — stocks, gold, property, loans — in one place.</div>
-          </a>
-        </div>
-      </div>
-
-      <div class="feat-section">
-        <div class="feat-section-label">Cash Flow</div>
-        <div class="feat-grid">
-          <a class="feat-card" href="money-required.html">
-            <div class="feat-card-head">
-              <div class="feat-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M3 13a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v6a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -6" /><path d="M15 9a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v10a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -10" /><path d="M9 5a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v14a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -14" /><path d="M4 20h14" /></svg></div>
-              <div class="feat-card-title">Monthly CashFlow</div>
-              <div class="feat-card-arrow">›</div>
-            </div>
-            <div class="feat-card-desc">Monthly expenses, daily spend tracking, and an expenses calculator.</div>
-          </a>
-          <a class="feat-card" href="income.html">
-            <div class="feat-card-head">
-              <div class="feat-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M7 15h-3a1 1 0 0 1 -1 -1v-8a1 1 0 0 1 1 -1h12a1 1 0 0 1 1 1v3" /><path d="M7 10a1 1 0 0 1 1 -1h12a1 1 0 0 1 1 1v8a1 1 0 0 1 -1 1h-12a1 1 0 0 1 -1 -1l0 -8" /><path d="M12 14a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /></svg></div>
-              <div class="feat-card-title">Income</div>
-              <div class="feat-card-arrow">›</div>
-            </div>
-            <div class="feat-card-desc">Log and track every income source, month over month.</div>
-          </a>
-          <a class="feat-card" href="tax-planning.html">
-            <div class="feat-card-head">
-              <div class="feat-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M5 21v-16a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v16l-3 -2l-2 2l-2 -2l-2 2l-2 -2l-3 2" /><path d="M14 8h-2.5a1.5 1.5 0 0 0 0 3h1a1.5 1.5 0 0 1 0 3h-2.5m2 0v1.5m0 -9v1.5" /></svg></div>
-              <div class="feat-card-title">Tax Planning</div>
-              <div class="feat-card-arrow">›</div>
-            </div>
-            <div class="feat-card-desc">Compare Old vs New tax regimes and estimate what you'll owe.</div>
-          </a>
-        </div>
-      </div>
-
-      <div class="feat-section">
-        <div class="feat-section-label">Protection</div>
-        <div class="feat-grid">
-          <a class="feat-card" href="insurance-tracker.html">
-            <div class="feat-card-head">
-              <div class="feat-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M11.46 20.846a12 12 0 0 1 -7.96 -14.846a12 12 0 0 0 8.5 -3a12 12 0 0 0 8.5 3a12 12 0 0 1 -.09 7.06" /><path d="M15 19l2 2l4 -4" /></svg></div>
-              <div class="feat-card-title">Insurance Tracker</div>
-              <div class="feat-card-arrow">›</div>
-            </div>
-            <div class="feat-card-desc">Track your policies and check whether your coverage is actually enough.</div>
-          </a>
-          <a class="feat-card" href="reminders.html">
-            <div class="feat-card-head">
-              <div class="feat-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M10 5a2 2 0 1 1 4 0a7 7 0 0 1 4 6v3a4 4 0 0 0 2 3h-16a4 4 0 0 0 2 -3v-3a7 7 0 0 1 4 -6" /><path d="M9 17v1a3 3 0 0 0 6 0v-1" /></svg></div>
-              <div class="feat-card-title">Reminders</div>
-              <div class="feat-card-arrow">›</div>
-            </div>
-            <div class="feat-card-desc">Never miss a premium, EMI or renewal date again.</div>
-          </a>
-          <a class="feat-card" href="vault-overview.html">
-            <div class="feat-card-head">
-              <div class="feat-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M5 13a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v6a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-6" /><path d="M11 16a1 1 0 1 0 2 0a1 1 0 0 0 -2 0" /><path d="M8 11v-4a4 4 0 1 1 8 0v4" /></svg></div>
-              <div class="feat-card-title">Document Vault</div>
-              <div class="feat-card-arrow">›</div>
-            </div>
-            <div class="feat-card-desc">A secure home for PAN, Aadhaar, property papers and more.</div>
-          </a>
-        </div>
-      </div>
-
-      <div class="feat-section">
-        <div class="feat-section-label">Family &amp; Health</div>
-        <div class="feat-grid">
-          <a class="feat-card" href="life-expectancy.html">
-            <div class="feat-card-head">
-              <div class="feat-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M19.5 12.572l-7.5 7.428l-7.5 -7.428a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572" /></svg></div>
-              <div class="feat-card-title">Health(is wealth)</div>
-              <div class="feat-card-arrow">›</div>
-            </div>
-            <div class="feat-card-desc">Life expectancy, medicine tracking and checkup reports, in one place.</div>
-          </a>
-        </div>
-      </div>
-
-      <div class="feat-section">
-        <div class="feat-section-label">More</div>
         <div class="feat-grid">
           <a class="feat-card" href="split/dashboard.html">
             <div class="feat-card-head">
@@ -454,15 +349,7 @@
               <div class="feat-card-title">Spiritual</div>
               <div class="feat-card-arrow">›</div>
             </div>
-            <div class="feat-card-desc">Rashi, Nakshatra and Lagna — for tradition and fun.</div>
-          </a>
-          <a class="feat-card" href="settings.html">
-            <div class="feat-card-head">
-              <div class="feat-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M10.325 4.317c.426 -1.756 2.924 -1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543 -.94 3.31 .826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756 .426 1.756 2.924 0 3.35a1.724 1.724 0 0 0 -1.066 2.573c.94 1.543 -.826 3.31 -2.37 2.37a1.724 1.724 0 0 0 -2.572 1.065c-.426 1.756 -2.924 1.756 -3.35 0a1.724 1.724 0 0 0 -2.573 -1.066c-1.543 .94 -3.31 -.826 -2.37 -2.37a1.724 1.724 0 0 0 -1.065 -2.572c-1.756 -.426 -1.756 -2.924 0 -3.35a1.724 1.724 0 0 0 1.066 -2.573c-.94 -1.543 .826 -3.31 2.37 -2.37c1 .608 2.296 .07 2.572 -1.065" /><path d="M9 12a3 3 0 1 0 6 0a3 3 0 0 0 -6 0" /></svg></div>
-              <div class="feat-card-title">Settings</div>
-              <div class="feat-card-arrow">›</div>
-            </div>
-            <div class="feat-card-desc">Manage your account, name, and preferences.</div>
+            <div class="feat-card-desc">Rashi, Nakshatra and Lagna, for tradition and fun.</div>
           </a>
         </div>
       </div>
@@ -471,25 +358,21 @@
       <nav class="mobile-bottom-nav">
         <a href="dashboard.html">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M5 12l-2 0l9 -9l9 9l-2 0" /><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" /><path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" /></svg>
-          <span>Home</span>
+          <span>FIRE</span>
         </a>
         <a href="net-worth.html">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M3 17l6 -6l4 4l8 -8" /><path d="M14 7l7 0l0 7" /></svg>
-          <span>Wealth</span>
+          <span>Net Worth</span>
         </a>
         <a href="money-required.html">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M3 13a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v6a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -6" /><path d="M15 9a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v10a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -10" /><path d="M9 5a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v14a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -14" /><path d="M4 20h14" /></svg>
           <span>Cash Flow</span>
         </a>
-        <a href="insurance-tracker.html">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M11.46 20.846a12 12 0 0 1 -7.96 -14.846a12 12 0 0 0 8.5 -3a12 12 0 0 0 8.5 3a12 12 0 0 1 -.09 7.06" /><path d="M15 19l2 2l4 -4" /></svg>
-          <span>Protection</span>
-        </a>
         <a href="life-expectancy.html">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M19.5 12.572l-7.5 7.428l-7.5 -7.428a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572" /></svg>
           <span>Health</span>
         </a>
-        <a href="split/dashboard.html">
+        <a href="features.html" class="active">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M5 12m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M12 12m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M19 12m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /></svg>
           <span>More</span>
         </a>
