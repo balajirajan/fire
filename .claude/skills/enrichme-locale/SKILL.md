@@ -197,6 +197,7 @@ app page's sidebar nav (`.nav-icon`).
   | Medicine Tracker | `pill` |
   | Checkup Reports | `stethoscope` |
   | Body Fat Calculator | `scale` |
+  | Calorie Tracker | `apple` |
   | SplitExpenses(SplitWise) | `users` |
   | Will Planner | `file-text` |
   | Will Document | `file-description` |

@@ -16,6 +16,11 @@ create table if not exists accounts (
 
 alter table accounts enable row level security;
 
+drop policy if exists "accounts_select_own" on accounts;
+drop policy if exists "accounts_insert_own" on accounts;
+drop policy if exists "accounts_update_own" on accounts;
+drop policy if exists "accounts_delete_own" on accounts;
+
 create policy "accounts_select_own" on accounts for select using (auth.uid() = user_id);
 create policy "accounts_insert_own" on accounts for insert with check (auth.uid() = user_id);
 create policy "accounts_update_own" on accounts for update using (auth.uid() = user_id);
@@ -42,6 +47,11 @@ create table if not exists networth_snapshots (
 
 alter table networth_snapshots enable row level security;
 
+drop policy if exists "networth_snapshots_select_own" on networth_snapshots;
+drop policy if exists "networth_snapshots_insert_own" on networth_snapshots;
+drop policy if exists "networth_snapshots_update_own" on networth_snapshots;
+drop policy if exists "networth_snapshots_delete_own" on networth_snapshots;
+
 create policy "networth_snapshots_select_own" on networth_snapshots for select using (auth.uid() = user_id);
 create policy "networth_snapshots_insert_own" on networth_snapshots for insert with check (auth.uid() = user_id);
 create policy "networth_snapshots_update_own" on networth_snapshots for update using (auth.uid() = user_id);
@@ -62,6 +72,11 @@ create table if not exists transactions (
 );
 
 alter table transactions enable row level security;
+
+drop policy if exists "transactions_select_own" on transactions;
+drop policy if exists "transactions_insert_own" on transactions;
+drop policy if exists "transactions_update_own" on transactions;
+drop policy if exists "transactions_delete_own" on transactions;
 
 create policy "transactions_select_own" on transactions for select using (auth.uid() = user_id);
 create policy "transactions_insert_own" on transactions for insert with check (auth.uid() = user_id);
@@ -95,6 +110,11 @@ create table if not exists budgets (
 );
 
 alter table budgets enable row level security;
+
+drop policy if exists "budgets_select_own" on budgets;
+drop policy if exists "budgets_insert_own" on budgets;
+drop policy if exists "budgets_update_own" on budgets;
+drop policy if exists "budgets_delete_own" on budgets;
 
 create policy "budgets_select_own" on budgets for select using (auth.uid() = user_id);
 create policy "budgets_insert_own" on budgets for insert with check (auth.uid() = user_id);
@@ -130,6 +150,11 @@ alter table expense_groups add column if not exists section text not null defaul
 
 alter table expense_groups enable row level security;
 
+drop policy if exists "expense_groups_select_own" on expense_groups;
+drop policy if exists "expense_groups_insert_own" on expense_groups;
+drop policy if exists "expense_groups_update_own" on expense_groups;
+drop policy if exists "expense_groups_delete_own" on expense_groups;
+
 create policy "expense_groups_select_own" on expense_groups for select using (auth.uid() = user_id);
 create policy "expense_groups_insert_own" on expense_groups for insert with check (auth.uid() = user_id);
 create policy "expense_groups_update_own" on expense_groups for update using (auth.uid() = user_id);
@@ -145,6 +170,11 @@ create table if not exists expense_items (
 );
 
 alter table expense_items enable row level security;
+
+drop policy if exists "expense_items_select_own" on expense_items;
+drop policy if exists "expense_items_insert_own" on expense_items;
+drop policy if exists "expense_items_update_own" on expense_items;
+drop policy if exists "expense_items_delete_own" on expense_items;
 
 create policy "expense_items_select_own" on expense_items for select using (auth.uid() = user_id);
 create policy "expense_items_insert_own" on expense_items for insert with check (auth.uid() = user_id);
@@ -162,6 +192,11 @@ create table if not exists expense_grid (
 );
 
 alter table expense_grid enable row level security;
+
+drop policy if exists "expense_grid_select_own" on expense_grid;
+drop policy if exists "expense_grid_insert_own" on expense_grid;
+drop policy if exists "expense_grid_update_own" on expense_grid;
+drop policy if exists "expense_grid_delete_own" on expense_grid;
 
 create policy "expense_grid_select_own" on expense_grid for select using (auth.uid() = user_id);
 create policy "expense_grid_insert_own" on expense_grid for insert with check (auth.uid() = user_id);
@@ -185,6 +220,11 @@ create table if not exists loan_details (
 
 alter table loan_details enable row level security;
 
+drop policy if exists "loan_details_select_own" on loan_details;
+drop policy if exists "loan_details_insert_own" on loan_details;
+drop policy if exists "loan_details_update_own" on loan_details;
+drop policy if exists "loan_details_delete_own" on loan_details;
+
 create policy "loan_details_select_own" on loan_details for select using (auth.uid() = user_id);
 create policy "loan_details_insert_own" on loan_details for insert with check (auth.uid() = user_id);
 create policy "loan_details_update_own" on loan_details for update using (auth.uid() = user_id);
@@ -194,7 +234,7 @@ create policy "loan_details_delete_own" on loan_details for delete using (auth.u
 -- ── — Stocks/MF/Gold move separately from cash accounts, powers investments.html ──
 alter table expense_groups drop constraint if exists expense_groups_section_check;
 alter table expense_groups add constraint expense_groups_section_check
-  check (section in ('expenses', 'income', 'loans', 'bank', 'investments'));
+  check (section in ('expenses', 'income', 'loans', 'bank', 'investments', 'portfolio', 'crypto'));
 
 -- Moves the old "Investment & Other Accounts" group (previously seeded under
 -- Bank Balances) over to the new Investments page, keeping its data intact.
@@ -234,6 +274,11 @@ create table if not exists loan_prepayments (
 
 alter table loan_prepayments enable row level security;
 
+drop policy if exists "loan_prepayments_select_own" on loan_prepayments;
+drop policy if exists "loan_prepayments_insert_own" on loan_prepayments;
+drop policy if exists "loan_prepayments_update_own" on loan_prepayments;
+drop policy if exists "loan_prepayments_delete_own" on loan_prepayments;
+
 create policy "loan_prepayments_select_own" on loan_prepayments for select using (auth.uid() = user_id);
 create policy "loan_prepayments_insert_own" on loan_prepayments for insert with check (auth.uid() = user_id);
 create policy "loan_prepayments_update_own" on loan_prepayments for update using (auth.uid() = user_id);
@@ -255,6 +300,11 @@ create table if not exists other_investments (
 );
 
 alter table other_investments enable row level security;
+
+drop policy if exists "other_investments_select_own" on other_investments;
+drop policy if exists "other_investments_insert_own" on other_investments;
+drop policy if exists "other_investments_update_own" on other_investments;
+drop policy if exists "other_investments_delete_own" on other_investments;
 
 create policy "other_investments_select_own" on other_investments for select using (auth.uid() = user_id);
 create policy "other_investments_insert_own" on other_investments for insert with check (auth.uid() = user_id);
@@ -315,6 +365,11 @@ create table if not exists personal_ious (
 
 alter table personal_ious enable row level security;
 
+drop policy if exists "personal_ious_select_own" on personal_ious;
+drop policy if exists "personal_ious_insert_own" on personal_ious;
+drop policy if exists "personal_ious_update_own" on personal_ious;
+drop policy if exists "personal_ious_delete_own" on personal_ious;
+
 create policy "personal_ious_select_own" on personal_ious for select using (auth.uid() = user_id);
 create policy "personal_ious_insert_own" on personal_ious for insert with check (auth.uid() = user_id);
 create policy "personal_ious_update_own" on personal_ious for update using (auth.uid() = user_id);
@@ -374,6 +429,11 @@ alter table properties add column if not exists purchase_price numeric not null 
 
 alter table properties enable row level security;
 
+drop policy if exists "properties_select_own" on properties;
+drop policy if exists "properties_insert_own" on properties;
+drop policy if exists "properties_update_own" on properties;
+drop policy if exists "properties_delete_own" on properties;
+
 create policy "properties_select_own" on properties for select using (auth.uid() = user_id);
 create policy "properties_insert_own" on properties for insert with check (auth.uid() = user_id);
 create policy "properties_update_own" on properties for update using (auth.uid() = user_id);
@@ -408,6 +468,11 @@ alter table gold_holdings add constraint gold_holdings_gold_type_check
 
 alter table gold_holdings enable row level security;
 
+drop policy if exists "gold_holdings_select_own" on gold_holdings;
+drop policy if exists "gold_holdings_insert_own" on gold_holdings;
+drop policy if exists "gold_holdings_update_own" on gold_holdings;
+drop policy if exists "gold_holdings_delete_own" on gold_holdings;
+
 create policy "gold_holdings_select_own" on gold_holdings for select using (auth.uid() = user_id);
 create policy "gold_holdings_insert_own" on gold_holdings for insert with check (auth.uid() = user_id);
 create policy "gold_holdings_update_own" on gold_holdings for update using (auth.uid() = user_id);
@@ -434,6 +499,11 @@ create table if not exists fire_plan_inputs (
 );
 
 alter table fire_plan_inputs enable row level security;
+
+drop policy if exists "fire_plan_inputs_select_own" on fire_plan_inputs;
+drop policy if exists "fire_plan_inputs_insert_own" on fire_plan_inputs;
+drop policy if exists "fire_plan_inputs_update_own" on fire_plan_inputs;
+drop policy if exists "fire_plan_inputs_delete_own" on fire_plan_inputs;
 
 create policy "fire_plan_inputs_select_own" on fire_plan_inputs for select using (auth.uid() = user_id);
 create policy "fire_plan_inputs_insert_own" on fire_plan_inputs for insert with check (auth.uid() = user_id);
@@ -1395,7 +1465,7 @@ create table if not exists obligations (
 -- category alongside insurance/tax/maintenance/etc — safe to re-run.
 alter table obligations drop constraint if exists obligations_category_check;
 alter table obligations add constraint obligations_category_check
-  check (category in ('insurance','tax','maintenance','warranty','document_renewal','subscription','medical','other'));
+  check (category in ('insurance','tax','maintenance','warranty','document_renewal','subscription','medical','preventive_checkup','important_date','other'));
 
 alter table obligations enable row level security;
 

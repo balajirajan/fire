@@ -24,6 +24,17 @@ var HealthLog = (function () {
     return data;
   }
 
+  async function updateMember(id, payload) {
+    var { data, error } = await supabaseClient.from('family_members').update(payload).eq('id', id).select().single();
+    if (error) throw error;
+    return data;
+  }
+
+  async function deleteMember(id) {
+    var { error } = await supabaseClient.from('family_members').delete().eq('id', id);
+    if (error) throw error;
+  }
+
   async function listMedicalEvents(memberId) {
     var { data, error } = await supabaseClient
       .from('medical_events')
@@ -186,6 +197,8 @@ var HealthLog = (function () {
   return {
     listMembers: listMembers,
     addMember: addMember,
+    updateMember: updateMember,
+    deleteMember: deleteMember,
     listMedicalEvents: listMedicalEvents,
     addMedicalEvent: addMedicalEvent,
     updateMedicalEvent: updateMedicalEvent,
