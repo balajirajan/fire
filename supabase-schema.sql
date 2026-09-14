@@ -1891,3 +1891,280 @@ update profiles set status = 'approved' where status = 'pending' and created_at 
 -- handle_new_user() — the date-cutoff grandfather clause alone can't catch
 -- that. Safe to re-run.
 update profiles set status = 'approved' where email in ('admin@enrichme.app', 'str.balaji@gmail.com');
+
+-- ── Know Your Rasi, per family member ────────────────────────────────────
+-- ── family_members (built for Medicine Tracker) and astrology_inputs      ──
+-- ── (built for the single-profile Know Your Rasi page) already cover most ──
+-- ── of what a per-member rasi profile needs — extended here rather than   ──
+-- ── duplicated into new tables. astrology_inputs goes from "one row per   ──
+-- ── user" to "one row per family member": the old unique(user_id) is      ──
+-- ── dropped in favor of a partial unique index on member_id, so existing  ──
+-- ── legacy rows (member_id still null) keep working untouched while       ──
+-- ── astrology.html adopts each one into a "Self" member on first visit.   ──
+alter table family_members add column if not exists date_of_birth date;
+alter table family_members add column if not exists updated_at timestamptz not null default now();
+
+alter table family_members drop constraint if exists family_members_relation_check;
+alter table family_members add constraint family_members_relation_check
+  check (relation in ('self','spouse','child','parent','other'));
+
+alter table astrology_inputs add column if not exists member_id uuid references family_members (id) on delete cascade;
+alter table astrology_inputs add column if not exists gothram text;
+alter table astrology_inputs add column if not exists notes text;
+
+alter table astrology_inputs drop constraint if exists astrology_inputs_user_id_key;
+-- A plain (non-partial) unique index, not a partial one: Postgres already
+-- treats NULLs as distinct from each other under a plain unique index, so
+-- legacy rows (member_id still null) can coexist freely while every
+-- non-null member_id stays unique. Deliberately plain so supabase-js's
+-- `.upsert(payload, { onConflict: 'member_id' })` can target it directly —
+-- a partial index needs a matching WHERE clause on the ON CONFLICT clause
+-- itself, which the upsert() helper has no way to express.
+create unique index if not exists astrology_inputs_member_unique on astrology_inputs (member_id);
+
+-- ══════════════════════════════════════════════════════════════════════════
+-- Nine additions across Finance, Health, Protection, and Family. Reuses the
+-- Obligations engine (category filters, linked_source pattern) and
+-- family_members wherever the feature is just a view or a link, and only
+-- introduces new tables where the feature is genuinely a new entity.
+-- ══════════════════════════════════════════════════════════════════════════
+
+-- ── Subscriptions view + Preventive checkup tracker: no new tables — both ──
+-- ── are filtered views on the existing Obligations engine. 'subscription' ──
+-- ── already existed; 'preventive_checkup' and 'important_date' (used by   ──
+-- ── the Family pillar's Important Dates tracker below) are added here.    ──
+-- ── Powers subscriptions.html and the Preventive Checkup category filter  ──
+-- ── on reminders.html/reminder-detail.html - no schema-only feature needs ──
+-- ── a new screen beyond what those two pages already provide.             ──
+alter table obligations drop constraint if exists obligations_category_check;
+alter table obligations add constraint obligations_category_check
+  check (category in ('insurance','tax','maintenance','warranty','document_renewal','subscription','medical','preventive_checkup','important_date','other'));
+
+-- ── Vehicle registry: registration/service reminders reuse the Obligations ──
+-- ── linked_source pattern (obligations.linked_source_type/_id) rather than ──
+-- ── new reminder logic - 'vehicle' widens the allowed source types, and    ──
+-- ── vehicles.html's detail page uses js/obligations-widget.js (the same    ──
+-- ── "upcoming obligations" badge gold.html/insurance-tracker.html use) to  ──
+-- ── show a vehicle's linked reminders inline. Powers vehicles.html.        ──
+create table if not exists vehicles (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  owner text not null default 'self' check (owner in ('self','spouse','joint','child','other')),
+  make_model text not null,
+  registration_number text not null,
+  registration_expiry_date date,
+  purchase_date date,
+  insurance_policy_id uuid references insurance_policies (id) on delete set null,
+  notes text,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+alter table vehicles enable row level security;
+
+drop policy if exists "vehicles_select_own" on vehicles;
+drop policy if exists "vehicles_insert_own" on vehicles;
+drop policy if exists "vehicles_update_own" on vehicles;
+drop policy if exists "vehicles_delete_own" on vehicles;
+
+create policy "vehicles_select_own" on vehicles for select using (auth.uid() = user_id);
+create policy "vehicles_insert_own" on vehicles for insert with check (auth.uid() = user_id);
+create policy "vehicles_update_own" on vehicles for update using (auth.uid() = user_id);
+create policy "vehicles_delete_own" on vehicles for delete using (auth.uid() = user_id);
+
+alter table obligations drop constraint if exists obligations_linked_source_type_check;
+alter table obligations add constraint obligations_linked_source_type_check
+  check (linked_source_type in ('account','other_investment','gold_holding','property','portfolio_item','bank_item','insurance_policy','vehicle'));
+
+-- ── Family doctor directory: a doctor can be linked to more than one       ──
+-- ── family member and a member can have more than one doctor, hence the   ──
+-- ── join table rather than a single foreign key either direction. Adds an ──
+-- ── optional doctor_id to medical_events alongside its existing free-text  ──
+-- ── doctor_or_hospital field, so a medical event can reference a real     ──
+-- ── Doctor record when one exists without breaking existing free-text     ──
+-- ── entries already saved there. Powers doctors.html.                     ──
+create table if not exists doctors (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  name text not null,
+  specialty text,
+  phone text,
+  clinic_or_hospital text,
+  notes text,
+  created_at timestamptz not null default now()
+);
+
+alter table doctors enable row level security;
+
+drop policy if exists "doctors_select_own" on doctors;
+drop policy if exists "doctors_insert_own" on doctors;
+drop policy if exists "doctors_update_own" on doctors;
+drop policy if exists "doctors_delete_own" on doctors;
+
+create policy "doctors_select_own" on doctors for select using (auth.uid() = user_id);
+create policy "doctors_insert_own" on doctors for insert with check (auth.uid() = user_id);
+create policy "doctors_update_own" on doctors for update using (auth.uid() = user_id);
+create policy "doctors_delete_own" on doctors for delete using (auth.uid() = user_id);
+
+create table if not exists doctor_member_links (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  doctor_id uuid not null references doctors (id) on delete cascade,
+  member_id uuid not null references family_members (id) on delete cascade,
+  created_at timestamptz not null default now(),
+  unique (doctor_id, member_id)
+);
+
+alter table doctor_member_links enable row level security;
+
+drop policy if exists "doctor_member_links_select_own" on doctor_member_links;
+drop policy if exists "doctor_member_links_insert_own" on doctor_member_links;
+drop policy if exists "doctor_member_links_delete_own" on doctor_member_links;
+
+create policy "doctor_member_links_select_own" on doctor_member_links for select using (auth.uid() = user_id);
+create policy "doctor_member_links_insert_own" on doctor_member_links for insert with check (auth.uid() = user_id);
+create policy "doctor_member_links_delete_own" on doctor_member_links for delete using (auth.uid() = user_id);
+
+alter table medical_events add column if not exists doctor_id uuid references doctors (id) on delete set null;
+
+-- ── Credit score tracker: manually logged, not pulled from any bureau      ──
+-- ── integration - source is a free-text label (e.g. "CIBIL", "Experian")  ──
+-- ── the user types themselves. Score range follows the Indian bureau      ──
+-- ── convention (300-900). Powers a per-member history + line chart.       ──
+create table if not exists credit_score_entries (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  member_id uuid not null references family_members (id) on delete cascade,
+  score integer not null check (score between 300 and 900),
+  source text,
+  date_recorded date not null default current_date,
+  notes text,
+  created_at timestamptz not null default now()
+);
+
+alter table credit_score_entries enable row level security;
+
+drop policy if exists "credit_score_entries_select_own" on credit_score_entries;
+drop policy if exists "credit_score_entries_insert_own" on credit_score_entries;
+drop policy if exists "credit_score_entries_update_own" on credit_score_entries;
+drop policy if exists "credit_score_entries_delete_own" on credit_score_entries;
+
+create policy "credit_score_entries_select_own" on credit_score_entries for select using (auth.uid() = user_id);
+create policy "credit_score_entries_insert_own" on credit_score_entries for insert with check (auth.uid() = user_id);
+create policy "credit_score_entries_update_own" on credit_score_entries for update using (auth.uid() = user_id);
+create policy "credit_score_entries_delete_own" on credit_score_entries for delete using (auth.uid() = user_id);
+
+-- ── Loan/EMI tracker: a standalone loan-account model (full amortization   ──
+-- ── schedule, prepayment "what-if" calculator) - distinct from             ──
+-- ── loan_details/loan_prepayments above, which are calculator inputs tied  ──
+-- ── to a Loans-section row in the monthly budgeting grid (expense_items)   ──
+-- ── and have no per-loan detail page. The two coexist on purpose:          ──
+-- ── loans.html keeps using loan_details for monthly EMI cash flow, this    ──
+-- ── new pair powers a dedicated Finance > Loans list + detail page, with   ──
+-- ── outstanding principal always computed live from principal_amount minus ──
+-- ── the principal component of loan_account_payments, never stored.       ──
+create table if not exists loan_accounts (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  owner text not null default 'self' check (owner in ('self','spouse','joint','child','other')),
+  name text not null,
+  loan_type text not null default 'other' check (loan_type in ('home','car','personal','other')),
+  principal_amount numeric not null,
+  interest_rate numeric not null,
+  tenure_months integer not null,
+  start_date date not null,
+  monthly_emi numeric not null,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+alter table loan_accounts enable row level security;
+
+drop policy if exists "loan_accounts_select_own" on loan_accounts;
+drop policy if exists "loan_accounts_insert_own" on loan_accounts;
+drop policy if exists "loan_accounts_update_own" on loan_accounts;
+drop policy if exists "loan_accounts_delete_own" on loan_accounts;
+
+create policy "loan_accounts_select_own" on loan_accounts for select using (auth.uid() = user_id);
+create policy "loan_accounts_insert_own" on loan_accounts for insert with check (auth.uid() = user_id);
+create policy "loan_accounts_update_own" on loan_accounts for update using (auth.uid() = user_id);
+create policy "loan_accounts_delete_own" on loan_accounts for delete using (auth.uid() = user_id);
+
+create table if not exists loan_account_payments (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  loan_id uuid not null references loan_accounts (id) on delete cascade,
+  payment_date date not null default current_date,
+  amount numeric not null,
+  created_at timestamptz not null default now()
+);
+
+alter table loan_account_payments enable row level security;
+
+drop policy if exists "loan_account_payments_select_own" on loan_account_payments;
+drop policy if exists "loan_account_payments_insert_own" on loan_account_payments;
+drop policy if exists "loan_account_payments_delete_own" on loan_account_payments;
+
+create policy "loan_account_payments_select_own" on loan_account_payments for select using (auth.uid() = user_id);
+create policy "loan_account_payments_insert_own" on loan_account_payments for insert with check (auth.uid() = user_id);
+create policy "loan_account_payments_delete_own" on loan_account_payments for delete using (auth.uid() = user_id);
+
+-- ── Emergency contact card: one row per member, aggregated at render time  ──
+-- ── with that member's linked Doctor(s) (doctor_member_links) and their    ──
+-- ── insurance_policies. Deliberately a single glanceable view, not a form- ──
+-- ── heavy page - see emergency-contacts.html.                             ──
+create table if not exists emergency_info (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  member_id uuid not null references family_members (id) on delete cascade,
+  blood_group text,
+  known_allergies text,
+  chronic_conditions text,
+  next_of_kin_name text,
+  next_of_kin_phone text,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  unique (member_id)
+);
+
+alter table emergency_info enable row level security;
+
+drop policy if exists "emergency_info_select_own" on emergency_info;
+drop policy if exists "emergency_info_insert_own" on emergency_info;
+drop policy if exists "emergency_info_update_own" on emergency_info;
+drop policy if exists "emergency_info_delete_own" on emergency_info;
+
+create policy "emergency_info_select_own" on emergency_info for select using (auth.uid() = user_id);
+create policy "emergency_info_insert_own" on emergency_info for insert with check (auth.uid() = user_id);
+create policy "emergency_info_update_own" on emergency_info for update using (auth.uid() = user_id);
+create policy "emergency_info_delete_own" on emergency_info for delete using (auth.uid() = user_id);
+
+-- ── Family tree: a relation is either to an existing family_members row or ──
+-- ── to a named person outside the app (e.g. a deceased grandparent) -      ──
+-- ── never both, enforced by the xor check below. Powers family-tree.html.  ──
+create table if not exists family_relations (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  member_id uuid not null references family_members (id) on delete cascade,
+  related_member_id uuid references family_members (id) on delete cascade,
+  external_relative_name text,
+  relation_type text not null default 'other' check (relation_type in ('parent','grandparent','sibling','spouse','child','other')),
+  notes text,
+  created_at timestamptz not null default now(),
+  constraint family_relations_target_xor check (
+    (related_member_id is not null and external_relative_name is null) or
+    (related_member_id is null and external_relative_name is not null)
+  )
+);
+
+alter table family_relations enable row level security;
+
+drop policy if exists "family_relations_select_own" on family_relations;
+drop policy if exists "family_relations_insert_own" on family_relations;
+drop policy if exists "family_relations_update_own" on family_relations;
+drop policy if exists "family_relations_delete_own" on family_relations;
+
+create policy "family_relations_select_own" on family_relations for select using (auth.uid() = user_id);
+create policy "family_relations_insert_own" on family_relations for insert with check (auth.uid() = user_id);
+create policy "family_relations_update_own" on family_relations for update using (auth.uid() = user_id);
+create policy "family_relations_delete_own" on family_relations for delete using (auth.uid() = user_id);

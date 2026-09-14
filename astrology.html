@@ -100,6 +100,13 @@
     }
     .astro-input:focus { outline: none; border-color: #a855f7; box-shadow: 0 0 0 2px rgba(168,85,247,0.15); }
     .astro-field-note { font-size: 0.73rem; color: #94a3b8; margin-top: 0.4rem; }
+    textarea.astro-input { resize: vertical; min-height: 2.4rem; }
+    .rasi-member-switcher { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; margin-bottom: 1.25rem; }
+    .rasi-member-chip { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.45rem 0.9rem; border-radius: 999px; border: 1px solid #e2e8f0; background: #fff; font-size: 0.83rem; font-weight: 600; color: #364752; text-decoration: none; }
+    .rasi-member-chip:hover { border-color: #a855f7; color: #7e22ce; }
+    .rasi-member-chip.active { background: #4c1d95; border-color: #4c1d95; color: #fff; }
+    .rasi-member-chip .rmc-relation { font-size: 0.7rem; font-weight: 600; opacity: 0.7; text-transform: capitalize; }
+    .rasi-member-chip.add-chip { border-style: dashed; color: #7e22ce; }
     .astro-calc-btn {
       margin-top: 1.3rem; width: 100%; padding: 0.85rem; border: none; border-radius: 0.7rem;
       background: linear-gradient(135deg, #7e22ce, #4c1d95); color: #fff; font-size: 0.92rem; font-weight: 700;
@@ -317,6 +324,18 @@
           <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M5 21v-16a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v16l-3 -2l-2 2l-2 -2l-2 2l-2 -2l-3 2" /><path d="M14 8h-2.5a1.5 1.5 0 0 0 0 3h1a1.5 1.5 0 0 1 0 3h-2.5m2 0v1.5m0 -9v1.5" /></svg></span>
           <span class="nav-label">Tax Planning</span>
         </a>
+        <a href="loans-tracker.html">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M17 8v-3a1 1 0 0 0 -1 -1h-10a2 2 0 0 0 0 4h12a1 1 0 0 1 1 1v3m0 4v3a1 1 0 0 1 -1 1h-12a2 2 0 0 1 -2 -2v-12" /><path d="M20 12v4h-4a2 2 0 0 1 0 -4h4" /></svg></span>
+          <span class="nav-label">Loans</span>
+        </a>
+        <a href="subscriptions.html">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M3 10h18" /><path d="M7 15h.01" /><path d="M11 15h2" /><path d="M5 6h14a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-8a2 2 0 0 1 2 -2z" /></svg></span>
+          <span class="nav-label">Subscriptions</span>
+        </a>
+        <a href="credit-score.html">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M3 17l6 -6l4 4l8 -8" /><path d="M14 7l7 0l0 7" /></svg></span>
+          <span class="nav-label">Credit Score</span>
+        </a>
 
         <div class="nav-section-label">Protection</div>
         <a href="insurance-tracker.html">
@@ -333,6 +352,14 @@
           <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2" /><path d="M9 9l1 0" /><path d="M9 13l6 0" /><path d="M9 17l6 0" /></svg></span>
           <span class="nav-label">Will Planner</span>
         </a>
+        <a href="vehicles.html">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M5 17h-2v-6l2 -5h9l4 5h1a2 2 0 0 1 2 2v4h-2m-4 0h-6m-6 0a2 2 0 1 0 4 0m-4 0a2 2 0 1 1 4 0m8 0a2 2 0 1 0 4 0m-4 0a2 2 0 1 1 4 0" /></svg></span>
+          <span class="nav-label">Vehicles</span>
+        </a>
+        <a href="emergency-contacts.html">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M19.5 12.572l-7.5 7.428l-7.5 -7.428a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572" /></svg></span>
+          <span class="nav-label">Emergency Contacts</span>
+        </a>
 
         <div class="nav-section-label">Health</div>
         <a href="life-expectancy.html">
@@ -340,17 +367,37 @@
           <span class="nav-label">Health(is wealth)</span>
           <span class="nav-chevron">›</span>
         </a>
+        <a href="doctors.html">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M6 19a6 6 0 0 1 12 0" /><path d="M9 10a3 3 0 1 0 6 0v-3a3 3 0 0 0 -6 0v3z" /><path d="M11 6l2 0" /><path d="M12 19v2" /></svg></span>
+          <span class="nav-label">Doctors</span>
+        </a>
 
         <div class="nav-section-label">Family</div>
 
+        <a href="family-members.html">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M5 7a4 4 0 1 0 8 0a4 4 0 1 0 -8 0" /><path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /><path d="M21 21v-2a4 4 0 0 0 -3 -3.85" /></svg></span>
+          <span class="nav-label">Family Members</span>
+        </a>
+        <a href="astrology.html" class="active">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454l0 .008" /><path d="M17 4a2 2 0 0 0 2 2a2 2 0 0 0 -2 2a2 2 0 0 0 -2 -2a2 2 0 0 0 2 -2" /><path d="M19 11h2m-1 -1v2" /></svg></span>
+          <span class="nav-label">Know your Rasi</span>
+        </a>
+        <a href="rasi-guidance.html">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454l0 .008" /><path d="M17 4a2 2 0 0 0 2 2a2 2 0 0 0 -2 2a2 2 0 0 0 -2 -2a2 2 0 0 0 2 -2" /><path d="M19 11h2m-1 -1v2" /></svg></span>
+          <span class="nav-label">Rasi Guidance</span>
+        </a>
+        <a href="important-dates.html">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z" /><path d="M16 3v4" /><path d="M8 3v4" /><path d="M4 11h16" /><path d="M11 15h1" /><path d="M12 15v3" /></svg></span>
+          <span class="nav-label">Important Dates</span>
+        </a>
+        <a href="family-tree.html">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M5 7a4 4 0 1 0 8 0a4 4 0 1 0 -8 0" /><path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /><path d="M21 21v-2a4 4 0 0 0 -3 -3.85" /></svg></span>
+          <span class="nav-label">Family Tree</span>
+        </a>
         <div class="nav-section-label">More</div>
         <a href="split/dashboard.html">
           <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M5 7a4 4 0 1 0 8 0a4 4 0 1 0 -8 0" /><path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /><path d="M21 21v-2a4 4 0 0 0 -3 -3.85" /></svg></span>
           <span class="nav-label">SplitExpenses(SplitWise)</span>
-        </a>
-        <a href="astrology.html" class="active">
-          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454l0 .008" /><path d="M17 4a2 2 0 0 0 2 2a2 2 0 0 0 -2 2a2 2 0 0 0 -2 -2a2 2 0 0 0 2 -2" /><path d="M19 11h2m-1 -1v2" /></svg></span>
-          <span class="nav-label">Spiritual</span>
         </a>
         <a href="reminders.html">
           <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M10 5a2 2 0 1 1 4 0a7 7 0 0 1 4 6v3a4 4 0 0 0 2 3h-16a4 4 0 0 0 2 -3v-3a7 7 0 0 1 4 -6" /><path d="M9 17v1a3 3 0 0 0 6 0v-1" /></svg></span>
@@ -386,7 +433,7 @@
             </g>
             <path d="M92,33 Q101,45 95,52 Q97,43 89,41 Q86,48 92,53 Q80,50 80,40 Q80,34 92,33 Z" fill="#712B13"/>
           </svg>
-          <h1>Spiritual</h1>
+          <h1>Know your Rasi</h1>
           <span class="topbar-mobile-brand">EnrichMe</span>
         </div>
         <div class="topbar-right">
@@ -419,6 +466,8 @@
         <p>Rooted in tradition, meant purely for fun. Enter your birth details to see your Moon sign, birth star and ascendant, plus traditional do's and don'ts.</p>
       </div>
 
+      <div class="rasi-member-switcher" id="rasiMemberSwitcher"></div>
+
       <div class="tone-banner">
         <span class="tb-icon">🔮</span>
         <span>For fun and tradition, not a scientific prediction. Your Rashi and Nakshatra are calculated from the Moon's real astronomical position at your birth moment (using the Lahiri ayanamsa), and Lagna from your birth time and place. Treat this as a cultural reference, not medical, financial or life advice.</span>
@@ -441,6 +490,14 @@
             <input type="text" class="astro-input" id="cityInput" list="cityDatalist" placeholder="Start typing a city...">
             <datalist id="cityDatalist"></datalist>
             <div class="astro-field-note" id="cityNote">Can't find your exact town? Pick the nearest major city.</div>
+          </div>
+          <div>
+            <div class="astro-field-label">🕉️ Gothram</div>
+            <input type="text" class="astro-input" id="gothramInput" placeholder="e.g. Bharadwaja">
+          </div>
+          <div>
+            <div class="astro-field-label">📝 Notes</div>
+            <textarea class="astro-input" id="notesInput" rows="1" placeholder="Anything else worth remembering"></textarea>
           </div>
         </div>
         <button type="button" class="astro-calc-btn" id="calcBtn">✨ Reveal My Rashi, Nakshatra &amp; Lagna</button>
@@ -599,7 +656,10 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-client.js"></script>
+  <script src="js/health-log/health-log-api.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/astronomy-engine@2.1.19/astronomy.browser.js"></script>
+  <script src="js/rasi-calc.js"></script>
+  <script src="js/rasi-guidance-data.js"></script>
   <script>
     function toggleSidebar() {
       var sidebar = document.getElementById('sidebar');
@@ -763,271 +823,13 @@
       return null;
     }
 
-    /* ── Element color theme, used to tint the hero and result cards to    ── */
-    /* ── match the user's own Rashi once it's known.                        ── */
-    var ELEMENT_COLORS = {
-      Fire: { accent: '#f97316', bg: 'rgba(249,115,22,0.14)' },
-      Earth: { accent: '#16a34a', bg: 'rgba(22,163,74,0.14)' },
-      Air: { accent: '#0ea5e9', bg: 'rgba(14,165,233,0.14)' },
-      Water: { accent: '#6366f1', bg: 'rgba(99,102,241,0.14)' }
-    };
+    /* ── Element colors + Rashi/Nakshatra guidance content now live in     ── */
+    /* ── js/rasi-guidance-data.js, shared with rasi-guidance.html.          ── */
+    var ELEMENT_COLORS = RasiGuidanceData.ELEMENT_COLORS;
+    var RASHIS = RasiGuidanceData.RASHIS;
+    var NAKSHATRAS = RasiGuidanceData.NAKSHATRAS;
 
-    /* ── Rashi (Moon sign) content library ─────────────────────────────── */
-    var RASHIS = [
-      { name: 'Mesha', english: 'Aries', symbol: '♈', lord: 'Mars', element: 'Fire',
-        traits: 'Bold, energetic and a natural starter. Mesha natives are said to lead with courage and impatience in equal measure.',
-        health: {
-          dos: ['Get your energy out through daily exercise or sport', 'Warm up properly before any physical activity', 'Get enough sleep even when you feel unstoppable', 'Address small injuries early instead of pushing through them'],
-          donts: ['Skip rest days just because you feel fine', 'Ignore headaches or blood pressure warning signs', 'Let anger and impatience spike your stress levels', 'Rush into intense workouts without preparation'] },
-        wealth: {
-          dos: ['Set a cooling-off period before big purchases', 'Keep an emergency fund for impulsive moments', 'Channel competitive drive into building a side income', 'Review your spending weekly, not just monthly'],
-          donts: ['Make investment decisions in the heat of the moment', 'Chase quick wins without a backup plan', 'Lend money impulsively to prove a point', 'Ignore the fine print because you\'re in a hurry'] },
-        caution: 'Mesha\'s biggest blind spot is impatience. Decisions made in a rush, whether about health or money, tend to need costly correction later. The instinct to act first and think later works well in emergencies, but rarely in planning.',
-        navigate: 'When things feel tough, Mesha natives do best by giving themselves a full day before reacting to setbacks. Physical movement, a run, a workout, a long walk, helps process frustration constructively rather than letting it drive impulsive choices.' },
-      { name: 'Vrishabha', english: 'Taurus', symbol: '♉', lord: 'Venus', element: 'Earth',
-        traits: 'Steady, patient and comfort-loving. Vrishabha natives value stability and the finer things in life.',
-        health: {
-          dos: ['Build a consistent daily routine', 'Balance comfort food with regular movement', 'Get regular throat and thyroid check-ups', 'Practice patience with your own body\'s pace of change'],
-          donts: ['Overindulge in rich or sugary food as a stress response', 'Stay sedentary for long stretches', 'Resist necessary lifestyle changes out of habit', 'Bottle up stress instead of addressing it'] },
-        wealth: {
-          dos: ['Automate savings into long-term instruments', 'Invest steadily in gold, property or index funds', 'Set clear long-term financial goals and revisit them yearly', 'Build financial security before comfort spending'],
-          donts: ['Let comfort spending quietly outpace saving', 'Hold onto a bad investment purely out of stubbornness', 'Avoid necessary financial conversations with family', 'Delay adapting your plan when circumstances change'] },
-        caution: 'Vrishabha\'s strength, steadiness, can tip into stubbornness. The reluctance to change course, even when the evidence says it\'s time, is the most common blind spot for this sign, both in health habits and financial decisions.',
-        navigate: 'During tough phases, Vrishabha natives find stability by returning to routine rather than abandoning it. Small, steady, tangible steps, one saved rupee, one healthy meal, rebuild confidence faster than big dramatic changes.' },
-      { name: 'Mithuna', english: 'Gemini', symbol: '♊', lord: 'Mercury', element: 'Air',
-        traits: 'Curious, communicative and quick-witted. Mithuna natives thrive on variety and conversation.',
-        health: {
-          dos: ['Keep a consistent sleep schedule despite a busy mind', 'Practice grounding routines like journaling or breathing exercises', 'Stay socially connected, it genuinely helps this sign', 'Take short breaks between tasks to avoid mental fatigue'],
-          donts: ['Let a racing mind rob you of proper sleep', 'Multitask through meals or rest periods', 'Ignore nervous tension building up over time', 'Overcommit socially until you\'re running on empty'] },
-        wealth: {
-          dos: ['Diversify income streams deliberately, not randomly', 'Track multiple accounts with a simple, consistent system', 'Finish one financial goal before starting the next', 'Learn continuously, but apply what you learn'],
-          donts: ['Jump between investment ideas without following through', 'Let curiosity turn into impulsive, unresearched bets', 'Overshare financial plans before they\'re finalised', 'Sign up for too many subscriptions or commitments at once'] },
-        caution: 'Mithuna\'s scattered energy is both a gift and a risk. New ideas come easily, but follow-through is the real challenge. The biggest blind spot is starting many things and finishing few, in health routines and in money matters alike.',
-        navigate: 'When life feels chaotic, Mithuna natives benefit from picking just one priority at a time instead of juggling everything. Writing things down, a journal, a budget sheet, a simple to-do list, turns mental noise into manageable steps.' },
-      { name: 'Karka', english: 'Cancer', symbol: '♋', lord: 'Moon', element: 'Water',
-        traits: 'Nurturing, emotional and deeply attached to home and family. Karka natives feel everything intensely.',
-        health: {
-          dos: ['Keep an eye on digestion, it often reflects emotional state', 'Build a calming bedtime routine', 'Talk through emotions instead of holding them in', 'Prioritise time with family and close friends'],
-          donts: ['Skip meals or overeat when stressed', 'Let mood swings disrupt your sleep', 'Isolate yourself when feeling low', 'Ignore physical symptoms that follow emotional stress'] },
-        wealth: {
-          dos: ['Build a strong emergency fund for family security', 'Save with a clear purpose, like home or family goals', 'Discuss money openly with people you trust', 'Balance generosity with your own financial safety net'],
-          donts: ['Let emotional decisions drive major financial choices', 'Overspend on family or loved ones beyond your means', 'Avoid checking your finances when you\'re anxious about them', 'Keep financial worries entirely to yourself'] },
-        caution: 'Karka feels everything deeply, and money and health decisions made in an emotional low point are rarely the best ones. The tendency to retreat inward during stress, rather than reach out, is this sign\'s biggest blind spot.',
-        navigate: 'During hard times, Karka natives recover best by leaning on family and close friends rather than withdrawing. A familiar routine, home-cooked food, a quiet evening with loved ones, restores emotional balance faster than facing things alone.' },
-      { name: 'Simha', english: 'Leo', symbol: '♌', lord: 'Sun', element: 'Fire',
-        traits: 'Confident, generous and a natural leader. Simha natives like to shine and be recognised.',
-        health: {
-          dos: ['Get regular heart health check-ups', 'Balance your active, high-energy lifestyle with proper rest', 'Take care of your back and spine as you age', 'Let yourself rest without feeling like you\'re falling behind'],
-          donts: ['Push through exhaustion to maintain appearances', 'Ignore early warning signs because you feel invincible', 'Let ego stop you from asking for medical help', 'Overexert yourself trying to prove a point'] },
-        wealth: {
-          dos: ['Invest in your own skills and visibility', 'Save a fixed portion before status spending', 'Negotiate confidently, it\'s a genuine strength', 'Celebrate wins with a budget in mind'],
-          donts: ['Overspend to maintain an image', 'Let pride prevent you from cutting losses', 'Avoid budgeting because it feels unglamorous', 'Take financial advice personally instead of practically'] },
-        caution: 'Simha\'s confidence is magnetic, but the need for recognition can quietly drive both health risks, like overexertion, and financial ones, like status spending. The blind spot here is mistaking appearance for actual security.',
-        navigate: 'In tough periods, Simha natives do best by stepping back from the spotlight rather than pushing harder to prove themselves. Quiet, private consistency, taking care of health and finances away from an audience, rebuilds strength more reliably than a dramatic comeback.' },
-      { name: 'Kanya', english: 'Virgo', symbol: '♍', lord: 'Mercury', element: 'Earth',
-        traits: 'Analytical, detail-oriented and practical. Kanya natives are natural planners and perfectionists.',
-        health: {
-          dos: ['Build a sustainable routine rather than a perfect one', 'Watch for stress-related digestive issues', 'Schedule rest as deliberately as you schedule work', 'Practice self-compassion, not just self-improvement'],
-          donts: ['Let perfectionism delay basic health decisions', 'Skip meals or sleep chasing productivity', 'Criticise yourself harshly for small setbacks', 'Ignore stress because it isn\'t "serious" yet'] },
-        wealth: {
-          dos: ['Keep a detailed, realistic budget', 'Automate the parts of saving you tend to overanalyse', 'Trust a good financial plan once it\'s made', 'Review, but don\'t obsessively re-check, your finances'],
-          donts: ['Delay decisions chasing the "perfect" option', 'Nitpick small expenses while missing bigger patterns', 'Take on too much financial responsibility for others', 'Let anxiety about money stop you from enjoying it'] },
-        caution: 'Kanya\'s attention to detail is a real strength, but it can tip into paralysis by analysis. The biggest blind spot is delaying action, on health or money, while waiting for a level of certainty that rarely arrives.',
-        navigate: 'When things go wrong, Kanya natives recover best by breaking the problem into small, concrete steps rather than trying to solve everything at once. A simple checklist, done imperfectly, beats a perfect plan that never starts.' },
-      { name: 'Tula', english: 'Libra', symbol: '♎', lord: 'Venus', element: 'Air',
-        traits: 'Diplomatic, fair-minded and relationship-focused. Tula natives seek balance in everything.',
-        health: {
-          dos: ['Keep a steady, balanced daily routine', 'Pay attention to kidney and lower-back health', 'Make health decisions with a deadline, not endlessly', 'Surround yourself with calm, supportive company'],
-          donts: ['Let indecision delay necessary check-ups or treatment', 'Avoid conflict even when it\'s affecting your wellbeing', 'Overcommit socially at the cost of rest', 'Neglect your own needs while balancing everyone else\'s'] },
-        wealth: {
-          dos: ['Choose financial partners and co-investors carefully', 'Set a firm deadline for financial decisions', 'Split shared expenses clearly and early', 'Invest in things that bring genuine, lasting balance'],
-          donts: ['Over-rely on a partner for financial decisions', 'Delay decisions trying to please everyone involved', 'Overspend on aesthetics or social appearances', 'Avoid difficult money conversations to keep the peace'] },
-        caution: 'Tula\'s search for balance can become indecision when it matters most. The biggest blind spot is avoiding a hard choice, about health or money, for so long that the decision gets made by default, often not in your favour.',
-        navigate: 'During tough times, Tula natives do best by seeking one trusted, honest opinion, rather than endless outside input. A single clear conversation, followed by a firm decision, works better than weighing every possible option forever.' },
-      { name: 'Vrishchika', english: 'Scorpio', symbol: '♏', lord: 'Mars', element: 'Water',
-        traits: 'Intense, resourceful and deeply private. Vrishchika natives pursue what they want with total focus.',
-        health: {
-          dos: ['Find a healthy outlet for intensity, sport, art or work', 'Get regular check-ups even when you feel in control', 'Talk about stress instead of internalising it', 'Watch for signs of burnout hidden behind focus'],
-          donts: ['Suppress stress until it shows up physically', 'Avoid medical advice out of a need for control', 'Isolate yourself when working through difficulty', 'Push your body past its limits to prove resilience'] },
-        wealth: {
-          dos: ['Research investments thoroughly before committing', 'Talk openly about money with family', 'Use your instinct for opportunity, but verify it', 'Build a private but honest financial plan'],
-          donts: ['Hide financial troubles instead of addressing them', 'Let suspicion damage useful financial relationships', 'Make secretive, high-risk moves without a backup plan', 'Hold onto old financial resentments that cloud judgement'] },
-        caution: 'Vrishchika\'s intensity and privacy are strengths, but secrecy about struggles, health or financial, tends to make problems worse before they\'re solved. The biggest blind spot is handling everything alone when support is available.',
-        navigate: 'In hard times, Vrishchika natives recover fastest by choosing one trusted person to be fully honest with, rather than carrying the weight alone. Once the intensity has an outlet, a conversation, a workout, focused work, clarity tends to follow.' },
-      { name: 'Dhanu', english: 'Sagittarius', symbol: '♐', lord: 'Jupiter', element: 'Fire',
-        traits: 'Optimistic, adventurous and philosophical. Dhanu natives are drawn to travel, learning and big ideas.',
-        health: {
-          dos: ['Stay active through movement you genuinely enjoy', 'Care for hip and joint mobility, especially with age', 'Set a realistic plan alongside your big goals', 'Get enough rest between adventures'],
-          donts: ['Ignore your body\'s limits chasing the next big thing', 'Ignore the fine print on health commitments or treatments', 'Let restlessness become chronic overcommitment', 'Skip follow-through on health routines once excitement fades'] },
-        wealth: {
-          dos: ['Set a travel and learning budget in advance', 'Balance optimism with a concrete financial plan', 'Follow through on financial commitments you\'ve made', 'Save before, not after, the next big adventure'],
-          donts: ['Over-promise financially and under-deliver', 'Ignore fine print on big commitments', 'Let big-picture optimism replace practical planning', 'Abandon a financial plan the moment it feels restrictive'] },
-        caution: 'Dhanu\'s optimism is genuinely valuable, but it can outpace planning, both for health and money. The biggest blind spot is assuming things will work out without putting a concrete plan behind that belief.',
-        navigate: 'When times get tough, Dhanu natives do best by picking one grounded, practical goal and seeing it through, rather than searching for the next big leap. A little structure, even briefly, restores the confidence to explore again later.' },
-      { name: 'Makara', english: 'Capricorn', symbol: '♑', lord: 'Saturn', element: 'Earth',
-        traits: 'Disciplined, ambitious and patient. Makara natives play the long game and rarely cut corners.',
-        health: {
-          dos: ['Take joint and bone health seriously, especially over time', 'Schedule deliberate rest, not just deserved rest', 'Balance ambition with regular health check-ups', 'Allow yourself to enjoy progress along the way, not just the end goal'],
-          donts: ['Overwork at the cost of basic health needs', 'Delay medical care because you\'re "too busy"', 'Treat rest as something you have to earn', 'Be overly hard on yourself for normal setbacks'] },
-        wealth: {
-          dos: ['Build long-term retirement and investment plans early', 'Let consistent saving do the heavy lifting over time', 'Reward yourself occasionally for earned progress', 'Review long-term plans periodically, not just once'],
-          donts: ['Delay enjoying earned success indefinitely', 'Equate self-worth purely with financial achievement', 'Be overly rigid with loved ones about money', 'Postpone necessary spending, like health care, to save more'] },
-        caution: 'Makara\'s discipline is a genuine strength, but it can tip into overwork and self-denial. The biggest blind spot is treating rest and enjoyment as rewards to be earned later, rather than as ongoing needs.',
-        navigate: 'During difficult periods, Makara natives do best by trusting the long-term plan they\'ve already built rather than working even harder in response to setbacks. Deliberate, scheduled downtime, not just powering through, is what actually restores capacity.' },
-      { name: 'Kumbha', english: 'Aquarius', symbol: '♒', lord: 'Saturn', element: 'Air',
-        traits: 'Independent, inventive and community-minded. Kumbha natives think differently and value causes over convention.',
-        health: {
-          dos: ['Keep a steady sleep-wake cycle despite an unconventional lifestyle', 'Stay connected to a community or support network', 'Care for circulation and nervous system health with regular movement', 'Balance independent thinking with practical routine'],
-          donts: ['Isolate yourself when stressed or overwhelmed', 'Let an unconventional schedule undermine basic rest', 'Dismiss practical health advice because it feels ordinary', 'Neglect routine check-ups in favour of bigger-picture thinking'] },
-        wealth: {
-          dos: ['Build a simple, consistent financial routine', 'Explore unconventional income ideas, but structure them', 'Stay connected to people who can offer practical financial advice', 'Track progress on ideas before scaling them up'],
-          donts: ['Chase every new trend without follow-through', 'Neglect practical planning for the sake of ideals', 'Avoid conventional financial tools purely on principle', 'Isolate yourself from financial advice that feels "too mainstream"'] },
-        caution: 'Kumbha\'s independent thinking is a real strength, but it can drift into avoiding structure altogether, in health routines and in money matters. The biggest blind spot is dismissing the ordinary and practical in favour of the different and exciting.',
-        navigate: 'In tough times, Kumbha natives do best by staying connected to their community rather than withdrawing into independence. A little borrowed structure, a friend\'s routine, a simple budgeting tool, can steady things until your own systems catch up.' },
-      { name: 'Meena', english: 'Pisces', symbol: '♓', lord: 'Jupiter', element: 'Water',
-        traits: 'Compassionate, imaginative and intuitive. Meena natives feel deeply and often put others first.',
-        health: {
-          dos: ['Prioritise enough sleep, it affects this sign deeply', 'Practice grounding activities like walking, music or art', 'Set clear boundaries around how much you give to others', 'Pay attention to early signs of stress or escapism'],
-          donts: ['Use escapism as a substitute for addressing stress', 'Neglect sleep when feeling overwhelmed', 'Absorb others\' stress as if it were your own', 'Ignore your own needs while caring for everyone else\'s'] },
-        wealth: {
-          dos: ['Automate savings so it doesn\'t rely on willpower alone', 'Set clear boundaries around lending and giving', 'Get a second opinion before big financial decisions', 'Keep finances simple and easy to track'],
-          donts: ['Lend or give beyond what you can afford', 'Avoid difficult financial conversations', 'Make financial decisions based on guilt or sympathy alone', 'Let vague, unclear finances create hidden stress'] },
-        caution: 'Meena\'s compassion is a genuine gift, but it often comes at the cost of personal boundaries, financial and emotional. The biggest blind spot is giving so much to others that your own health and financial security quietly suffer.',
-        navigate: 'During hard times, Meena natives recover best through gentle structure, a simple routine, a small automated saving habit, rather than relying on willpower alone. Creative or calming outlets, music, art, time near water, help process difficult emotions constructively.' }
-    ];
-
-    /* ── Nakshatra (birth star) content library ────────────────────────── */
-    var NAKSHATRAS = [
-      { name: 'Ashwini', lord: 'Ketu', deity: 'Ashwini Kumaras', trait: 'Quick, pioneering energy: natural healers and fast starters.' },
-      { name: 'Bharani', lord: 'Venus', deity: 'Yama', trait: 'Intense determination and a strong sense of responsibility.' },
-      { name: 'Krittika', lord: 'Sun', deity: 'Agni', trait: 'Sharp, purifying focus. Natives cut through confusion with clarity.' },
-      { name: 'Rohini', lord: 'Moon', deity: 'Brahma', trait: 'Charming and creative, with a deep appreciation for beauty and growth.' },
-      { name: 'Mrigashira', lord: 'Mars', deity: 'Soma', trait: 'Searching, curious energy, always seeking the next discovery.' },
-      { name: 'Ardra', lord: 'Rahu', deity: 'Rudra', trait: 'Transformative and intense: growth often follows a storm.' },
-      { name: 'Punarvasu', lord: 'Jupiter', deity: 'Aditi', trait: 'Renewal and optimism, with a natural ability to bounce back.' },
-      { name: 'Pushya', lord: 'Saturn', deity: 'Brihaspati', trait: 'Nurturing and disciplined, considered one of the most steady, supportive placements.' },
-      { name: 'Ashlesha', lord: 'Mercury', deity: 'Nagas', trait: 'Perceptive and strategic, with a magnetic, hard-to-read presence.' },
-      { name: 'Magha', lord: 'Ketu', deity: 'Pitrs', trait: 'A strong connection to heritage and legacy, with natural leadership instincts.' },
-      { name: 'Purva Phalguni', lord: 'Venus', deity: 'Bhaga', trait: 'Warm, pleasure-loving energy with a love for creativity and relaxation.' },
-      { name: 'Uttara Phalguni', lord: 'Sun', deity: 'Aryaman', trait: 'Dependable and generous. Natives make loyal partners and friends.' },
-      { name: 'Hasta', lord: 'Moon', deity: 'Savitar', trait: 'Skilled hands and a practical mind, natural at crafting and problem-solving.' },
-      { name: 'Chitra', lord: 'Mars', deity: 'Tvashtar', trait: 'A love of beauty and design. Natives often stand out visually.' },
-      { name: 'Swati', lord: 'Rahu', deity: 'Vayu', trait: 'Independent and adaptable, moving through life like the wind.' },
-      { name: 'Vishakha', lord: 'Jupiter', deity: 'Indra-Agni', trait: 'Goal-driven and determined, with a competitive streak.' },
-      { name: 'Anuradha', lord: 'Saturn', deity: 'Mitra', trait: 'Loyal and cooperative, building deep, lasting friendships.' },
-      { name: 'Jyeshtha', lord: 'Mercury', deity: 'Indra', trait: 'A natural protector, often carrying responsibility for others.' },
-      { name: 'Mula', lord: 'Ketu', deity: 'Nirriti', trait: 'Deep, investigative energy, drawn to root causes and hard truths.' },
-      { name: 'Purva Ashadha', lord: 'Venus', deity: 'Apas', trait: 'An invincible spirit and persuasive energy, hard to discourage once decided.' },
-      { name: 'Uttara Ashadha', lord: 'Sun', deity: 'Vishvadevas', trait: 'Steady, long-term achievers with quiet, lasting influence.' },
-      { name: 'Shravana', lord: 'Moon', deity: 'Vishnu', trait: 'A natural listener and learner, connecting well through communication.' },
-      { name: 'Dhanishta', lord: 'Mars', deity: 'Vasus', trait: 'Energetic and rhythmic, often drawn to music, wealth and group activities.' },
-      { name: 'Shatabhisha', lord: 'Rahu', deity: 'Varuna', trait: 'Independent healer energy, valuing solitude and unconventional solutions.' },
-      { name: 'Purva Bhadrapada', lord: 'Jupiter', deity: 'Aja Ekapada', trait: 'Intense idealism, passionate about transformation and depth.' },
-      { name: 'Uttara Bhadrapada', lord: 'Saturn', deity: 'Ahir Budhnya', trait: 'Calm depth and quiet wisdom, comfortable with life\'s slower rhythms.' },
-      { name: 'Revati', lord: 'Mercury', deity: 'Pushan', trait: 'Gentle, nurturing energy, like a natural guide who helps others reach their destination.' }
-    ];
-
-    var state = { dob: '', birthTime: '', city: null };
-
-    /* ── Astro calculation engine ──────────────────────────────────────── */
-    /* Uses the astronomy-engine library for real Sun/Moon/sidereal-time    */
-    /* positions, then applies the Lahiri ayanamsa (approximate, anchored   */
-    /* at J2000 ≈ 23.8537°, advancing at the general precession rate) to    */
-    /* convert to sidereal (Vedic) longitudes. The Ascendant uses the       */
-    /* standard tropical-to-Lagna formula from local sidereal time,         */
-    /* latitude and the ecliptic's true obliquity.                         */
-
-    function lahiriAyanamsa(utcDate) {
-      var msPerYear = 365.25 * 24 * 3600 * 1000;
-      var decimalYear = 2000.0 + (utcDate.getTime() - Date.UTC(2000, 0, 1, 12, 0, 0)) / msPerYear;
-      return 23.85370 + (decimalYear - 2000.0) * (50.2388475 / 3600);
-    }
-
-    function siderealLongitude(tropicalLon, ayanamsa) {
-      return ((tropicalLon - ayanamsa) % 360 + 360) % 360;
-    }
-
-    function rashiIndexFromLongitude(siderealLon) {
-      return Math.floor(siderealLon / 30) % 12;
-    }
-
-    function nakshatraFromLongitude(siderealLon) {
-      var span = 360 / 27;
-      var idx = Math.floor(siderealLon / span) % 27;
-      var within = siderealLon - idx * span;
-      var pada = Math.floor(within / (span / 4)) + 1;
-      return { index: idx, pada: pada };
-    }
-
-    /* The Ascendant is found numerically rather than via a hand-derived      */
-    /* trig formula: for a fixed birth moment, scan ecliptic longitude       */
-    /* around the full circle, convert each point to RA/Dec (a simple,       */
-    /* standard ecliptic-to-equatorial rotation) and feed it through         */
-    /* astronomy-engine's own tested Horizon() transform to get altitude/    */
-    /* azimuth. The Ascendant is the ecliptic point whose altitude crosses   */
-    /* zero on the eastern side of the sky (azimuth 0-180°) - that's the     */
-    /* literal definition of "rising on the horizon", so this sidesteps any  */
-    /* risk of a sign/quadrant error in a memorized closed-form formula.     */
-
-    function eclipticToEquatorialOfDate(lambdaDeg, obliquityDeg) {
-      var lambda = lambdaDeg * Math.PI / 180;
-      var eps = obliquityDeg * Math.PI / 180;
-      var raRad = Math.atan2(Math.sin(lambda) * Math.cos(eps), Math.cos(lambda));
-      var raDeg = (raRad * 180 / Math.PI + 360) % 360;
-      var decDeg = Math.asin(Math.sin(lambda) * Math.sin(eps)) * 180 / Math.PI;
-      return { raHours: raDeg / 15, decDeg: decDeg };
-    }
-
-    function horizonForEclipticLongitude(lambdaDeg, time, observer, obliquityDeg) {
-      var eq = eclipticToEquatorialOfDate(lambdaDeg, obliquityDeg);
-      return Astronomy.Horizon(time, observer, eq.raHours, eq.decDeg, 'normal');
-    }
-
-    function computeAscendantTropical(time, observer, obliquityDeg) {
-      var step = 2;
-      var crossings = [];
-      var prevLambda = 0;
-      var prevAlt = horizonForEclipticLongitude(0, time, observer, obliquityDeg).altitude;
-      for (var lam = step; lam <= 360; lam += step) {
-        var alt = horizonForEclipticLongitude(lam, time, observer, obliquityDeg).altitude;
-        if ((prevAlt < 0 && alt >= 0) || (prevAlt >= 0 && alt < 0)) {
-          var frac = (0 - prevAlt) / (alt - prevAlt);
-          var lamCross = prevLambda + frac * (lam - prevLambda);
-          crossings.push(((lamCross % 360) + 360) % 360);
-        }
-        prevAlt = alt;
-        prevLambda = lam;
-      }
-      for (var i = 0; i < crossings.length; i++) {
-        var hor = horizonForEclipticLongitude(crossings[i], time, observer, obliquityDeg);
-        if (hor.azimuth >= 0 && hor.azimuth < 180) {
-          return crossings[i];
-        }
-      }
-      return crossings.length ? crossings[0] : 0;
-    }
-
-    function computeAstroProfile(dob, timeStr, city) {
-      var parts = dob.split('-').map(Number);
-      var tparts = timeStr.split(':').map(Number);
-      var utcDate = new Date(Date.UTC(parts[0], parts[1] - 1, parts[2], tparts[0], tparts[1], 0));
-      utcDate = new Date(utcDate.getTime() - (5 * 60 + 30) * 60 * 1000); // IST -> UTC
-
-      var time = Astronomy.MakeTime(utcDate);
-      var moon = Astronomy.EclipticGeoMoon(time);
-      var ayanamsa = lahiriAyanamsa(utcDate);
-      var moonSidereal = siderealLongitude(moon.lon, ayanamsa);
-      var rashiIdx = rashiIndexFromLongitude(moonSidereal);
-      var nak = nakshatraFromLongitude(moonSidereal);
-
-      var observer = new Astronomy.Observer(city.lat, city.lon, 0);
-      var obliquity = Astronomy.e_tilt(time).tobl;
-      var ascTropical = computeAscendantTropical(time, observer, obliquity);
-      var ascSidereal = siderealLongitude(ascTropical, ayanamsa);
-      var lagnaIdx = rashiIndexFromLongitude(ascSidereal);
-
-      return { rashiIdx: rashiIdx, nakshatraIdx: nak.index, nakshatraPada: nak.pada, lagnaIdx: lagnaIdx };
-    }
+    var state = { dob: '', birthTime: '', city: null, gothram: '', notes: '', memberId: null };
 
     /* ── UI wiring ──────────────────────────────────────────────────────── */
 
@@ -1143,7 +945,7 @@
       errEl.textContent = '';
 
       try {
-        var profile = computeAstroProfile(state.dob, state.birthTime, state.city);
+        var profile = RasiCalc.computeAstroProfile(state.dob, state.birthTime, state.city);
         renderResults(profile);
         scheduleSave();
       } catch (e) {
@@ -1173,39 +975,93 @@
       document.getElementById('dobInput').addEventListener('change', function () {
         state.dob = this.value;
         tryCalculate(false);
+        scheduleSave();
       });
       document.getElementById('birthTimeInput').addEventListener('change', function () {
         state.birthTime = this.value;
         tryCalculate(false);
+        scheduleSave();
       });
       document.getElementById('cityInput').addEventListener('input', function () {
         updateCityFromInput(true);
         tryCalculate(false);
+        scheduleSave();
+      });
+      document.getElementById('gothramInput').addEventListener('input', function () {
+        state.gothram = this.value;
+        scheduleSave();
+      });
+      document.getElementById('notesInput').addEventListener('input', function () {
+        state.notes = this.value;
+        scheduleSave();
       });
       document.getElementById('calcBtn').addEventListener('click', function () {
         updateCityFromInput(true);
         tryCalculate(true);
+        scheduleSave();
       });
     }
 
-    /* ── Persistence, mirroring fire_plan_inputs / health_inputs ───────── */
+    function escapeHtml(s) {
+      return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+      });
+    }
 
-    async function loadSavedInputs() {
-      var { data, error } = await supabaseClient.from('astrology_inputs').select('*').maybeSingle();
+    /* ── Member resolution ──────────────────────────────────────────────── */
+    /* astrology_inputs used to be one row per user; it's now one row per   */
+    /* family_members row (member_id, unique when set). A page visit with   */
+    /* no ?member= in the URL resolves to (or creates) the user's own       */
+    /* "Self" member and redirects there, so existing single-profile users  */
+    /* see no change - their old data just becomes Self's profile.         */
+
+    async function ensureSelfMember() {
+      var members = await HealthLog.listMembers();
+      var self = members.filter(function (m) { return m.relation === 'self'; })[0];
+      if (self) return self;
+
+      self = await HealthLog.addMember({ name: 'Me', relation: 'self' });
+
+      // One-time adoption of a legacy pre-member astrology_inputs row.
+      var { error } = await supabaseClient.from('astrology_inputs').update({ member_id: self.id }).is('member_id', null);
+      if (error) console.error('Could not adopt legacy astrology inputs into Self member', error);
+
+      return self;
+    }
+
+    function renderMemberSwitcher(members, currentMemberId) {
+      var wrap = document.getElementById('rasiMemberSwitcher');
+      var chips = members.map(function (m) {
+        var active = m.id === currentMemberId ? ' active' : '';
+        return '<a class="rasi-member-chip' + active + '" href="astrology.html?member=' + m.id + '">' +
+          escapeHtml(m.name) + ' <span class="rmc-relation">' + escapeHtml(m.relation) + '</span></a>';
+      });
+      chips.push('<a class="rasi-member-chip add-chip" href="family-members.html">+ Add Family Member</a>');
+      wrap.innerHTML = chips.join('');
+    }
+
+    /* ── Persistence, one row per member_id ────────────────────────────── */
+
+    async function loadSavedInputs(memberId) {
+      var { data, error } = await supabaseClient.from('astrology_inputs').select('*').eq('member_id', memberId).maybeSingle();
       if (error) { console.error('Could not load saved astrology inputs', error); return null; }
       return data;
     }
 
     async function saveInputs() {
+      if (!state.memberId) return;
       var payload = {
+        member_id: state.memberId,
         dob: state.dob || null,
         birth_time: state.birthTime || null,
         birth_city: state.city ? (state.city.name + ', ' + state.city.state) : null,
         birth_lat: state.city ? state.city.lat : null,
         birth_lon: state.city ? state.city.lon : null,
+        gothram: state.gothram || null,
+        notes: state.notes || null,
         updated_at: new Date().toISOString()
       };
-      var { error } = await supabaseClient.from('astrology_inputs').upsert(payload, { onConflict: 'user_id' });
+      var { error } = await supabaseClient.from('astrology_inputs').upsert(payload, { onConflict: 'member_id' });
       if (error) console.error('Could not save astrology inputs', error);
     }
 
@@ -1222,17 +1078,43 @@
         state.city = { name: saved.birth_city.split(',')[0].trim(), state: saved.birth_city.split(',').slice(1).join(',').trim(), lat: saved.birth_lat, lon: saved.birth_lon };
         document.getElementById('cityInput').value = saved.birth_city;
       }
+      if (saved.gothram) { state.gothram = saved.gothram; document.getElementById('gothramInput').value = saved.gothram; }
+      if (saved.notes) { state.notes = saved.notes; document.getElementById('notesInput').value = saved.notes; }
     }
 
     (async function init() {
       var user = await requireAuth('login.html');
       if (!user) return;
 
+      var members = await HealthLog.listMembers();
+      var memberId = new URLSearchParams(window.location.search).get('member');
+
+      if (!memberId) {
+        var self = members.filter(function (m) { return m.relation === 'self'; })[0] || await ensureSelfMember();
+        window.location.replace('astrology.html?member=' + self.id);
+        return;
+      }
+
+      if (!members.some(function (m) { return m.id === memberId; })) {
+        // Unknown or someone else's member id - fall back to Self rather than erroring.
+        var fallback = members.filter(function (m) { return m.relation === 'self'; })[0] || await ensureSelfMember();
+        window.location.replace('astrology.html?member=' + fallback.id);
+        return;
+      }
+
+      state.memberId = memberId;
+      renderMemberSwitcher(members, memberId);
+
+      var currentMember = members.filter(function (m) { return m.id === memberId; })[0];
+      document.querySelector('.page-head h2').textContent = currentMember.relation === 'self'
+        ? 'Rashi, Nakshatra & Lagna Finder'
+        : currentMember.name + "'s Rashi, Nakshatra & Lagna";
+
       populateCityList();
       buildZodiacRing();
       wireInputs();
 
-      var saved = await loadSavedInputs();
+      var saved = await loadSavedInputs(memberId);
       if (saved) applySaved(saved);
 
       tryCalculate();

@@ -8,7 +8,7 @@
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#712B13">
-  <title>Will Document - EnrichMe</title>
+  <title>Family Tree - EnrichMe</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -30,7 +30,6 @@
     .topbar-left { display: flex; align-items: center; gap: 0.65rem; }
     .topbar-mobile-brand { display: none; }
 
-    /* Sidebar */
     .sidebar { background: #ffffff; border-right: 1px solid #e2e8f0; display: flex; flex-direction: column; padding: 1.5rem 1.25rem; }
     .sidebar-logo { display: flex; align-items: center; gap: 0.65rem; font-size: 1.1rem; font-weight: 800; margin-bottom: 2rem; padding: 0 0.25rem; color: #712B13; }
     .sidebar-logo-icon { width: 30px; height: 30px; flex-shrink: 0; }
@@ -40,19 +39,11 @@
     .sidebar-nav a, .sidebar-nav .nav-group-head { display: flex; align-items: center; gap: 0.75rem; padding: 0.7rem 0.75rem; border-radius: 0.6rem; font-size: 0.9rem; font-weight: 500; color: #364752; }
     .sidebar-nav a:hover, .sidebar-nav .nav-group-head:hover { background: #f1f5f9; }
     .sidebar-nav a.active { background: #0f172a; color: #ffffff; font-weight: 600; }
-    .sidebar-nav .nav-group-head.open { background: #f1f5f9; font-weight: 700; }
-    .sidebar-nav .nav-group-head.active { background: #0f172a; color: #ffffff; font-weight: 600; }
-    .sidebar-nav .nav-group-head.active .nav-chevron { color: rgba(255,255,255,0.6); }
     .sidebar-nav .nav-icon { width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
     .sidebar-nav .nav-icon .tabler-icon { width: 18px; height: 18px; }
     .sidebar-nav .nav-label { flex: 1; }
-    .sidebar-nav .nav-chevron { color: #94a3b8; font-size: 0.85rem; }
     .sidebar-nav .nav-section-label { font-size: 0.66rem; font-weight: 800; letter-spacing: 0.07em; text-transform: uppercase; color: #94a3b8; padding: 0.9rem 0.75rem 0.35rem; }
     .sidebar-nav .nav-section-label:first-of-type { padding-top: 0.2rem; }
-    .sidebar-subnav { display: flex; flex-direction: column; gap: 0.2rem; padding-left: 1.6rem; margin: 0.15rem 0 0.3rem; }
-    .sidebar-subnav a { display: flex; align-items: center; gap: 0.6rem; padding: 0.55rem 0.6rem; border-radius: 0.5rem; font-size: 0.85rem; font-weight: 500; color: #364752; }
-    .sidebar-subnav a:hover { background: #f1f5f9; }
-    .sidebar-subnav a.active { background: #0f172a; color: #fff; font-weight: 600; }
     .sidebar-spacer { flex: 1; }
     .feedback-card { background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 0.9rem; padding: 1.1rem; margin-top: 1.5rem; }
     .feedback-card .fc-icon { width: 32px; height: 32px; border-radius: 0.6rem; background: #eef2f7; display: flex; align-items: center; justify-content: center; font-size: 0.95rem; margin-bottom: 0.6rem; }
@@ -61,171 +52,109 @@
     .feedback-card a { display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; width: 100%; padding: 0.55rem; border: 1px solid #cbd5e1; border-radius: 0.5rem; font-size: 0.8rem; font-weight: 600; color: #364752; }
     .feedback-card a:hover { border-color: #10b981; color: #10b981; }
 
-    /* Main */
     .main { padding: 1.5rem 2.5rem 3rem; min-width: 0; }
     .topbar { display: flex; align-items: center; justify-content: space-between; padding-bottom: 1.25rem; border-bottom: 1px solid #e2e8f0; margin-bottom: 1.5rem; }
     .topbar h1 { font-size: 1.4rem; font-weight: 700; }
     .topbar-right { display: flex; align-items: center; gap: 0.85rem; }
-    .language-selector { display: flex; align-items: center; gap: 0.5rem; background: #ffffff; padding: 0.5rem 0.9rem; border-radius: 0.5rem; color: #51636f; border: 1px solid #e2e8f0; cursor: pointer; font-size: 0.85rem; }
     .user-menu { position: relative; list-style: none; }
     .user-menu > summary { cursor: pointer; list-style: none; width: 34px; height: 34px; border-radius: 50%; background: #eef2f7; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; font-size: 1rem; }
-    .user-menu > summary.user-avatar-initials { background: linear-gradient(135deg, #0ea5e9, #10b981); color: #fff; font-weight: 800; font-size: 0.82rem; letter-spacing: 0.02em; border-color: transparent; }
     .user-menu > summary::-webkit-details-marker { display: none; }
     .user-menu-panel { position: absolute; top: calc(100% + 0.6rem); right: 0; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 0.75rem; box-shadow: 0 10px 30px rgba(15,23,42,0.12); padding: 0.4rem; min-width: 150px; z-index: 20; }
     .user-menu-panel a { display: block; padding: 0.55rem 0.7rem; border-radius: 0.5rem; font-size: 0.85rem; color: #364752; font-weight: 500; }
     .user-menu-panel a:hover { background: #f1f5f9; color: #10b981; }
 
-    .page-head { margin-bottom: 1.5rem; max-width: 68ch; }
-    .page-head h2 { font-size: 1.6rem; font-weight: 800; margin-bottom: 0.3rem; }
+    .page-head { margin-bottom: 1.5rem; max-width: 62ch; }
     .page-head p { color: #64748b; font-size: 0.9rem; line-height: 1.55; }
 
-    .prefill-note { display: none; align-items: center; gap: 0.5rem; background: #f0fdf7; border: 1px solid #bbf7d0; color: #047857; font-size: 0.82rem; padding: 0.6rem 0.9rem; border-radius: 0.6rem; margin-bottom: 1.5rem; }
-    .prefill-note.show { display: flex; }
+    .section-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.8rem; }
+    .section-head h3 { font-size: 1.05rem; font-weight: 800; }
+    .btn-primary { padding: 0.6rem 1.1rem; border: none; border-radius: 0.6rem; background: linear-gradient(135deg, #0ea5e9, #10b981); color: #fff; font-size: 0.85rem; font-weight: 700; cursor: pointer; }
+    .btn-secondary { padding: 0.55rem 1rem; border: 1px solid #cbd5e1; border-radius: 0.6rem; background: #fff; color: #364752; font-size: 0.83rem; font-weight: 600; cursor: pointer; }
+    .btn-danger-text { color: #dc2626; font-size: 0.78rem; font-weight: 700; cursor: pointer; background: none; border: none; }
 
-    .wp-card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 1.25rem; padding: 1.75rem 2rem; box-shadow: 0 14px 36px rgba(15, 23, 42, 0.05); margin-bottom: 1.5rem; }
-    .wp-card-eyebrow { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #10b981; margin-bottom: 0.35rem; }
-    .wp-card-title { font-size: 1.35rem; font-weight: 800; margin-bottom: 0.5rem; }
-    .wp-card-desc { color: #64748b; font-size: 0.9rem; line-height: 1.55; margin-bottom: 1.5rem; }
+    .empty-state { background: #ffffff; border: 1px dashed #cbd5e1; border-radius: 1rem; padding: 3rem 1.5rem; text-align: center; margin-bottom: 1.5rem; }
+    .empty-state-icon { font-size: 1.8rem; margin-bottom: 0.75rem; }
+    .empty-state p { color: #64748b; font-size: 0.9rem; margin-bottom: 1.25rem; }
 
-    .btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.85rem 1.5rem; border: none; border-radius: 0.7rem; background: linear-gradient(135deg, #0ea5e9, #10b981); color: #fff; font-size: 0.95rem; font-weight: 700; cursor: pointer; }
-    .btn-primary:hover { opacity: 0.92; }
-    .btn-secondary { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.7rem 1.3rem; border: 1px solid #cbd5e1; border-radius: 0.6rem; background: #fff; color: #364752; font-size: 0.88rem; font-weight: 600; cursor: pointer; }
-    .btn-secondary:hover { border-color: #94a3b8; }
+    .date-list { display: flex; flex-direction: column; gap: 0.6rem; }
+    .date-row { display: flex; align-items: center; gap: 1rem; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 0.9rem; padding: 0.85rem 1.1rem; box-shadow: 0 2px 10px rgba(15,23,42,0.02); }
+    .date-badge { width: 52px; height: 52px; border-radius: 0.85rem; background: #fdf2f8; color: #be185d; display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0; }
+    .date-badge-day { font-size: 1.05rem; font-weight: 800; line-height: 1; }
+    .date-badge-month { font-size: 0.62rem; font-weight: 700; text-transform: uppercase; margin-top: 0.15rem; }
+    .date-main { flex: 1; min-width: 0; }
+    .date-name { font-size: 0.92rem; font-weight: 700; color: #0f172a; margin-bottom: 0.25rem; }
+    .date-sub { font-size: 0.78rem; color: #94a3b8; }
+    .date-owner { font-size: 0.72rem; color: #94a3b8; font-weight: 600; white-space: nowrap; }
+    .date-actions { display: flex; gap: 0.6rem; flex-shrink: 0; }
 
-    /* Split recap */
-    .split-recap { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-bottom: 0.5rem; }
-    .split-chip { display: inline-flex; align-items: center; gap: 0.4rem; background: #f1f5f9; border-radius: 999px; padding: 0.4rem 0.85rem; font-size: 0.85rem; font-weight: 600; color: #364752; }
-    .split-chip i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
-    .split-edit-link { font-size: 0.85rem; font-weight: 600; color: #059669; }
-    .split-edit-link:hover { text-decoration: underline; }
-
-    /* Will document form */
-    .wp-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.1rem; margin-bottom: 1.1rem; }
-    @media (max-width: 700px) { .wp-form-grid { grid-template-columns: 1fr; } }
-    .wp-field label { display: block; font-size: 0.82rem; font-weight: 700; color: #364752; margin-bottom: 0.4rem; }
-    .wp-field input, .wp-field textarea {
-      width: 100%; padding: 0.7rem 0.85rem; border: 1px solid #cbd5e1; border-radius: 0.6rem;
-      font-size: 0.9rem; font-family: inherit; color: #0f172a; background: #fff;
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.55); align-items: center; justify-content: center; z-index: 50; padding: 1rem; }
+    .modal-overlay.show { display: flex; }
+    .modal-box { background: #fff; border-radius: 1.1rem; padding: 1.6rem 1.75rem; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; }
+    .modal-box h3 { font-size: 1.1rem; font-weight: 800; margin-bottom: 1.1rem; }
+    .field-label { font-size: 0.83rem; font-weight: 600; color: #0f172a; margin-bottom: 0.4rem; display: block; }
+    .field-input, .field-select {
+      width: 100%; padding: 0.6rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 0.55rem;
+      font-size: 0.88rem; font-family: inherit; color: #0f172a; margin-bottom: 0.9rem; background: #fff;
     }
-    .wp-field input:focus, .wp-field textarea:focus { outline: none; border-color: #10b981; box-shadow: 0 0 0 2px rgba(16,185,129,0.15); }
-    .wp-field textarea { resize: vertical; min-height: 90px; }
-    .wp-field.full { grid-column: 1 / -1; }
+    .field-input:focus, .field-select:focus { outline: none; border-color: #10b981; box-shadow: 0 0 0 2px rgba(16,185,129,0.15); }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+    .modal-actions { display: flex; gap: 0.7rem; margin-top: 0.5rem; }
+    .modal-actions button { flex: 1; }
+    .form-error { font-size: 0.8rem; color: #dc2626; font-weight: 600; margin-bottom: 0.7rem; }
 
-    .will-preview {
-      background: #fffdf6;
-      border: 1px solid #f4e8c1;
-      border-radius: 0.9rem;
-      padding: 1.75rem 2rem;
-      font-family: Georgia, 'Times New Roman', serif;
-      font-size: 0.92rem;
-      line-height: 1.85;
-      color: #1f2937;
-      white-space: pre-wrap;
-      margin-bottom: 1.25rem;
-    }
-    .will-preview .blank { border-bottom: 1px solid #94a3b8; padding: 0 0.2rem; color: #94a3b8; }
-
-    .wp-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center; }
-    .copy-note { font-size: 0.82rem; color: #059669; font-weight: 600; display: none; align-items: center; gap: 0.4rem; }
-    .copy-note.show { display: inline-flex; }
-
-    .witness-callout {
-      display: flex; gap: 0.75rem; background: #fff8f0; border: 1px solid #f4d8b0;
-      border-radius: 0.7rem; padding: 1rem 1.25rem; margin-bottom: 1.25rem;
-      font-size: 0.85rem; color: #8a5a00; line-height: 1.6;
-    }
-
-    .wp-disclaimer { font-size: 0.8rem; color: #94a3b8; line-height: 1.6; }
-
-    /* Mobile sidebar (kept last so it wins the cascade over the base rules above) */
     @media (max-width: 860px) {
       .app-shell { grid-template-columns: 1fr; }
-
-      .sidebar {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        bottom: 0;
-        width: 280px;
-        max-width: 84vw;
-        z-index: 100;
-        box-shadow: 12px 0 32px rgba(15, 23, 42, 0.18);
-        overflow-y: auto;
-      }
-
+      .sidebar { display: none; position: fixed; top: 0; left: 0; bottom: 0; width: 280px; max-width: 84vw; z-index: 100; box-shadow: 12px 0 32px rgba(15, 23, 42, 0.18); overflow-y: auto; }
       .sidebar.open { display: flex; }
-
-      .sidebar-backdrop.open {
-        display: block;
-        position: fixed;
-        inset: 0;
-        background: rgba(15, 23, 42, 0.4);
-        z-index: 99;
-      }
-
-      .sidebar-toggle {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 40px;
-        height: 40px;
-        flex-shrink: 0;
-        border: 1px solid #e2e8f0;
-        border-radius: 0.5rem;
-        background: #ffffff;
-        color: #364752;
-        font-size: 1.15rem;
-        cursor: pointer;
-      }
-
-      .topbar-mobile-logo {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 30px;
-        height: 30px;
-        flex-shrink: 0;
-      }
-
+      .sidebar-backdrop.open { display: block; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.4); z-index: 99; }
+      .sidebar-toggle { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; flex-shrink: 0; border: 1px solid #e2e8f0; border-radius: 0.5rem; background: #ffffff; color: #364752; font-size: 1.15rem; cursor: pointer; }
+      .topbar-mobile-logo { display: flex; align-items: center; justify-content: center; width: 30px; height: 30px; flex-shrink: 0; }
       .topbar h1 { display: none; }
       .topbar-mobile-brand { display: block; font-size: 1.15rem; font-weight: 700; }
-      .language-selector { display: none; }
     }
 
     .mobile-bottom-nav { display: none; }
     @media (max-width: 860px) {
-      .mobile-bottom-nav {
-        display: flex;
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        background: #ffffff;
-        border-top: 1px solid #e2e8f0;
-        padding: 0.35rem 0.25rem calc(0.35rem + env(safe-area-inset-bottom));
-        z-index: 90;
-      }
-      .mobile-bottom-nav a {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 0.2rem;
-        padding: 0.3rem 0.2rem;
-        font-size: 0.64rem;
-        font-weight: 600;
-        color: #94a3b8;
-        text-decoration: none;
-      }
+      .mobile-bottom-nav { display: flex; position: fixed; bottom: 0; left: 0; right: 0; background: #ffffff; border-top: 1px solid #e2e8f0; padding: 0.35rem 0.25rem calc(0.35rem + env(safe-area-inset-bottom)); z-index: 90; }
+      .mobile-bottom-nav a { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 0.2rem; padding: 0.3rem 0.2rem; font-size: 0.64rem; font-weight: 600; color: #94a3b8; text-decoration: none; }
       .mobile-bottom-nav a .tabler-icon { width: 22px; height: 22px; }
       .mobile-bottom-nav a.active { color: #0f172a; }
       .main { padding-bottom: 5.5rem; }
     }
 
-    .menu-link { display: inline-flex; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 0.55rem; border: 1px solid #e2e8f0; background: #ffffff; color: #364752; flex-shrink: 0; }
-    .menu-link:hover { border-color: #94a3b8; color: #0f172a; }
-    .menu-link .tabler-icon { width: 20px; height: 20px; }
+    .btn-primary { padding: 0.6rem 1.1rem; border: none; border-radius: 0.6rem; background: linear-gradient(135deg, #0ea5e9, #10b981); color: #fff; font-size: 0.85rem; font-weight: 700; cursor: pointer; }
+    .btn-secondary { padding: 0.55rem 1rem; border: 1px solid #cbd5e1; border-radius: 0.6rem; background: #fff; color: #364752; font-size: 0.83rem; font-weight: 600; cursor: pointer; }
+    .btn-danger-text { color: #dc2626; font-size: 0.78rem; font-weight: 700; cursor: pointer; background: none; border: none; }
+    .section-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.8rem; }
+    .section-head h3 { font-size: 1.05rem; font-weight: 800; }
+    .page-head { margin-bottom: 1.5rem; max-width: 62ch; }
+    .page-head p { color: #64748b; font-size: 0.9rem; line-height: 1.55; }
+    .empty-state { background: #ffffff; border: 1px dashed #cbd5e1; border-radius: 1rem; padding: 3rem 1.5rem; text-align: center; margin-bottom: 1.5rem; }
+    .empty-state-icon { font-size: 1.8rem; margin-bottom: 0.75rem; }
+    .empty-state p { color: #64748b; font-size: 0.9rem; margin-bottom: 1.25rem; }
+    .form-error { font-size: 0.8rem; color: #dc2626; font-weight: 600; margin-bottom: 0.7rem; }
+    .field-label { font-size: 0.83rem; font-weight: 600; color: #0f172a; margin-bottom: 0.4rem; display: block; }
+    .field-input, .field-select { width: 100%; padding: 0.6rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 0.55rem; font-size: 0.88rem; font-family: inherit; color: #0f172a; margin-bottom: 0.9rem; background: #fff; }
+    .field-input:focus, .field-select:focus { outline: none; border-color: #10b981; box-shadow: 0 0 0 2px rgba(16,185,129,0.15); }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.55); align-items: center; justify-content: center; z-index: 50; padding: 1rem; }
+    .modal-overlay.show { display: flex; }
+    .modal-box { background: #fff; border-radius: 1.1rem; padding: 1.6rem 1.75rem; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; }
+    .modal-box h3 { font-size: 1.1rem; font-weight: 800; margin-bottom: 1.1rem; }
+    .modal-actions { display: flex; gap: 0.7rem; margin-top: 0.5rem; }
+    .modal-actions button { flex: 1; }
+    .toggle-row { display: flex; gap: 0.5rem; margin-bottom: 0.9rem; }
+    .toggle-btn { flex: 1; padding: 0.5rem; border: 1px solid #cbd5e1; border-radius: 0.55rem; background: #fff; font-size: 0.82rem; font-weight: 600; cursor: pointer; color: #364752; }
+    .toggle-btn.selected { background: #0f172a; color: #fff; border-color: #0f172a; }
+
+    .tree-section { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 1.1rem; padding: 1.3rem 1.5rem; margin-bottom: 1rem; }
+    .tree-section-name { font-size: 1rem; font-weight: 800; margin-bottom: 0.9rem; }
+    .tree-rel-row { display: flex; align-items: center; justify-content: space-between; padding: 0.55rem 0; border-bottom: 1px solid #f1f5f9; font-size: 0.85rem; }
+    .tree-rel-row:last-child { border-bottom: none; }
+    .tree-rel-type { font-size: 0.68rem; font-weight: 800; text-transform: uppercase; color: #0369a1; background: #eff6ff; padding: 0.18rem 0.5rem; border-radius: 999px; margin-right: 0.6rem; }
+    .tree-rel-name { font-weight: 600; }
+    .tree-rel-external { color: #94a3b8; font-size: 0.75rem; margin-left: 0.4rem; }
+
   </style>
 </head>
 <body>
@@ -258,24 +187,20 @@
         <a href="fire-plan.html">
           <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M8 16l2 -6l6 -2l-2 6l-6 2" /><path d="M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /><path d="M12 3l0 2" /><path d="M12 19l0 2" /><path d="M3 12l2 0" /><path d="M19 12l2 0" /></svg></span>
           <span class="nav-label">FIRE Plan</span>
-          <span class="nav-chevron">›</span>
         </a>
         <a href="fire-goals.html">
           <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M11 12a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M7 12a5 5 0 1 0 10 0a5 5 0 1 0 -10 0" /><path d="M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /></svg></span>
           <span class="nav-label">Goal Based Savings</span>
-          <span class="nav-chevron">›</span>
         </a>
         <a href="net-worth.html">
           <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M3 17l6 -6l4 4l8 -8" /><path d="M14 7l7 0l0 7" /></svg></span>
           <span class="nav-label">Networth</span>
-          <span class="nav-chevron">›</span>
         </a>
 
         <div class="nav-section-label">Cash Flow</div>
         <a href="money-required.html">
           <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M3 13a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v6a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -6" /><path d="M15 9a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v10a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -10" /><path d="M9 5a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v14a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -14" /><path d="M4 20h14" /></svg></span>
           <span class="nav-label">Monthly CashFlow</span>
-          <span class="nav-chevron">›</span>
         </a>
         <a href="income.html">
           <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M7 15h-3a1 1 0 0 1 -1 -1v-8a1 1 0 0 1 1 -1h12a1 1 0 0 1 1 1v3" /><path d="M7 10a1 1 0 0 1 1 -1h12a1 1 0 0 1 1 1v8a1 1 0 0 1 -1 1h-12a1 1 0 0 1 -1 -1l0 -8" /><path d="M12 14a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /></svg></span>
@@ -302,24 +227,15 @@
         <a href="insurance-tracker.html">
           <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M11.46 20.846a12 12 0 0 1 -7.96 -14.846a12 12 0 0 0 8.5 -3a12 12 0 0 0 8.5 3a12 12 0 0 1 -.09 7.06" /><path d="M15 19l2 2l4 -4" /></svg></span>
           <span class="nav-label">Insurance Tracker</span>
-          <span class="nav-chevron">›</span>
         </a>
         <a href="vault-overview.html">
           <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M5 13a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v6a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-6" /><path d="M11 16a1 1 0 1 0 2 0a1 1 0 0 0 -2 0" /><path d="M8 11v-4a4 4 0 1 1 8 0v4" /></svg></span>
           <span class="nav-label">Document Vault</span>
-          <span class="nav-chevron">›</span>
         </a>
-        <a href="will-document.html" class="nav-group-head open active">
+        <a href="will-document.html">
           <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2" /><path d="M9 9l1 0" /><path d="M9 13l6 0" /><path d="M9 17l6 0" /></svg></span>
           <span class="nav-label">Will Planner</span>
-          <span class="nav-chevron">⌄</span>
         </a>
-        <div class="sidebar-subnav">
-          <a href="will-document.html" class="active">
-            <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2" /><path d="M9 17h6" /><path d="M9 13h6" /></svg></span>
-            <span class="nav-label">Will Document</span>
-          </a>
-        </div>
         <a href="vehicles.html">
           <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M5 17h-2v-6l2 -5h9l4 5h1a2 2 0 0 1 2 2v4h-2m-4 0h-6m-6 0a2 2 0 1 0 4 0m-4 0a2 2 0 1 1 4 0m8 0a2 2 0 1 0 4 0m-4 0a2 2 0 1 1 4 0" /></svg></span>
           <span class="nav-label">Vehicles</span>
@@ -333,7 +249,6 @@
         <a href="life-expectancy.html">
           <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M19.5 12.572l-7.5 7.428l-7.5 -7.428a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572" /></svg></span>
           <span class="nav-label">Health(is wealth)</span>
-          <span class="nav-chevron">›</span>
         </a>
         <a href="doctors.html">
           <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M6 19a6 6 0 0 1 12 0" /><path d="M9 10a3 3 0 1 0 6 0v-3a3 3 0 0 0 -6 0v3z" /><path d="M11 6l2 0" /><path d="M12 19v2" /></svg></span>
@@ -341,7 +256,6 @@
         </a>
 
         <div class="nav-section-label">Family</div>
-
         <a href="family-members.html">
           <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M5 7a4 4 0 1 0 8 0a4 4 0 1 0 -8 0" /><path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /><path d="M21 21v-2a4 4 0 0 0 -3 -3.85" /></svg></span>
           <span class="nav-label">Family Members</span>
@@ -358,10 +272,11 @@
           <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z" /><path d="M16 3v4" /><path d="M8 3v4" /><path d="M4 11h16" /><path d="M11 15h1" /><path d="M12 15v3" /></svg></span>
           <span class="nav-label">Important Dates</span>
         </a>
-        <a href="family-tree.html">
+        <a href="family-tree.html" class="active">
           <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M5 7a4 4 0 1 0 8 0a4 4 0 1 0 -8 0" /><path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /><path d="M21 21v-2a4 4 0 0 0 -3 -3.85" /></svg></span>
           <span class="nav-label">Family Tree</span>
         </a>
+
         <div class="nav-section-label">More</div>
         <a href="split/dashboard.html">
           <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M5 7a4 4 0 1 0 8 0a4 4 0 1 0 -8 0" /><path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /><path d="M21 21v-2a4 4 0 0 0 -3 -3.85" /></svg></span>
@@ -401,7 +316,7 @@
             </g>
             <path d="M92,33 Q101,45 95,52 Q97,43 89,41 Q86,48 92,53 Q80,50 80,40 Q80,34 92,33 Z" fill="#712B13"/>
           </svg>
-          <h1>Will Document</h1>
+          <h1>Family Tree</h1>
           <span class="topbar-mobile-brand">EnrichMe</span>
         </div>
         <div class="topbar-right">
@@ -416,64 +331,20 @@
       </div>
 
       <div class="page-head">
-        <h2>Draft the actual Will</h2>
-        <p>Fill this in and we'll turn it into a starting draft below, using the estate split from the previous page.</p>
+        <p>Who's related to whom - including relatives who aren't on EnrichMe themselves, like a grandparent no longer with us.</p>
       </div>
 
-      <div class="prefill-note" id="prefillNote">✓ Picked up where you left off - your saved draft is loaded below.</div>
-
-      <div class="wp-card">
-        <p class="wp-card-eyebrow">Your Estate Split</p>
-        <div class="split-recap" id="splitRecap"></div>
-        <a href="will-planner.html" class="split-edit-link">← Edit your split</a>
+      <div class="section-head">
+        <h3>Relations</h3>
+        <button type="button" class="btn-primary" onclick="openAddModal()">+ Add Relation</button>
       </div>
 
-      <div class="wp-card">
-        <p class="wp-card-eyebrow">The Document</p>
-        <h3 class="wp-card-title">Draft your Will</h3>
-        <p class="wp-card-desc">A few details about you, and this turns into a real draft you can sign.</p>
-
-        <div class="wp-form-grid">
-          <div class="wp-field">
-            <label>Your full legal name</label>
-            <input type="text" id="testatorName" placeholder="e.g. Rajesh Kumar Sharma">
-          </div>
-          <div class="wp-field">
-            <label>Your father's/husband's name</label>
-            <input type="text" id="testatorParent" placeholder="e.g. S/o Late Mohan Sharma">
-          </div>
-          <div class="wp-field full">
-            <label>Your address</label>
-            <input type="text" id="testatorAddress" placeholder="e.g. 42, MG Road, Bengaluru, Karnataka">
-          </div>
-          <div class="wp-field">
-            <label>Executor's name</label>
-            <input type="text" id="executorName" placeholder="Who will carry out your wishes?">
-          </div>
-          <div class="wp-field">
-            <label>Guardian for minor children</label>
-            <input type="text" id="guardianName" placeholder="Optional - if children are minors">
-          </div>
-          <div class="wp-field full">
-            <label>Specific gifts (optional)</label>
-            <textarea id="bequests" placeholder="e.g. My gold jewellery to my daughter Priya. My car to my son Arjun."></textarea>
-          </div>
-        </div>
-
-        <div class="witness-callout">
-          ⚠️ A Will is only valid once you sign it in the presence of <strong>two witnesses</strong>, who must also sign it - they cannot be beneficiaries. Registration isn't compulsory in India but is recommended for safekeeping.
-        </div>
-
-        <p class="wp-card-desc" style="margin-bottom: 0.75rem;"><strong>Draft preview</strong></p>
-        <div class="will-preview" id="willPreview"></div>
-
-        <div class="wp-actions">
-          <button type="button" class="btn-secondary" onclick="copyWill()">📋 Copy draft</button>
-          <span class="copy-note" id="copyNote">✓ Copied to clipboard</span>
-        </div>
+      <div class="empty-state" id="emptyState" style="display:none;">
+        <div class="empty-state-icon">🌳</div>
+        <p>No relations added yet - add family members first, then connect them here.</p>
+        <button type="button" class="btn-primary" onclick="openAddModal()">+ Add Relation</button>
       </div>
-
-      <p class="wp-disclaimer">This tool helps you organise your wishes and produces a starting draft only - it is not legal advice and doesn't guarantee a legally valid Will on its own. Have a lawyer review and formally execute it (signed, dated, witnessed) before relying on it.</p>
+      <div id="treeSections"></div>
     </main>
 
       <nav class="mobile-bottom-nav">
@@ -500,6 +371,40 @@
       </nav>
   </div>
 
+  <div class="modal-overlay" id="modalOverlay" onclick="if (event.target === this) closeModal();">
+    <div class="modal-box">
+      <h3>Add Relation</h3>
+      <p class="form-error" id="formError"></p>
+      <label class="field-label">Family Member</label>
+      <select class="field-select" id="fMember"></select>
+
+      <label class="field-label">Related Type</label>
+      <select class="field-select" id="fRelationType">
+        <option value="parent">Parent</option>
+        <option value="grandparent">Grandparent</option>
+        <option value="sibling">Sibling</option>
+        <option value="spouse">Spouse</option>
+        <option value="child">Child</option>
+        <option value="other">Other</option>
+      </select>
+
+      <label class="field-label">Related Person</label>
+      <div class="toggle-row">
+        <button type="button" class="toggle-btn selected" id="toggleExisting" onclick="setTargetMode('existing')">Existing Member</button>
+        <button type="button" class="toggle-btn" id="toggleExternal" onclick="setTargetMode('external')">Not in EnrichMe</button>
+      </div>
+      <select class="field-select" id="fRelatedMember"></select>
+      <input type="text" class="field-input" id="fExternalName" placeholder="e.g. Grandfather (late)" style="display:none;">
+
+      <label class="field-label">Notes (optional)</label>
+      <input type="text" class="field-input" id="fNotes" placeholder="Anything worth remembering">
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" onclick="closeModal()">Cancel</button>
+        <button type="button" class="btn-primary" id="saveBtn" onclick="saveRelation()">Save</button>
+      </div>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-client.js"></script>
   <script>
@@ -510,144 +415,145 @@
       backdrop.classList.toggle('open', isOpen);
     }
 
-    var COLOR_PALETTE = ['#0f172a', '#0ea5e9', '#38bdf8', '#10b981', '#94a3b8', '#f59e0b', '#8b5cf6', '#ec4899', '#f43f5e', '#14b8a6'];
-    var heirs = [];
+    var members = [];
+    var relations = [];
+    var targetMode = 'existing';
 
-    function esc(s) { return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
-    function blank(s, placeholder) {
-      var v = esc(s);
-      return v ? v : '<span class="blank">' + placeholder + '</span>';
+    function escapeHtml(s) {
+      return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
 
-    function renderSplitRecap() {
-      var el = document.getElementById('splitRecap');
-      if (!heirs.length) {
-        el.innerHTML = '<span style="color:#94a3b8; font-size:0.85rem;">No split set up yet.</span>';
+    var RELATION_LABEL = { parent: 'Parent', grandparent: 'Grandparent', sibling: 'Sibling', spouse: 'Spouse', child: 'Child', other: 'Other' };
+
+    async function loadAll() {
+      var memRes = await supabaseClient.from('family_members').select('*').order('created_at');
+      members = memRes.data || [];
+
+      var relRes = await supabaseClient.from('family_relations').select('*').order('created_at');
+      if (relRes.error) { console.error(relRes.error); return; }
+      relations = relRes.data || [];
+    }
+
+    function memberName(id) {
+      var m = members.find(function (x) { return x.id === id; });
+      return m ? m.name : 'Unknown';
+    }
+
+    function render() {
+      var wrap = document.getElementById('treeSections');
+      var empty = document.getElementById('emptyState');
+
+      if (!relations.length) {
+        wrap.innerHTML = '';
+        empty.style.display = 'block';
         return;
       }
-      el.innerHTML = heirs.map(function (h, idx) {
-        var color = COLOR_PALETTE[idx % COLOR_PALETTE.length];
-        return '<span class="split-chip"><i style="background:' + color + ';"></i>' + esc(h.label || 'Untitled') + ' - ' + Number(h.pct) + '%</span>';
+      empty.style.display = 'none';
+
+      var byMember = {};
+      relations.forEach(function (r) {
+        if (!byMember[r.member_id]) byMember[r.member_id] = [];
+        byMember[r.member_id].push(r);
+      });
+
+      wrap.innerHTML = Object.keys(byMember).map(function (memberId) {
+        var rows = byMember[memberId].map(function (r) {
+          var name = r.related_member_id ? memberName(r.related_member_id) : escapeHtml(r.external_relative_name);
+          var external = !r.related_member_id ? '<span class="tree-rel-external">(not in EnrichMe)</span>' : '';
+          return '<div class="tree-rel-row">' +
+            '<span><span class="tree-rel-type">' + RELATION_LABEL[r.relation_type] + '</span><span class="tree-rel-name">' + name + '</span>' + external + '</span>' +
+            '<button type="button" class="btn-danger-text" data-del="' + r.id + '">Remove</button>' +
+          '</div>';
+        }).join('');
+
+        return '<div class="tree-section">' +
+          '<div class="tree-section-name">' + escapeHtml(memberName(memberId)) + '\'s Family</div>' +
+          rows +
+        '</div>';
       }).join('');
+
+      Array.prototype.forEach.call(wrap.querySelectorAll('[data-del]'), function (btn) {
+        btn.addEventListener('click', function () { removeRelation(btn.dataset.del); });
+      });
     }
 
-    function updateWillPreview() {
-      var name = document.getElementById('testatorName').value.trim();
-      var parent = document.getElementById('testatorParent').value.trim();
-      var address = document.getElementById('testatorAddress').value.trim();
-      var executor = document.getElementById('executorName').value.trim();
-      var guardian = document.getElementById('guardianName').value.trim();
-      var bequests = document.getElementById('bequests').value.trim();
-
-      var splitLines = heirs
-        .filter(function (h) { return Number(h.pct) > 0; })
-        .map(function (h) { return '  • ' + Number(h.pct) + '% of my residuary estate to my ' + esc((h.label || 'beneficiary').toLowerCase()) + '.'; })
-        .join('\n');
-
-      var lines = [];
-      lines.push('LAST WILL AND TESTAMENT');
-      lines.push('');
-      lines.push('I, ' + blank(name, '[Your full name]') + (parent ? ', ' + esc(parent) : '') + ', residing at ' + blank(address, '[Your address]') + ', being of sound mind, declare this to be my last Will, revoking all earlier wills and codicils made by me.');
-      lines.push('');
-      lines.push('1. EXECUTOR');
-      lines.push('I appoint ' + blank(executor, "[Executor's name]") + ' as the Executor of this Will.');
-      lines.push('');
-      if (guardian) {
-        lines.push('2. GUARDIANSHIP');
-        lines.push('I appoint ' + esc(guardian) + ' as guardian of my minor children, should the need arise.');
-        lines.push('');
-      }
-      lines.push((guardian ? '3' : '2') + '. DISTRIBUTION OF MY ESTATE');
-      lines.push('I direct that my estate be distributed as follows:');
-      lines.push(splitLines || '  • [No split entered yet - set one up on the Estate Split page]');
-      lines.push('');
-      if (bequests) {
-        lines.push((guardian ? '4' : '3') + '. SPECIFIC GIFTS');
-        lines.push(esc(bequests));
-        lines.push('');
-      }
-      lines.push('IN WITNESS WHEREOF, I have signed this Will on this ____ day of ____________, 20____.');
-      lines.push('');
-      lines.push('_______________________');
-      lines.push('(Signature of Testator)');
-      lines.push('');
-      lines.push('Signed by the above-named testator in our joint presence, and then by us in the presence of the testator:');
-      lines.push('');
-      lines.push('Witness 1: ______________________   Address: ______________________');
-      lines.push('Witness 2: ______________________   Address: ______________________');
-
-      document.getElementById('willPreview').innerHTML = lines.join('\n');
+    function populateSelects() {
+      var memberOptions = members.map(function (m) { return '<option value="' + m.id + '">' + escapeHtml(m.name) + '</option>'; }).join('');
+      document.getElementById('fMember').innerHTML = memberOptions;
+      document.getElementById('fRelatedMember').innerHTML = memberOptions;
     }
 
-    ['testatorName', 'testatorParent', 'testatorAddress', 'executorName', 'guardianName', 'bequests'].forEach(function (id) {
-      document.getElementById(id).addEventListener('input', function () { updateWillPreview(); scheduleSave(); });
-    });
-
-    function copyWill() {
-      var text = document.getElementById('willPreview').textContent;
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).then(function () {
-          var note = document.getElementById('copyNote');
-          note.classList.add('show');
-          setTimeout(function () { note.classList.remove('show'); }, 2000);
-        });
-      }
+    function setTargetMode(mode) {
+      targetMode = mode;
+      document.getElementById('toggleExisting').classList.toggle('selected', mode === 'existing');
+      document.getElementById('toggleExternal').classList.toggle('selected', mode === 'external');
+      document.getElementById('fRelatedMember').style.display = mode === 'existing' ? 'block' : 'none';
+      document.getElementById('fExternalName').style.display = mode === 'external' ? 'block' : 'none';
     }
 
-    /* ---- Persist to will_drafts, same debounced-upsert pattern used   ---- */
-    /* ---- elsewhere in the app. Shares the row with will-planner.html  ---- */
-    /* ---- (upsert only touches the columns in each page's own payload, ---- */
-    /* ---- so the two pages don't clobber each other's fields).         ---- */
-
-    async function loadSavedDraft() {
-      var { data, error } = await supabaseClient.from('will_drafts').select('*').maybeSingle();
-      if (error) { console.error('Could not load saved will draft', error); return null; }
-      return data;
+    function openAddModal() {
+      if (!members.length) { alert('Add a family member first, from Family > Family Members.'); return; }
+      document.getElementById('formError').textContent = '';
+      document.getElementById('fRelationType').value = 'parent';
+      document.getElementById('fExternalName').value = '';
+      document.getElementById('fNotes').value = '';
+      populateSelects();
+      setTargetMode('existing');
+      document.getElementById('modalOverlay').classList.add('show');
     }
 
-    async function saveDraft() {
+    function closeModal() {
+      document.getElementById('modalOverlay').classList.remove('show');
+    }
+
+    async function saveRelation() {
+      var memberId = document.getElementById('fMember').value;
+      var relationType = document.getElementById('fRelationType').value;
+      var errEl = document.getElementById('formError');
+
       var payload = {
-        testator_name: document.getElementById('testatorName').value,
-        testator_parent: document.getElementById('testatorParent').value,
-        testator_address: document.getElementById('testatorAddress').value,
-        executor_name: document.getElementById('executorName').value,
-        guardian_name: document.getElementById('guardianName').value,
-        bequests: document.getElementById('bequests').value,
-        updated_at: new Date().toISOString()
+        member_id: memberId,
+        relation_type: relationType,
+        notes: document.getElementById('fNotes').value.trim() || null,
+        related_member_id: null,
+        external_relative_name: null
       };
-      var { error } = await supabaseClient.from('will_drafts').upsert(payload, { onConflict: 'user_id' });
-      if (error) console.error('Could not save will draft', error);
+
+      if (targetMode === 'existing') {
+        var relatedId = document.getElementById('fRelatedMember').value;
+        if (relatedId === memberId) { errEl.textContent = 'A member cannot be related to themselves.'; return; }
+        payload.related_member_id = relatedId;
+      } else {
+        var name = document.getElementById('fExternalName').value.trim();
+        if (!name) { errEl.textContent = 'Enter a name for this relative.'; return; }
+        payload.external_relative_name = name;
+      }
+
+      var btn = document.getElementById('saveBtn');
+      btn.disabled = true;
+      var { error } = await supabaseClient.from('family_relations').insert(payload);
+      btn.disabled = false;
+      if (error) { errEl.textContent = error.message; return; }
+
+      closeModal();
+      await loadAll();
+      render();
     }
 
-    var saveTimer = null;
-    function scheduleSave() {
-      if (saveTimer) clearTimeout(saveTimer);
-      saveTimer = setTimeout(saveDraft, 600);
+    async function removeRelation(id) {
+      if (!confirm('Remove this relation?')) return;
+      await supabaseClient.from('family_relations').delete().eq('id', id);
+      await loadAll();
+      render();
     }
 
     (async function init() {
       var user = await requireAuth('login.html');
       if (!user) return;
-
-      try {
-        var saved = await loadSavedDraft();
-        if (saved) {
-          heirs = Array.isArray(saved.heirs) ? saved.heirs : [];
-          document.getElementById('testatorName').value = saved.testator_name || '';
-          document.getElementById('testatorParent').value = saved.testator_parent || '';
-          document.getElementById('testatorAddress').value = saved.testator_address || '';
-          document.getElementById('executorName').value = saved.executor_name || '';
-          document.getElementById('guardianName').value = saved.guardian_name || '';
-          document.getElementById('bequests').value = saved.bequests || '';
-          document.getElementById('prefillNote').classList.add('show');
-        }
-      } catch (e) {
-        console.error('Could not load saved will draft, falling back to defaults', e);
-      }
-
-      renderSplitRecap();
-      updateWillPreview();
+      await loadAll();
+      render();
     })();
+
   </script>
 </body>
 </html>
