@@ -185,6 +185,7 @@ app page's sidebar nav (`.nav-icon`).
   | My Policies / Insurance Documents | `shield` |
   | Coverage Calculator / Monthly Expenses | `calculator` |
   | Reminders | `bell` |
+  | ToDos | `checklist` |
   | Document Vault | `lock` |
   | Bank Locker | `key` |
   | Bond Documents | `file-certificate` |

@@ -2297,3 +2297,38 @@ create index if not exists calorie_entries_user_date_idx on calorie_entries (use
 -- ── the UI falls back to the old owner enum / no tag when it's null.       ──
 alter table goals add column if not exists member_id uuid references family_members (id) on delete set null;
 alter table insurance_policies add column if not exists member_id uuid references family_members (id) on delete set null;
+
+-- ── ToDos: one-off action items, deliberately separate from the           ──
+-- ── Obligations engine — Obligations are recurring, mostly financial due  ──
+-- ── dates (insurance, tax, subscriptions); ToDos have no recurrence and   ──
+-- ── no amount. Kept as its own minimal table rather than another          ──
+-- ── obligations.category value or a shared table, so ToDo never inherits  ──
+-- ── Obligation's recurrence/linked-asset complexity. A completed todo is  ──
+-- ── never deleted - status flips to 'done' and completed_at is stamped,   ──
+-- ── so there's a record of what was done and when. Powers todos.html.     ──
+create table if not exists todos (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  title text not null,
+  description text,
+  assignee_id uuid references family_members (id) on delete set null,
+  due_date date,
+  priority text not null default 'medium' check (priority in ('low','medium','high')),
+  status text not null default 'open' check (status in ('open','done')),
+  created_at timestamptz not null default now(),
+  completed_at timestamptz
+);
+
+alter table todos enable row level security;
+
+drop policy if exists "todos_select_own" on todos;
+drop policy if exists "todos_insert_own" on todos;
+drop policy if exists "todos_update_own" on todos;
+drop policy if exists "todos_delete_own" on todos;
+
+create policy "todos_select_own" on todos for select using (auth.uid() = user_id);
+create policy "todos_insert_own" on todos for insert with check (auth.uid() = user_id);
+create policy "todos_update_own" on todos for update using (auth.uid() = user_id);
+create policy "todos_delete_own" on todos for delete using (auth.uid() = user_id);
+
+create index if not exists todos_user_status_due_idx on todos (user_id, status, due_date);
