@@ -8,7 +8,7 @@
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#712B13">
-  <title>Bond Documents - EnrichMe</title>
+  <title>Rasi Guidance - EnrichMe</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -30,6 +30,7 @@
     .topbar-left { display: flex; align-items: center; gap: 0.65rem; }
     .topbar-mobile-brand { display: none; }
 
+    /* Sidebar */
     .sidebar { background: #ffffff; border-right: 1px solid #e2e8f0; display: flex; flex-direction: column; padding: 1.5rem 1.25rem; }
     .sidebar-logo { display: flex; align-items: center; gap: 0.65rem; font-size: 1.1rem; font-weight: 800; margin-bottom: 2rem; padding: 0 0.25rem; color: #712B13; }
     .sidebar-logo-icon { width: 30px; height: 30px; flex-shrink: 0; }
@@ -40,8 +41,6 @@
     .sidebar-nav a:hover, .sidebar-nav .nav-group-head:hover { background: #f1f5f9; }
     .sidebar-nav a.active { background: #0f172a; color: #ffffff; font-weight: 600; }
     .sidebar-nav .nav-group-head.open { background: #f1f5f9; font-weight: 700; }
-    .sidebar-nav .nav-group-head.active { background: #0f172a; color: #ffffff; font-weight: 600; }
-    .sidebar-nav .nav-group-head.active .nav-chevron { color: rgba(255,255,255,0.6); }
     .sidebar-nav .nav-icon { width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
     .sidebar-nav .nav-icon .tabler-icon { width: 18px; height: 18px; }
     .sidebar-nav .nav-label { flex: 1; }
@@ -60,11 +59,11 @@
     .feedback-card a { display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; width: 100%; padding: 0.55rem; border: 1px solid #cbd5e1; border-radius: 0.5rem; font-size: 0.8rem; font-weight: 600; color: #364752; }
     .feedback-card a:hover { border-color: #10b981; color: #10b981; }
 
+    /* Main */
     .main { padding: 1.5rem 2.5rem 3rem; min-width: 0; }
     .topbar { display: flex; align-items: center; justify-content: space-between; padding-bottom: 1.25rem; border-bottom: 1px solid #e2e8f0; margin-bottom: 1.5rem; }
     .topbar h1 { font-size: 1.4rem; font-weight: 700; }
     .topbar-right { display: flex; align-items: center; gap: 0.85rem; }
-    .language-selector { display: flex; align-items: center; gap: 0.5rem; background: #ffffff; padding: 0.5rem 0.9rem; border-radius: 0.5rem; color: #51636f; border: 1px solid #e2e8f0; cursor: pointer; font-size: 0.85rem; }
     .user-menu { position: relative; list-style: none; }
     .user-menu > summary { cursor: pointer; list-style: none; width: 34px; height: 34px; border-radius: 50%; background: #eef2f7; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; font-size: 1rem; }
     .user-menu > summary.user-avatar-initials { background: linear-gradient(135deg, #0ea5e9, #10b981); color: #fff; font-weight: 800; font-size: 0.82rem; letter-spacing: 0.02em; border-color: transparent; }
@@ -76,55 +75,49 @@
     .page-head { margin-bottom: 1rem; }
     .page-head h2 { font-size: 1.6rem; font-weight: 800; margin-bottom: 0.3rem; }
     .page-head p { color: #64748b; font-size: 0.9rem; }
-    .back-link { font-size: 0.85rem; font-weight: 600; color: #0ea5e9; margin-bottom: 0.75rem; display: inline-block; }
 
-    .lock-btn { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.5rem 0.9rem; border: 1px solid #cbd5e1; border-radius: 0.6rem; background: #fff; font-size: 0.8rem; font-weight: 600; color: #364752; cursor: pointer; }
-    .lock-btn:hover { border-color: #94a3b8; }
+    .tone-banner { display: flex; align-items: center; gap: 0.55rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 0.65rem; padding: 0.6rem 0.9rem; margin-bottom: 1.5rem; font-size: 0.76rem; color: #64748b; line-height: 1.5; }
+    .tone-banner .tb-icon { font-size: 0.9rem; flex-shrink: 0; }
 
-    .vault-locked { background: linear-gradient(135deg, #0f172a, #1e293b); border-radius: 1.25rem; padding: 3rem 2rem; text-align: center; color: #fff; }
-    .vault-locked .vl-icon { font-size: 2.5rem; margin-bottom: 1rem; }
-    .vault-locked h3 { font-size: 1.2rem; font-weight: 800; margin-bottom: 0.5rem; }
-    .vault-locked p { font-size: 0.85rem; color: #94a3b8; margin-bottom: 1.5rem; max-width: 420px; margin-left: auto; margin-right: auto; }
-    .vault-locked input { width: 100%; max-width: 320px; padding: 0.7rem 0.9rem; border-radius: 0.6rem; border: 1px solid #334155; background: #1e293b; color: #fff; font-size: 0.9rem; margin-bottom: 0.9rem; }
-    .vault-locked .btn-primary { max-width: 320px; width: 100%; }
-    .vault-error { font-size: 0.8rem; color: #fca5a5; font-weight: 600; margin-bottom: 0.9rem; max-width: 320px; margin-left: auto; margin-right: auto; }
-    .warn-box { background: rgba(245,158,11,0.12); border: 1px solid rgba(245,158,11,0.35); border-radius: 0.65rem; padding: 0.75rem 1rem; font-size: 0.78rem; color: #fcd34d; text-align: left; max-width: 380px; margin: 0 auto 1.2rem; line-height: 1.5; }
+    /* Rasi guide accordion cards, styled to match astrology.html's result cards */
+    .astro-card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 1.1rem; padding: 1.6rem 1.75rem; margin-bottom: 1.25rem; box-shadow: 0 4px 16px rgba(15,23,42,0.03); }
+    .astro-card-head { display: flex; align-items: center; gap: 0.85rem; margin-bottom: 1rem; padding-bottom: 0.85rem; border-bottom: 1px solid #e2e8f0; }
+    .astro-card-head h3 { font-size: 1rem; font-weight: 700; }
+    .astro-card-head .ach-sub { font-size: 0.78rem; color: #94a3b8; margin-top: 0.15rem; }
+    .astro-card-badge { width: 44px; height: 44px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; background: var(--el-bg, #f3e8ff); color: var(--el-accent, #7e22ce); border: 2px solid var(--el-accent, #7e22ce); }
+    .astro-meta-row { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-bottom: 1rem; }
+    .astro-meta-pill { font-size: 0.75rem; font-weight: 700; padding: 0.3rem 0.7rem; border-radius: 999px; background: var(--el-bg, #f3e8ff); color: var(--el-accent, #7e22ce); }
+    .astro-trait-text { font-size: 0.87rem; color: #364752; line-height: 1.65; margin-bottom: 0.9rem; }
+    .astro-pair-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+    .astro-pair-grid > .astro-card { margin-bottom: 0; }
+    @media (max-width: 900px) { .astro-pair-grid { grid-template-columns: 1fr; } }
+    .astro-two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+    @media (max-width: 700px) { .astro-two-col { grid-template-columns: 1fr; } }
+    .astro-list-head { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; }
+    .astro-list-head.dos { color: #059669; }
+    .astro-list-head.donts { color: #dc2626; }
+    .astro-list { list-style: none; display: flex; flex-direction: column; gap: 0.45rem; }
+    .astro-list li { font-size: 0.83rem; color: #364752; padding-left: 1.3rem; position: relative; line-height: 1.5; }
+    .astro-list.dos li::before { content: '✓'; position: absolute; left: 0; color: #059669; font-weight: 800; }
+    .astro-list.donts li::before { content: '✕'; position: absolute; left: 0; color: #dc2626; font-weight: 800; }
+    .astro-caution-block { border-left: 3px solid #f59e0b; background: #fffbeb; border-radius: 0 0.6rem 0.6rem 0; padding: 0.9rem 1.1rem; margin-bottom: 0.9rem; }
+    .astro-caution-block.nav { border-left-color: #6366f1; background: #eef2ff; }
+    .astro-caution-block:last-child { margin-bottom: 0; }
+    .astro-caution-label { font-size: 0.78rem; font-weight: 700; color: #b45309; margin-bottom: 0.4rem; }
+    .astro-caution-label.nav { color: #4338ca; }
+    .astro-caution-block .astro-trait-text { margin-bottom: 0; }
 
-    .btn-primary { padding: 0.6rem 1.1rem; border: none; border-radius: 0.6rem; background: linear-gradient(135deg, #0ea5e9, #10b981); color: #fff; font-size: 0.85rem; font-weight: 700; cursor: pointer; }
-    .btn-primary:hover { opacity: 0.92; }
-    .btn-secondary { padding: 0.55rem 1rem; border: 1px solid #cbd5e1; border-radius: 0.6rem; background: #fff; color: #364752; font-size: 0.83rem; font-weight: 600; cursor: pointer; }
-    .btn-secondary:hover { border-color: #94a3b8; }
-    .btn-danger-text { color: #dc2626; font-size: 0.78rem; font-weight: 700; cursor: pointer; background: none; border: none; }
+    .rasi-guide-card { background: #ffffff; border: 1px solid #e5e7eb; border-top: 3px solid var(--el-accent, #e2e8f0); border-radius: 1.1rem; margin-bottom: 0.85rem; overflow: hidden; box-shadow: 0 4px 16px rgba(15,23,42,0.03); }
+    .rasi-guide-summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: 0.85rem; padding: 1.1rem 1.4rem; }
+    .rasi-guide-summary::-webkit-details-marker { display: none; }
+    .rasi-guide-summary-text { flex: 1; }
+    .rasi-guide-name { font-size: 1rem; font-weight: 800; margin-bottom: 0.35rem; }
+    .rasi-guide-chevron { color: #94a3b8; font-size: 0.85rem; transition: transform 0.15s ease; }
+    details[open] .rasi-guide-chevron { transform: rotate(90deg); }
+    .rasi-guide-body { padding: 0 1.4rem 1.4rem; }
 
-    .section-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
-    .section-head h3 { font-size: 1.05rem; font-weight: 800; }
+    .disclaimer { font-size: 0.78rem; color: #94a3b8; line-height: 1.6; padding: 1rem 1.2rem; background: #f8fafc; border-radius: 0.75rem; margin-top: 1rem; }
 
-    .empty-state { background: #ffffff; border: 1px dashed #cbd5e1; border-radius: 1rem; padding: 2.5rem 1.5rem; text-align: center; color: #94a3b8; font-size: 0.9rem; }
-
-    .doc-list { display: flex; flex-direction: column; gap: 0.9rem; }
-    .doc-row { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 1rem; padding: 1.1rem 1.3rem; box-shadow: 0 4px 16px rgba(15,23,42,0.03); display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
-    .doc-icon { width: 42px; height: 42px; border-radius: 0.7rem; background: #eff6ff; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; }
-    .doc-info { flex: 1; min-width: 180px; }
-    .doc-name { font-size: 0.9rem; font-weight: 700; word-break: break-word; }
-    .doc-meta { font-size: 0.76rem; color: #94a3b8; margin-top: 0.2rem; }
-    .expiry-pill { font-size: 0.72rem; font-weight: 700; padding: 0.25rem 0.6rem; border-radius: 999px; }
-    .expiry-pill.ok { background: rgba(16,185,129,0.12); color: #059669; }
-    .expiry-pill.soon { background: rgba(245,158,11,0.12); color: #b45309; }
-    .expiry-pill.expired { background: rgba(220,38,38,0.12); color: #dc2626; }
-    .doc-actions { display: flex; gap: 0.5rem; }
-
-    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.55); align-items: center; justify-content: center; z-index: 50; padding: 1rem; }
-    .modal-overlay.show { display: flex; }
-    .modal-box { background: #fff; border-radius: 1.1rem; padding: 1.6rem 1.75rem; width: 100%; max-width: 460px; max-height: 90vh; overflow-y: auto; }
-    .modal-box h3 { font-size: 1.1rem; font-weight: 800; margin-bottom: 1.1rem; }
-    .field-label { font-size: 0.83rem; font-weight: 600; color: #0f172a; margin-bottom: 0.4rem; display: block; }
-    .field-input { width: 100%; padding: 0.6rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 0.55rem; font-size: 0.88rem; font-family: inherit; color: #0f172a; margin-bottom: 0.9rem; background: #fff; }
-    .field-input:focus { outline: none; border-color: #10b981; box-shadow: 0 0 0 2px rgba(16,185,129,0.15); }
-    .modal-actions { display: flex; gap: 0.7rem; margin-top: 0.5rem; }
-    .modal-actions button { flex: 1; }
-    .form-error { font-size: 0.8rem; color: #dc2626; font-weight: 600; margin-bottom: 0.7rem; }
-
-    .disclaimer { font-size: 0.78rem; color: #94a3b8; line-height: 1.6; padding: 1rem 1.2rem; background: #f8fafc; border-radius: 0.75rem; margin-top: 1.5rem; }
     /* Mobile sidebar (kept last so it wins the cascade over the base rules above) */
     @media (max-width: 860px) {
       .app-shell { grid-template-columns: 1fr; }
@@ -178,7 +171,6 @@
 
       .topbar h1 { display: none; }
       .topbar-mobile-brand { display: block; font-size: 1.15rem; font-weight: 700; }
-      .language-selector { display: none; }
     }
 
     .mobile-bottom-nav { display: none; }
@@ -210,10 +202,6 @@
       .mobile-bottom-nav a.active { color: #0f172a; }
       .main { padding-bottom: 5.5rem; }
     }
-
-    .menu-link { display: inline-flex; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 0.55rem; border: 1px solid #e2e8f0; background: #ffffff; color: #364752; flex-shrink: 0; }
-    .menu-link:hover { border-color: #94a3b8; color: #0f172a; }
-    .menu-link .tabler-icon { width: 20px; height: 20px; }
   </style>
 </head>
 <body>
@@ -294,45 +282,11 @@
           <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M11.46 20.846a12 12 0 0 1 -7.96 -14.846a12 12 0 0 0 8.5 -3a12 12 0 0 0 8.5 3a12 12 0 0 1 -.09 7.06" /><path d="M15 19l2 2l4 -4" /></svg></span>
           <span class="nav-label">Term Insurance</span>
         </a>
-        <a href="vault-overview.html" class="nav-group-head open">
+        <a href="vault-overview.html">
           <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M5 13a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v6a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-6" /><path d="M11 16a1 1 0 1 0 2 0a1 1 0 0 0 -2 0" /><path d="M8 11v-4a4 4 0 1 1 8 0v4" /></svg></span>
           <span class="nav-label">Document Vault</span>
-          <span class="nav-chevron">⌄</span>
+          <span class="nav-chevron">›</span>
         </a>
-        <div class="sidebar-subnav">
-          <a href="vault-bank-locker.html">
-            <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M16.555 3.843l3.602 3.602a2.877 2.877 0 0 1 0 4.069l-2.643 2.643a2.877 2.877 0 0 1 -4.069 0l-.301 -.301l-6.558 6.558a2 2 0 0 1 -1.239 .578l-.175 .008h-1.172a1 1 0 0 1 -.993 -.883l-.007 -.117v-1.172a2 2 0 0 1 .467 -1.284l.119 -.13l.414 -.414h2v-2h2v-2l2.144 -2.144l-.301 -.301a2.877 2.877 0 0 1 0 -4.069l2.643 -2.643a2.877 2.877 0 0 1 4.069 0" /><path d="M15 9h.01" /></svg></span>
-            <span class="nav-label">Bank Locker</span>
-          </a>
-          <a href="vault-property.html">
-            <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M3 21l18 0" /><path d="M9 8l1 0" /><path d="M9 12l1 0" /><path d="M9 16l1 0" /><path d="M14 8l1 0" /><path d="M14 12l1 0" /><path d="M14 16l1 0" /><path d="M5 21v-16a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v16" /></svg></span>
-            <span class="nav-label">Property Documents</span>
-          </a>
-          <a href="vault-bonds.html" class="active">
-            <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M5 8v-3a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2h-5" /><path d="M3 14a3 3 0 1 0 6 0a3 3 0 1 0 -6 0" /><path d="M4.5 17l-1.5 5l3 -1.5l3 1.5l-1.5 -5" /></svg></span>
-            <span class="nav-label">Bond Documents</span>
-          </a>
-          <a href="vault-government.html">
-            <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M12 15a3 3 0 1 0 6 0a3 3 0 1 0 -6 0" /><path d="M13 17.5v4.5l2 -1.5l2 1.5v-4.5" /><path d="M10 19h-5a2 2 0 0 1 -2 -2v-10c0 -1.1 .9 -2 2 -2h14a2 2 0 0 1 2 2v10a2 2 0 0 1 -1 1.73" /><path d="M6 9l12 0" /><path d="M6 12l3 0" /><path d="M6 15l2 0" /></svg></span>
-            <span class="nav-label">Government Documents</span>
-          </a>
-          <a href="vault-vehicle.html">
-            <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M5 17a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M15 17a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M5 17h-2v-6l2 -5h9l4 5h1a2 2 0 0 1 2 2v4h-2m-4 0h-6m-6 -6h15m-6 0v-5" /></svg></span>
-            <span class="nav-label">Vehicle Documents</span>
-          </a>
-          <a href="vault-education.html">
-            <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M22 9l-10 -4l-10 4l10 4l10 -4v6" /><path d="M6 10.6v5.4a6 3 0 0 0 12 0v-5.4" /></svg></span>
-            <span class="nav-label">Education Certificates</span>
-          </a>
-          <a href="vault-insurance.html">
-            <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M12 3a12 12 0 0 0 8.5 3a12 12 0 0 1 -8.5 15a12 12 0 0 1 -8.5 -15a12 12 0 0 0 8.5 -3" /></svg></span>
-            <span class="nav-label">Insurance Documents</span>
-          </a>
-          <a href="vault-legal.html">
-            <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M13 10l7.383 7.418c.823 .82 .823 2.148 0 2.967a2.11 2.11 0 0 1 -2.976 0l-7.407 -7.385" /><path d="M6 9l4 4" /><path d="M13 10l-4 -4" /><path d="M3 21h7" /><path d="M6.793 15.793l-3.586 -3.586a1 1 0 0 1 0 -1.414l2.293 -2.293l.5 .5l3 -3l-.5 -.5l2.293 -2.293a1 1 0 0 1 1.414 0l3.586 3.586a1 1 0 0 1 0 1.414l-2.293 2.293l-.5 -.5l-3 3l.5 .5l-2.293 2.293a1 1 0 0 1 -1.414 0" /></svg></span>
-            <span class="nav-label">Legal & Estate Documents</span>
-          </a>
-        </div>
         <a href="will-document.html">
           <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2" /><path d="M9 9l1 0" /><path d="M9 13l6 0" /><path d="M9 17l6 0" /></svg></span>
           <span class="nav-label">Will Planner</span>
@@ -370,7 +324,7 @@
           <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454l0 .008" /><path d="M17 4a2 2 0 0 0 2 2a2 2 0 0 0 -2 2a2 2 0 0 0 -2 -2a2 2 0 0 0 2 -2" /><path d="M19 11h2m-1 -1v2" /></svg></span>
           <span class="nav-label">Know your Rasi</span>
         </a>
-        <a href="rasi-guidance.html">
+        <a href="rasi-guidance.html" class="active">
           <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454l0 .008" /><path d="M17 4a2 2 0 0 0 2 2a2 2 0 0 0 -2 2a2 2 0 0 0 -2 -2a2 2 0 0 0 2 -2" /><path d="M19 11h2m-1 -1v2" /></svg></span>
           <span class="nav-label">Rasi Guidance</span>
         </a>
@@ -422,7 +376,7 @@
             </g>
             <path d="M92,33 Q101,45 95,52 Q97,43 89,41 Q86,48 92,53 Q80,50 80,40 Q80,34 92,33 Z" fill="#712B13"/>
           </svg>
-          <h1>Document Vault</h1>
+          <h1>Rasi Guidance</h1>
           <span class="topbar-mobile-brand">EnrichMe</span>
         </div>
         <div class="topbar-right">
@@ -436,19 +390,17 @@
         </div>
       </div>
 
-      <a href="vault-overview.html" class="back-link">← Vault Overview</a>
-
       <div class="page-head">
-        <h2>💹 Bond Documents</h2>
-        <p>Certificates, SGB holding statements and other paperwork for the bonds and government schemes you hold - coming soon.</p>
+        <h2>Rasi Guidance</h2>
+        <p>All 12 Rashis and their traditional guidance, in one reference - independent of any family member's own chart.</p>
       </div>
 
-            <div class="vault-locked">
-        <div class="vl-icon">ð§</div>
-        <h3>Document Vault is Coming Soon</h3>
-        <p>Secure, encrypted document storage is on its way. We’re building it right, not fast - check back soon.</p>
+      <div class="tone-banner">
+        <span class="tb-icon">🔮</span>
+        <span>For fun and tradition, not a scientific prediction. This is cultural reference content, not medical or financial advice.</span>
       </div>
 
+      <div id="rasiGuideList"></div>
     </main>
 
       <nav class="mobile-bottom-nav">
@@ -468,7 +420,7 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M19.5 12.572l-7.5 7.428l-7.5 -7.428a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572" /></svg>
           <span>Health</span>
         </a>
-        <a href="features.html">
+        <a href="features.html" class="active">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M5 12m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M12 12m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M19 12m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /></svg>
           <span>More</span>
         </a>
@@ -477,17 +429,72 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-client.js"></script>
+  <script src="js/rasi-guidance-data.js"></script>
   <script>
     function toggleSidebar() {
       var sidebar = document.getElementById('sidebar');
       var backdrop = document.getElementById('sidebarBackdrop');
-      var isOpen = sidebar.classList.toggle('open');
-      backdrop.classList.toggle('open', isOpen);
+      sidebar.classList.toggle('open');
+      backdrop.classList.toggle('open');
+    }
+
+    function renderRasiList() {
+      var list = document.getElementById('rasiGuideList');
+      list.innerHTML = RasiGuidanceData.RASHIS.map(function (rashi) {
+        var colors = RasiGuidanceData.ELEMENT_COLORS[rashi.element];
+        var dosHtml = function (arr) { return arr.map(function (d) { return '<li>' + d + '</li>'; }).join(''); };
+        return '' +
+          '<details class="rasi-guide-card" style="--el-accent:' + colors.accent + ';--el-bg:' + colors.bg + ';">' +
+            '<summary class="rasi-guide-summary">' +
+              '<div class="astro-card-badge">' + rashi.symbol + '</div>' +
+              '<div class="rasi-guide-summary-text">' +
+                '<div class="rasi-guide-name">' + rashi.name + ' (' + rashi.english + ')</div>' +
+                '<div class="astro-meta-row" style="margin-bottom:0;">' +
+                  '<span class="astro-meta-pill">Lord: ' + rashi.lord + '</span>' +
+                  '<span class="astro-meta-pill">Element: ' + rashi.element + '</span>' +
+                '</div>' +
+              '</div>' +
+              '<span class="rasi-guide-chevron">›</span>' +
+            '</summary>' +
+            '<div class="rasi-guide-body">' +
+              '<p class="astro-trait-text">' + rashi.traits + '</p>' +
+              '<div class="astro-pair-grid">' +
+                '<div class="astro-card">' +
+                  '<div class="astro-card-head"><div><h3>🩺 Health Guidance</h3></div></div>' +
+                  '<div class="astro-two-col">' +
+                    '<div><div class="astro-list-head dos">Do\'s</div><ul class="astro-list dos">' + dosHtml(rashi.health.dos) + '</ul></div>' +
+                    '<div><div class="astro-list-head donts">Don\'ts</div><ul class="astro-list donts">' + dosHtml(rashi.health.donts) + '</ul></div>' +
+                  '</div>' +
+                '</div>' +
+                '<div class="astro-card">' +
+                  '<div class="astro-card-head"><div><h3>💰 Wealth Guidance</h3></div></div>' +
+                  '<div class="astro-two-col">' +
+                    '<div><div class="astro-list-head dos">Do\'s</div><ul class="astro-list dos">' + dosHtml(rashi.wealth.dos) + '</ul></div>' +
+                    '<div><div class="astro-list-head donts">Don\'ts</div><ul class="astro-list donts">' + dosHtml(rashi.wealth.donts) + '</ul></div>' +
+                  '</div>' +
+                '</div>' +
+              '</div>' +
+              '<div class="astro-card" style="margin-bottom:0;">' +
+                '<div class="astro-card-head"><div><h3>🧭 Cautions &amp; Navigating Tough Times</h3></div></div>' +
+                '<div class="astro-caution-block">' +
+                  '<div class="astro-caution-label">⚠️ Be careful about</div>' +
+                  '<p class="astro-trait-text">' + rashi.caution + '</p>' +
+                '</div>' +
+                '<div class="astro-caution-block nav">' +
+                  '<div class="astro-caution-label nav">🧭 Navigating tough times</div>' +
+                  '<p class="astro-trait-text">' + rashi.navigate + '</p>' +
+                '</div>' +
+              '</div>' +
+            '</div>' +
+          '</details>';
+      }).join('');
     }
 
     (async function init() {
       var user = await requireAuth('login.html');
       if (!user) return;
+
+      renderRasiList();
     })();
   </script>
 </body>

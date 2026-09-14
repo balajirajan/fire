@@ -2168,3 +2168,62 @@ create policy "family_relations_select_own" on family_relations for select using
 create policy "family_relations_insert_own" on family_relations for insert with check (auth.uid() = user_id);
 create policy "family_relations_update_own" on family_relations for update using (auth.uid() = user_id);
 create policy "family_relations_delete_own" on family_relations for delete using (auth.uid() = user_id);
+
+-- ── Calorie Tracker: a daily food log, separate from body_fat_inputs       ──
+-- ── (which stores the one-time TDEE calculator inputs). calorie_settings   ──
+-- ── holds an optional manual daily_target_kcal override - when null the    ──
+-- ── page falls back to the same Mifflin-St Jeor TDEE calculation as        ──
+-- ── body-fat-calculator.html, reading that page's saved inputs if present. ──
+-- ── Self only (like the calculators), not per family_members - it's the    ──
+-- ── account holder's own diet log. Powers calorie-tracker.html.            ──
+create table if not exists calorie_settings (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null default auth.uid() references auth.users (id) on delete cascade unique,
+  daily_target_kcal numeric,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+alter table calorie_settings enable row level security;
+
+drop policy if exists "calorie_settings_select_own" on calorie_settings;
+drop policy if exists "calorie_settings_insert_own" on calorie_settings;
+drop policy if exists "calorie_settings_update_own" on calorie_settings;
+drop policy if exists "calorie_settings_delete_own" on calorie_settings;
+
+create policy "calorie_settings_select_own" on calorie_settings for select using (auth.uid() = user_id);
+create policy "calorie_settings_insert_own" on calorie_settings for insert with check (auth.uid() = user_id);
+create policy "calorie_settings_update_own" on calorie_settings for update using (auth.uid() = user_id);
+create policy "calorie_settings_delete_own" on calorie_settings for delete using (auth.uid() = user_id);
+
+create table if not exists calorie_entries (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  entry_date date not null default current_date,
+  meal_type text not null default 'snack' check (meal_type in ('breakfast','lunch','dinner','snack')),
+  food_name text not null,
+  calories numeric not null,
+  created_at timestamptz not null default now()
+);
+
+alter table calorie_entries enable row level security;
+
+drop policy if exists "calorie_entries_select_own" on calorie_entries;
+drop policy if exists "calorie_entries_insert_own" on calorie_entries;
+drop policy if exists "calorie_entries_update_own" on calorie_entries;
+drop policy if exists "calorie_entries_delete_own" on calorie_entries;
+
+create policy "calorie_entries_select_own" on calorie_entries for select using (auth.uid() = user_id);
+create policy "calorie_entries_insert_own" on calorie_entries for insert with check (auth.uid() = user_id);
+create policy "calorie_entries_update_own" on calorie_entries for update using (auth.uid() = user_id);
+create policy "calorie_entries_delete_own" on calorie_entries for delete using (auth.uid() = user_id);
+
+create index if not exists calorie_entries_user_date_idx on calorie_entries (user_id, entry_date);
+
+-- ── Family member linking for Goal Based Savings and Insurance Tracker:    ──
+-- ── both previously stored "who is this for" as free text/enum only.       ──
+-- ── member_id is nullable so existing rows (and goals/policies covering    ──
+-- ── more than one person, e.g. "Joint") keep working with no member set -  ──
+-- ── the UI falls back to the old owner enum / no tag when it's null.       ──
+alter table goals add column if not exists member_id uuid references family_members (id) on delete set null;
+alter table insurance_policies add column if not exists member_id uuid references family_members (id) on delete set null;

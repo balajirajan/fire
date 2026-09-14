@@ -189,6 +189,38 @@
     .menu-link { display: inline-flex; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 0.55rem; border: 1px solid #e2e8f0; background: #ffffff; color: #364752; flex-shrink: 0; }
     .menu-link:hover { border-color: #94a3b8; color: #0f172a; }
     .menu-link .tabler-icon { width: 20px; height: 20px; }
+
+    /* Family Members card - the single place family members get added, so
+       Goal Based Savings, Insurance Tracker and Know Your Rasi can all point
+       at the same list instead of each collecting names separately. */
+    .btn-secondary { padding: 0.55rem 1rem; border: 1px solid #cbd5e1; border-radius: 0.6rem; background: #fff; color: #364752; font-size: 0.83rem; font-weight: 600; cursor: pointer; white-space: nowrap; }
+    .btn-secondary:hover { border-color: #94a3b8; }
+    .btn-danger-text { color: #dc2626; font-size: 0.78rem; font-weight: 700; cursor: pointer; background: none; border: none; }
+    .btn-edit-text { color: #0284c7; font-size: 0.78rem; font-weight: 700; cursor: pointer; background: none; border: none; }
+
+    .settings-card-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1.1rem; }
+    .settings-card-head h3 { font-size: 1rem; font-weight: 800; }
+
+    .member-row { display: flex; align-items: center; gap: 0.85rem; padding: 0.75rem 0.25rem; border-bottom: 1px solid #f1f5f9; }
+    .member-row:last-child { border-bottom: none; }
+    .member-avatar { width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg, #0ea5e9, #10b981); color: #fff; font-weight: 800; font-size: 0.85rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .member-row-info { flex: 1; min-width: 0; }
+    .member-row-name { font-size: 0.9rem; font-weight: 700; }
+    .member-row-meta { font-size: 0.76rem; color: #94a3b8; text-transform: capitalize; }
+    .member-row-actions { display: flex; gap: 0.9rem; flex-shrink: 0; }
+
+    .member-empty-hint { font-size: 0.82rem; color: #94a3b8; padding: 0.5rem 0.25rem 0.25rem; }
+
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.55); align-items: center; justify-content: center; z-index: 50; padding: 1rem; }
+    .modal-overlay.show { display: flex; }
+    .modal-box { background: #fff; border-radius: 1.1rem; padding: 1.6rem 1.75rem; width: 100%; max-width: 420px; max-height: 90vh; overflow-y: auto; }
+    .modal-box h3 { font-size: 1.1rem; font-weight: 800; margin-bottom: 1.1rem; }
+    .modal-actions { display: flex; align-items: center; justify-content: space-between; gap: 0.7rem; margin-top: 1rem; }
+    .modal-actions-right { display: flex; gap: 0.7rem; flex: 1; }
+    .modal-actions-right button { flex: 1; }
+    .form-error { font-size: 0.8rem; color: #dc2626; font-weight: 600; margin-bottom: 0.7rem; }
+    .field-select { width: 100%; padding: 0.65rem 0.8rem; border: 1px solid #cbd5e1; border-radius: 0.55rem; font-size: 0.9rem; font-family: inherit; color: #0f172a; background: #fff; }
+    .field-select:focus { outline: none; border-color: #10b981; box-shadow: 0 0 0 2px rgba(16,185,129,0.15); }
   </style>
 </head>
 <body>
@@ -217,15 +249,10 @@
           <span class="nav-label">Dashboard</span>
         </a>
 
-        <div class="nav-section-label">Wealth</div>
+        <div class="nav-section-label">Finance</div>
         <a href="fire-plan.html">
           <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M8 16l2 -6l6 -2l-2 6l-6 2" /><path d="M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /><path d="M12 3l0 2" /><path d="M12 19l0 2" /><path d="M3 12l2 0" /><path d="M19 12l2 0" /></svg></span>
           <span class="nav-label">FIRE Plan</span>
-          <span class="nav-chevron">›</span>
-        </a>
-        <a href="fire-goals.html">
-          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M11 12a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M7 12a5 5 0 1 0 10 0a5 5 0 1 0 -10 0" /><path d="M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /></svg></span>
-          <span class="nav-label">Goal Based Savings</span>
           <span class="nav-chevron">›</span>
         </a>
         <a href="net-worth.html">
@@ -233,8 +260,6 @@
           <span class="nav-label">Networth</span>
           <span class="nav-chevron">›</span>
         </a>
-
-        <div class="nav-section-label">Cash Flow</div>
         <a href="money-required.html">
           <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M3 13a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v6a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -6" /><path d="M15 9a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v10a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -10" /><path d="M9 5a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v14a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -14" /><path d="M4 20h14" /></svg></span>
           <span class="nav-label">Monthly CashFlow</span>
@@ -247,6 +272,11 @@
         <a href="tax-planning.html">
           <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M5 21v-16a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v16l-3 -2l-2 2l-2 -2l-2 2l-2 -2l-3 2" /><path d="M14 8h-2.5a1.5 1.5 0 0 0 0 3h1a1.5 1.5 0 0 1 0 3h-2.5m2 0v1.5m0 -9v1.5" /></svg></span>
           <span class="nav-label">Tax Planning</span>
+        </a>
+        <a href="fire-goals.html">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M11 12a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M7 12a5 5 0 1 0 10 0a5 5 0 1 0 -10 0" /><path d="M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /></svg></span>
+          <span class="nav-label">Goal Based Savings</span>
+          <span class="nav-chevron">›</span>
         </a>
         <a href="loans-tracker.html">
           <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M17 8v-3a1 1 0 0 0 -1 -1h-10a2 2 0 0 0 0 4h12a1 1 0 0 1 1 1v3m0 4v3a1 1 0 0 1 -1 1h-12a2 2 0 0 1 -2 -2v-12" /><path d="M20 12v4h-4a2 2 0 0 1 0 -4h4" /></svg></span>
@@ -266,6 +296,10 @@
           <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M11.46 20.846a12 12 0 0 1 -7.96 -14.846a12 12 0 0 0 8.5 -3a12 12 0 0 0 8.5 3a12 12 0 0 1 -.09 7.06" /><path d="M15 19l2 2l4 -4" /></svg></span>
           <span class="nav-label">Insurance Tracker</span>
           <span class="nav-chevron">›</span>
+        </a>
+        <a href="insurance-tracker.html#term">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M11.46 20.846a12 12 0 0 1 -7.96 -14.846a12 12 0 0 0 8.5 -3a12 12 0 0 0 8.5 3a12 12 0 0 1 -.09 7.06" /><path d="M15 19l2 2l4 -4" /></svg></span>
+          <span class="nav-label">Term Insurance</span>
         </a>
         <a href="vault-overview.html">
           <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M5 13a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v6a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-6" /><path d="M11 16a1 1 0 1 0 2 0a1 1 0 0 0 -2 0" /><path d="M8 11v-4a4 4 0 1 1 8 0v4" /></svg></span>
@@ -295,9 +329,12 @@
           <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M6 19a6 6 0 0 1 12 0" /><path d="M9 10a3 3 0 1 0 6 0v-3a3 3 0 0 0 -6 0v3z" /><path d="M11 6l2 0" /><path d="M12 19v2" /></svg></span>
           <span class="nav-label">Doctors</span>
         </a>
+        <a href="reminders.html">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z" /><path d="M16 3v4" /><path d="M8 3v4" /><path d="M4 11h16" /><path d="M11 15h1" /><path d="M12 15v3" /></svg></span>
+          <span class="nav-label">Preventive Checkup Tracker</span>
+        </a>
 
         <div class="nav-section-label">Family</div>
-
         <a href="family-members.html">
           <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M5 7a4 4 0 1 0 8 0a4 4 0 1 0 -8 0" /><path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /><path d="M21 21v-2a4 4 0 0 0 -3 -3.85" /></svg></span>
           <span class="nav-label">Family Members</span>
@@ -318,14 +355,15 @@
           <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M5 7a4 4 0 1 0 8 0a4 4 0 1 0 -8 0" /><path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /><path d="M21 21v-2a4 4 0 0 0 -3 -3.85" /></svg></span>
           <span class="nav-label">Family Tree</span>
         </a>
+
         <div class="nav-section-label">More</div>
-        <a href="split/dashboard.html">
-          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M5 7a4 4 0 1 0 8 0a4 4 0 1 0 -8 0" /><path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /><path d="M21 21v-2a4 4 0 0 0 -3 -3.85" /></svg></span>
-          <span class="nav-label">SplitExpenses(SplitWise)</span>
-        </a>
         <a href="reminders.html">
           <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M10 5a2 2 0 1 1 4 0a7 7 0 0 1 4 6v3a4 4 0 0 0 2 3h-16a4 4 0 0 0 2 -3v-3a7 7 0 0 1 4 -6" /><path d="M9 17v1a3 3 0 0 0 6 0v-1" /></svg></span>
           <span class="nav-label">Reminders</span>
+        </a>
+        <a href="split/dashboard.html">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M5 7a4 4 0 1 0 8 0a4 4 0 1 0 -8 0" /><path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /><path d="M21 21v-2a4 4 0 0 0 -3 -3.85" /></svg></span>
+          <span class="nav-label">SplitExpenses(SplitWise)</span>
         </a>
 
         <a href="settings.html" class="active">
@@ -415,7 +453,48 @@
           <span class="save-message" id="saveMessage"></span>
         </div>
       </form>
+
+      <div class="settings-card" style="margin-top: 1.5rem;">
+        <div class="settings-card-head">
+          <h3>Family Members</h3>
+          <button type="button" class="btn-secondary" id="addMemberBtn">+ Add Family Member</button>
+        </div>
+        <p class="settings-section-hint" style="margin-top: -0.5rem;">Add spouse, kids and parents here once - Goal Based Savings, Insurance Tracker and Know Your Rasi all pick from this same list, so you never re-type a name.</p>
+        <div id="memberList"></div>
+        <div class="member-empty-hint" id="memberEmptyHint" style="display:none;">No family members added yet. Add one above to start linking goals, policies and Rasi profiles to them.</div>
+      </div>
     </main>
+
+    <div class="modal-overlay" id="memberModal">
+      <div class="modal-box">
+        <h3 id="memberModalTitle">Add Family Member</h3>
+        <div class="form-error" id="memberFormError"></div>
+        <div class="field-block">
+          <label class="field-label">Name</label>
+          <input type="text" class="field-input" id="memberNameInput" placeholder="e.g. child's name">
+        </div>
+        <div class="field-block">
+          <label class="field-label">Relation</label>
+          <select class="field-select" id="memberRelationInput">
+            <option value="spouse">Spouse</option>
+            <option value="child" selected>Child</option>
+            <option value="parent">Parent</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="field-block">
+          <label class="field-label">Date of birth (optional)</label>
+          <input type="date" class="field-input" id="memberDobInput">
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-danger-text" id="deleteMemberBtn" style="display:none;">Delete</button>
+          <div class="modal-actions-right">
+            <button type="button" class="btn-secondary" id="cancelMemberBtn">Cancel</button>
+            <button type="button" class="btn-primary" id="saveMemberBtn">Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
 
       <nav class="mobile-bottom-nav">
         <a href="dashboard.html">
@@ -443,12 +522,157 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-client.js"></script>
+  <script src="js/health-log/health-log-api.js"></script>
   <script>
     function toggleSidebar() {
       var sidebar = document.getElementById('sidebar');
       var backdrop = document.getElementById('sidebarBackdrop');
       var isOpen = sidebar.classList.toggle('open');
       backdrop.classList.toggle('open', isOpen);
+    }
+
+    function escapeHtml(s) {
+      return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+      });
+    }
+
+    function ageFromDob(dob) {
+      if (!dob) return null;
+      var b = new Date(dob + 'T00:00:00');
+      var now = new Date();
+      var age = now.getFullYear() - b.getFullYear();
+      var m = now.getMonth() - b.getMonth();
+      if (m < 0 || (m === 0 && now.getDate() < b.getDate())) age--;
+      return age;
+    }
+
+    function initials(name) {
+      var parts = String(name || '').trim().split(/\s+/);
+      return ((parts[0] || '')[0] || '?').toUpperCase() + ((parts[1] || '')[0] || '').toUpperCase();
+    }
+
+    // Self is a family_members row too (relation = 'self'), shared with
+    // astrology.html and every other family-member picker - created lazily
+    // here the same way astrology.html creates it, so whichever page a user
+    // visits first ends up with the same one Self record.
+    var memberState = { members: [], editingId: null };
+    var selfMemberId = null;
+
+    async function ensureSelfMember(fallbackName) {
+      var members = await HealthLog.listMembers();
+      var self = members.filter(function (m) { return m.relation === 'self'; })[0];
+      if (self) return self;
+      self = await HealthLog.addMember({ name: fallbackName || 'Me', relation: 'self' });
+      // One-time adoption of a legacy pre-member astrology_inputs row.
+      await supabaseClient.from('astrology_inputs').update({ member_id: self.id }).is('member_id', null);
+      return self;
+    }
+
+    function renderMemberList() {
+      var container = document.getElementById('memberList');
+      var empty = document.getElementById('memberEmptyHint');
+      var others = memberState.members.filter(function (m) { return m.relation !== 'self'; });
+
+      if (!others.length) {
+        container.innerHTML = '';
+        empty.style.display = 'block';
+        return;
+      }
+      empty.style.display = 'none';
+
+      container.innerHTML = others.map(function (m) {
+        var age = ageFromDob(m.date_of_birth);
+        return '' +
+          '<div class="member-row">' +
+            '<div class="member-avatar">' + escapeHtml(initials(m.name)) + '</div>' +
+            '<div class="member-row-info">' +
+              '<div class="member-row-name">' + escapeHtml(m.name) + '</div>' +
+              '<div class="member-row-meta">' + escapeHtml(m.relation) + (age != null ? ' · ' + age + ' years old' : '') + '</div>' +
+            '</div>' +
+            '<div class="member-row-actions">' +
+              '<button type="button" class="btn-edit-text" data-edit="' + m.id + '">Edit</button>' +
+            '</div>' +
+          '</div>';
+      }).join('');
+
+      Array.prototype.forEach.call(container.querySelectorAll('[data-edit]'), function (btn) {
+        btn.addEventListener('click', function () { openMemberModal(btn.getAttribute('data-edit')); });
+      });
+    }
+
+    async function loadMemberList() {
+      memberState.members = await HealthLog.listMembers();
+      renderMemberList();
+    }
+
+    function openMemberModal(memberId) {
+      memberState.editingId = memberId || null;
+      document.getElementById('memberFormError').textContent = '';
+      var deleteBtn = document.getElementById('deleteMemberBtn');
+
+      if (memberId) {
+        var m = memberState.members.filter(function (x) { return x.id === memberId; })[0];
+        document.getElementById('memberModalTitle').textContent = 'Edit Family Member';
+        document.getElementById('memberNameInput').value = m ? m.name : '';
+        document.getElementById('memberRelationInput').value = m ? m.relation : 'child';
+        document.getElementById('memberDobInput').value = m && m.date_of_birth ? m.date_of_birth : '';
+        deleteBtn.style.display = 'inline-block';
+      } else {
+        document.getElementById('memberModalTitle').textContent = 'Add Family Member';
+        document.getElementById('memberNameInput').value = '';
+        document.getElementById('memberRelationInput').value = 'child';
+        document.getElementById('memberDobInput').value = '';
+        deleteBtn.style.display = 'none';
+      }
+
+      document.getElementById('memberModal').classList.add('show');
+    }
+
+    function closeMemberModal() {
+      document.getElementById('memberModal').classList.remove('show');
+    }
+
+    async function saveMember() {
+      var name = document.getElementById('memberNameInput').value.trim();
+      var errEl = document.getElementById('memberFormError');
+      if (!name) { errEl.textContent = 'Please enter a name.'; return; }
+
+      var payload = {
+        name: name,
+        relation: document.getElementById('memberRelationInput').value,
+        date_of_birth: document.getElementById('memberDobInput').value || null
+      };
+
+      var saveBtn = document.getElementById('saveMemberBtn');
+      saveBtn.disabled = true;
+      try {
+        if (memberState.editingId) {
+          await HealthLog.updateMember(memberState.editingId, payload);
+        } else {
+          await HealthLog.addMember(payload);
+        }
+        closeMemberModal();
+        await loadMemberList();
+      } catch (e) {
+        console.error('Could not save family member', e);
+        errEl.textContent = 'Could not save. Please try again.';
+      } finally {
+        saveBtn.disabled = false;
+      }
+    }
+
+    async function deleteMember() {
+      if (!memberState.editingId) return;
+      if (!window.confirm('Remove this family member? Anything linked to them elsewhere (goals, policies, Rasi profile) loses that link too.')) return;
+      try {
+        await HealthLog.deleteMember(memberState.editingId);
+        closeMemberModal();
+        await loadMemberList();
+      } catch (e) {
+        console.error('Could not delete family member', e);
+        document.getElementById('memberFormError').textContent = 'Could not delete. Please try again.';
+      }
     }
 
     async function handleSave(event) {
@@ -481,9 +705,12 @@
         .update({ first_name: firstName, last_name: lastName || null, full_name: fullName })
         .eq('id', userId);
 
+      var self = await ensureSelfMember(fullName);
+      selfMemberId = self.id;
+      if (self.name !== fullName) await HealthLog.updateMember(self.id, { name: fullName });
       var { error: astroErr } = await supabaseClient
         .from('astrology_inputs')
-        .upsert({ dob: dob, birth_time: birthTime, updated_at: new Date().toISOString() }, { onConflict: 'user_id' });
+        .upsert({ member_id: self.id, dob: dob, birth_time: birthTime, updated_at: new Date().toISOString() }, { onConflict: 'member_id' });
 
       // Keeps the session's own copy in sync so "Welcome back, X" on the
       // dashboard reflects the new name immediately, without a re-login.

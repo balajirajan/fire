@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" href="/assets/icons/icon-192.png" type="image/png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#712B13">
+  <title>Calorie Tracker - EnrichMe</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f8fafc;
+      color: #0f172a;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    a, button { color: inherit; text-decoration: none; font-family: inherit; }
+
+    .app-shell { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
+
+    .sidebar-toggle { display: none; }
+    .sidebar-backdrop { display: none; }
+    .topbar-mobile-logo { display: none; }
+    .topbar-left { display: flex; align-items: center; gap: 0.65rem; }
+    .topbar-mobile-brand { display: none; }
+
+    .sidebar { background: #ffffff; border-right: 1px solid #e2e8f0; display: flex; flex-direction: column; padding: 1.5rem 1.25rem; }
+    .sidebar-logo { display: flex; align-items: center; gap: 0.65rem; font-size: 1.1rem; font-weight: 800; margin-bottom: 2rem; padding: 0 0.25rem; color: #712B13; }
+    .sidebar-logo-icon { width: 30px; height: 30px; flex-shrink: 0; }
+    .sidebar-logo-text { display: flex; flex-direction: column; gap: 0.05rem; line-height: 1.2; }
+    .sidebar-logo-tagline { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase; color: #94a3b8; }
+    .sidebar-nav { display: flex; flex-direction: column; gap: 0.25rem; }
+    .sidebar-nav a, .sidebar-nav .nav-group-head { display: flex; align-items: center; gap: 0.75rem; padding: 0.7rem 0.75rem; border-radius: 0.6rem; font-size: 0.9rem; font-weight: 500; color: #364752; }
+    .sidebar-nav a:hover, .sidebar-nav .nav-group-head:hover { background: #f1f5f9; }
+    .sidebar-nav a.active { background: #0f172a; color: #ffffff; font-weight: 600; }
+    .sidebar-nav .nav-group-head.open { background: #f1f5f9; font-weight: 700; }
+    .sidebar-nav .nav-group-head.active { background: #0f172a; color: #ffffff; font-weight: 600; }
+    .sidebar-nav .nav-group-head.active .nav-chevron { color: rgba(255,255,255,0.6); }
+    .sidebar-nav .nav-icon { width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .sidebar-nav .nav-icon .tabler-icon { width: 18px; height: 18px; }
+    .sidebar-nav .nav-label { flex: 1; }
+    .sidebar-nav .nav-chevron { color: #94a3b8; font-size: 0.85rem; }
+    .sidebar-nav .nav-section-label { font-size: 0.66rem; font-weight: 800; letter-spacing: 0.07em; text-transform: uppercase; color: #94a3b8; padding: 0.9rem 0.75rem 0.35rem; }
+    .sidebar-nav .nav-section-label:first-of-type { padding-top: 0.2rem; }
+    .sidebar-subnav { display: flex; flex-direction: column; gap: 0.2rem; padding-left: 1.6rem; margin: 0.15rem 0 0.3rem; }
+    .sidebar-subnav a { display: flex; align-items: center; gap: 0.6rem; padding: 0.55rem 0.6rem; border-radius: 0.5rem; font-size: 0.85rem; font-weight: 500; color: #364752; }
+    .sidebar-subnav a:hover { background: #f1f5f9; }
+    .sidebar-subnav a.active { background: #0f172a; color: #fff; font-weight: 600; }
+    .sidebar-spacer { flex: 1; }
+    .feedback-card { background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 0.9rem; padding: 1.1rem; margin-top: 1.5rem; }
+    .feedback-card .fc-icon { width: 32px; height: 32px; border-radius: 0.6rem; background: #eef2f7; display: flex; align-items: center; justify-content: center; font-size: 0.95rem; margin-bottom: 0.6rem; }
+    .feedback-card strong { display: block; font-size: 0.85rem; margin-bottom: 0.3rem; }
+    .feedback-card p { font-size: 0.78rem; color: #64748b; line-height: 1.5; margin-bottom: 0.85rem; }
+    .feedback-card a { display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; width: 100%; padding: 0.55rem; border: 1px solid #cbd5e1; border-radius: 0.5rem; font-size: 0.8rem; font-weight: 600; color: #364752; }
+    .feedback-card a:hover { border-color: #10b981; color: #10b981; }
+
+    .main { padding: 1.5rem 2.5rem 3rem; min-width: 0; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; padding-bottom: 1.25rem; border-bottom: 1px solid #e2e8f0; margin-bottom: 1.5rem; }
+    .topbar h1 { font-size: 1.4rem; font-weight: 700; }
+    .topbar-right { display: flex; align-items: center; gap: 0.85rem; }
+    .user-menu { position: relative; list-style: none; }
+    .user-menu > summary { cursor: pointer; list-style: none; width: 34px; height: 34px; border-radius: 50%; background: #eef2f7; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; font-size: 1rem; }
+    .user-menu > summary.user-avatar-initials { background: linear-gradient(135deg, #0ea5e9, #10b981); color: #fff; font-weight: 800; font-size: 0.82rem; letter-spacing: 0.02em; border-color: transparent; }
+    .user-menu > summary::-webkit-details-marker { display: none; }
+    .user-menu-panel { position: absolute; top: calc(100% + 0.6rem); right: 0; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 0.75rem; box-shadow: 0 10px 30px rgba(15,23,42,0.12); padding: 0.4rem; min-width: 150px; z-index: 20; }
+    .user-menu-panel a { display: block; padding: 0.55rem 0.7rem; border-radius: 0.5rem; font-size: 0.85rem; color: #364752; font-weight: 500; }
+    .user-menu-panel a:hover { background: #f1f5f9; color: #10b981; }
+
+    .page-head { margin-bottom: 1.5rem; max-width: 62ch; }
+    .page-head h2 { font-size: 1.6rem; font-weight: 800; margin-bottom: 0.3rem; }
+    .page-head p { color: #64748b; font-size: 0.9rem; line-height: 1.55; }
+
+    .btn-primary { padding: 0.65rem 1.2rem; border: none; border-radius: 0.6rem; background: linear-gradient(135deg, #0ea5e9, #10b981); color: #fff; font-size: 0.85rem; font-weight: 700; cursor: pointer; white-space: nowrap; }
+    .btn-primary:hover { opacity: 0.92; }
+    .btn-secondary { padding: 0.55rem 1rem; border: 1px solid #cbd5e1; border-radius: 0.6rem; background: #fff; color: #364752; font-size: 0.83rem; font-weight: 600; cursor: pointer; white-space: nowrap; }
+    .btn-secondary:hover { border-color: #94a3b8; }
+    .btn-danger-text { color: #dc2626; font-size: 0.78rem; font-weight: 700; cursor: pointer; background: none; border: none; }
+    .btn-edit-text { color: #0284c7; font-size: 0.78rem; font-weight: 700; cursor: pointer; background: none; border: none; }
+
+    /* Summary card */
+    .cal-summary { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 1.1rem; padding: 1.5rem 1.6rem; margin-bottom: 1.5rem; box-shadow: 0 4px 16px rgba(15,23,42,0.03); display: flex; flex-wrap: wrap; align-items: center; gap: 1.75rem; }
+    .cal-ring-wrap { position: relative; width: 108px; height: 108px; flex-shrink: 0; }
+    .cal-ring-wrap svg { width: 108px; height: 108px; display: block; transform: rotate(-90deg); }
+    .cal-ring-label { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    .cal-ring-value { font-size: 1.15rem; font-weight: 800; color: #0f172a; }
+    .cal-ring-sub { font-size: 0.62rem; color: #94a3b8; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; }
+    .cal-summary-stats { display: flex; flex-wrap: wrap; gap: 1.75rem; flex: 1; }
+    .cal-stat-label { font-size: 0.74rem; color: #94a3b8; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; margin-bottom: 0.25rem; }
+    .cal-stat-value { font-size: 1.3rem; font-weight: 800; color: #0f172a; }
+    .cal-stat-value.over { color: #dc2626; }
+    .cal-stat-value.under { color: #16a34a; }
+    .cal-target-edit { font-size: 0.76rem; font-weight: 700; color: #0284c7; cursor: pointer; background: none; border: none; margin-top: 0.3rem; }
+
+    /* Date nav */
+    .cal-date-nav { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.1rem; }
+    .cal-date-btn { width: 32px; height: 32px; border-radius: 50%; border: 1px solid #cbd5e1; background: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #364752; font-size: 0.95rem; }
+    .cal-date-btn:hover { border-color: #94a3b8; }
+    .cal-date-label { font-size: 0.95rem; font-weight: 700; color: #0f172a; min-width: 160px; text-align: center; }
+    .cal-date-today { font-size: 0.78rem; font-weight: 700; color: #0284c7; cursor: pointer; background: none; border: none; }
+
+    /* Section head */
+    .section-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+    .section-head h3 { font-size: 1.05rem; font-weight: 800; }
+
+    /* Log list */
+    .cal-meal-group { margin-bottom: 1.25rem; }
+    .cal-meal-head { display: flex; align-items: center; justify-content: space-between; padding: 0.5rem 0.2rem; border-bottom: 1px solid #f1f5f9; margin-bottom: 0.4rem; }
+    .cal-meal-name { font-size: 0.8rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.03em; color: #64748b; }
+    .cal-meal-total { font-size: 0.8rem; font-weight: 700; color: #0f172a; }
+    .cal-entry-row { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; padding: 0.65rem 0.2rem; border-bottom: 1px solid #f8fafc; }
+    .cal-entry-name { font-size: 0.88rem; font-weight: 600; color: #0f172a; }
+    .cal-entry-right { display: flex; align-items: center; gap: 0.9rem; flex-shrink: 0; }
+    .cal-entry-kcal { font-size: 0.85rem; font-weight: 700; color: #364752; }
+    .cal-entry-actions { display: flex; gap: 0.6rem; }
+
+    .empty-state { background: #ffffff; border: 1px dashed #cbd5e1; border-radius: 1rem; padding: 2.5rem 1.5rem; text-align: center; color: #94a3b8; font-size: 0.9rem; margin-bottom: 1.5rem; }
+
+    /* 7-day chart */
+    .cal-chart-card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 1.1rem; padding: 1.4rem 1.6rem; margin-bottom: 1.5rem; box-shadow: 0 4px 16px rgba(15,23,42,0.03); }
+    .cal-chart-card h3 { font-size: 1.05rem; font-weight: 800; margin-bottom: 1.1rem; }
+    .cal-chart-bars { display: flex; align-items: flex-end; gap: 0.9rem; height: 140px; }
+    .cal-chart-col { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; gap: 0.4rem; }
+    .cal-chart-bar-track { width: 100%; flex: 1; display: flex; align-items: flex-end; }
+    .cal-chart-bar { width: 100%; border-radius: 0.3rem 0.3rem 0 0; min-height: 3px; background: #16a34a; }
+    .cal-chart-bar.over { background: #dc2626; }
+    .cal-chart-day { font-size: 0.68rem; font-weight: 700; color: #94a3b8; }
+    .cal-chart-target-line { position: relative; width: 100%; border-top: 1px dashed #cbd5e1; margin-bottom: 0.5rem; }
+
+    /* Modal */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.55); align-items: center; justify-content: center; z-index: 50; padding: 1rem; }
+    .modal-overlay.show { display: flex; }
+    .modal-box { background: #fff; border-radius: 1.1rem; padding: 1.6rem 1.75rem; width: 100%; max-width: 420px; max-height: 90vh; overflow-y: auto; }
+    .modal-box h3 { font-size: 1.1rem; font-weight: 800; margin-bottom: 1.1rem; }
+    .modal-actions { display: flex; align-items: center; justify-content: space-between; gap: 0.7rem; margin-top: 1rem; }
+    .modal-actions-right { display: flex; gap: 0.7rem; flex: 1; }
+    .modal-actions-right button { flex: 1; }
+    .form-error { font-size: 0.8rem; color: #dc2626; font-weight: 600; margin-bottom: 0.7rem; }
+    .field-item { margin-bottom: 1.1rem; }
+    .field-label { font-size: 0.83rem; font-weight: 600; color: #0f172a; margin-bottom: 0.5rem; display: block; }
+    .field-select, .num-input {
+      width: 100%; padding: 0.65rem 0.8rem; border: 1px solid #cbd5e1; border-radius: 0.55rem;
+      font-size: 0.9rem; font-family: inherit; color: #0f172a; background: #fff;
+    }
+    .field-select:focus, .num-input:focus { outline: none; border-color: #10b981; box-shadow: 0 0 0 2px rgba(16,185,129,0.15); }
+    .field-hint { font-size: 0.78rem; color: #94a3b8; margin-top: -0.6rem; margin-bottom: 1.1rem; }
+
+    @media (max-width: 860px) {
+      .app-shell { grid-template-columns: 1fr; }
+      .sidebar { display: none; position: fixed; top: 0; left: 0; bottom: 0; width: 280px; max-width: 84vw; z-index: 100; box-shadow: 12px 0 32px rgba(15, 23, 42, 0.18); overflow-y: auto; }
+      .sidebar.open { display: flex; }
+      .sidebar-backdrop.open { display: block; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.4); z-index: 99; }
+      .sidebar-toggle { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; flex-shrink: 0; border: 1px solid #e2e8f0; border-radius: 0.5rem; background: #ffffff; color: #364752; font-size: 1.15rem; cursor: pointer; }
+      .topbar-mobile-logo { display: flex; align-items: center; justify-content: center; width: 30px; height: 30px; flex-shrink: 0; }
+      .topbar h1 { display: none; }
+      .topbar-mobile-brand { display: block; font-size: 1.15rem; font-weight: 700; }
+      .cal-summary { flex-direction: column; align-items: flex-start; }
+    }
+
+    .mobile-bottom-nav { display: none; }
+    @media (max-width: 860px) {
+      .mobile-bottom-nav { display: flex; position: fixed; bottom: 0; left: 0; right: 0; background: #ffffff; border-top: 1px solid #e2e8f0; padding: 0.35rem 0.25rem calc(0.35rem + env(safe-area-inset-bottom)); z-index: 90; }
+      .mobile-bottom-nav a { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 0.2rem; padding: 0.3rem 0.2rem; font-size: 0.64rem; font-weight: 600; color: #94a3b8; text-decoration: none; }
+      .mobile-bottom-nav a .tabler-icon { width: 22px; height: 22px; }
+      .mobile-bottom-nav a.active { color: #0f172a; }
+      .main { padding-bottom: 5.5rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleSidebar()"></div>
+    <aside class="sidebar" id="sidebar">
+      <a href="dashboard.html" class="sidebar-logo">
+        <svg class="sidebar-logo-icon" viewBox="8 8 98 94" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <circle cx="55" cy="55" r="42" fill="none" stroke="#712B13" stroke-width="8" stroke-linecap="round" stroke-dasharray="230 34" stroke-dashoffset="20"/>
+          <g fill="none" stroke="#712B13" stroke-width="6" stroke-linecap="round" opacity="0.65">
+            <path d="M32,38 L65,38"/>
+            <path d="M32,55 L54,55"/>
+            <path d="M32,72 L65,72"/>
+          </g>
+          <path d="M92,33 Q101,45 95,52 Q97,43 89,41 Q86,48 92,53 Q80,50 80,40 Q80,34 92,33 Z" fill="#712B13"/>
+        </svg>
+        <span class="sidebar-logo-text">
+          <span class="sidebar-logo-name">EnrichMe</span>
+          <span class="sidebar-logo-tagline">Personal Life &amp; Wealth OS</span>
+        </span>
+      </a>
+
+      <nav class="sidebar-nav">
+        <a href="dashboard.html">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M5 12l-2 0l9 -9l9 9l-2 0" /><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" /><path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" /></svg></span>
+          <span class="nav-label">Dashboard</span>
+        </a>
+
+        <div class="nav-section-label">Finance</div>
+        <a href="fire-plan.html">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M8 16l2 -6l6 -2l-2 6l-6 2" /><path d="M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /><path d="M12 3l0 2" /><path d="M12 19l0 2" /><path d="M3 12l2 0" /><path d="M19 12l2 0" /></svg></span>
+          <span class="nav-label">FIRE Plan</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="net-worth.html">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M3 17l6 -6l4 4l8 -8" /><path d="M14 7l7 0l0 7" /></svg></span>
+          <span class="nav-label">Networth</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="money-required.html">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M3 13a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v6a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -6" /><path d="M15 9a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v10a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -10" /><path d="M9 5a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v14a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -14" /><path d="M4 20h14" /></svg></span>
+          <span class="nav-label">Monthly CashFlow</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="income.html">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M7 15h-3a1 1 0 0 1 -1 -1v-8a1 1 0 0 1 1 -1h12a1 1 0 0 1 1 1v3" /><path d="M7 10a1 1 0 0 1 1 -1h12a1 1 0 0 1 1 1v8a1 1 0 0 1 -1 1h-12a1 1 0 0 1 -1 -1l0 -8" /><path d="M12 14a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /></svg></span>
+          <span class="nav-label">Income</span>
+        </a>
+        <a href="tax-planning.html">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M5 21v-16a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v16l-3 -2l-2 2l-2 -2l-2 2l-2 -2l-3 2" /><path d="M14 8h-2.5a1.5 1.5 0 0 0 0 3h1a1.5 1.5 0 0 1 0 3h-2.5m2 0v1.5m0 -9v1.5" /></svg></span>
+          <span class="nav-label">Tax Planning</span>
+        </a>
+        <a href="fire-goals.html">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M11 12a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M7 12a5 5 0 1 0 10 0a5 5 0 1 0 -10 0" /><path d="M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /></svg></span>
+          <span class="nav-label">Goal Based Savings</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="loans-tracker.html">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M17 8v-3a1 1 0 0 0 -1 -1h-10a2 2 0 0 0 0 4h12a1 1 0 0 1 1 1v3m0 4v3a1 1 0 0 1 -1 1h-12a2 2 0 0 1 -2 -2v-12" /><path d="M20 12v4h-4a2 2 0 0 1 0 -4h4" /></svg></span>
+          <span class="nav-label">Loans</span>
+        </a>
+        <a href="subscriptions.html">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M3 10h18" /><path d="M7 15h.01" /><path d="M11 15h2" /><path d="M5 6h14a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-8a2 2 0 0 1 2 -2z" /></svg></span>
+          <span class="nav-label">Subscriptions</span>
+        </a>
+        <a href="credit-score.html">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M3 17l6 -6l4 4l8 -8" /><path d="M14 7l7 0l0 7" /></svg></span>
+          <span class="nav-label">Credit Score</span>
+        </a>
+
+        <div class="nav-section-label">Protection</div>
+        <a href="insurance-tracker.html">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M11.46 20.846a12 12 0 0 1 -7.96 -14.846a12 12 0 0 0 8.5 -3a12 12 0 0 0 8.5 3a12 12 0 0 1 -.09 7.06" /><path d="M15 19l2 2l4 -4" /></svg></span>
+          <span class="nav-label">Insurance Tracker</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="insurance-tracker.html#term">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M11.46 20.846a12 12 0 0 1 -7.96 -14.846a12 12 0 0 0 8.5 -3a12 12 0 0 0 8.5 3a12 12 0 0 1 -.09 7.06" /><path d="M15 19l2 2l4 -4" /></svg></span>
+          <span class="nav-label">Term Insurance</span>
+        </a>
+        <a href="vault-overview.html">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M5 13a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v6a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-6" /><path d="M11 16a1 1 0 1 0 2 0a1 1 0 0 0 -2 0" /><path d="M8 11v-4a4 4 0 1 1 8 0v4" /></svg></span>
+          <span class="nav-label">Document Vault</span>
+          <span class="nav-chevron">›</span>
+        </a>
+        <a href="will-document.html">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2" /><path d="M9 9l1 0" /><path d="M9 13l6 0" /><path d="M9 17l6 0" /></svg></span>
+          <span class="nav-label">Will Planner</span>
+        </a>
+        <a href="vehicles.html">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M5 17h-2v-6l2 -5h9l4 5h1a2 2 0 0 1 2 2v4h-2m-4 0h-6m-6 0a2 2 0 1 0 4 0m-4 0a2 2 0 1 1 4 0m8 0a2 2 0 1 0 4 0m-4 0a2 2 0 1 1 4 0" /></svg></span>
+          <span class="nav-label">Vehicles</span>
+        </a>
+        <a href="emergency-contacts.html">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M19.5 12.572l-7.5 7.428l-7.5 -7.428a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572" /></svg></span>
+          <span class="nav-label">Emergency Contacts</span>
+        </a>
+
+        <div class="nav-section-label">Health</div>
+        <a href="life-expectancy.html" class="nav-group-head open active">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M19.5 12.572l-7.5 7.428l-7.5 -7.428a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572" /></svg></span>
+          <span class="nav-label">Health(is wealth)</span>
+          <span class="nav-chevron">⌄</span>
+        </a>
+        <div class="sidebar-subnav">
+          <a href="life-expectancy.html">
+            <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M6.5 7h11" /><path d="M6.5 17h11" /><path d="M6 20v-2a6 6 0 1 1 12 0v2a1 1 0 0 1 -1 1h-10a1 1 0 0 1 -1 -1" /><path d="M6 4v2a6 6 0 1 0 12 0v-2a1 1 0 0 0 -1 -1h-10a1 1 0 0 0 -1 1" /></svg></span>
+            <span class="nav-label">Life Expectancy</span>
+          </a>
+          <a href="health-medicine-tracker.html">
+            <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M4.5 12.5l8 -8a4.94 4.94 0 0 1 7 7l-8 8a4.94 4.94 0 0 1 -7 -7" /><path d="M8.5 8.5l7 7" /></svg></span>
+            <span class="nav-label">Medicine Tracker</span>
+          </a>
+          <a href="health-checkup-reports.html">
+            <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M6 4h-1a2 2 0 0 0 -2 2v3.5a5.5 5.5 0 0 0 11 0v-3.5a2 2 0 0 0 -2 -2h-1" /><path d="M8 15a6 6 0 1 0 12 0v-3" /><path d="M11 3v2" /><path d="M6 3v2" /><path d="M18 10a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /></svg></span>
+            <span class="nav-label">Checkup Reports</span>
+          </a>
+          <a href="body-fat-calculator.html">
+            <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M7 20l10 0" /><path d="M6 6l6 -1l6 1" /><path d="M12 3l0 17" /><path d="M9 12l-3 -6l-3 6a3 3 0 0 0 6 0" /><path d="M21 12l-3 -6l-3 6a3 3 0 0 0 6 0" /></svg></span>
+            <span class="nav-label">Body Fat Calculator</span>
+          </a>
+          <a href="calorie-tracker.html" class="active">
+            <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M4 11.319c0 3.102 .444 5.319 2.222 7.978c1.351 1.797 3.156 2.247 5.08 .988c.426 -.268 .97 -.268 1.397 0c1.923 1.26 3.728 .809 5.079 -.988c1.778 -2.66 2.222 -4.876 2.222 -7.977c0 -2.661 -1.99 -5.32 -4.444 -5.32c-1.267 0 -2.41 .693 -3.22 1.44a.5 .5 0 0 1 -.672 0c-.809 -.746 -1.953 -1.44 -3.22 -1.44c-2.454 0 -4.444 2.66 -4.444 5.319" /><path d="M7 12c0 -1.47 .454 -2.34 1.5 -3" /><path d="M12 7c0 -1.2 .867 -4 3 -4" /></svg></span>
+            <span class="nav-label">Calorie Tracker</span>
+          </a>
+          <a href="body-fat-calculator.html">
+            <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M7 20l10 0" /><path d="M6 6l6 -1l6 1" /><path d="M12 3l0 17" /><path d="M9 12l-3 -6l-3 6a3 3 0 0 0 6 0" /><path d="M21 12l-3 -6l-3 6a3 3 0 0 0 6 0" /></svg></span>
+            <span class="nav-label">Weight Loss Calculator</span>
+          </a>
+          <a href="health-medicine-tracker.html?tab=vaccination">
+            <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M6 4h-1a2 2 0 0 0 -2 2v3.5a5.5 5.5 0 0 0 11 0v-3.5a2 2 0 0 0 -2 -2h-1" /><path d="M8 15a6 6 0 1 0 12 0v-3" /><path d="M11 3v2" /><path d="M6 3v2" /><path d="M18 10a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /></svg></span>
+            <span class="nav-label">Kids Vaccination Chart</span>
+          </a>
+        </div>
+        <a href="doctors.html">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M6 19a6 6 0 0 1 12 0" /><path d="M9 10a3 3 0 1 0 6 0v-3a3 3 0 0 0 -6 0v3z" /><path d="M11 6l2 0" /><path d="M12 19v2" /></svg></span>
+          <span class="nav-label">Doctors</span>
+        </a>
+        <a href="reminders.html">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z" /><path d="M16 3v4" /><path d="M8 3v4" /><path d="M4 11h16" /><path d="M11 15h1" /><path d="M12 15v3" /></svg></span>
+          <span class="nav-label">Preventive Checkup Tracker</span>
+        </a>
+
+        <div class="nav-section-label">Family</div>
+        <a href="family-members.html">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M5 7a4 4 0 1 0 8 0a4 4 0 1 0 -8 0" /><path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /><path d="M21 21v-2a4 4 0 0 0 -3 -3.85" /></svg></span>
+          <span class="nav-label">Family Members</span>
+        </a>
+        <a href="astrology.html">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454l0 .008" /><path d="M17 4a2 2 0 0 0 2 2a2 2 0 0 0 -2 2a2 2 0 0 0 -2 -2a2 2 0 0 0 2 -2" /><path d="M19 11h2m-1 -1v2" /></svg></span>
+          <span class="nav-label">Know your Rasi</span>
+        </a>
+        <a href="rasi-guidance.html">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454l0 .008" /><path d="M17 4a2 2 0 0 0 2 2a2 2 0 0 0 -2 2a2 2 0 0 0 -2 -2a2 2 0 0 0 2 -2" /><path d="M19 11h2m-1 -1v2" /></svg></span>
+          <span class="nav-label">Rasi Guidance</span>
+        </a>
+        <a href="important-dates.html">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z" /><path d="M16 3v4" /><path d="M8 3v4" /><path d="M4 11h16" /><path d="M11 15h1" /><path d="M12 15v3" /></svg></span>
+          <span class="nav-label">Important Dates</span>
+        </a>
+        <a href="family-tree.html">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M5 7a4 4 0 1 0 8 0a4 4 0 1 0 -8 0" /><path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /><path d="M21 21v-2a4 4 0 0 0 -3 -3.85" /></svg></span>
+          <span class="nav-label">Family Tree</span>
+        </a>
+
+        <div class="nav-section-label">More</div>
+        <a href="reminders.html">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M10 5a2 2 0 1 1 4 0a7 7 0 0 1 4 6v3a4 4 0 0 0 2 3h-16a4 4 0 0 0 2 -3v-3a7 7 0 0 1 4 -6" /><path d="M9 17v1a3 3 0 0 0 6 0v-1" /></svg></span>
+          <span class="nav-label">Reminders</span>
+        </a>
+        <a href="split/dashboard.html">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M5 7a4 4 0 1 0 8 0a4 4 0 1 0 -8 0" /><path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /><path d="M21 21v-2a4 4 0 0 0 -3 -3.85" /></svg></span>
+          <span class="nav-label">SplitExpenses(SplitWise)</span>
+        </a>
+
+        <a href="settings.html">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M10.325 4.317c.426 -1.756 2.924 -1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543 -.94 3.31 .826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756 .426 1.756 2.924 0 3.35a1.724 1.724 0 0 0 -1.066 2.573c.94 1.543 -.826 3.31 -2.37 2.37a1.724 1.724 0 0 0 -2.572 1.065c-.426 1.756 -2.924 1.756 -3.35 0a1.724 1.724 0 0 0 -2.573 -1.066c-1.543 .94 -3.31 -.826 -2.37 -2.37a1.724 1.724 0 0 0 -1.065 -2.572c-1.756 -.426 -1.756 -2.924 0 -3.35a1.724 1.724 0 0 0 1.066 -2.573c-.94 -1.543 .826 -3.31 2.37 -2.37c1 .608 2.296 .07 2.572 -1.065" /><path d="M9 12a3 3 0 1 0 6 0a3 3 0 0 0 -6 0" /></svg></span>
+          <span class="nav-label">Settings</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-spacer"></div>
+
+      <div class="feedback-card">
+        <div class="fc-icon">💬</div>
+        <strong>Got feedback?</strong>
+        <p>Have an idea or found a bug? We read every message.</p>
+        <a href="mailto:hello@enrichme.app">✉ Contact Us</a>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <div class="topbar-left">
+          <button class="sidebar-toggle" aria-label="Menu" onclick="toggleSidebar()">☰</button>
+          <svg class="topbar-mobile-logo" viewBox="8 8 98 94" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <circle cx="55" cy="55" r="42" fill="none" stroke="#712B13" stroke-width="8" stroke-linecap="round" stroke-dasharray="230 34" stroke-dashoffset="20"/>
+            <g fill="none" stroke="#712B13" stroke-width="6" stroke-linecap="round" opacity="0.65">
+              <path d="M32,38 L65,38"/>
+              <path d="M32,55 L54,55"/>
+              <path d="M32,72 L65,72"/>
+            </g>
+            <path d="M92,33 Q101,45 95,52 Q97,43 89,41 Q86,48 92,53 Q80,50 80,40 Q80,34 92,33 Z" fill="#712B13"/>
+          </svg>
+          <h1>Calorie Tracker</h1>
+          <span class="topbar-mobile-brand">EnrichMe</span>
+        </div>
+        <div class="topbar-right">
+          <details class="user-menu">
+            <summary id="userAvatar">👤</summary>
+            <div class="user-menu-panel">
+              <a href="settings.html">Settings</a>
+              <a href="#" onclick="signOutAndRedirect('index.html'); return false;">Log Out</a>
+            </div>
+          </details>
+        </div>
+      </div>
+
+      <div class="page-head">
+        <h2>Calorie Tracker</h2>
+        <p>Log what you eat and see it against your daily target - a simple food diary, not a calorie database. Add your own foods and calorie counts as you go.</p>
+      </div>
+
+      <div class="cal-summary">
+        <div class="cal-ring-wrap">
+          <svg viewBox="0 0 108 108">
+            <circle cx="54" cy="54" r="46" fill="none" stroke="#f1f5f9" stroke-width="10"/>
+            <circle id="calRingProgress" cx="54" cy="54" r="46" fill="none" stroke="#10b981" stroke-width="10" stroke-linecap="round" stroke-dasharray="289" stroke-dashoffset="289"/>
+          </svg>
+          <div class="cal-ring-label">
+            <div class="cal-ring-value" id="calRingPct">0%</div>
+            <div class="cal-ring-sub">of target</div>
+          </div>
+        </div>
+        <div class="cal-summary-stats">
+          <div>
+            <div class="cal-stat-label">Daily Target</div>
+            <div class="cal-stat-value" id="calTargetValue">2,000 kcal</div>
+            <button type="button" class="cal-target-edit" id="editTargetBtn">Edit target</button>
+          </div>
+          <div>
+            <div class="cal-stat-label">Consumed</div>
+            <div class="cal-stat-value" id="calConsumedValue">0 kcal</div>
+          </div>
+          <div>
+            <div class="cal-stat-label">Remaining</div>
+            <div class="cal-stat-value" id="calRemainingValue">0 kcal</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="cal-date-nav">
+        <button type="button" class="cal-date-btn" id="prevDayBtn">‹</button>
+        <div class="cal-date-label" id="calDateLabel">Today</div>
+        <button type="button" class="cal-date-btn" id="nextDayBtn">›</button>
+        <button type="button" class="cal-date-today" id="jumpTodayBtn" style="display:none;">Jump to today</button>
+      </div>
+
+      <div class="section-head">
+        <h3>Food Log</h3>
+        <button type="button" class="btn-primary" id="addEntryBtn">+ Add Food</button>
+      </div>
+
+      <div class="empty-state" id="logEmptyState" style="display:none;">Nothing logged for this day yet. Add what you ate to start tracking.</div>
+      <div id="mealGroups"></div>
+
+      <div class="cal-chart-card">
+        <h3>Last 7 Days</h3>
+        <div class="cal-chart-bars" id="calChartBars"></div>
+      </div>
+    </main>
+
+      <nav class="mobile-bottom-nav">
+        <a href="dashboard.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M5 12l-2 0l9 -9l9 9l-2 0" /><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" /><path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" /></svg>
+          <span>FIRE</span>
+        </a>
+        <a href="net-worth.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M3 17l6 -6l4 4l8 -8" /><path d="M14 7l7 0l0 7" /></svg>
+          <span>Net Worth</span>
+        </a>
+        <a href="money-required.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M3 13a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v6a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -6" /><path d="M15 9a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v10a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -10" /><path d="M9 5a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v14a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -14" /><path d="M4 20h14" /></svg>
+          <span>Cash Flow</span>
+        </a>
+        <a href="life-expectancy.html" class="active">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M19.5 12.572l-7.5 7.428l-7.5 -7.428a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572" /></svg>
+          <span>Health</span>
+        </a>
+        <a href="features.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M5 12m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M12 12m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M19 12m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /></svg>
+          <span>More</span>
+        </a>
+      </nav>
+  </div>
+
+  <!-- Add/Edit Food Entry -->
+  <div class="modal-overlay" id="entryModal">
+    <div class="modal-box">
+      <h3 id="entryModalTitle">Add Food</h3>
+      <div class="form-error" id="entryFormError"></div>
+      <div class="field-item">
+        <label class="field-label">Food name</label>
+        <input type="text" class="num-input" id="entryNameInput" placeholder="e.g. 2 idlis with sambar">
+      </div>
+      <div class="field-item">
+        <label class="field-label">Calories (kcal)</label>
+        <input type="number" class="num-input" id="entryCaloriesInput" min="0" step="10">
+      </div>
+      <div class="field-item">
+        <label class="field-label">Meal</label>
+        <select class="field-select" id="entryMealInput">
+          <option value="breakfast">Breakfast</option>
+          <option value="lunch">Lunch</option>
+          <option value="dinner">Dinner</option>
+          <option value="snack" selected>Snack</option>
+        </select>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn-danger-text" id="deleteEntryBtn" style="display:none;">Delete</button>
+        <div class="modal-actions-right">
+          <button type="button" class="btn-secondary" id="cancelEntryBtn">Cancel</button>
+          <button type="button" class="btn-primary" id="saveEntryBtn">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Daily Target -->
+  <div class="modal-overlay" id="targetModal">
+    <div class="modal-box">
+      <h3>Daily Calorie Target</h3>
+      <div class="form-error" id="targetFormError"></div>
+      <div class="field-item">
+        <label class="field-label">Target (kcal/day)</label>
+        <input type="number" class="num-input" id="targetInput" min="800" step="50">
+      </div>
+      <div class="field-hint" id="targetSuggestionHint"></div>
+      <div class="modal-actions">
+        <div class="modal-actions-right">
+          <button type="button" class="btn-secondary" id="cancelTargetBtn">Cancel</button>
+          <button type="button" class="btn-primary" id="saveTargetBtn">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-client.js"></script>
+  <script>
+    function toggleSidebar() {
+      var sidebar = document.getElementById('sidebar');
+      var backdrop = document.getElementById('sidebarBackdrop');
+      var isOpen = sidebar.classList.toggle('open');
+      backdrop.classList.toggle('open', isOpen);
+    }
+
+    var ACTIVITY_MULTIPLIER = { sedentary: 1.2, light: 1.375, moderate: 1.55, vigorous: 1.725 };
+    var MEALS = [
+      { key: 'breakfast', label: 'Breakfast' },
+      { key: 'lunch', label: 'Lunch' },
+      { key: 'dinner', label: 'Dinner' },
+      { key: 'snack', label: 'Snack' }
+    ];
+    var DEFAULT_TARGET = 2000;
+
+    function todayStr() {
+      var d = new Date();
+      return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    }
+
+    function dateToStr(d) {
+      return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    }
+
+    function addDays(dateStr, n) {
+      var d = new Date(dateStr + 'T00:00:00');
+      d.setDate(d.getDate() + n);
+      return dateToStr(d);
+    }
+
+    function formatDateLabel(dateStr) {
+      if (dateStr === todayStr()) return 'Today';
+      if (dateStr === addDays(todayStr(), -1)) return 'Yesterday';
+      var d = new Date(dateStr + 'T00:00:00');
+      return d.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' });
+    }
+
+    function escapeHtml(s) {
+      return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+      });
+    }
+
+    var state = {
+      selectedDate: todayStr(),
+      settings: null,
+      suggestedTarget: null,
+      entries: [],
+      editingEntryId: null
+    };
+
+    function effectiveTarget() {
+      if (state.settings && state.settings.daily_target_kcal) return Number(state.settings.daily_target_kcal);
+      if (state.suggestedTarget) return Math.round(state.suggestedTarget);
+      return DEFAULT_TARGET;
+    }
+
+    async function loadSettings() {
+      var { data } = await supabaseClient.from('calorie_settings').select('*').maybeSingle();
+      state.settings = data || null;
+
+      try {
+        var { data: bf } = await supabaseClient.from('body_fat_inputs').select('*').maybeSingle();
+        if (bf) {
+          var bmr = bf.sex === 'female'
+            ? 10 * bf.weight_kg + 6.25 * bf.height_cm - 5 * bf.age - 161
+            : 10 * bf.weight_kg + 6.25 * bf.height_cm - 5 * bf.age + 5;
+          var tdee = bmr * (ACTIVITY_MULTIPLIER[bf.activity_level] || ACTIVITY_MULTIPLIER.light);
+          state.suggestedTarget = tdee - Number(bf.daily_deficit_kcal || 0);
+        }
+      } catch (e) {
+        // No Body Fat Calculator inputs saved yet - fall back to the generic default.
+      }
+    }
+
+    async function loadEntriesForSelectedDate() {
+      var { data, error } = await supabaseClient
+        .from('calorie_entries')
+        .select('*')
+        .eq('entry_date', state.selectedDate)
+        .order('created_at', { ascending: true });
+      if (error) { console.error('Could not load calorie entries', error); return; }
+      state.entries = data || [];
+    }
+
+    function renderSummary() {
+      var target = effectiveTarget();
+      var consumed = state.entries.reduce(function (sum, e) { return sum + Number(e.calories || 0); }, 0);
+      var remaining = target - consumed;
+      var pct = target > 0 ? Math.min(100, Math.round((consumed / target) * 100)) : 0;
+
+      document.getElementById('calTargetValue').textContent = Math.round(target).toLocaleString('en-IN') + ' kcal';
+      document.getElementById('calConsumedValue').textContent = Math.round(consumed).toLocaleString('en-IN') + ' kcal';
+
+      var remEl = document.getElementById('calRemainingValue');
+      remEl.textContent = Math.round(Math.abs(remaining)).toLocaleString('en-IN') + ' kcal' + (remaining < 0 ? ' over' : '');
+      remEl.className = 'cal-stat-value' + (remaining < 0 ? ' over' : consumed > 0 ? ' under' : '');
+
+      document.getElementById('calRingPct').textContent = pct + '%';
+      var circumference = 2 * Math.PI * 46;
+      var offset = circumference - (Math.min(consumed / target, 1) * circumference);
+      var ring = document.getElementById('calRingProgress');
+      ring.setAttribute('stroke-dasharray', circumference.toFixed(1));
+      ring.setAttribute('stroke-dashoffset', offset.toFixed(1));
+      ring.setAttribute('stroke', consumed > target ? '#dc2626' : '#10b981');
+    }
+
+    function renderDateNav() {
+      document.getElementById('calDateLabel').textContent = formatDateLabel(state.selectedDate);
+      document.getElementById('jumpTodayBtn').style.display = state.selectedDate === todayStr() ? 'none' : 'inline-block';
+      document.getElementById('nextDayBtn').disabled = state.selectedDate >= todayStr();
+    }
+
+    function renderLog() {
+      var container = document.getElementById('mealGroups');
+      var empty = document.getElementById('logEmptyState');
+
+      if (!state.entries.length) {
+        container.innerHTML = '';
+        empty.style.display = 'block';
+        return;
+      }
+      empty.style.display = 'none';
+
+      container.innerHTML = MEALS.map(function (meal) {
+        var rows = state.entries.filter(function (e) { return e.meal_type === meal.key; });
+        if (!rows.length) return '';
+        var total = rows.reduce(function (sum, e) { return sum + Number(e.calories || 0); }, 0);
+        return '' +
+          '<div class="cal-meal-group">' +
+            '<div class="cal-meal-head"><span class="cal-meal-name">' + meal.label + '</span><span class="cal-meal-total">' + Math.round(total).toLocaleString('en-IN') + ' kcal</span></div>' +
+            rows.map(function (e) {
+              return '' +
+                '<div class="cal-entry-row">' +
+                  '<div class="cal-entry-name">' + escapeHtml(e.food_name) + '</div>' +
+                  '<div class="cal-entry-right">' +
+                    '<div class="cal-entry-kcal">' + Math.round(e.calories).toLocaleString('en-IN') + ' kcal</div>' +
+                    '<div class="cal-entry-actions"><button type="button" class="btn-edit-text" data-edit="' + e.id + '">Edit</button></div>' +
+                  '</div>' +
+                '</div>';
+            }).join('') +
+          '</div>';
+      }).join('');
+
+      Array.prototype.forEach.call(container.querySelectorAll('[data-edit]'), function (btn) {
+        btn.addEventListener('click', function () { openEntryModal(btn.getAttribute('data-edit')); });
+      });
+    }
+
+    async function renderChart() {
+      var target = effectiveTarget();
+      var days = [];
+      for (var i = 6; i >= 0; i--) days.push(addDays(todayStr(), -i));
+
+      var { data, error } = await supabaseClient
+        .from('calorie_entries')
+        .select('entry_date, calories')
+        .gte('entry_date', days[0])
+        .lte('entry_date', days[days.length - 1]);
+      if (error) { console.error('Could not load 7-day calorie chart', error); return; }
+
+      var totals = {};
+      (data || []).forEach(function (row) {
+        totals[row.entry_date] = (totals[row.entry_date] || 0) + Number(row.calories || 0);
+      });
+
+      var maxVal = Math.max(target, Math.max.apply(null, days.map(function (d) { return totals[d] || 0; })), 1);
+
+      document.getElementById('calChartBars').innerHTML = days.map(function (d) {
+        var total = totals[d] || 0;
+        var heightPct = Math.max((total / maxVal) * 100, total > 0 ? 3 : 0);
+        var over = total > target;
+        var label = new Date(d + 'T00:00:00').toLocaleDateString('en-IN', { weekday: 'narrow' });
+        return '' +
+          '<div class="cal-chart-col">' +
+            '<div class="cal-chart-bar-track"><div class="cal-chart-bar' + (over ? ' over' : '') + '" style="height:' + heightPct + '%" title="' + Math.round(total) + ' kcal"></div></div>' +
+            '<div class="cal-chart-day">' + label + '</div>' +
+          '</div>';
+      }).join('');
+    }
+
+    async function refresh() {
+      await loadEntriesForSelectedDate();
+      renderSummary();
+      renderDateNav();
+      renderLog();
+    }
+
+    function openEntryModal(entryId) {
+      state.editingEntryId = entryId || null;
+      document.getElementById('entryFormError').textContent = '';
+      var deleteBtn = document.getElementById('deleteEntryBtn');
+
+      if (entryId) {
+        var e = state.entries.filter(function (x) { return x.id === entryId; })[0];
+        document.getElementById('entryModalTitle').textContent = 'Edit Food';
+        document.getElementById('entryNameInput').value = e ? e.food_name : '';
+        document.getElementById('entryCaloriesInput').value = e ? e.calories : '';
+        document.getElementById('entryMealInput').value = e ? e.meal_type : 'snack';
+        deleteBtn.style.display = 'inline-block';
+      } else {
+        document.getElementById('entryModalTitle').textContent = 'Add Food';
+        document.getElementById('entryNameInput').value = '';
+        document.getElementById('entryCaloriesInput').value = '';
+        document.getElementById('entryMealInput').value = 'snack';
+        deleteBtn.style.display = 'none';
+      }
+
+      document.getElementById('entryModal').classList.add('show');
+    }
+
+    function closeEntryModal() {
+      document.getElementById('entryModal').classList.remove('show');
+    }
+
+    async function saveEntry() {
+      var name = document.getElementById('entryNameInput').value.trim();
+      var calories = Number(document.getElementById('entryCaloriesInput').value);
+      var meal = document.getElementById('entryMealInput').value;
+      var errEl = document.getElementById('entryFormError');
+
+      if (!name) { errEl.textContent = 'Please enter a food name.'; return; }
+      if (!calories || calories <= 0) { errEl.textContent = 'Please enter a valid calorie count.'; return; }
+
+      var saveBtn = document.getElementById('saveEntryBtn');
+      saveBtn.disabled = true;
+      try {
+        var payload = { food_name: name, calories: calories, meal_type: meal, entry_date: state.selectedDate };
+        if (state.editingEntryId) {
+          var { error } = await supabaseClient.from('calorie_entries').update(payload).eq('id', state.editingEntryId);
+          if (error) throw error;
+        } else {
+          var { error: insError } = await supabaseClient.from('calorie_entries').insert(payload);
+          if (insError) throw insError;
+        }
+        closeEntryModal();
+        await refresh();
+        await renderChart();
+      } catch (e) {
+        console.error('Could not save calorie entry', e);
+        errEl.textContent = 'Could not save. Please try again.';
+      } finally {
+        saveBtn.disabled = false;
+      }
+    }
+
+    async function deleteEntry() {
+      if (!state.editingEntryId) return;
+      if (!window.confirm('Remove this food entry?')) return;
+      var { error } = await supabaseClient.from('calorie_entries').delete().eq('id', state.editingEntryId);
+      if (error) { console.error('Could not delete calorie entry', error); return; }
+      closeEntryModal();
+      await refresh();
+      await renderChart();
+    }
+
+    function openTargetModal() {
+      document.getElementById('targetFormError').textContent = '';
+      document.getElementById('targetInput').value = effectiveTarget();
+      var hint = document.getElementById('targetSuggestionHint');
+      hint.textContent = state.suggestedTarget
+        ? 'Suggested from your Body Fat Calculator inputs: ' + Math.round(state.suggestedTarget) + ' kcal/day.'
+        : 'Set your details in the Body Fat Calculator for a suggested target based on your TDEE.';
+      document.getElementById('targetModal').classList.add('show');
+    }
+
+    function closeTargetModal() {
+      document.getElementById('targetModal').classList.remove('show');
+    }
+
+    async function saveTarget() {
+      var value = Number(document.getElementById('targetInput').value);
+      var errEl = document.getElementById('targetFormError');
+      if (!value || value < 800) { errEl.textContent = 'Please enter a target of at least 800 kcal.'; return; }
+
+      var saveBtn = document.getElementById('saveTargetBtn');
+      saveBtn.disabled = true;
+      try {
+        var payload = { daily_target_kcal: value, updated_at: new Date().toISOString() };
+        var { error } = await supabaseClient.from('calorie_settings').upsert(payload, { onConflict: 'user_id' });
+        if (error) throw error;
+        await loadSettings();
+        closeTargetModal();
+        renderSummary();
+        await renderChart();
+      } catch (e) {
+        console.error('Could not save calorie target', e);
+        errEl.textContent = 'Could not save. Please try again.';
+      } finally {
+        saveBtn.disabled = false;
+      }
+    }
+
+    (async function init() {
+      var user = await requireAuth('login.html');
+      if (!user) return;
+
+      document.getElementById('addEntryBtn').addEventListener('click', function () { openEntryModal(null); });
+      document.getElementById('cancelEntryBtn').addEventListener('click', closeEntryModal);
+      document.getElementById('saveEntryBtn').addEventListener('click', saveEntry);
+      document.getElementById('deleteEntryBtn').addEventListener('click', deleteEntry);
+      document.getElementById('entryModal').addEventListener('click', function (e) { if (e.target === this) closeEntryModal(); });
+
+      document.getElementById('editTargetBtn').addEventListener('click', openTargetModal);
+      document.getElementById('cancelTargetBtn').addEventListener('click', closeTargetModal);
+      document.getElementById('saveTargetBtn').addEventListener('click', saveTarget);
+      document.getElementById('targetModal').addEventListener('click', function (e) { if (e.target === this) closeTargetModal(); });
+
+      document.getElementById('prevDayBtn').addEventListener('click', async function () {
+        state.selectedDate = addDays(state.selectedDate, -1);
+        await refresh();
+      });
+      document.getElementById('nextDayBtn').addEventListener('click', async function () {
+        if (state.selectedDate >= todayStr()) return;
+        state.selectedDate = addDays(state.selectedDate, 1);
+        await refresh();
+      });
+      document.getElementById('jumpTodayBtn').addEventListener('click', async function () {
+        state.selectedDate = todayStr();
+        await refresh();
+      });
+
+      await loadSettings();
+      await refresh();
+      await renderChart();
+    })();
+  </script>
+</body>
+</html>
