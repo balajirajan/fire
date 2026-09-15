@@ -1303,18 +1303,25 @@
     }
 
     document.addEventListener('DOMContentLoaded', function () {
-      var words = ['Money', 'Wealth', 'Health'];
-      var el = document.getElementById('heroRotatingWord');
-      if (!el) return;
-      var index = 0;
-      setInterval(function () {
-        index = (index + 1) % words.length;
-        el.classList.add('fade-out');
+      function rotateWord(elementId, words, intervalMs, startDelayMs) {
+        var el = document.getElementById(elementId);
+        if (!el) return;
+        var index = 0;
         setTimeout(function () {
-          el.textContent = words[index];
-          el.classList.remove('fade-out');
-        }, 250);
-      }, 2200);
+          setInterval(function () {
+            index = (index + 1) % words.length;
+            el.classList.add('fade-out');
+            setTimeout(function () {
+              el.textContent = words[index];
+              el.classList.remove('fade-out');
+            }, 250);
+          }, intervalMs);
+        }, startDelayMs);
+      }
+
+      rotateWord('heroRotatingWord1', ['Money', 'Net Worth', 'FIRE', 'Health'], 2200, 0);
+      rotateWord('heroRotatingWord2', ['Wealth', 'Health'], 2200, 700);
+      rotateWord('heroRotatingWord3', ['Freedom', 'Health', 'FIRE'], 2200, 1400);
     });
   </script>
 
@@ -1323,9 +1330,9 @@
     <section class="hero">
       <p class="hero-eyebrow">Personal Life &amp; Wealth OS</p>
       <h1>
-        Track Your <span class="hero-rotating-word" id="heroRotatingWord">Money</span>.<br>
-        Build Your Wealth.<br>
-        <span class="gradient">Reach Your Freedom.</span>
+        Track Your <span class="hero-rotating-word" id="heroRotatingWord1">Money</span>.<br>
+        Build Your <span class="hero-rotating-word" id="heroRotatingWord2">Wealth</span>.<br>
+        <span class="gradient">Reach Your <span class="hero-rotating-word" id="heroRotatingWord3">Freedom</span>.</span>
       </h1>
       <p>Build wealth. Protect what matters. Live better. EnrichMe brings FIRE planning, net worth tracking, budgeting, and family health into one dashboard.</p>
     </section>
