@@ -997,22 +997,19 @@
     }
 
     .pricing-teaser-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1.25rem;
+      display: flex;
+      justify-content: center;
       margin-bottom: 2rem;
-    }
-
-    @media (max-width: 800px) {
-      .pricing-teaser-grid { grid-template-columns: 1fr; }
     }
 
     .pricing-chip {
       background: var(--bg-alt);
       border: 1px solid var(--border);
       border-radius: 1rem;
-      padding: 1.5rem 1.25rem;
+      padding: 1.5rem 1.5rem;
       text-align: left;
+      max-width: 340px;
+      width: 100%;
     }
 
     .pricing-chip .chip-plan {
@@ -2337,24 +2334,14 @@
 
   <!-- Pricing Teaser -->
   <section class="pricing-teaser-section">
-    <h2>Straightforward pricing, start free</h2>
-    <p>From solo tracking to full family wealth management - a plan for every stage, in rupees you understand.</p>
+    <h2>Not built for the 1.1% Club</h2>
+    <p>Every feature, for everyone - the app is free, and the only thing you pay is what it costs us to keep the servers and AI running.</p>
 
     <div class="pricing-teaser-grid">
       <div class="pricing-chip">
-        <div class="chip-plan">Basic</div>
-        <div class="chip-price">₹0 <span>/ forever</span></div>
-        <p>Manual net worth, budgeting and FIRE planning for one user.</p>
-      </div>
-      <div class="pricing-chip">
-        <div class="chip-plan">Family</div>
-        <div class="chip-price">₹299 <span>/ month</span></div>
-        <p>Up to 5 members, shared goals and split expenses.</p>
-      </div>
-      <div class="pricing-chip">
-        <div class="chip-plan">HNI</div>
-        <div class="chip-price">₹999 <span>/ month</span></div>
-        <p>Auto net worth sync via the SEBI-regulated Account Aggregator framework.</p>
+        <div class="chip-plan">The only plan</div>
+        <div class="chip-price">₹25 <span>/ month</span></div>
+        <p>At cost, for cloud hosting and AI - nothing added on top.</p>
       </div>
     </div>
 
@@ -2364,7 +2351,7 @@
   <!-- Get Started -->
   <section class="get-started-section">
     <h2>Start tracking your money today</h2>
-    <p>Free forever on Basic. No credit card required.</p>
+    <p>Every feature included. No credit card required to sign up.</p>
     <a href="login.html?mode=signup" class="btn btn-primary">Start Free →</a>
   </section>
 
