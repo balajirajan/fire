@@ -853,6 +853,125 @@
       border-radius: 0.7rem;
     }
 
+    /* Mock UI panels (HTML/CSS app previews for login-gated features) */
+    .mock-panel {
+      padding: 1.4rem 1.3rem;
+    }
+
+    .mock-panel-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      margin-bottom: 0.35rem;
+    }
+
+    .mock-panel-value {
+      font-size: 1.9rem;
+      font-weight: 800;
+      color: var(--ink);
+      margin-bottom: 0.2rem;
+    }
+
+    .mock-panel-sub {
+      font-size: 0.82rem;
+      color: var(--ink-soft);
+      line-height: 1.4;
+    }
+
+    .mock-spark {
+      display: block;
+      width: 100%;
+      margin-top: 0.6rem;
+    }
+
+    .mock-divider {
+      border-top: 1px solid var(--border);
+      margin: 1rem 0 0.2rem;
+    }
+
+    .mock-row {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      padding: 0.65rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .mock-row:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .mock-row-icon {
+      flex-shrink: 0;
+      width: 32px;
+      height: 32px;
+      border-radius: 0.55rem;
+      background: var(--ink);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .mock-row-icon svg { width: 16px; height: 16px; }
+
+    .mock-row-body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .mock-row-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .mock-row-sub {
+      font-size: 0.72rem;
+      color: var(--ink-faint);
+      margin-top: 0.1rem;
+    }
+
+    .mock-row-value {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--ink);
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .mock-row-value.positive { color: #1a7f4e; }
+    .mock-row-value.negative { color: var(--accent); }
+
+    .mock-tag {
+      flex-shrink: 0;
+      font-size: 0.66rem;
+      font-weight: 700;
+      padding: 0.22rem 0.55rem;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+
+    .mock-tag.tag-success { background: #e6f4ec; color: #1a7f4e; }
+    .mock-tag.tag-warning { background: var(--accent-tint); color: var(--accent-dark); }
+    .mock-tag.tag-neutral { background: var(--bg-alt); color: var(--ink-soft); }
+
+    .mock-bar-track {
+      height: 6px;
+      border-radius: 999px;
+      background: var(--bg-alt);
+      overflow: hidden;
+      margin: 0.6rem 0 0;
+    }
+
+    .mock-bar-fill {
+      height: 100%;
+      border-radius: 999px;
+      background: var(--accent);
+    }
+
     /* Pricing Teaser */
     .pricing-teaser-section {
       position: relative;
@@ -1874,8 +1993,40 @@
     </div>
   </section>
 
-  <!-- Feature Showcase: Expense tracking -->
+  <!-- Feature Showcase: Net worth -->
   <section class="showcase-section reverse">
+    <div class="showcase-grid">
+      <div class="showcase-visual">
+        <div class="showcase-visual-frame">
+          <div class="mock-panel">
+            <div class="mock-panel-label">Net Worth</div>
+            <div class="mock-panel-value">₹6.5 Cr</div>
+            <div class="mock-panel-sub">On the way to your ₹11.6 Cr FIRE target</div>
+            <svg class="mock-spark" height="34" viewBox="0 0 300 34" preserveAspectRatio="none"><path d="M2,30 Q80,20 150,14 T298,3" fill="none" stroke="#de3341" stroke-width="2"/></svg>
+            <div class="mock-divider"></div>
+            <div class="mock-row"><div class="mock-row-body"><div class="mock-row-title">Investments</div></div><div class="mock-row-value positive">₹3.2 Cr</div></div>
+            <div class="mock-row"><div class="mock-row-body"><div class="mock-row-title">Property</div></div><div class="mock-row-value positive">₹2.1 Cr</div></div>
+            <div class="mock-row"><div class="mock-row-body"><div class="mock-row-title">Bank Balances</div></div><div class="mock-row-value positive">₹85 L</div></div>
+            <div class="mock-row"><div class="mock-row-body"><div class="mock-row-title">Gold</div></div><div class="mock-row-value positive">₹40 L</div></div>
+            <div class="mock-row"><div class="mock-row-body"><div class="mock-row-title">Loans</div></div><div class="mock-row-value negative">-₹65 L</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="showcase-text">
+        <h2 class="showcase-title">Your net worth, updated the moment anything changes</h2>
+        <p class="showcase-desc">Every account, investment, gold holding and property rolled into one live number - no monthly close to wait for, no spreadsheet to reconcile.</p>
+        <ul class="showcase-points">
+          <li>Bank balances, investments, gold, property and loans in one number</li>
+          <li>A six-category breakdown shows exactly what moved your number</li>
+          <li>Tracks the gap between where you are and your FIRE target</li>
+        </ul>
+        <a href="login.html?mode=signup" class="btn btn-primary">Track Your Net Worth →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Feature Showcase: Expense tracking -->
+  <section class="showcase-section">
     <div class="showcase-grid">
       <div class="showcase-visual">
         <div class="showcase-visual-frame">
@@ -1891,6 +2042,203 @@
           <li>Spots your biggest spending category in one glance</li>
         </ul>
         <a href="calculator/monthly-expense-calculator.html" class="btn btn-primary">Try the Expense Calculator →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Feature Showcase: Life expectancy -->
+  <section class="showcase-section reverse">
+    <div class="showcase-grid">
+      <div class="showcase-visual">
+        <div class="showcase-visual-frame">
+          <div class="mock-panel">
+            <div class="mock-panel-label">Health &amp; Longevity</div>
+            <div class="mock-panel-value">84 → 87 yrs</div>
+            <div class="mock-panel-sub">+3 years from healthier habits</div>
+            <div class="mock-bar-track"><div class="mock-bar-fill" style="width: 68%"></div></div>
+            <div class="mock-divider"></div>
+            <div class="mock-row"><div class="mock-row-body"><div class="mock-row-title">Sleep quality</div></div><span class="mock-tag tag-success">Good</span></div>
+            <div class="mock-row"><div class="mock-row-body"><div class="mock-row-title">Activity level</div></div><span class="mock-tag tag-success">Active</span></div>
+            <div class="mock-row"><div class="mock-row-body"><div class="mock-row-title">Diet score</div></div><span class="mock-tag tag-neutral">7 / 10</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="showcase-text">
+        <h2 class="showcase-title">Know the years you're actually planning for</h2>
+        <p class="showcase-desc">A few real health inputs turn into a life expectancy estimate, so your FIRE number accounts for the years you're likely to live, not a flat guess.</p>
+        <ul class="showcase-points">
+          <li>Built from real health inputs, not just your age</li>
+          <li>See how habits like sleep, activity and diet move the estimate</li>
+          <li>Feeds straight into your FIRE plan's retirement horizon</li>
+        </ul>
+        <a href="login.html?mode=signup" class="btn btn-primary">Estimate Your Life Expectancy →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Feature Showcase: Insurance tracker -->
+  <section class="showcase-section">
+    <div class="showcase-grid">
+      <div class="showcase-text">
+        <h2 class="showcase-title">Every policy, one screen, no missed renewals</h2>
+        <p class="showcase-desc">Term, health and vehicle insurance together, with sums assured, premiums and renewal dates that actually remind you before a policy lapses.</p>
+        <ul class="showcase-points">
+          <li>All your policies in one list, however many insurers you use</li>
+          <li>A coverage gap check against your dependents and loans</li>
+          <li>Renewal reminders before a policy silently lapses</li>
+        </ul>
+        <a href="login.html?mode=signup" class="btn btn-primary">Track Your Insurance →</a>
+      </div>
+      <div class="showcase-visual">
+        <div class="showcase-visual-frame">
+          <div class="mock-panel">
+            <div class="mock-panel-label">Insurance Tracker</div>
+            <div class="mock-panel-value">4 policies</div>
+            <div class="mock-panel-sub">No coverage gaps</div>
+            <div class="mock-divider"></div>
+            <div class="mock-row">
+              <div class="mock-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11.46 20.846a12 12 0 0 1 -7.96 -14.846a12 12 0 0 0 8.5 -3a12 12 0 0 0 8.5 3a12 12 0 0 1 -.09 7.06" /><path d="M15 19l2 2l4 -4" /></svg></div>
+              <div class="mock-row-body"><div class="mock-row-title">Term Life</div><div class="mock-row-sub">Sum assured ₹1 Cr</div></div>
+              <span class="mock-tag tag-success">Active</span>
+            </div>
+            <div class="mock-row">
+              <div class="mock-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11.46 20.846a12 12 0 0 1 -7.96 -14.846a12 12 0 0 0 8.5 -3a12 12 0 0 0 8.5 3a12 12 0 0 1 -.09 7.06" /><path d="M15 19l2 2l4 -4" /></svg></div>
+              <div class="mock-row-body"><div class="mock-row-title">Health</div><div class="mock-row-sub">Sum assured ₹10 L</div></div>
+              <span class="mock-tag tag-warning">Renews in 12 days</span>
+            </div>
+            <div class="mock-row">
+              <div class="mock-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11.46 20.846a12 12 0 0 1 -7.96 -14.846a12 12 0 0 0 8.5 -3a12 12 0 0 0 8.5 3a12 12 0 0 1 -.09 7.06" /><path d="M15 19l2 2l4 -4" /></svg></div>
+              <div class="mock-row-body"><div class="mock-row-title">Vehicle</div><div class="mock-row-sub">Sum assured ₹3 L</div></div>
+              <span class="mock-tag tag-success">Active</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Feature Showcase: Document vault -->
+  <section class="showcase-section reverse">
+    <div class="showcase-grid">
+      <div class="showcase-visual">
+        <div class="showcase-visual-frame">
+          <div class="mock-panel">
+            <div class="mock-panel-label">Document Vault</div>
+            <div class="mock-panel-value">14 documents</div>
+            <div class="mock-panel-sub">AES-256 encrypted, only you hold the key</div>
+            <div class="mock-divider"></div>
+            <div class="mock-row">
+              <div class="mock-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v6a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-6" /><path d="M11 16a1 1 0 1 0 2 0a1 1 0 0 0 -2 0" /><path d="M8 11v-4a4 4 0 1 1 8 0v4" /></svg></div>
+              <div class="mock-row-body"><div class="mock-row-title">Bank Locker</div><div class="mock-row-sub">3 files</div></div>
+              <span class="mock-tag tag-neutral">Encrypted</span>
+            </div>
+            <div class="mock-row">
+              <div class="mock-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21l18 0" /><path d="M9 8l1 0" /><path d="M9 12l1 0" /><path d="M9 16l1 0" /><path d="M14 8l1 0" /><path d="M14 12l1 0" /><path d="M14 16l1 0" /><path d="M5 21v-16a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v16" /></svg></div>
+              <div class="mock-row-body"><div class="mock-row-title">Property Documents</div><div class="mock-row-sub">5 files</div></div>
+              <span class="mock-tag tag-neutral">Encrypted</span>
+            </div>
+            <div class="mock-row">
+              <div class="mock-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11.46 20.846a12 12 0 0 1 -7.96 -14.846a12 12 0 0 0 8.5 -3a12 12 0 0 0 8.5 3a12 12 0 0 1 -.09 7.06" /><path d="M15 19l2 2l4 -4" /></svg></div>
+              <div class="mock-row-body"><div class="mock-row-title">Insurance Documents</div><div class="mock-row-sub">4 files</div></div>
+              <span class="mock-tag tag-neutral">Encrypted</span>
+            </div>
+            <div class="mock-row">
+              <div class="mock-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 9l-10 -4l-10 4l10 4l10 -4v6" /><path d="M6 10.6v5.4a6 3 0 0 0 12 0v-5.4" /></svg></div>
+              <div class="mock-row-body"><div class="mock-row-title">Education Certificates</div><div class="mock-row-sub">2 files</div></div>
+              <span class="mock-tag tag-neutral">Encrypted</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="showcase-text">
+        <h2 class="showcase-title">Every important document, encrypted, only you hold the key</h2>
+        <p class="showcase-desc">Insurance papers, property deeds, education certificates - locked with bank-grade AES-256 encryption and a passphrase only you know. Not even we can read them.</p>
+        <ul class="showcase-points">
+          <li>Real client-side encryption, not just password-protected storage</li>
+          <li>Organized by category - legal, property, vehicle, education and more</li>
+          <li>No recovery path by design - your key never leaves your device</li>
+        </ul>
+        <a href="login.html?mode=signup" class="btn btn-primary">Secure Your Documents →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Feature Showcase: Will planner -->
+  <section class="showcase-section">
+    <div class="showcase-grid">
+      <div class="showcase-text">
+        <h2 class="showcase-title">Put your wishes in writing, before you need to</h2>
+        <p class="showcase-desc">Draft your will, list your executors and beneficiaries, and keep it alongside everything else your family will need to find, all in one place.</p>
+        <ul class="showcase-points">
+          <li>Guided sections for assets, executors and beneficiaries</li>
+          <li>Stored alongside your document vault, not a separate app</li>
+          <li>Update it anytime as your family or assets change</li>
+        </ul>
+        <a href="login.html?mode=signup" class="btn btn-primary">Start Your Will →</a>
+      </div>
+      <div class="showcase-visual">
+        <div class="showcase-visual-frame">
+          <div class="mock-panel">
+            <div class="mock-panel-label">Will Planner</div>
+            <div class="mock-panel-value">Draft ready</div>
+            <div class="mock-panel-sub">Last updated 3 months ago</div>
+            <div class="mock-divider"></div>
+            <div class="mock-row">
+              <div class="mock-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 1 0 0 18a9 9 0 1 0 0 -18" /><path d="M9 12l2 2l4 -4" /></svg></div>
+              <div class="mock-row-body"><div class="mock-row-title">Executors added</div></div>
+              <span class="mock-tag tag-success">Done</span>
+            </div>
+            <div class="mock-row">
+              <div class="mock-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 1 0 0 18a9 9 0 1 0 0 -18" /><path d="M9 12l2 2l4 -4" /></svg></div>
+              <div class="mock-row-body"><div class="mock-row-title">Beneficiaries added</div></div>
+              <span class="mock-tag tag-success">Done</span>
+            </div>
+            <div class="mock-row">
+              <div class="mock-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 1 0 0 18a9 9 0 1 0 0 -18" /><path d="M9 12l2 2l4 -4" /></svg></div>
+              <div class="mock-row-body"><div class="mock-row-title">Assets listed (12)</div></div>
+              <span class="mock-tag tag-success">Done</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Feature Showcase: SplitExpenses, To-Dos and Reminders -->
+  <section class="showcase-section reverse">
+    <div class="showcase-grid">
+      <div class="showcase-visual">
+        <div class="showcase-visual-frame">
+          <div class="mock-panel">
+            <div class="mock-panel-label">SplitExpenses</div>
+            <div class="mock-panel-value">₹1,200</div>
+            <div class="mock-panel-sub">Priya owes you, from last weekend's trip</div>
+            <div class="mock-divider"></div>
+            <div class="mock-row"><div class="mock-row-body"><div class="mock-row-title">You owe Rahul</div></div><div class="mock-row-value negative">-₹850</div></div>
+            <div class="mock-row"><div class="mock-row-body"><div class="mock-row-title">Priya owes you</div></div><div class="mock-row-value positive">+₹1,200</div></div>
+            <div class="mock-divider"></div>
+            <div class="mock-row">
+              <div class="mock-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 5a2 2 0 1 1 4 0a7 7 0 0 1 4 6v3a4 4 0 0 0 2 3h-16a4 4 0 0 0 2 -3v-3a7 7 0 0 1 4 -6" /><path d="M9 17v1a3 3 0 0 0 6 0v-1" /></svg></div>
+              <div class="mock-row-body"><div class="mock-row-title">Term insurance renews</div></div>
+              <span class="mock-tag tag-warning">12 days</span>
+            </div>
+            <div class="mock-row">
+              <div class="mock-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.615 20h-2.615a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h8a2 2 0 0 1 2 2v8" /><path d="M14 19l2 2l4 -4" /><path d="M9 8h4" /><path d="M9 12h2" /></svg></div>
+              <div class="mock-row-body"><div class="mock-row-title">Book annual health checkup</div></div>
+              <span class="mock-tag tag-neutral">To-do</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="showcase-text">
+        <h2 class="showcase-title">Split expenses, remember renewals, never miss a to-do</h2>
+        <p class="showcase-desc">Split group expenses with friends and family and settle up in one tap, while reminders and to-dos catch the everyday things a spreadsheet never will.</p>
+        <ul class="showcase-points">
+          <li>Split and settle group expenses, no manual math</li>
+          <li>Renewal reminders for policies, subscriptions and EMIs</li>
+          <li>A shared to-do list for the whole household</li>
+        </ul>
+        <a href="login.html?mode=signup" class="btn btn-primary">Explore SplitExpenses →</a>
       </div>
     </div>
   </section>
