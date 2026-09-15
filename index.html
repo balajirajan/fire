@@ -8,7 +8,7 @@
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#712B13">
-  <meta name="description" content="Build wealth. Protect what matters. Live better. EnrichMe brings wealth, health and family into one dashboard - FIRE planning, net worth, budgeting, insurance and family health.">
+  <meta name="description" content="Build wealth. Protect what matters. Live better. EnrichMe is the OS for money, health and family - FIRE planning, net worth, budgeting, insurance and family health, in one dashboard.">
   <title>EnrichMe - Your Money. Your Health. Your Family. Your Freedom.</title>
   <style>
     * {
@@ -496,6 +496,124 @@
       width: 100%;
       height: auto;
       border-radius: 0.8rem;
+    }
+
+    /* Hero dashboard preview card (4-tile pillar summary + a renewal banner) */
+    .hero-dash {
+      position: relative;
+      z-index: 1;
+      background: #f3f1ec;
+      border-radius: 1.25rem;
+      padding: 1.5rem;
+      box-shadow: 0 30px 70px rgba(22, 19, 15, 0.14), 0 4px 14px rgba(22, 19, 15, 0.05);
+      max-width: 480px;
+      width: 100%;
+      min-width: 0;
+    }
+
+    .hero-dash-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+
+    .hero-dash-tile {
+      background: #ffffff;
+      border-radius: 0.85rem;
+      padding: 0.9rem;
+      box-shadow: 0 8px 24px -12px rgba(0, 0, 0, 0.15);
+    }
+
+    .hero-dash-label {
+      font-size: 0.66rem;
+      font-weight: 700;
+      color: #712b13;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.35rem;
+    }
+
+    .hero-dash-value {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 0.15rem;
+    }
+
+    .hero-dash-sub {
+      font-size: 0.72rem;
+      color: var(--ink-soft);
+      line-height: 1.4;
+      margin-bottom: 0.55rem;
+    }
+
+    .hero-dash-spark {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .hero-dash-inline {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: #712b13;
+    }
+
+    .hero-dash-inline svg {
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
+    }
+
+    .hero-dash-inline .hero-dash-sub-text {
+      color: var(--ink-soft);
+      font-weight: 500;
+    }
+
+    .hero-dash-pills {
+      display: flex;
+      gap: 0.35rem;
+      flex-wrap: wrap;
+    }
+
+    .hero-dash-pill {
+      font-size: 0.6rem;
+      font-weight: 600;
+      color: #712b13;
+      border: 1px solid #712b13;
+      border-radius: 999px;
+      padding: 0.18rem 0.55rem;
+    }
+
+    .hero-dash-banner {
+      background: #712b13;
+      border-radius: 0.75rem;
+      padding: 0.75rem 1rem;
+      margin-top: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .hero-dash-banner svg {
+      width: 16px;
+      height: 16px;
+      color: #ffffff;
+      flex-shrink: 0;
+    }
+
+    .hero-dash-banner span {
+      font-size: 0.82rem;
+      color: #ffffff;
+      font-weight: 500;
+    }
+
+    @media (max-width: 420px) {
+      .hero-dash-value { font-size: 1rem; }
+      .hero-dash-sub { font-size: 0.68rem; }
     }
 
     /* Household Hub diagram */
@@ -1293,7 +1411,7 @@
       </svg>
       <span class="logo-text">
         <span class="logo-name">EnrichMe</span>
-        <span class="logo-tagline">Wealth, Health &amp; Family. One Dashboard.</span>
+        <span class="logo-tagline">The OS for Money, Health &amp; Family</span>
       </span>
     </div>
     <button class="nav-toggle" id="navToggle" aria-label="Menu" aria-expanded="false" onclick="toggleMobileNav()">
@@ -1390,7 +1508,7 @@
   <!-- Hero -->
   <div class="hero-container">
     <section class="hero">
-      <p class="hero-eyebrow">Wealth, Health &amp; Family. One Dashboard.</p>
+      <p class="hero-eyebrow">The OS for Money, Health &amp; Family</p>
       <h1>
         Track Your <span class="hero-rotating-word" id="heroRotatingWord1">Money</span>.<br>
         Build Your <span class="hero-rotating-word" id="heroRotatingWord2">Wealth</span>.<br>
@@ -1400,8 +1518,48 @@
     </section>
 
     <div class="hero-visual">
-      <div class="hero-visual-frame">
-        <img src="assets/img/hero-wealth-trajectory.png" alt="EnrichMe FIRE calculator showing a wealth trajectory chart from age 30 through retirement at 50 to age 90, with a ₹11.61 Cr FIRE target line">
+      <div class="hero-dash">
+        <div class="hero-dash-grid">
+          <div class="hero-dash-tile">
+            <div class="hero-dash-label">Finance</div>
+            <div class="hero-dash-value">₹6.5 Cr</div>
+            <div class="hero-dash-sub">Net worth, on the way to ₹11.6 Cr FIRE target</div>
+            <svg class="hero-dash-spark" width="100%" height="32" viewBox="0 0 120 32"><path d="M2,28 Q30,10 60,6 T118,2" fill="none" stroke="#712b13" stroke-width="2"/></svg>
+          </div>
+          <div class="hero-dash-tile">
+            <div class="hero-dash-label">Health</div>
+            <div class="hero-dash-value">-5 kg</div>
+            <div class="hero-dash-sub">Could add years to your life expectancy</div>
+            <div class="hero-dash-inline">
+              <span>84 yrs</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l14 0" /><path d="M13 18l6 -6" /><path d="M13 6l6 6" /></svg>
+              <span>87 yrs</span>
+            </div>
+          </div>
+          <div class="hero-dash-tile">
+            <div class="hero-dash-label">Protection</div>
+            <div class="hero-dash-value">4 policies</div>
+            <div class="hero-dash-sub">All active</div>
+            <div class="hero-dash-inline">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11.46 20.846a12 12 0 0 1 -7.96 -14.846a12 12 0 0 0 8.5 -3a12 12 0 0 0 8.5 3a12 12 0 0 1 -.09 7.06" /><path d="M15 19l2 2l4 -4" /></svg>
+              <span class="hero-dash-sub-text">No coverage gaps</span>
+            </div>
+          </div>
+          <div class="hero-dash-tile">
+            <div class="hero-dash-label">Family</div>
+            <div class="hero-dash-value">3 kids</div>
+            <div class="hero-dash-sub">Plans for every milestone ahead</div>
+            <div class="hero-dash-pills">
+              <span class="hero-dash-pill">Education</span>
+              <span class="hero-dash-pill">Marriage</span>
+              <span class="hero-dash-pill">Health</span>
+            </div>
+          </div>
+        </div>
+        <div class="hero-dash-banner">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 5a2 2 0 1 1 4 0a7 7 0 0 1 4 6v3a4 4 0 0 0 2 3h-16a4 4 0 0 0 2 -3v-3a7 7 0 0 1 4 -6" /><path d="M9 17v1a3 3 0 0 0 6 0v-1" /></svg>
+          <span>2 renewals due this week</span>
+        </div>
       </div>
     </div>
   </div>
