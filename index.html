@@ -1302,7 +1302,7 @@
       btn.textContent = isOpen ? '✕' : '☰';
     }
 
-    (function () {
+    document.addEventListener('DOMContentLoaded', function () {
       var words = ['Money', 'Wealth', 'Health'];
       var el = document.getElementById('heroRotatingWord');
       if (!el) return;
@@ -1315,7 +1315,7 @@
           el.classList.remove('fade-out');
         }, 250);
       }, 2200);
-    })();
+    });
   </script>
 
   <!-- Hero -->
@@ -1328,12 +1328,6 @@
         <span class="gradient">Reach Your Freedom.</span>
       </h1>
       <p>Build wealth. Protect what matters. Live better. EnrichMe brings FIRE planning, net worth tracking, budgeting, and family health into one dashboard.</p>
-
-      <div class="hero-buttons">
-        <a href="login.html?mode=signup" class="btn btn-primary">
-          Start Free
-        </a>
-      </div>
     </section>
 
     <div class="hero-visual">
