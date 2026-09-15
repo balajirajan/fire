@@ -8,7 +8,7 @@
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#712B13">
-  <meta name="description" content="Build wealth. Protect what matters. Live better. EnrichMe is your Personal Life &amp; Wealth OS for FIRE planning, net worth, budgeting, insurance and family health, in one dashboard.">
+  <meta name="description" content="Build wealth. Protect what matters. Live better. EnrichMe brings wealth, health and family into one dashboard - FIRE planning, net worth, budgeting, insurance and family health.">
   <title>EnrichMe - Your Money. Your Health. Your Family. Your Freedom.</title>
   <style>
     * {
@@ -167,9 +167,10 @@
     .nav-signup-btn {
       background: var(--black);
       font-weight: 600;
-      padding: 0.55rem 1.3rem;
+      padding: 0.55rem 1.15rem 0.55rem 1.3rem;
       border-radius: 999px;
-      transition: background 0.2s;
+      gap: 0.4rem;
+      transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
     }
 
     .nav-links a.nav-signup-btn,
@@ -177,8 +178,41 @@
       color: #ffffff;
     }
 
+    .nav-signup-icon {
+      display: inline-flex;
+      transition: transform 0.2s ease;
+    }
+
+    .nav-signup-icon svg {
+      width: 15px;
+      height: 15px;
+    }
+
     .nav-signup-btn:hover {
       background: var(--black-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(22, 19, 15, 0.22);
+    }
+
+    .nav-signup-btn:hover .nav-signup-icon {
+      transform: translateX(2px);
+    }
+
+    .nav-signup-btn:active {
+      transform: translateY(0) scale(0.97);
+      box-shadow: none;
+    }
+
+    .nav-signup-btn:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .nav-signup-btn,
+      .nav-signup-icon {
+        transition: none;
+      }
     }
 
     /* Features nav dropdown (mega menu) */
@@ -1255,7 +1289,7 @@
       </svg>
       <span class="logo-text">
         <span class="logo-name">EnrichMe</span>
-        <span class="logo-tagline">Personal Life &amp; Wealth OS</span>
+        <span class="logo-tagline">Wealth, Health &amp; Family. One Dashboard.</span>
       </span>
     </div>
     <button class="nav-toggle" id="navToggle" aria-label="Menu" aria-expanded="false" onclick="toggleMobileNav()">
@@ -1305,7 +1339,10 @@
       <a href="pricing.html">Pricing</a>
       <a href="resources.html">Learn</a>
       <a href="services.html">Services</a>
-      <a href="login.html" class="nav-signup-btn">Sign In</a>
+      <a href="login.html" class="nav-signup-btn">
+        Sign In
+        <span class="nav-signup-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l14 0" /><path d="M13 18l6 -6" /><path d="M13 6l6 6" /></svg></span>
+      </a>
     </div>
   </nav>
 
@@ -1349,7 +1386,7 @@
   <!-- Hero -->
   <div class="hero-container">
     <section class="hero">
-      <p class="hero-eyebrow">Personal Life &amp; Wealth OS</p>
+      <p class="hero-eyebrow">Wealth, Health &amp; Family. One Dashboard.</p>
       <h1>
         Track Your <span class="hero-rotating-word" id="heroRotatingWord1">Money</span>.<br>
         Build Your <span class="hero-rotating-word" id="heroRotatingWord2">Wealth</span>.<br>
