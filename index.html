@@ -1188,7 +1188,7 @@
       position: relative;
       z-index: 2;
       padding: 5rem 3rem 6rem;
-      max-width: 720px;
+      max-width: 800px;
       margin: 0 auto;
     }
 
@@ -1218,171 +1218,260 @@
       line-height: 1.6;
     }
 
-    /* Connected vertical journey */
-    .path-timeline {
+    /* Alternating quote timeline: a dotted center line with a numbered
+       marker per pillar, text on one side and a mini preview card on the
+       other, swapping sides each row. */
+    .path-quote-timeline {
       position: relative;
+      max-width: 680px;
+      margin: 0 auto;
     }
 
-    .path-timeline::before {
+    .path-quote-timeline::before {
       content: '';
       position: absolute;
-      left: 20px;
-      top: 20px;
-      bottom: 20px;
-      width: 2px;
-      background: linear-gradient(to bottom, var(--border) 0%, var(--accent) 100%);
+      left: 50%;
+      top: 0;
+      bottom: 0;
+      width: 0;
+      border-left: 2px dotted #d9a08d;
+      transform: translateX(-1px);
     }
 
-    .path-you-are-here {
-      display: flex;
+    .path-quote-row {
+      display: grid;
+      grid-template-columns: 1fr 52px 1fr;
       align-items: center;
-      gap: 1.1rem;
-      margin-bottom: 2.25rem;
-      position: relative;
+      gap: 0;
+      margin-bottom: 2.5rem;
     }
 
-    .path-marker-icon {
-      flex-shrink: 0;
-      width: 44px;
-      height: 44px;
+    .path-quote-row:last-of-type {
+      margin-bottom: 0;
+    }
+
+    .path-quote-marker {
+      justify-self: center;
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
-      background: #ffffff;
-      border: 2px solid var(--border);
+      background: #712b13;
+      border: 3px solid #ffffff;
+      box-shadow: 0 2px 8px -2px rgba(113, 43, 19, 0.5);
       display: flex;
       align-items: center;
       justify-content: center;
-      position: relative;
-      z-index: 2;
-      box-shadow: 0 4px 12px rgba(22, 19, 15, 0.06);
+      color: #ffffff;
+      font-size: 0.8rem;
+      font-weight: 700;
     }
 
-    .path-marker-icon svg { width: 19px; height: 19px; color: var(--ink-faint); }
-
-    .path-you-are-here strong {
-      display: block;
-      font-size: 0.95rem;
-      color: var(--ink);
+    .path-quote-text {
+      padding-right: 1.4rem;
     }
 
-    .path-you-are-here span {
-      font-size: 0.82rem;
-      color: var(--ink-faint);
+    .path-quote-row.path-quote-reverse .path-quote-text {
+      padding-right: 0;
+      padding-left: 1.4rem;
     }
 
-    .path-stage {
-      display: flex;
-      gap: 1.1rem;
-      margin-bottom: 2.25rem;
-      position: relative;
+    .path-quote-row.path-quote-reverse {
+      grid-template-areas: "visual marker text";
+      grid-template-columns: 1fr 52px 1fr;
     }
 
-    .path-stage-icon {
-      flex-shrink: 0;
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      background: var(--ink);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      z-index: 2;
-      box-shadow: 0 6px 16px rgba(22, 19, 15, 0.2);
-    }
+    .path-quote-row.path-quote-reverse .path-quote-visual { grid-area: visual; }
+    .path-quote-row.path-quote-reverse .path-quote-marker { grid-area: marker; }
+    .path-quote-row.path-quote-reverse .path-quote-text { grid-area: text; }
 
-    .path-stage-icon svg { width: 20px; height: 20px; }
-
-    .path-stage-num {
-      position: absolute;
-      bottom: -3px;
-      right: -3px;
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      color: var(--ink-faint);
-      font-size: 0.62rem;
-      font-weight: 800;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 3;
-    }
-
-    .path-stage-content {
-      padding-top: 0.1rem;
-      flex: 1;
-    }
-
-    .path-stage-chip {
-      display: inline-block;
+    .path-quote-pillar {
       font-size: 0.7rem;
       font-weight: 700;
-      color: var(--accent);
-      background: var(--accent-tint);
-      padding: 0.22rem 0.65rem;
-      border-radius: 999px;
-      margin-bottom: 0.55rem;
+      color: #712b13;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 0.45rem;
     }
 
-    .path-stage-content h3 {
-      font-size: 1.15rem;
+    .path-quote-row:not(.path-quote-reverse) .path-quote-text {
+      text-align: right;
+    }
+
+    .path-quote-line {
+      font-size: 0.82rem;
+      font-style: italic;
+      color: var(--ink-soft);
+      margin-bottom: 0.4rem;
+      line-height: 1.5;
+    }
+
+    .path-quote-headline {
+      font-size: 1rem;
       font-weight: 700;
       color: var(--ink);
-      margin-bottom: 0.4rem;
+      margin-bottom: 0.25rem;
     }
 
-    .path-stage-content p {
+    .path-quote-desc {
+      font-size: 0.82rem;
       color: var(--ink-soft);
-      font-size: 0.9rem;
-      line-height: 1.6;
-      margin-bottom: 0.6rem;
+      line-height: 1.5;
     }
 
-    .path-stage-link {
-      display: inline-flex;
+    .path-quote-visual {
+      padding-left: 1.4rem;
+    }
+
+    .path-quote-row.path-quote-reverse .path-quote-visual {
+      padding-left: 0;
+      padding-right: 1.4rem;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .path-quote-card {
+      background: #ffffff;
+      border-radius: 0.75rem;
+      padding: 0.9rem 1rem;
+      box-shadow: 0 8px 20px -12px rgba(0, 0, 0, 0.15);
+      max-width: 170px;
+    }
+
+    .path-quote-card-label {
+      font-size: 0.68rem;
+      color: #712b13;
+      font-weight: 700;
+      margin-bottom: 0.15rem;
+    }
+
+    .path-quote-card-value {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 0.15rem;
+    }
+
+    .path-quote-card-sub {
+      font-size: 0.75rem;
+      color: var(--ink-soft);
+    }
+
+    .path-quote-card-spark {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .path-quote-card-inline {
+      display: flex;
       align-items: center;
       gap: 0.35rem;
-      font-size: 0.87rem;
+      font-size: 0.85rem;
       font-weight: 600;
-      color: var(--accent);
-      text-decoration: none;
+      color: var(--ink);
     }
 
-    .path-stage-link:hover { opacity: 0.8; }
-
-    .path-stage-final {
-      margin-bottom: 0;
-      align-items: flex-start;
+    .path-quote-card-inline svg {
+      width: 13px;
+      height: 13px;
+      color: #712b13;
+      flex-shrink: 0;
     }
 
-    .path-stage-final .path-stage-icon {
+    .path-quote-pills {
+      display: flex;
+      gap: 0.35rem;
+      flex-wrap: wrap;
+    }
+
+    .path-quote-row.path-quote-reverse .path-quote-pills {
+      justify-content: flex-end;
+    }
+
+    .path-quote-pill {
+      font-size: 0.62rem;
+      font-weight: 600;
+      color: #712b13;
+      border: 1px solid #712b13;
+      border-radius: 999px;
+      padding: 0.16rem 0.55rem;
+    }
+
+    .path-here {
+      text-align: center;
+      margin-top: 3rem;
+    }
+
+    .path-here-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
       background: var(--accent);
+      border: 3px solid #ffffff;
       box-shadow: 0 6px 16px rgba(222, 51, 65, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 0.9rem;
     }
 
-    .path-stage-final .path-stage-num {
-      background: var(--accent);
-      border-color: var(--accent);
-      color: #ffffff;
+    .path-here-icon svg { width: 20px; height: 20px; color: #ffffff; }
+
+    .path-here strong {
+      display: block;
+      font-size: 1.05rem;
+      color: var(--ink);
+      margin-bottom: 0.2rem;
     }
 
-    .path-final-card {
-      background: var(--black);
-      border-radius: 1.1rem;
-      padding: 1.75rem 2rem;
+    .path-here p {
+      font-size: 0.85rem;
+      color: var(--ink-soft);
+      margin-bottom: 1.25rem;
     }
 
-    .path-final-card h3 { font-size: 1.3rem; margin-bottom: 0.5rem; color: #ffffff; }
-    .path-final-card p { margin-bottom: 1.25rem; color: rgba(255, 255, 255, 0.65); }
-    .path-final-card .btn-primary { background: #ffffff; color: var(--ink); }
-    .path-final-card .btn-primary:hover { background: var(--accent-tint); }
-
-    @media (max-width: 600px) {
+    @media (max-width: 700px) {
       .path-section { padding: 4rem 1.25rem 5rem; }
       .path-heading { font-size: 2rem; }
-      .path-final-card { padding: 1.25rem 1.25rem; }
+
+      .path-quote-timeline::before { left: 20px; }
+
+      .path-quote-row,
+      .path-quote-row.path-quote-reverse {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 2.25rem;
+        padding-left: 3.25rem;
+        position: relative;
+      }
+
+      .path-quote-marker {
+        position: absolute;
+        left: 2px;
+        top: 0;
+      }
+
+      /* Text always reads before its visual card on mobile, regardless of
+         which side of the desktop timeline it sits on - matches the same
+         specificity as the desktop rule (.path-quote-row:not(...) ...) so
+         this actually overrides it instead of silently losing to it. */
+      .path-quote-row:not(.path-quote-reverse) .path-quote-text,
+      .path-quote-row.path-quote-reverse .path-quote-text {
+        order: 1;
+        padding: 0 0 1rem;
+        text-align: left;
+      }
+
+      .path-quote-row:not(.path-quote-reverse) .path-quote-visual,
+      .path-quote-row.path-quote-reverse .path-quote-visual {
+        order: 2;
+        padding: 0;
+        justify-content: flex-start;
+      }
+
+      .path-quote-row.path-quote-reverse .path-quote-pills {
+        justify-content: flex-start;
+      }
     }
 
     footer {
@@ -1903,84 +1992,95 @@
     </div>
   </section>
 
-  <!-- Your Path to Financial Freedom -->
+  <!-- Your Path to the Life You Want -->
   <section class="path-section">
-    <p class="path-eyebrow">Your path to financial freedom</p>
-    <h2 class="path-heading">Live the Life You Want</h2>
+    <p class="path-eyebrow">Your path to the life you want</p>
+    <h2 class="path-heading">Build the Life You Want</h2>
     <p class="path-subtext">
-      Maybe it's more time with your kids. A year of travel. Work you choose because you want to,
-      not because you have to. Whatever your freedom looks like, EnrichMe gets you there in four steps.
+      Maybe it's more time with your kids, a body that keeps up with them, and nothing left to
+      chance. Whatever it looks like, it starts with knowing exactly where you stand.
     </p>
 
-    <div class="path-timeline">
-      <div class="path-you-are-here">
-        <div class="path-marker-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11a3 3 0 1 0 6 0a3 3 0 0 0 -6 0" /><path d="M17.657 16.657l-4.243 4.243a2 2 0 0 1 -2.827 0l-4.244 -4.243a8 8 0 1 1 11.314 0z" /></svg></div>
-        <div>
-          <strong>You are here</strong>
-          <span>Free to start, two minutes in</span>
+    <div class="path-quote-timeline">
+      <div class="path-quote-row">
+        <div class="path-quote-text">
+          <div class="path-quote-pillar">Finance</div>
+          <div class="path-quote-line">"My money's scattered across five apps - I never see the whole picture."</div>
+          <div class="path-quote-headline">Your entire net worth, in one place</div>
+          <div class="path-quote-desc">Every account, one live number.</div>
+        </div>
+        <div class="path-quote-marker">1</div>
+        <div class="path-quote-visual">
+          <div class="path-quote-card">
+            <div class="path-quote-card-label">NET WORTH</div>
+            <div class="path-quote-card-value">₹6.5 Cr</div>
+            <svg class="path-quote-card-spark" width="100%" height="26" viewBox="0 0 120 26"><path d="M2,24 Q30,10 60,6 T118,2" fill="none" stroke="#712b13" stroke-width="2"/></svg>
+          </div>
         </div>
       </div>
 
-      <div class="path-stage">
-        <div class="path-stage-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-14" /><path d="M3 10h18" /><path d="M10 3v18" /></svg>
-          <span class="path-stage-num">01</span>
+      <div class="path-quote-row path-quote-reverse">
+        <div class="path-quote-visual">
+          <div class="path-quote-card">
+            <div class="path-quote-card-label">LIFE EXPECTANCY</div>
+            <div class="path-quote-card-inline">
+              <span>84</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l14 0" /><path d="M13 18l6 -6" /><path d="M13 6l6 6" /></svg>
+              <span>87 yrs</span>
+            </div>
+          </div>
         </div>
-        <div class="path-stage-content">
-          <span class="path-stage-chip">Under 15 seconds</span>
-          <h3>Know where your money goes</h3>
-          <p>Log a spend in seconds, or move a slider on the expense calculator - every rupee sorted into a category automatically.</p>
-          <a href="calculator/monthly-expense-calculator.html" class="path-stage-link">Try the Expense Calculator →</a>
-        </div>
-      </div>
-
-      <div class="path-stage">
-        <div class="path-stage-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6 -6l4 4l8 -8" /><path d="M14 7l7 0l0 7" /></svg>
-          <span class="path-stage-num">02</span>
-        </div>
-        <div class="path-stage-content">
-          <span class="path-stage-chip">11 account types</span>
-          <h3>Watch your net worth climb</h3>
-          <p>Banks, mutual funds, stocks, gold, property, EPF - every account you own, rolled into one live number.</p>
-          <a href="calculator/free-calculators.html" class="path-stage-link">See Your Financial Fitness Score →</a>
+        <div class="path-quote-marker">2</div>
+        <div class="path-quote-text">
+          <div class="path-quote-pillar">Health</div>
+          <div class="path-quote-line">"I know I should lose weight - I just don't know what it's buying me."</div>
+          <div class="path-quote-headline">See what healthier choices earn you</div>
+          <div class="path-quote-desc">Lose 5kg, and watch your life expectancy move.</div>
         </div>
       </div>
 
-      <div class="path-stage">
-        <div class="path-stage-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 16l2 -6l6 -2l-2 6l-6 2" /><path d="M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /><path d="M12 3l0 2" /><path d="M12 19l0 2" /><path d="M3 12l2 0" /><path d="M19 12l2 0" /></svg>
-          <span class="path-stage-num">03</span>
+      <div class="path-quote-row">
+        <div class="path-quote-text">
+          <div class="path-quote-pillar">Protection</div>
+          <div class="path-quote-line">"If something happened tomorrow, would my family even know where to look?"</div>
+          <div class="path-quote-headline">Everything protected, nothing forgotten</div>
+          <div class="path-quote-desc">Policies, documents, and renewals - all covered.</div>
         </div>
-        <div class="path-stage-content">
-          <span class="path-stage-chip">Updated in real time</span>
-          <h3>Know your exact FIRE number</h3>
-          <p>Not a guess - the exact corpus you need to stop working, recalculated instantly as your life changes.</p>
-          <a href="calculator/fire-calculator.html" class="path-stage-link">Try the FIRE Calculator →</a>
-        </div>
-      </div>
-
-      <div class="path-stage">
-        <div class="path-stage-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a12 12 0 0 0 8.5 3a12 12 0 0 1 -8.5 15a12 12 0 0 1 -8.5 -15a12 12 0 0 0 8.5 -3" /></svg>
-          <span class="path-stage-num">04</span>
-        </div>
-        <div class="path-stage-content">
-          <span class="path-stage-chip">14 tools, one family</span>
-          <h3>Protect it, and live it together</h3>
-          <p>Insurance, your will and documents locked away safe - plus medicine schedules for your parents and split bills with your partner, all in the same app that tracks your FIRE number.</p>
-          <a href="login.html?mode=signup" class="path-stage-link">Start Free →</a>
+        <div class="path-quote-marker">3</div>
+        <div class="path-quote-visual">
+          <div class="path-quote-card">
+            <div class="path-quote-card-label">PROTECTION</div>
+            <div class="path-quote-card-value">4 policies</div>
+            <div class="path-quote-card-sub">No coverage gaps</div>
+          </div>
         </div>
       </div>
 
-      <div class="path-stage path-stage-final">
-        <div class="path-stage-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 10.941c2.333 -3.308 .167 -7.823 -1 -8.941c0 3.395 -2.235 5.299 -3.667 6.706c-1.43 1.408 -2.333 3.294 -2.333 5.588c0 3.704 3.134 6.706 7 6.706c3.866 0 7 -3.002 7 -6.706c0 -1.712 -1.232 -4.403 -2.333 -5.588c-2.084 3.353 -3.257 3.353 -4.667 2.235" /></svg></div>
-        <div class="path-stage-content path-final-card">
-          <h3>Reach Your Freedom</h3>
-          <p>The first step takes about two minutes. Everything after that is just watching the number move.</p>
-          <a href="login.html?mode=signup" class="btn btn-primary">Start Free →</a>
+      <div class="path-quote-row path-quote-reverse">
+        <div class="path-quote-visual">
+          <div class="path-quote-card">
+            <div class="path-quote-card-label">FAMILY</div>
+            <div class="path-quote-pills">
+              <span class="path-quote-pill">Education</span>
+              <span class="path-quote-pill">Marriage</span>
+            </div>
+          </div>
+        </div>
+        <div class="path-quote-marker">4</div>
+        <div class="path-quote-text">
+          <div class="path-quote-pillar">Family</div>
+          <div class="path-quote-line">"Grandkids don't remember rasi, gothram - nobody wrote it down."</div>
+          <div class="path-quote-headline">Your family's life, held together</div>
+          <div class="path-quote-desc">Kids' plans, important dates, and the details only family remembers.</div>
         </div>
       </div>
+    </div>
+
+    <div class="path-here">
+      <div class="path-here-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 10.941c2.333 -3.308 .167 -7.823 -1 -8.941c0 3.395 -2.235 5.299 -3.667 6.706c-1.43 1.408 -2.333 3.294 -2.333 5.588c0 3.704 3.134 6.706 7 6.706c3.866 0 7 -3.002 7 -6.706c0 -1.712 -1.232 -4.403 -2.333 -5.588c-2.084 3.353 -3.257 3.353 -4.667 2.235" /></svg></div>
+      <strong>You are here</strong>
+      <p>The first step takes less than two minutes.</p>
+      <a href="login.html?mode=signup" class="btn btn-primary">Start your path →</a>
     </div>
   </section>
 
