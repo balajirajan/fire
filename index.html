@@ -337,6 +337,21 @@
       color: var(--accent);
     }
 
+    .hero-rotating-word {
+      display: inline-block;
+      color: var(--accent);
+      transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+
+    .hero-rotating-word.fade-out {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .hero-rotating-word { transition: none; }
+    }
+
     .hero p {
       font-size: 1.1rem;
       color: var(--ink-soft);
@@ -1286,6 +1301,21 @@
       btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
       btn.textContent = isOpen ? '✕' : '☰';
     }
+
+    (function () {
+      var words = ['Money', 'Wealth', 'Health'];
+      var el = document.getElementById('heroRotatingWord');
+      if (!el) return;
+      var index = 0;
+      setInterval(function () {
+        index = (index + 1) % words.length;
+        el.classList.add('fade-out');
+        setTimeout(function () {
+          el.textContent = words[index];
+          el.classList.remove('fade-out');
+        }, 250);
+      }, 2200);
+    })();
   </script>
 
   <!-- Hero -->
@@ -1293,7 +1323,7 @@
     <section class="hero">
       <p class="hero-eyebrow">Personal Life &amp; Wealth OS</p>
       <h1>
-        Track Your Money.<br>
+        Track Your <span class="hero-rotating-word" id="heroRotatingWord">Money</span>.<br>
         Build Your Wealth.<br>
         <span class="gradient">Reach Your Freedom.</span>
       </h1>
