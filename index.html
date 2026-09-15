@@ -944,41 +944,8 @@
       margin-bottom: 2.5rem;
     }
 
-    /* Features Section */
-    .features-section {
-      position: relative;
-      z-index: 2;
-      padding: 5rem 3rem 2rem;
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    .features-eyebrow {
-      text-align: center;
-      font-size: 0.8rem;
-      font-weight: 700;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: 0.75rem;
-    }
-
-    .features-heading {
-      text-align: center;
-      font-size: 2.5rem;
-      font-weight: 800;
-      margin-bottom: 1rem;
-      color: var(--ink);
-    }
-
-    .features-subtext {
-      text-align: center;
-      color: var(--ink-soft);
-      max-width: 620px;
-      margin: 0 auto 3.5rem;
-      line-height: 1.6;
-    }
-
+    /* Features catalog (folded into the Household Hub section - see
+       .hub-section above for the shared intro) */
     .features-group {
       margin-bottom: 2.75rem;
     }
@@ -1065,122 +1032,6 @@
       font-size: 0.87rem;
       color: var(--ink-soft);
       line-height: 1.6;
-    }
-
-    /* Layer stack diagram (One App section) */
-    .stack-caption {
-      text-align: center;
-      font-size: 0.78rem;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--ink-faint);
-      margin-bottom: 1.25rem;
-    }
-
-    .stack-diagram {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.75rem;
-      margin: 0 auto 4rem;
-      max-width: 980px;
-    }
-
-    .stack-layer {
-      width: 100%;
-      border: 1px solid var(--border);
-      background: var(--bg-alt);
-      border-radius: 1.1rem;
-      padding: 1.1rem 1.6rem;
-    }
-
-    .stack-layer[data-tier="protection"] { width: 92%; background: rgba(222, 51, 65, 0.05); border-color: rgba(222, 51, 65, 0.16); }
-    .stack-layer[data-tier="wealth"] { width: 80%; background: rgba(222, 51, 65, 0.1); border-color: rgba(222, 51, 65, 0.2); }
-    .stack-layer[data-tier="health"] { width: 66%; background: rgba(222, 51, 65, 0.16); border-color: rgba(222, 51, 65, 0.26); }
-    .stack-layer[data-tier="more"] { width: 50%; background: rgba(222, 51, 65, 0.22); border-color: rgba(222, 51, 65, 0.32); }
-
-    .stack-layer-title {
-      display: flex;
-      align-items: baseline;
-      justify-content: center;
-      gap: 0.45rem;
-      font-size: 0.95rem;
-      font-weight: 800;
-      color: var(--ink);
-      margin-bottom: 0.75rem;
-    }
-
-    .stack-layer-title span {
-      font-size: 0.76rem;
-      font-weight: 600;
-      color: var(--ink-faint);
-    }
-
-    .stack-layer-pills {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 0.5rem;
-    }
-
-    .stack-pill {
-      display: inline-flex;
-      align-items: center;
-      background: #ffffff;
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      padding: 0.4rem 0.95rem;
-      font-size: 0.83rem;
-      font-weight: 600;
-      color: var(--ink);
-      white-space: nowrap;
-    }
-
-    .stack-layer-cap {
-      width: auto;
-      max-width: 360px;
-      background: var(--black);
-      border-color: var(--black);
-      text-align: center;
-      padding: 1.4rem 1.8rem;
-    }
-
-    .stack-cap-icon {
-      width: 38px;
-      height: 38px;
-      border-radius: 0.7rem;
-      background: var(--accent);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 0.75rem;
-    }
-
-    .stack-cap-icon svg { width: 20px; height: 20px; }
-
-    .stack-layer-cap strong {
-      display: block;
-      color: #ffffff;
-      font-size: 1.05rem;
-      margin-bottom: 0.3rem;
-    }
-
-    .stack-layer-cap p {
-      color: #cfc9c1;
-      font-size: 0.83rem;
-      max-width: 32ch;
-      margin: 0 auto;
-      line-height: 1.5;
-    }
-
-    @media (max-width: 640px) {
-      .stack-layer,
-      .stack-layer[data-tier] {
-        width: 100% !important;
-      }
-      .stack-layer-cap { max-width: 100% !important; }
-      .stack-pill { font-size: 0.78rem; padding: 0.35rem 0.8rem; }
     }
 
     /* Path to Freedom Section */
@@ -1653,11 +1504,15 @@
     </div>
   </div>
 
-  <!-- Household Hub -->
-  <section class="hub-section">
+  <!-- Household Hub (merged with the former "Features" section: one intro
+       instead of two, the redundant stack-diagram pyramid dropped since it
+       re-showed these same seven categories a third time, the detailed
+       feature-card catalog kept since it does a genuinely different job -
+       deep per-feature detail - than this quick-scan tile grid.) -->
+  <section class="hub-section" id="features">
     <p class="hub-eyebrow">Everything connected</p>
-    <h2 class="hub-heading">Your Household, One Place</h2>
-    <p class="hub-subtext">Wealth, protection, health and family - tracked side by side, nothing lives in its own silo.</p>
+    <h2 class="hub-heading">One App For Your Wealth And Your Health</h2>
+    <p class="hub-subtext">Wealth, protection, health and family - tracked side by side, nothing lives in its own silo. Fourteen tools, one dashboard.</p>
 
     <div class="hub-diagram" id="hubDiagram">
       <h3 style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">EnrichMe organizes dozens of features into seven areas: FIRE & Goals, Net Worth & Investments, Cash Flow & Tax, Protection, Health, Family and More, all feeding your FIRE number.</h3>
@@ -1752,112 +1607,11 @@
     </div>
   </section>
 
-  <!-- Feature Showcase: FIRE planning -->
-  <section class="showcase-section">
-    <div class="showcase-grid">
-      <div class="showcase-text">
-        <h2 class="showcase-title">Know your FIRE number, not just guess it</h2>
-        <p class="showcase-desc">Move a few sliders - expenses, age, expected returns - and see the exact number you need to stop working, recalculated instantly in rupees.</p>
-        <ul class="showcase-points">
-          <li>Lean, Standard and Fat FIRE targets side by side</li>
-          <li>Built around Indian inflation and post-retirement returns</li>
-          <li>Pulls in your real tracked expenses with one click</li>
-          <li>Plans for the years you're likely to live, not a flat age 90</li>
-        </ul>
-        <a href="calculator/fire-calculator.html" class="btn btn-primary">Try the FIRE Calculator →</a>
-      </div>
-      <div class="showcase-visual">
-        <div class="showcase-visual-frame">
-          <img src="assets/img/feature-fire-number.png" alt="EnrichMe FIRE calculator result panel showing a ₹11.61 Cr FIRE number, current age 30, 20 years to FIRE, and a Lean FIRE / Fat FIRE snapshot">
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Feature Showcase: Expense tracking -->
-  <section class="showcase-section reverse">
-    <div class="showcase-grid">
-      <div class="showcase-visual">
-        <div class="showcase-visual-frame">
-          <img src="assets/img/feature-expense-tracking.png" alt="EnrichMe monthly expense calculator showing total spending of ₹53,700 broken down by everyday spending, online and travel, utility bills, and subscriptions">
-        </div>
-      </div>
-      <div class="showcase-text">
-        <h2 class="showcase-title">See exactly where your money goes</h2>
-        <p class="showcase-desc">Groceries to subscriptions - move the sliders to match your real spending, and watch every category and the total update instantly.</p>
-        <ul class="showcase-points">
-          <li>Auto-grouped into everyday, travel, bills and subscriptions</li>
-          <li>Feeds straight into your FIRE number, no re-entry</li>
-          <li>Spots your biggest spending category in one glance</li>
-        </ul>
-        <a href="calculator/monthly-expense-calculator.html" class="btn btn-primary">Try the Expense Calculator →</a>
-      </div>
-    </div>
-  </section>
-
-  <!-- Features -->
-  <section class="features-section" id="features">
-    <p class="features-eyebrow">Everything in one place</p>
-    <h2 class="features-heading">One App For Your Wealth And Your Health</h2>
-    <p class="features-subtext">
-      Not just your financial life - your net worth, your medicines, your policies, your family's documents. Fourteen tools, one dashboard.
-    </p>
-
-    <p class="stack-caption">Bottom to top: how it all builds up</p>
-    <div class="stack-diagram">
-      <div class="stack-layer stack-layer-cap">
-        <span class="stack-cap-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 10.941c2.333 -3.308 .167 -7.823 -1 -8.941c0 3.395 -2.235 5.299 -3.667 6.706c-1.43 1.408 -2.333 3.294 -2.333 5.588c0 3.704 3.134 6.706 7 6.706c3.866 0 7 -3.002 7 -6.706c0 -1.712 -1.232 -4.403 -2.333 -5.588c-2.084 3.353 -3.257 3.353 -4.667 2.235" /></svg></span>
-        <strong>One FIRE Number. One Dashboard.</strong>
-        <p>Every layer below rolls up into a single number you can check anytime.</p>
-      </div>
-
-      <div class="stack-layer" data-tier="more">
-        <p class="stack-layer-title">More <span>· addon features</span></p>
-        <div class="stack-layer-pills">
-          <span class="stack-pill">Split Expenses</span>
-          <span class="stack-pill">Will Planner</span>
-          <span class="stack-pill">Vedic Astrology</span>
-        </div>
-      </div>
-
-      <div class="stack-layer" data-tier="health">
-        <p class="stack-layer-title">Family &amp; Health</p>
-        <div class="stack-layer-pills">
-          <span class="stack-pill">Medicine Tracker</span>
-          <span class="stack-pill">Checkup Reports</span>
-          <span class="stack-pill">Life Expectancy</span>
-        </div>
-      </div>
-
-      <div class="stack-layer" data-tier="wealth">
-        <p class="stack-layer-title">Wealth</p>
-        <div class="stack-layer-pills">
-          <span class="stack-pill">Net Worth</span>
-          <span class="stack-pill">Portfolio, Gold &amp; Property</span>
-          <span class="stack-pill">FIRE Planning &amp; Goals</span>
-        </div>
-      </div>
-
-      <div class="stack-layer" data-tier="protection">
-        <p class="stack-layer-title">Protection</p>
-        <div class="stack-layer-pills">
-          <span class="stack-pill">Insurance Tracker</span>
-          <span class="stack-pill">Renewal Reminders</span>
-          <span class="stack-pill">Encrypted Document Vault</span>
-        </div>
-      </div>
-
-      <div class="stack-layer" data-tier="cashflow">
-        <p class="stack-layer-title">Cash Flow <span>· the foundation</span></p>
-        <div class="stack-layer-pills">
-          <span class="stack-pill">Daily Expense Capture</span>
-          <span class="stack-pill">Monthly Budgeting</span>
-          <span class="stack-pill">Income</span>
-          <span class="stack-pill">Tax Planning</span>
-        </div>
-      </div>
-    </div>
-
+  <!-- Detailed feature catalog, folded into the Household Hub section above
+       (was its own "Features" section with a duplicate intro + a
+       stack-diagram pyramid repeating the same seven categories a third
+       time - both removed, see comment above). -->
+  <section class="hub-section" style="padding-top: 0;">
     <div class="features-group">
       <p class="features-group-label">Wealth</p>
       <div class="features-group-grid cols-2">
@@ -1988,6 +1742,49 @@
             <p>A full suite of free calculators - SIP, EMI, compound interest and more - no login required.</p>
           </div>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Feature Showcase: FIRE planning -->
+  <section class="showcase-section">
+    <div class="showcase-grid">
+      <div class="showcase-text">
+        <h2 class="showcase-title">Know your FIRE number, not just guess it</h2>
+        <p class="showcase-desc">Move a few sliders - expenses, age, expected returns - and see the exact number you need to stop working, recalculated instantly in rupees.</p>
+        <ul class="showcase-points">
+          <li>Lean, Standard and Fat FIRE targets side by side</li>
+          <li>Built around Indian inflation and post-retirement returns</li>
+          <li>Pulls in your real tracked expenses with one click</li>
+          <li>Plans for the years you're likely to live, not a flat age 90</li>
+        </ul>
+        <a href="calculator/fire-calculator.html" class="btn btn-primary">Try the FIRE Calculator →</a>
+      </div>
+      <div class="showcase-visual">
+        <div class="showcase-visual-frame">
+          <img src="assets/img/feature-fire-number.png" alt="EnrichMe FIRE calculator result panel showing a ₹11.61 Cr FIRE number, current age 30, 20 years to FIRE, and a Lean FIRE / Fat FIRE snapshot">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Feature Showcase: Expense tracking -->
+  <section class="showcase-section reverse">
+    <div class="showcase-grid">
+      <div class="showcase-visual">
+        <div class="showcase-visual-frame">
+          <img src="assets/img/feature-expense-tracking.png" alt="EnrichMe monthly expense calculator showing total spending of ₹53,700 broken down by everyday spending, online and travel, utility bills, and subscriptions">
+        </div>
+      </div>
+      <div class="showcase-text">
+        <h2 class="showcase-title">See exactly where your money goes</h2>
+        <p class="showcase-desc">Groceries to subscriptions - move the sliders to match your real spending, and watch every category and the total update instantly.</p>
+        <ul class="showcase-points">
+          <li>Auto-grouped into everyday, travel, bills and subscriptions</li>
+          <li>Feeds straight into your FIRE number, no re-entry</li>
+          <li>Spots your biggest spending category in one glance</li>
+        </ul>
+        <a href="calculator/monthly-expense-calculator.html" class="btn btn-primary">Try the Expense Calculator →</a>
       </div>
     </div>
   </section>
