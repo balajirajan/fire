@@ -102,6 +102,19 @@
     .fr-row-label { flex: 1; font-size: 0.83rem; font-weight: 700; color: #364752; min-width: 0; }
     .fr-row.done .fr-row-label { color: #065f46; }
     .fr-row-chevron { color: #cbd5e1; font-size: 0.9rem; flex-shrink: 0; }
+    .fr-toggle { display: none; }
+    @media (max-width: 560px) {
+      .fr-rows { display: none; grid-template-columns: 1fr; }
+      .fr-rows.open { display: grid; }
+      .fr-toggle {
+        display: flex; align-items: center; gap: 0.35rem;
+        background: none; border: none; padding: 0.4rem 0 0.9rem; margin: -0.4rem 0 0;
+        font-size: 0.8rem; font-weight: 700; color: #0284c7; cursor: pointer; width: 100%;
+      }
+      .fr-toggle-count { color: #94a3b8; font-weight: 600; }
+      .fr-toggle-chevron { transition: transform 0.2s ease; margin-left: auto; }
+      .fr-toggle.open .fr-toggle-chevron { transform: rotate(180deg); }
+    }
     .fr-card.fr-done { border-color: #a7f3d0; background: #f0fdf7; }
     .fr-card.fr-done .fr-head-text strong { color: #065f46; }
     .head-actions { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }

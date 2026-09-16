@@ -210,6 +210,36 @@
     return { fill: '#94a3b8', track: 'rgba(148,163,184,0.18)' };
   }
 
+  // The per-item row breakdown (.fr-rows) is the part that gets long - up
+  // to 12 rows on life-expectancy.html - and on narrow screens each row is
+  // full-width, so the whole card can push real page content well below
+  // the fold. This toggle (shown only under a mobile CSS breakpoint - see
+  // .fr-toggle in each page's own <style>) collapses .fr-rows by default
+  // there while leaving the always-visible .fr-head summary line alone, so
+  // the reminder still shows at a glance without the full list stealing
+  // the page. Desktop is unaffected: .fr-toggle stays hidden there and
+  // .fr-rows shows inline as it always has. Still computed fresh on every
+  // load either way - nothing here is dismissed or remembered.
+  function wireFrToggle(containerEl) {
+    var toggle = containerEl.querySelector('.fr-toggle');
+    var rows = containerEl.querySelector('.fr-rows');
+    if (!toggle || !rows) return;
+    toggle.addEventListener('click', function () {
+      var open = rows.classList.toggle('open');
+      toggle.classList.toggle('open', open);
+      toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      toggle.querySelector('.fr-toggle-label').textContent = open ? 'Hide details' : 'View details';
+    });
+  }
+
+  function frToggleHtml(count) {
+    return '<button type="button" class="fr-toggle" aria-expanded="false">' +
+      '<span class="fr-toggle-label">View details</span>' +
+      '<span class="fr-toggle-count">(' + count + ')</span>' +
+      '<span class="fr-toggle-chevron">⌄</span>' +
+    '</button>';
+  }
+
   // Renders into containerEl on every page load, straight from a fresh
   // computeFireReadiness() call - deliberately no sessionStorage/
   // localStorage gating, so it always reflects whatever is true right now
@@ -255,8 +285,10 @@
           '</div>' +
           '<p class="fr-head-text"><strong>⚠️ Complete your FIRE Readiness Checklist</strong> - ' + readiness.pendingCount + ' of ' + readiness.total + ' sections aren\'t fully in yet, so your FIRE number can\'t be fully trusted.</p>' +
         '</div>' +
+        frToggleHtml(ITEMS.length) +
         '<div class="fr-rows">' + rowsHtml + '</div>' +
       '</div>';
+    wireFrToggle(containerEl);
   }
 
   // Renders a single category's own checklist (embedded directly on that
@@ -308,8 +340,10 @@
           '</div>' +
           '<p class="fr-head-text"><strong>⚠️ ' + escapeHtml(title) + '</strong> - ' + pendingCount + ' of ' + detail.items.length + ' still ' + (pendingCount === 1 ? 'needs' : 'need') + ' real data.</p>' +
         '</div>' +
+        frToggleHtml(detail.items.length) +
         '<div class="fr-rows">' + rowsHtml + '</div>' +
       '</div>';
+    wireFrToggle(containerEl);
   }
 
   root.computeFireReadiness = computeFireReadiness;
