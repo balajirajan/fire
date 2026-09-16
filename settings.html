@@ -80,7 +80,7 @@
     .page-head h2 { font-size: 1.6rem; font-weight: 800; margin-bottom: 0.3rem; }
     .page-head p { color: #64748b; font-size: 0.9rem; }
 
-    .settings-card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 1.1rem; padding: 1.75rem; max-width: 640px; box-shadow: 0 4px 16px rgba(15,23,42,0.03); }
+    .settings-card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 1.1rem; padding: 1.75rem; max-width: 960px; box-shadow: 0 4px 16px rgba(15,23,42,0.03); }
     .settings-section-title { font-size: 0.78rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; margin: 1.6rem 0 1rem; padding-top: 1.3rem; border-top: 1px solid #f1f5f9; }
     .settings-section-title:first-child { margin-top: 0; padding-top: 0; border-top: none; }
     .settings-section-hint { font-size: 0.78rem; color: #94a3b8; margin: -0.6rem 0 1.1rem; line-height: 1.5; }
@@ -95,13 +95,23 @@
     .field-hint { font-size: 0.74rem; color: #94a3b8; margin-top: 0.35rem; line-height: 1.4; }
     .field-optional-tag { font-weight: 500; color: #94a3b8; text-transform: none; }
 
-    .save-row { display: flex; align-items: center; gap: 1rem; margin-top: 0.5rem; }
+    /* People table - same professional row/column look as the Admin
+       Dashboard's user table. Everyone (self included) is a row here,
+       edited through the one modal below rather than a separate form. */
+    .member-table-wrap { overflow-x: auto; }
+    table.member-table { width: 100%; border-collapse: collapse; min-width: 760px; }
+    table.member-table th { text-align: left; padding: 0.7rem 1rem; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: #94a3b8; border-bottom: 1px solid #e2e8f0; background: #f8fafc; white-space: nowrap; }
+    table.member-table th:first-child { border-top-left-radius: 0.6rem; }
+    table.member-table th:last-child { border-top-right-radius: 0.6rem; }
+    table.member-table td { padding: 0.75rem 1rem; font-size: 0.85rem; color: #364752; border-bottom: 1px solid #f1f5f9; vertical-align: middle; white-space: nowrap; }
+    table.member-table tr:last-child td { border-bottom: none; }
+    .member-name-cell { display: flex; align-items: center; gap: 0.65rem; font-weight: 700; color: #0f172a; }
+    .member-avatar-sm { width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, #0ea5e9, #10b981); color: #fff; font-weight: 800; font-size: 0.7rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .member-muted { color: #94a3b8; }
+
     .btn-primary { padding: 0.7rem 1.4rem; border: none; border-radius: 0.6rem; background: linear-gradient(135deg, #0ea5e9, #10b981); color: #fff; font-size: 0.88rem; font-weight: 700; cursor: pointer; }
     .btn-primary:hover { opacity: 0.92; }
     .btn-primary:disabled { opacity: 0.6; cursor: default; }
-    .save-message { font-size: 0.82rem; font-weight: 600; }
-    .save-message.success { color: #059669; }
-    .save-message.error { color: #dc2626; }
 
     @media (max-width: 860px) {
       .app-shell { grid-template-columns: 1fr; }
@@ -459,68 +469,24 @@
 
       <div class="page-head">
         <h2>Account Settings</h2>
-        <p>Your details and your family's - entered once here, then reused across FIRE Plan, Know Your Rasi, Term Insurance, Will Planner, Goal Based Savings and Family Health, instead of re-typing names and dates on every page.</p>
+        <p>You and your family, in one list - entered once here, then reused across FIRE Plan, Know Your Rasi, Term Insurance, Will Planner, Goal Based Savings and Family Health, instead of re-typing names and dates on every page.</p>
       </div>
 
-      <form class="settings-card" id="settingsForm">
-        <div class="settings-section-title">Your Details</div>
-
-        <div class="field-block">
-          <label class="field-label">Email</label>
-          <input type="email" class="field-input" id="emailDisplay" disabled>
-        </div>
-
-        <div class="field-row">
-          <div class="field-block">
-            <label class="field-label">First Name</label>
-            <input type="text" class="field-input" id="firstNameInput" placeholder="e.g. Priya" autocomplete="given-name">
-          </div>
-          <div class="field-block">
-            <label class="field-label">Last Name</label>
-            <input type="text" class="field-input" id="lastNameInput" placeholder="e.g. Sharma" autocomplete="family-name">
-          </div>
-        </div>
-
-        <div class="field-block">
-          <label class="field-label">Phone <span class="field-optional-tag">(optional)</span></label>
-          <input type="tel" class="field-input" id="phoneInput" placeholder="e.g. 98765 43210" autocomplete="tel">
-        </div>
-
-        <div class="settings-section-title">Date, Time &amp; Place of Birth</div>
-        <p class="settings-section-hint">Used across EnrichMe wherever your exact birth details matter - your Vedic Astrology chart (Rashi, Nakshatra, Lagna), FIRE Plan life expectancy, Term Insurance, and the Will Planner - kept in one place instead of re-entering it on each page.</p>
-
-        <div class="field-row">
-          <div class="field-block">
-            <label class="field-label">Date of Birth</label>
-            <input type="date" class="field-input" id="dobInput">
-          </div>
-          <div class="field-block">
-            <label class="field-label">Time of Birth</label>
-            <input type="time" class="field-input" id="birthTimeInput" step="1">
-          </div>
-        </div>
-
-        <div class="field-block">
-          <label class="field-label">Place of Birth</label>
-          <input type="text" class="field-input" id="cityInput" list="cityDatalist" placeholder="Start typing a city...">
-          <datalist id="cityDatalist"></datalist>
-          <p class="field-hint">Can't find your exact town? Pick the nearest major city - it's used to calculate your Lagna (ascendant).</p>
-        </div>
-
-        <div class="save-row">
-          <button type="submit" class="btn-primary" id="saveBtn">Save Changes</button>
-          <span class="save-message" id="saveMessage"></span>
-        </div>
-      </form>
-
-      <div class="settings-card" style="margin-top: 1.5rem;">
+      <div class="settings-card">
         <div class="settings-card-head">
-          <h3>Family Members</h3>
+          <h3>People</h3>
           <button type="button" class="btn-secondary" id="addMemberBtn">+ Add Family Member</button>
         </div>
-        <p class="settings-section-hint" style="margin-top: -0.5rem;">Add your spouse, kids and parents here once, with their birth details - Goal Based Savings, Insurance Tracker, Know Your Rasi and Will Planner all pick from this same list, so you never re-type a name or date.</p>
-        <div id="memberList"></div>
-        <div class="member-empty-hint" id="memberEmptyHint" style="display:none;">No family members added yet. Add one above to start linking goals, policies and Rasi profiles to them.</div>
+        <p class="settings-section-hint" style="margin-top: -0.5rem;">You, plus your spouse, kids and parents - each with their own birth details. Goal Based Savings, Insurance Tracker, Know Your Rasi and Will Planner all pick from this same list, so you never re-type a name or date. Click Edit on any row to update it.</p>
+        <div class="member-table-wrap">
+          <table class="member-table" id="memberTable" style="display:none;">
+            <thead>
+              <tr><th>Name</th><th>Relationship</th><th>Date of Birth</th><th>Age</th><th>Phone</th><th>Email</th><th></th></tr>
+            </thead>
+            <tbody id="memberList"></tbody>
+          </table>
+        </div>
+        <div class="member-empty-hint" id="memberEmptyHint" style="display:none;">No one added yet.</div>
       </div>
     </main>
 
@@ -529,7 +495,12 @@
         <h3 id="memberModalTitle">Add Family Member</h3>
         <div class="form-error" id="memberFormError"></div>
 
-        <div class="field-block">
+        <div class="field-block" id="memberSelfEmailBlock" style="display:none;">
+          <label class="field-label">Email</label>
+          <input type="email" class="field-input" id="memberSelfEmailInput" disabled>
+        </div>
+
+        <div class="field-block" id="memberRelationBlock">
           <label class="field-label">Relationship</label>
           <select class="field-select" id="memberRelationInput">
             <option value="wife">Wife</option>
@@ -573,6 +544,7 @@
         <div class="field-block">
           <label class="field-label">Place of Birth</label>
           <input type="text" class="field-input" id="memberCityInput" list="cityDatalist" placeholder="Start typing a city...">
+          <datalist id="cityDatalist"></datalist>
         </div>
 
         <div class="field-row">
@@ -580,7 +552,7 @@
             <label class="field-label">Phone <span class="field-optional-tag">(optional)</span></label>
             <input type="tel" class="field-input" id="memberPhoneInput" placeholder="e.g. 98765 43210">
           </div>
-          <div class="field-block">
+          <div class="field-block" id="memberContactEmailBlock">
             <label class="field-label">Email <span class="field-optional-tag">(optional)</span></label>
             <input type="email" class="field-input" id="memberEmailInput" placeholder="e.g. name@example.com">
           </div>
@@ -701,6 +673,12 @@
       var m = now.getMonth() - b.getMonth();
       if (m < 0 || (m === 0 && now.getDate() < b.getDate())) age--;
       return age;
+    }
+
+    function formatDob(dob) {
+      if (!dob) return null;
+      var d = new Date(dob + 'T00:00:00');
+      return d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
     }
 
     function initials(name) {
@@ -928,29 +906,35 @@
 
     function renderMemberList() {
       var container = document.getElementById('memberList');
+      var table = document.getElementById('memberTable');
       var empty = document.getElementById('memberEmptyHint');
-      var others = memberState.members.filter(function (m) { return m.relation !== 'self'; });
+      // Self always sorts first - everyone else keeps the order they were added in.
+      var everyone = memberState.members.slice().sort(function (a, b) {
+        return (a.relation === 'self' ? -1 : 0) - (b.relation === 'self' ? -1 : 0);
+      });
 
-      if (!others.length) {
+      if (!everyone.length) {
         container.innerHTML = '';
+        table.style.display = 'none';
         empty.style.display = 'block';
         return;
       }
+      table.style.display = 'table';
       empty.style.display = 'none';
 
-      container.innerHTML = others.map(function (m) {
+      container.innerHTML = everyone.map(function (m) {
         var age = ageFromDob(m.date_of_birth);
+        var dob = formatDob(m.date_of_birth);
         return '' +
-          '<div class="member-row">' +
-            '<div class="member-avatar">' + escapeHtml(initials(m.name)) + '</div>' +
-            '<div class="member-row-info">' +
-              '<div class="member-row-name">' + escapeHtml(m.name) + '</div>' +
-              '<div class="member-row-meta">' + escapeHtml(relationLabel(m.relation)) + (age != null ? ' · ' + age + ' years old' : ' · birth details missing') + '</div>' +
-            '</div>' +
-            '<div class="member-row-actions">' +
-              '<button type="button" class="btn-edit-text" data-edit="' + m.id + '">Edit</button>' +
-            '</div>' +
-          '</div>';
+          '<tr>' +
+            '<td><div class="member-name-cell"><span class="member-avatar-sm">' + escapeHtml(initials(m.name)) + '</span>' + escapeHtml(m.name) + '</div></td>' +
+            '<td>' + escapeHtml(relationLabel(m.relation)) + '</td>' +
+            '<td>' + (dob ? escapeHtml(dob) : '<span class="member-muted">-</span>') + '</td>' +
+            '<td>' + (age != null ? age : '<span class="member-muted">-</span>') + '</td>' +
+            '<td>' + (m.phone ? escapeHtml(m.phone) : '<span class="member-muted">-</span>') + '</td>' +
+            '<td>' + (m.email ? escapeHtml(m.email) : '<span class="member-muted">-</span>') + '</td>' +
+            '<td><button type="button" class="btn-edit-text" data-edit="' + m.id + '">Edit</button></td>' +
+          '</tr>';
       }).join('');
 
       Array.prototype.forEach.call(container.querySelectorAll('[data-edit]'), function (btn) {
@@ -967,22 +951,36 @@
       memberState.editingId = memberId || null;
       document.getElementById('memberFormError').textContent = '';
       var deleteBtn = document.getElementById('deleteMemberBtn');
+      var selfEmailBlock = document.getElementById('memberSelfEmailBlock');
+      var relationBlock = document.getElementById('memberRelationBlock');
+      var contactEmailBlock = document.getElementById('memberContactEmailBlock');
+
+      var m = memberId ? memberState.members.filter(function (x) { return x.id === memberId; })[0] : null;
+      var isSelf = !!(m && m.relation === 'self');
+
+      selfEmailBlock.style.display = isSelf ? 'block' : 'none';
+      relationBlock.style.display = isSelf ? 'none' : 'block';
+      contactEmailBlock.style.display = isSelf ? 'none' : 'block';
 
       if (memberId) {
-        var m = memberState.members.filter(function (x) { return x.id === memberId; })[0];
-        document.getElementById('memberModalTitle').textContent = 'Edit Family Member';
+        document.getElementById('memberModalTitle').textContent = isSelf ? 'Edit Your Details' : 'Edit Family Member';
         document.getElementById('memberFirstNameInput').value = (m && m.first_name) || (m ? m.name.split(/\s+/)[0] : '');
         document.getElementById('memberLastNameInput').value = (m && m.last_name) || (m ? m.name.split(/\s+/).slice(1).join(' ') : '');
         document.getElementById('memberRelationInput').value = m ? m.relation : 'son';
         document.getElementById('memberPhoneInput').value = (m && m.phone) || '';
         document.getElementById('memberEmailInput').value = (m && m.email) || '';
 
+        if (isSelf) {
+          var { data: { session } } = await supabaseClient.auth.getSession();
+          document.getElementById('memberSelfEmailInput').value = session.user.email;
+        }
+
         var astro = null;
         try { astro = await AstroProfiles.get(memberId); } catch (e) { console.error('Could not load birth details', e); }
         document.getElementById('memberDobInput').value = (astro && astro.dob) || (m && m.date_of_birth) || '';
         document.getElementById('memberBirthTimeInput').value = (astro && astro.birth_time) || '';
         document.getElementById('memberCityInput').value = (astro && astro.birth_city) || '';
-        deleteBtn.style.display = 'inline-block';
+        deleteBtn.style.display = isSelf ? 'none' : 'inline-block';
       } else {
         document.getElementById('memberModalTitle').textContent = 'Add Family Member';
         document.getElementById('memberFirstNameInput').value = '';
@@ -1007,6 +1005,7 @@
       var errEl = document.getElementById('memberFormError');
       errEl.textContent = '';
 
+      var isSelf = memberState.editingId === selfMemberId;
       var firstName = document.getElementById('memberFirstNameInput').value.trim();
       var lastName = document.getElementById('memberLastNameInput').value.trim();
       var relation = document.getElementById('memberRelationInput').value;
@@ -1016,25 +1015,37 @@
       var phone = document.getElementById('memberPhoneInput').value.trim();
       var email = document.getElementById('memberEmailInput').value.trim();
 
-      if (!firstName || !lastName) { errEl.textContent = 'Please enter their first and last name.'; return; }
-      if (!dob) { errEl.textContent = 'Please enter their date of birth.'; return; }
-      if (!birthTime) { errEl.textContent = 'Please enter their time of birth.'; return; }
-      if (!cityValue) { errEl.textContent = 'Please enter their place of birth.'; return; }
+      if (!firstName || !lastName) { errEl.textContent = 'Please enter ' + (isSelf ? 'your' : 'their') + ' first and last name.'; return; }
+      if (!dob) { errEl.textContent = 'Please enter ' + (isSelf ? 'your' : 'their') + ' date of birth.'; return; }
+      if (!birthTime) { errEl.textContent = 'Please enter ' + (isSelf ? 'your' : 'their') + ' time of birth.'; return; }
+      if (!cityValue) { errEl.textContent = 'Please enter ' + (isSelf ? 'your' : 'their') + ' place of birth.'; return; }
 
       var fullName = (firstName + ' ' + lastName).trim();
       var payload = {
         name: fullName,
         first_name: firstName,
         last_name: lastName,
-        relation: relation,
+        relation: isSelf ? 'self' : relation,
         date_of_birth: dob,
         phone: phone || null,
-        email: email || null
+        email: isSelf ? null : (email || null)
       };
 
       var saveBtn = document.getElementById('saveMemberBtn');
       saveBtn.disabled = true;
       try {
+        if (isSelf) {
+          var { data: { session } } = await supabaseClient.auth.getSession();
+          var { error: profErr } = await supabaseClient
+            .from('profiles')
+            .update({ first_name: firstName, last_name: lastName, full_name: fullName, phone: phone || null })
+            .eq('id', session.user.id);
+          if (profErr) throw profErr;
+          // Keeps the session's own copy in sync so "Welcome back, X" on the
+          // dashboard reflects the new name immediately, without a re-login.
+          await supabaseClient.auth.updateUser({ data: { full_name: fullName } });
+        }
+
         var savedMember;
         if (memberState.editingId) {
           savedMember = await HealthLog.updateMember(memberState.editingId, payload);
@@ -1045,7 +1056,7 @@
         closeMemberModal();
         await loadMemberList();
       } catch (e) {
-        console.error('Could not save family member', e);
+        console.error('Could not save', e);
         errEl.textContent = 'Could not save. Please try again.';
       } finally {
         saveBtn.disabled = false;
@@ -1065,77 +1076,6 @@
       }
     }
 
-    async function handleSave(event) {
-      event.preventDefault();
-      var msgEl = document.getElementById('saveMessage');
-      var btn = document.getElementById('saveBtn');
-      msgEl.textContent = '';
-      msgEl.className = 'save-message';
-
-      var firstName = document.getElementById('firstNameInput').value.trim();
-      var lastName = document.getElementById('lastNameInput').value.trim();
-      var phone = document.getElementById('phoneInput').value.trim();
-      var dob = document.getElementById('dobInput').value;
-      var birthTime = document.getElementById('birthTimeInput').value;
-      var cityValue = document.getElementById('cityInput').value.trim();
-
-      if (!firstName || !lastName) {
-        msgEl.textContent = 'Please enter your first and last name.';
-        msgEl.className = 'save-message error';
-        return;
-      }
-      if (!dob) {
-        msgEl.textContent = 'Please enter your date of birth.';
-        msgEl.className = 'save-message error';
-        return;
-      }
-      if (!birthTime) {
-        msgEl.textContent = 'Please enter your time of birth.';
-        msgEl.className = 'save-message error';
-        return;
-      }
-      if (!cityValue) {
-        msgEl.textContent = 'Please enter your place of birth.';
-        msgEl.className = 'save-message error';
-        return;
-      }
-
-      btn.disabled = true;
-      btn.textContent = 'Saving…';
-
-      var fullName = (firstName + ' ' + lastName).trim();
-      var { data: { session } } = await supabaseClient.auth.getSession();
-      var userId = session.user.id;
-
-      var { error: profErr } = await supabaseClient
-        .from('profiles')
-        .update({ first_name: firstName, last_name: lastName || null, full_name: fullName, phone: phone || null })
-        .eq('id', userId);
-
-      var self = await ensureSelfMember(fullName);
-      selfMemberId = self.id;
-      if (self.name !== fullName || self.date_of_birth !== dob) {
-        await HealthLog.updateMember(self.id, { name: fullName, first_name: firstName, last_name: lastName || null, date_of_birth: dob });
-      }
-      var { error: astroErr } = await AstroProfiles.save(self.id, dob, birthTime, cityValue);
-
-      // Keeps the session's own copy in sync so "Welcome back, X" on the
-      // dashboard reflects the new name immediately, without a re-login.
-      if (!profErr) await supabaseClient.auth.updateUser({ data: { full_name: fullName } });
-
-      btn.disabled = false;
-      btn.textContent = 'Save Changes';
-
-      if (profErr || astroErr) {
-        var err = profErr || astroErr;
-        msgEl.textContent = 'Could not save: ' + err.message;
-        msgEl.className = 'save-message error';
-        return;
-      }
-      msgEl.textContent = '✓ Saved';
-      msgEl.className = 'save-message success';
-    }
-
     (async function init() {
       var user = await requireAuth('login.html');
       if (!user) return;
@@ -1144,39 +1084,16 @@
         if (admin) document.getElementById('adminLink').style.display = 'flex';
       });
 
-      document.getElementById('emailDisplay').value = user.email;
       populateCityList();
 
       var { data: profile } = await supabaseClient
         .from('profiles')
-        .select('first_name, last_name, full_name, phone')
+        .select('full_name')
         .eq('id', user.id)
         .maybeSingle();
 
       var self = await ensureSelfMember(profile && profile.full_name);
       selfMemberId = self.id;
-
-      var astro = await AstroProfiles.get(self.id);
-
-      var firstName = profile && profile.first_name;
-      var lastName = profile && profile.last_name;
-      // One-time convenience for accounts that signed up before this page
-      // existed: split the single full_name they already gave at signup
-      // into a starting first/last, rather than making them retype it.
-      if (!firstName && !lastName && profile && profile.full_name) {
-        var parts = profile.full_name.trim().split(/\s+/);
-        firstName = parts[0] || '';
-        lastName = parts.slice(1).join(' ');
-      }
-
-      document.getElementById('firstNameInput').value = firstName || '';
-      document.getElementById('lastNameInput').value = lastName || '';
-      document.getElementById('phoneInput').value = (profile && profile.phone) || '';
-      document.getElementById('dobInput').value = (astro && astro.dob) || '';
-      document.getElementById('birthTimeInput').value = (astro && astro.birth_time) || '';
-      document.getElementById('cityInput').value = (astro && astro.birth_city) || '';
-
-      document.getElementById('settingsForm').addEventListener('submit', handleSave);
 
       document.getElementById('addMemberBtn').addEventListener('click', function () { openMemberModal(null); });
       document.getElementById('cancelMemberBtn').addEventListener('click', closeMemberModal);

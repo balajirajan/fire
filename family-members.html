@@ -81,18 +81,20 @@
 
     .empty-state { background: #ffffff; border: 1px dashed #cbd5e1; border-radius: 1rem; padding: 2.5rem 1.5rem; text-align: center; color: #94a3b8; font-size: 0.9rem; }
 
-    .member-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1rem; }
-    .member-card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 1.1rem; padding: 1.3rem 1.4rem; box-shadow: 0 4px 16px rgba(15,23,42,0.03); display: flex; flex-direction: column; gap: 0.9rem; }
-    .member-card-head { display: flex; align-items: center; gap: 0.85rem; }
-    .member-avatar { width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, #0ea5e9, #10b981); color: #fff; font-weight: 800; font-size: 1rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-    .member-name { font-size: 1rem; font-weight: 700; }
-    .member-relation { font-size: 0.78rem; color: #64748b; text-transform: capitalize; }
-    .member-age { font-size: 0.78rem; color: #94a3b8; }
-    .member-card-actions { display: flex; align-items: center; justify-content: space-between; gap: 0.7rem; padding-top: 0.7rem; border-top: 1px solid #f1f5f9; flex-wrap: wrap; }
-    .member-card-actions .rasi-link { font-size: 0.8rem; font-weight: 700; color: #7e22ce; }
-    .member-card-actions-right { display: flex; gap: 0.9rem; }
-    .member-goal-links { display: flex; gap: 0.85rem; padding-top: 0.15rem; }
-    .member-goal-links a { font-size: 0.76rem; font-weight: 700; color: #0284c7; }
+    /* People table - same professional row/column look as the Admin
+       Dashboard's user table and settings.html's People list. */
+    .member-table-wrap { overflow-x: auto; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 1.1rem; box-shadow: 0 4px 16px rgba(15,23,42,0.03); }
+    table.member-table { width: 100%; border-collapse: collapse; min-width: 1080px; }
+    table.member-table th { text-align: left; padding: 0.8rem 1.1rem; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: #94a3b8; border-bottom: 1px solid #e2e8f0; background: #f8fafc; white-space: nowrap; }
+    table.member-table th:first-child { border-top-left-radius: 1.1rem; }
+    table.member-table th:last-child { border-top-right-radius: 1.1rem; }
+    table.member-table td { padding: 0.85rem 1.1rem; font-size: 0.85rem; color: #364752; border-bottom: 1px solid #f1f5f9; vertical-align: middle; white-space: nowrap; }
+    table.member-table tr:last-child td { border-bottom: none; }
+    .member-name-cell { display: flex; align-items: center; gap: 0.65rem; font-weight: 700; color: #0f172a; }
+    .member-avatar-sm { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #0ea5e9, #10b981); color: #fff; font-weight: 800; font-size: 0.72rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .member-muted { color: #94a3b8; }
+    .rasi-link { font-size: 0.8rem; font-weight: 700; color: #7e22ce; }
+    table.member-table td a.goal-link { font-size: 0.8rem; font-weight: 700; color: #0284c7; }
 
     .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.55); align-items: center; justify-content: center; z-index: 50; padding: 1rem; }
     .modal-overlay.show { display: flex; }
@@ -437,7 +439,6 @@
       </div>
 
       <div class="members-toolbar">
-        <a href="rasi-family-list.html" class="btn-secondary">View All Rasi Profiles →</a>
         <button type="button" class="btn-primary" id="addMemberBtn">+ Add Family Member</button>
       </div>
 
@@ -445,7 +446,14 @@
         No family members added yet beyond yourself. <a href="#" id="addFirstMemberLink" style="color:#0ea5e9; font-weight:600;">Add one</a> to get started.
       </div>
 
-      <div class="member-grid" id="memberGrid"></div>
+      <div class="member-table-wrap">
+        <table class="member-table" id="memberTable" style="display:none;">
+          <thead>
+            <tr><th>Name</th><th>Relationship</th><th>Date of Birth</th><th>Age</th><th>Phone</th><th>Email</th><th>Rasi</th><th>Education Goal</th><th>Wedding Goal</th><th></th></tr>
+          </thead>
+          <tbody id="memberGrid"></tbody>
+        </table>
+      </div>
     </main>
 
                   <nav class="mobile-bottom-nav">
@@ -839,48 +847,48 @@
 
     var state = { members: [], editingId: null };
 
-    function goalShortcutsHtml(m) {
+    function formatDob(dob) {
+      if (!dob) return null;
+      var d = new Date(dob + 'T00:00:00');
+      return d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+    }
+
+    function goalUrl(m, category, label) {
       var firstName = String(m.name || '').trim().split(/\s+/)[0] || m.name;
-      var eduUrl = 'fire-goals.html?goal_category=education&goal_member=' + encodeURIComponent(m.id) + '&goal_name=' + encodeURIComponent(firstName + "'s Education");
-      var weddingUrl = 'fire-goals.html?goal_category=wedding&goal_member=' + encodeURIComponent(m.id) + '&goal_name=' + encodeURIComponent(firstName + "'s Wedding");
-      return '' +
-        '<div class="member-goal-links">' +
-          '<a href="' + eduUrl + '">🎓 Education Goal</a>' +
-          '<a href="' + weddingUrl + '">💍 Wedding Goal</a>' +
-        '</div>';
+      return 'fire-goals.html?goal_category=' + category + '&goal_member=' + encodeURIComponent(m.id) + '&goal_name=' + encodeURIComponent(firstName + "'s " + label);
     }
 
     function renderMembers() {
       var grid = document.getElementById('memberGrid');
+      var table = document.getElementById('memberTable');
       var empty = document.getElementById('noMembersState');
 
       if (!state.members.length) {
         grid.innerHTML = '';
+        table.style.display = 'none';
         empty.style.display = 'block';
         return;
       }
+      table.style.display = 'table';
       empty.style.display = 'none';
 
       grid.innerHTML = state.members.map(function (m) {
         var age = ageFromDob(m.date_of_birth);
+        var dob = formatDob(m.date_of_birth);
+        var isChild = CHILD_RELATIONS.indexOf(m.relation) !== -1;
         return '' +
-          '<div class="member-card">' +
-            '<div class="member-card-head">' +
-              '<div class="member-avatar">' + escapeHtml(initials(m.name)) + '</div>' +
-              '<div>' +
-                '<div class="member-name">' + escapeHtml(m.name) + '</div>' +
-                '<div class="member-relation">' + escapeHtml(relationLabel(m.relation)) + '</div>' +
-                (age != null ? '<div class="member-age">' + age + ' years old</div>' : '') +
-              '</div>' +
-            '</div>' +
-            (CHILD_RELATIONS.indexOf(m.relation) !== -1 ? goalShortcutsHtml(m) : '') +
-            '<div class="member-card-actions">' +
-              '<a class="rasi-link" href="astrology.html?member=' + m.id + '">View Rasi Profile →</a>' +
-              '<div class="member-card-actions-right">' +
-                '<button type="button" class="btn-edit-text" data-edit="' + m.id + '">Edit</button>' +
-              '</div>' +
-            '</div>' +
-          '</div>';
+          '<tr>' +
+            '<td><div class="member-name-cell"><span class="member-avatar-sm">' + escapeHtml(initials(m.name)) + '</span>' + escapeHtml(m.name) + '</div></td>' +
+            '<td>' + escapeHtml(relationLabel(m.relation)) + '</td>' +
+            '<td>' + (dob ? escapeHtml(dob) : '<span class="member-muted">-</span>') + '</td>' +
+            '<td>' + (age != null ? age : '<span class="member-muted">-</span>') + '</td>' +
+            '<td>' + (m.phone ? escapeHtml(m.phone) : '<span class="member-muted">-</span>') + '</td>' +
+            '<td>' + (m.email ? escapeHtml(m.email) : '<span class="member-muted">-</span>') + '</td>' +
+            '<td><a class="rasi-link" href="astrology.html?member=' + m.id + '">View →</a></td>' +
+            '<td>' + (isChild ? '<a class="goal-link" href="' + goalUrl(m, 'education', 'Education') + '">View →</a>' : '<span class="member-muted">-</span>') + '</td>' +
+            '<td>' + (isChild ? '<a class="goal-link" href="' + goalUrl(m, 'wedding', 'Wedding') + '">View →</a>' : '<span class="member-muted">-</span>') + '</td>' +
+            '<td><button type="button" class="btn-edit-text" data-edit="' + m.id + '">Edit</button></td>' +
+          '</tr>';
       }).join('');
 
       Array.prototype.forEach.call(grid.querySelectorAll('[data-edit]'), function (btn) {
