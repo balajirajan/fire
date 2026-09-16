@@ -1886,7 +1886,7 @@ create policy "profiles_select_admin" on profiles for select using (is_admin());
 -- table-level grant Supabase's default setup gives `authenticated`.
 create policy "profiles_update_own" on profiles for update using (auth.uid() = id) with check (auth.uid() = id);
 revoke update on profiles from authenticated;
-grant update (first_name, last_name, full_name) on profiles to authenticated;
+grant update (first_name, last_name, full_name, phone) on profiles to authenticated;
 
 -- Auto-create a profiles row for every new signup. admin@enrichme.app and
 -- str.balaji@gmail.com (the account holder) are always pre-approved and
