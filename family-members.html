@@ -96,14 +96,18 @@
 
     .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.55); align-items: center; justify-content: center; z-index: 50; padding: 1rem; }
     .modal-overlay.show { display: flex; }
-    .modal-box { background: #fff; border-radius: 1.1rem; padding: 1.6rem 1.75rem; width: 100%; max-width: 420px; max-height: 90vh; overflow-y: auto; }
+    .modal-box { background: #fff; border-radius: 1.1rem; padding: 1.6rem 1.75rem; width: 100%; max-width: 520px; max-height: 90vh; overflow-y: auto; }
     .modal-box h3 { font-size: 1.1rem; font-weight: 800; margin-bottom: 1.1rem; }
     .modal-actions { display: flex; align-items: center; justify-content: space-between; gap: 0.7rem; margin-top: 1rem; }
     .modal-actions-right { display: flex; gap: 0.7rem; flex: 1; }
     .modal-actions-right button { flex: 1; }
     .form-error { font-size: 0.8rem; color: #dc2626; font-weight: 600; margin-bottom: 0.7rem; }
     .field-item { margin-bottom: 1.1rem; }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    @media (max-width: 480px) { .field-row { grid-template-columns: 1fr; } }
     .field-label { font-size: 0.83rem; font-weight: 600; color: #0f172a; margin-bottom: 0.5rem; display: block; }
+    .field-optional-tag { font-weight: 500; color: #94a3b8; }
+    .field-hint { font-size: 0.74rem; color: #94a3b8; margin-top: 0.35rem; line-height: 1.4; }
     .field-select, .num-input {
       width: 100%; padding: 0.65rem 0.8rem; border: 1px solid #cbd5e1; border-radius: 0.55rem;
       font-size: 0.9rem; font-family: inherit; color: #0f172a; background: #fff;
@@ -429,7 +433,7 @@
 
       <div class="page-head">
         <h2>Family Members</h2>
-        <p>Everyone in your household, in one roster - spouse, kids, parents. Used by Know Your Rasi today, and by Medicine Tracker for who a medicine or check-up is for.</p>
+        <p>Everyone in your household, with their birth details - spouse, kids, parents. Used by Know Your Rasi, Goal Based Savings, Insurance and Medicine Tracker, so you never re-type a name or date on any of those pages.</p>
       </div>
 
       <div class="members-toolbar">
@@ -473,23 +477,66 @@
     <div class="modal-box">
       <h3 id="memberModalTitle">Add Family Member</h3>
       <div class="form-error" id="memberFormError"></div>
+
       <div class="field-item">
-        <label class="field-label">Name</label>
-        <input type="text" class="num-input" id="memberNameInput" placeholder="e.g. child's name">
-      </div>
-      <div class="field-item">
-        <label class="field-label">Relation</label>
+        <label class="field-label">Relationship</label>
         <select class="field-select" id="memberRelationInput">
-          <option value="spouse">Spouse</option>
-          <option value="child" selected>Child</option>
-          <option value="parent">Parent</option>
+          <option value="wife">Wife</option>
+          <option value="husband">Husband</option>
+          <option value="son" selected>Son</option>
+          <option value="daughter">Daughter</option>
+          <option value="father">Father</option>
+          <option value="mother">Mother</option>
+          <option value="brother">Brother</option>
+          <option value="sister">Sister</option>
+          <option value="grandfather">Grandfather</option>
+          <option value="grandmother">Grandmother</option>
+          <option value="father_in_law">Father-in-law</option>
+          <option value="mother_in_law">Mother-in-law</option>
           <option value="other">Other</option>
         </select>
       </div>
-      <div class="field-item">
-        <label class="field-label">Date of birth (optional)</label>
-        <input type="date" class="num-input" id="memberDobInput">
+
+      <div class="field-row">
+        <div class="field-item">
+          <label class="field-label">First Name</label>
+          <input type="text" class="num-input" id="memberFirstNameInput" placeholder="e.g. Ananya">
+        </div>
+        <div class="field-item">
+          <label class="field-label">Last Name</label>
+          <input type="text" class="num-input" id="memberLastNameInput" placeholder="e.g. Sharma">
+        </div>
       </div>
+
+      <div class="field-row">
+        <div class="field-item">
+          <label class="field-label">Date of Birth</label>
+          <input type="date" class="num-input" id="memberDobInput">
+        </div>
+        <div class="field-item">
+          <label class="field-label">Time of Birth</label>
+          <input type="time" class="num-input" id="memberBirthTimeInput" step="1">
+        </div>
+      </div>
+
+      <div class="field-item">
+        <label class="field-label">Place of Birth</label>
+        <input type="text" class="num-input" id="memberCityInput" list="cityDatalist" placeholder="Start typing a city...">
+        <datalist id="cityDatalist"></datalist>
+        <p class="field-hint">Used for their Rasi chart's Lagna (ascendant) - pick the nearest major city if you're not sure of the exact town.</p>
+      </div>
+
+      <div class="field-row">
+        <div class="field-item">
+          <label class="field-label">Phone <span class="field-optional-tag">(optional)</span></label>
+          <input type="tel" class="num-input" id="memberPhoneInput" placeholder="e.g. 98765 43210">
+        </div>
+        <div class="field-item">
+          <label class="field-label">Email <span class="field-optional-tag">(optional)</span></label>
+          <input type="email" class="num-input" id="memberEmailInput" placeholder="e.g. name@example.com">
+        </div>
+      </div>
+
       <div class="modal-actions">
         <button type="button" class="btn-danger-text" id="deleteMemberBtn" style="display:none;">Delete</button>
         <div class="modal-actions-right">
@@ -588,6 +635,208 @@
       return ((parts[0] || '')[0] || '?').toUpperCase() + ((parts[1] || '')[0] || '').toUpperCase();
     }
 
+    var RELATION_LABELS = {
+      self: 'You', spouse: 'Spouse', child: 'Child', parent: 'Parent', other: 'Other',
+      husband: 'Husband', wife: 'Wife', son: 'Son', daughter: 'Daughter',
+      father: 'Father', mother: 'Mother', brother: 'Brother', sister: 'Sister',
+      grandfather: 'Grandfather', grandmother: 'Grandmother',
+      father_in_law: 'Father-in-law', mother_in_law: 'Mother-in-law'
+    };
+    function relationLabel(r) { return RELATION_LABELS[r] || r; }
+    var CHILD_RELATIONS = ['child', 'son', 'daughter'];
+
+    // Birth-place picker: same city list and lookup pattern as astrology.html
+    // and settings.html, duplicated here since pages in this app are self-
+    // contained (no shared template) - kept in sync by hand if any list changes.
+    var CITIES = [
+      { name: 'Agartala', state: 'Tripura', lat: 23.8315, lon: 91.2868 },
+      { name: 'Agra', state: 'Uttar Pradesh', lat: 27.1767, lon: 78.0081 },
+      { name: 'Ahmedabad', state: 'Gujarat', lat: 23.0225, lon: 72.5714 },
+      { name: 'Aizawl', state: 'Mizoram', lat: 23.7271, lon: 92.7176 },
+      { name: 'Ajmer', state: 'Rajasthan', lat: 26.4499, lon: 74.6399 },
+      { name: 'Aligarh', state: 'Uttar Pradesh', lat: 27.8974, lon: 78.0880 },
+      { name: 'Alwar', state: 'Rajasthan', lat: 27.5530, lon: 76.6346 },
+      { name: 'Amaravati', state: 'Andhra Pradesh', lat: 16.5062, lon: 80.6480 },
+      { name: 'Amritsar', state: 'Punjab', lat: 31.6340, lon: 74.8723 },
+      { name: 'Aurangabad', state: 'Maharashtra', lat: 19.8762, lon: 75.3433 },
+      { name: 'Ayodhya', state: 'Uttar Pradesh', lat: 26.7922, lon: 82.1998 },
+      { name: 'Bareilly', state: 'Uttar Pradesh', lat: 28.3670, lon: 79.4304 },
+      { name: 'Bengaluru', state: 'Karnataka', lat: 12.9716, lon: 77.5946 },
+      { name: 'Bhagalpur', state: 'Bihar', lat: 25.2425, lon: 87.0079 },
+      { name: 'Bhavnagar', state: 'Gujarat', lat: 21.7645, lon: 72.1519 },
+      { name: 'Bhilai', state: 'Chhattisgarh', lat: 21.2094, lon: 81.4285 },
+      { name: 'Bhilwara', state: 'Rajasthan', lat: 25.3463, lon: 74.6364 },
+      { name: 'Bhopal', state: 'Madhya Pradesh', lat: 23.2599, lon: 77.4126 },
+      { name: 'Bhubaneswar', state: 'Odisha', lat: 20.2961, lon: 85.8245 },
+      { name: 'Bikaner', state: 'Rajasthan', lat: 28.0229, lon: 73.3119 },
+      { name: 'Bilaspur', state: 'Chhattisgarh', lat: 22.0797, lon: 82.1409 },
+      { name: 'Chandigarh', state: 'Chandigarh', lat: 30.7333, lon: 76.7794 },
+      { name: 'Chennai', state: 'Tamil Nadu', lat: 13.0827, lon: 80.2707 },
+      { name: 'Coimbatore', state: 'Tamil Nadu', lat: 11.0168, lon: 76.9558 },
+      { name: 'Cuttack', state: 'Odisha', lat: 20.4625, lon: 85.8828 },
+      { name: 'Darbhanga', state: 'Bihar', lat: 26.1542, lon: 85.8918 },
+      { name: 'Dehradun', state: 'Uttarakhand', lat: 30.3165, lon: 78.0322 },
+      { name: 'Delhi', state: 'Delhi', lat: 28.7041, lon: 77.1025 },
+      { name: 'Dhanbad', state: 'Jharkhand', lat: 23.7957, lon: 86.4304 },
+      { name: 'Dibrugarh', state: 'Assam', lat: 27.4728, lon: 94.9120 },
+      { name: 'Dispur', state: 'Assam', lat: 26.1433, lon: 91.7898 },
+      { name: 'Durgapur', state: 'West Bengal', lat: 23.5204, lon: 87.3119 },
+      { name: 'Erode', state: 'Tamil Nadu', lat: 11.3410, lon: 77.7172 },
+      { name: 'Faridabad', state: 'Haryana', lat: 28.4089, lon: 77.3178 },
+      { name: 'Firozabad', state: 'Uttar Pradesh', lat: 27.1592, lon: 78.3957 },
+      { name: 'Gandhinagar', state: 'Gujarat', lat: 23.2156, lon: 72.6369 },
+      { name: 'Gangtok', state: 'Sikkim', lat: 27.3389, lon: 88.6065 },
+      { name: 'Gaya', state: 'Bihar', lat: 24.7955, lon: 84.9994 },
+      { name: 'Ghaziabad', state: 'Uttar Pradesh', lat: 28.6692, lon: 77.4538 },
+      { name: 'Gorakhpur', state: 'Uttar Pradesh', lat: 26.7606, lon: 83.3732 },
+      { name: 'Guntur', state: 'Andhra Pradesh', lat: 16.3067, lon: 80.4365 },
+      { name: 'Gurugram', state: 'Haryana', lat: 28.4595, lon: 77.0266 },
+      { name: 'Guwahati', state: 'Assam', lat: 26.1445, lon: 91.7362 },
+      { name: 'Gwalior', state: 'Madhya Pradesh', lat: 26.2183, lon: 78.1828 },
+      { name: 'Hisar', state: 'Haryana', lat: 29.1492, lon: 75.7217 },
+      { name: 'Howrah', state: 'West Bengal', lat: 22.5958, lon: 88.2636 },
+      { name: 'Hubli', state: 'Karnataka', lat: 15.3647, lon: 75.1240 },
+      { name: 'Hyderabad', state: 'Telangana', lat: 17.3850, lon: 78.4867 },
+      { name: 'Imphal', state: 'Manipur', lat: 24.8170, lon: 93.9368 },
+      { name: 'Indore', state: 'Madhya Pradesh', lat: 22.7196, lon: 75.8577 },
+      { name: 'Itanagar', state: 'Arunachal Pradesh', lat: 27.0844, lon: 93.6053 },
+      { name: 'Jabalpur', state: 'Madhya Pradesh', lat: 23.1815, lon: 79.9864 },
+      { name: 'Jaipur', state: 'Rajasthan', lat: 26.9124, lon: 75.7873 },
+      { name: 'Jalandhar', state: 'Punjab', lat: 31.3260, lon: 75.5762 },
+      { name: 'Jalgaon', state: 'Maharashtra', lat: 21.0077, lon: 75.5626 },
+      { name: 'Jammu', state: 'Jammu and Kashmir', lat: 32.7266, lon: 74.8570 },
+      { name: 'Jamnagar', state: 'Gujarat', lat: 22.4707, lon: 70.0577 },
+      { name: 'Jamshedpur', state: 'Jharkhand', lat: 22.8046, lon: 86.2029 },
+      { name: 'Jhansi', state: 'Uttar Pradesh', lat: 25.4484, lon: 78.5685 },
+      { name: 'Jodhpur', state: 'Rajasthan', lat: 26.2389, lon: 73.0243 },
+      { name: 'Kakinada', state: 'Andhra Pradesh', lat: 16.9891, lon: 82.2475 },
+      { name: 'Kanpur', state: 'Uttar Pradesh', lat: 26.4499, lon: 80.3319 },
+      { name: 'Karnal', state: 'Haryana', lat: 29.6857, lon: 76.9905 },
+      { name: 'Kavaratti', state: 'Lakshadweep', lat: 10.5669, lon: 72.6420 },
+      { name: 'Kochi', state: 'Kerala', lat: 9.9312, lon: 76.2673 },
+      { name: 'Kohima', state: 'Nagaland', lat: 25.6751, lon: 94.1086 },
+      { name: 'Kolar', state: 'Karnataka', lat: 13.1372, lon: 78.1298 },
+      { name: 'Kolhapur', state: 'Maharashtra', lat: 16.7050, lon: 74.2433 },
+      { name: 'Kolkata', state: 'West Bengal', lat: 22.5726, lon: 88.3639 },
+      { name: 'Kollam', state: 'Kerala', lat: 8.8932, lon: 76.6141 },
+      { name: 'Kota', state: 'Rajasthan', lat: 25.2138, lon: 75.8648 },
+      { name: 'Kozhikode', state: 'Kerala', lat: 11.2588, lon: 75.7804 },
+      { name: 'Kurnool', state: 'Andhra Pradesh', lat: 15.8281, lon: 78.0373 },
+      { name: 'Latur', state: 'Maharashtra', lat: 18.4088, lon: 76.5604 },
+      { name: 'Lucknow', state: 'Uttar Pradesh', lat: 26.8467, lon: 80.9462 },
+      { name: 'Ludhiana', state: 'Punjab', lat: 30.9010, lon: 75.8573 },
+      { name: 'Madurai', state: 'Tamil Nadu', lat: 9.9252, lon: 78.1198 },
+      { name: 'Mangaluru', state: 'Karnataka', lat: 12.9141, lon: 74.8560 },
+      { name: 'Mathura', state: 'Uttar Pradesh', lat: 27.4924, lon: 77.6737 },
+      { name: 'Meerut', state: 'Uttar Pradesh', lat: 28.9845, lon: 77.7064 },
+      { name: 'Moradabad', state: 'Uttar Pradesh', lat: 28.8386, lon: 78.7733 },
+      { name: 'Mumbai', state: 'Maharashtra', lat: 19.0760, lon: 72.8777 },
+      { name: 'Muzaffarpur', state: 'Bihar', lat: 26.1225, lon: 85.3906 },
+      { name: 'Mysuru', state: 'Karnataka', lat: 12.2958, lon: 76.6394 },
+      { name: 'Nagpur', state: 'Maharashtra', lat: 21.1458, lon: 79.0882 },
+      { name: 'Nanded', state: 'Maharashtra', lat: 19.1383, lon: 77.3210 },
+      { name: 'Nashik', state: 'Maharashtra', lat: 19.9975, lon: 73.7898 },
+      { name: 'Navi Mumbai', state: 'Maharashtra', lat: 19.0330, lon: 73.0297 },
+      { name: 'Nellore', state: 'Andhra Pradesh', lat: 14.4426, lon: 79.9865 },
+      { name: 'New Delhi', state: 'Delhi', lat: 28.6139, lon: 77.2090 },
+      { name: 'Nizamabad', state: 'Telangana', lat: 18.6725, lon: 78.0941 },
+      { name: 'Noida', state: 'Uttar Pradesh', lat: 28.5355, lon: 77.3910 },
+      { name: 'Pali', state: 'Rajasthan', lat: 25.7711, lon: 73.3234 },
+      { name: 'Panaji', state: 'Goa', lat: 15.4909, lon: 73.8278 },
+      { name: 'Panipat', state: 'Haryana', lat: 29.3909, lon: 76.9635 },
+      { name: 'Patiala', state: 'Punjab', lat: 30.3398, lon: 76.3869 },
+      { name: 'Patna', state: 'Bihar', lat: 25.5941, lon: 85.1376 },
+      { name: 'Pondicherry', state: 'Puducherry', lat: 11.9416, lon: 79.8083 },
+      { name: 'Port Blair', state: 'Andaman and Nicobar Islands', lat: 11.6234, lon: 92.7265 },
+      { name: 'Pune', state: 'Maharashtra', lat: 18.5204, lon: 73.8567 },
+      { name: 'Puri', state: 'Odisha', lat: 19.8135, lon: 85.8312 },
+      { name: 'Raipur', state: 'Chhattisgarh', lat: 21.2514, lon: 81.6296 },
+      { name: 'Rajahmundry', state: 'Andhra Pradesh', lat: 17.0005, lon: 81.8040 },
+      { name: 'Rajkot', state: 'Gujarat', lat: 22.3039, lon: 70.8022 },
+      { name: 'Ranchi', state: 'Jharkhand', lat: 23.3441, lon: 85.3096 },
+      { name: 'Rewa', state: 'Madhya Pradesh', lat: 24.5364, lon: 81.3037 },
+      { name: 'Rohtak', state: 'Haryana', lat: 28.8955, lon: 76.6066 },
+      { name: 'Rourkela', state: 'Odisha', lat: 22.2604, lon: 84.8536 },
+      { name: 'Sagar', state: 'Madhya Pradesh', lat: 23.8388, lon: 78.7378 },
+      { name: 'Saharanpur', state: 'Uttar Pradesh', lat: 29.9680, lon: 77.5460 },
+      { name: 'Salem', state: 'Tamil Nadu', lat: 11.6643, lon: 78.1460 },
+      { name: 'Sambalpur', state: 'Odisha', lat: 21.4669, lon: 83.9756 },
+      { name: 'Satna', state: 'Madhya Pradesh', lat: 24.6005, lon: 80.8322 },
+      { name: 'Shillong', state: 'Meghalaya', lat: 25.5788, lon: 91.8933 },
+      { name: 'Shimla', state: 'Himachal Pradesh', lat: 31.1048, lon: 77.1734 },
+      { name: 'Sikar', state: 'Rajasthan', lat: 27.6094, lon: 75.1399 },
+      { name: 'Silchar', state: 'Assam', lat: 24.8333, lon: 92.7789 },
+      { name: 'Siliguri', state: 'West Bengal', lat: 26.7271, lon: 88.3953 },
+      { name: 'Solapur', state: 'Maharashtra', lat: 17.6599, lon: 75.9064 },
+      { name: 'Sonipat', state: 'Haryana', lat: 28.9931, lon: 77.0151 },
+      { name: 'Srinagar', state: 'Jammu and Kashmir', lat: 34.0837, lon: 74.7973 },
+      { name: 'Surat', state: 'Gujarat', lat: 21.1702, lon: 72.8311 },
+      { name: 'Thane', state: 'Maharashtra', lat: 19.2183, lon: 72.9781 },
+      { name: 'Thiruvananthapuram', state: 'Kerala', lat: 8.5241, lon: 76.9366 },
+      { name: 'Thrissur', state: 'Kerala', lat: 10.5276, lon: 76.2144 },
+      { name: 'Tiruchirappalli', state: 'Tamil Nadu', lat: 10.7905, lon: 78.7047 },
+      { name: 'Tirupati', state: 'Andhra Pradesh', lat: 13.6288, lon: 79.4192 },
+      { name: 'Tumkur', state: 'Karnataka', lat: 13.3379, lon: 77.1173 },
+      { name: 'Udaipur', state: 'Rajasthan', lat: 24.5854, lon: 73.7125 },
+      { name: 'Ujjain', state: 'Madhya Pradesh', lat: 23.1765, lon: 75.7885 },
+      { name: 'Vadodara', state: 'Gujarat', lat: 22.3072, lon: 73.1812 },
+      { name: 'Varanasi', state: 'Uttar Pradesh', lat: 25.3176, lon: 82.9739 },
+      { name: 'Vellore', state: 'Tamil Nadu', lat: 12.9165, lon: 79.1325 },
+      { name: 'Vijayawada', state: 'Andhra Pradesh', lat: 16.5062, lon: 80.6480 },
+      { name: 'Visakhapatnam', state: 'Andhra Pradesh', lat: 17.6868, lon: 83.2185 },
+      { name: 'Warangal', state: 'Telangana', lat: 17.9689, lon: 79.5941 },
+      { name: 'Yamunanagar', state: 'Haryana', lat: 30.1290, lon: 77.2674 }
+    ];
+
+    var CITY_MAP = {};
+    CITIES.forEach(function (c) {
+      CITY_MAP[(c.name + ', ' + c.state).toLowerCase()] = c;
+    });
+
+    function findCity(inputValue) {
+      var v = (inputValue || '').trim().toLowerCase();
+      if (!v) return null;
+      if (CITY_MAP[v]) return CITY_MAP[v];
+      var nameMatches = CITIES.filter(function (c) { return c.name.toLowerCase() === v; });
+      if (nameMatches.length === 1) return nameMatches[0];
+      return null;
+    }
+
+    function populateCityList() {
+      var dl = document.getElementById('cityDatalist');
+      dl.innerHTML = CITIES.map(function (c) {
+        return '<option value="' + c.name + ', ' + c.state + '">';
+      }).join('');
+    }
+
+    // Thin wrapper around astrology_inputs (member_id, dob, birth_time,
+    // birth_city, birth_lat, birth_lon) - the one place per-member birth
+    // details live, shared with astrology.html's Rasi chart.
+    var AstroProfiles = {
+      async get(memberId) {
+        var { data } = await supabaseClient
+          .from('astrology_inputs')
+          .select('dob, birth_time, birth_city, birth_lat, birth_lon')
+          .eq('member_id', memberId)
+          .maybeSingle();
+        return data || null;
+      },
+      async save(memberId, dob, birthTime, cityValue) {
+        var city = findCity(cityValue);
+        return supabaseClient
+          .from('astrology_inputs')
+          .upsert({
+            member_id: memberId,
+            dob: dob,
+            birth_time: birthTime,
+            birth_city: city ? (city.name + ', ' + city.state) : (cityValue || null),
+            birth_lat: city ? city.lat : null,
+            birth_lon: city ? city.lon : null,
+            updated_at: new Date().toISOString()
+          }, { onConflict: 'member_id' });
+      }
+    };
+
     var state = { members: [], editingId: null };
 
     function goalShortcutsHtml(m) {
@@ -620,11 +869,11 @@
               '<div class="member-avatar">' + escapeHtml(initials(m.name)) + '</div>' +
               '<div>' +
                 '<div class="member-name">' + escapeHtml(m.name) + '</div>' +
-                '<div class="member-relation">' + escapeHtml(m.relation) + '</div>' +
+                '<div class="member-relation">' + escapeHtml(relationLabel(m.relation)) + '</div>' +
                 (age != null ? '<div class="member-age">' + age + ' years old</div>' : '') +
               '</div>' +
             '</div>' +
-            (m.relation === 'child' ? goalShortcutsHtml(m) : '') +
+            (CHILD_RELATIONS.indexOf(m.relation) !== -1 ? goalShortcutsHtml(m) : '') +
             '<div class="member-card-actions">' +
               '<a class="rasi-link" href="astrology.html?member=' + m.id + '">View Rasi Profile →</a>' +
               '<div class="member-card-actions-right">' +
@@ -644,7 +893,7 @@
       renderMembers();
     }
 
-    function openMemberModal(memberId) {
+    async function openMemberModal(memberId) {
       state.editingId = memberId || null;
       document.getElementById('memberFormError').textContent = '';
       var deleteBtn = document.getElementById('deleteMemberBtn');
@@ -652,15 +901,28 @@
       if (memberId) {
         var m = state.members.filter(function (x) { return x.id === memberId; })[0];
         document.getElementById('memberModalTitle').textContent = 'Edit Family Member';
-        document.getElementById('memberNameInput').value = m ? m.name : '';
-        document.getElementById('memberRelationInput').value = m ? m.relation : 'child';
-        document.getElementById('memberDobInput').value = m && m.date_of_birth ? m.date_of_birth : '';
+        document.getElementById('memberFirstNameInput').value = (m && m.first_name) || (m ? m.name.split(/\s+/)[0] : '');
+        document.getElementById('memberLastNameInput').value = (m && m.last_name) || (m ? m.name.split(/\s+/).slice(1).join(' ') : '');
+        document.getElementById('memberRelationInput').value = m ? m.relation : 'son';
+        document.getElementById('memberPhoneInput').value = (m && m.phone) || '';
+        document.getElementById('memberEmailInput').value = (m && m.email) || '';
+
+        var astro = null;
+        try { astro = await AstroProfiles.get(memberId); } catch (e) { console.error('Could not load birth details', e); }
+        document.getElementById('memberDobInput').value = (astro && astro.dob) || (m && m.date_of_birth) || '';
+        document.getElementById('memberBirthTimeInput').value = (astro && astro.birth_time) || '';
+        document.getElementById('memberCityInput').value = (astro && astro.birth_city) || '';
         deleteBtn.style.display = m && m.relation !== 'self' ? 'inline-block' : 'none';
       } else {
         document.getElementById('memberModalTitle').textContent = 'Add Family Member';
-        document.getElementById('memberNameInput').value = '';
-        document.getElementById('memberRelationInput').value = 'child';
+        document.getElementById('memberFirstNameInput').value = '';
+        document.getElementById('memberLastNameInput').value = '';
+        document.getElementById('memberRelationInput').value = 'son';
+        document.getElementById('memberPhoneInput').value = '';
+        document.getElementById('memberEmailInput').value = '';
         document.getElementById('memberDobInput').value = '';
+        document.getElementById('memberBirthTimeInput').value = '';
+        document.getElementById('memberCityInput').value = '';
         deleteBtn.style.display = 'none';
       }
 
@@ -672,24 +934,44 @@
     }
 
     async function saveMember() {
-      var name = document.getElementById('memberNameInput').value.trim();
       var errEl = document.getElementById('memberFormError');
-      if (!name) { errEl.textContent = 'Please enter a name.'; return; }
+      errEl.textContent = '';
 
+      var firstName = document.getElementById('memberFirstNameInput').value.trim();
+      var lastName = document.getElementById('memberLastNameInput').value.trim();
+      var relation = document.getElementById('memberRelationInput').value;
+      var dob = document.getElementById('memberDobInput').value;
+      var birthTime = document.getElementById('memberBirthTimeInput').value;
+      var cityValue = document.getElementById('memberCityInput').value.trim();
+      var phone = document.getElementById('memberPhoneInput').value.trim();
+      var email = document.getElementById('memberEmailInput').value.trim();
+
+      if (!firstName || !lastName) { errEl.textContent = 'Please enter their first and last name.'; return; }
+      if (!dob) { errEl.textContent = 'Please enter their date of birth.'; return; }
+      if (!birthTime) { errEl.textContent = 'Please enter their time of birth.'; return; }
+      if (!cityValue) { errEl.textContent = 'Please enter their place of birth.'; return; }
+
+      var fullName = (firstName + ' ' + lastName).trim();
       var payload = {
-        name: name,
-        relation: document.getElementById('memberRelationInput').value,
-        date_of_birth: document.getElementById('memberDobInput').value || null
+        name: fullName,
+        first_name: firstName,
+        last_name: lastName,
+        relation: relation,
+        date_of_birth: dob,
+        phone: phone || null,
+        email: email || null
       };
 
       var saveBtn = document.getElementById('saveMemberBtn');
       saveBtn.disabled = true;
       try {
+        var savedMember;
         if (state.editingId) {
-          await HealthLog.updateMember(state.editingId, payload);
+          savedMember = await HealthLog.updateMember(state.editingId, payload);
         } else {
-          await HealthLog.addMember(payload);
+          savedMember = await HealthLog.addMember(payload);
         }
+        await AstroProfiles.save(savedMember.id, dob, birthTime, cityValue);
         closeMemberModal();
         await loadMembers();
       } catch (e) {
@@ -716,6 +998,8 @@
     (async function init() {
       var user = await requireAuth('login.html');
       if (!user) return;
+
+      populateCityList();
 
       document.getElementById('addMemberBtn').addEventListener('click', function () { openMemberModal(null); });
       document.getElementById('addFirstMemberLink').addEventListener('click', function (e) { e.preventDefault(); openMemberModal(null); });

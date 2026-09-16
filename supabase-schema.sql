@@ -2332,3 +2332,37 @@ create policy "todos_update_own" on todos for update using (auth.uid() = user_id
 create policy "todos_delete_own" on todos for delete using (auth.uid() = user_id);
 
 create index if not exists todos_user_status_due_idx on todos (user_id, status, due_date);
+
+-- ── Settings page: fuller profile + family member details ──────────────
+-- ── settings.html now collects place of birth (and second-precision      ──
+-- ── birth time) for the account holder AND every family member, plus     ──
+-- ── contact details - so FIRE Plan, Know Your Rasi, Insurance/Term cover, ──
+-- ── Will Planner, Goal Based Savings (kids' education) and Family Health  ──
+-- ── (parents' medical) can all pull from one shared record instead of    ──
+-- ── each feature asking the user to re-enter the same names and dates.   ──
+-- ── astrology_inputs (member_id, dob, birth_time, birth_city/lat/lon)     ──
+-- ── already supports one row per family_members row, so place-of-birth   ──
+-- ── and birth time for BOTH the account holder and family members are    ──
+-- ── stored there - no new table needed. birth_time is already a plain    ──
+-- ── Postgres `time`, which natively holds seconds; only the settings.html ──
+-- ── <input type="time" step="1"> needed to change to expose that in the  ──
+-- ── browser UI.
+alter table profiles add column if not exists phone text;
+
+alter table family_members add column if not exists first_name text;
+alter table family_members add column if not exists last_name text;
+alter table family_members add column if not exists phone text;
+alter table family_members add column if not exists email text;
+
+-- Additive: keeps every relation value ever saved (including the original
+-- self/spouse/child/parent/other set) valid, and adds specific immediate-
+-- family terms (wife, son, mother, etc.) so Rasi/Will Planner/Insurance can
+-- show "your son" instead of a generic "child".
+alter table family_members drop constraint if exists family_members_relation_check;
+alter table family_members add constraint family_members_relation_check
+  check (relation in (
+    'self','spouse','child','parent','other',
+    'husband','wife','son','daughter','father','mother',
+    'brother','sister','grandfather','grandmother',
+    'father_in_law','mother_in_law'
+  ));
