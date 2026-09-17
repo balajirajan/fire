@@ -900,6 +900,7 @@
           mortgage_balance: Number(row.mortgage_balance) || 0, mortgage_emi: Number(row.mortgage_emi) || 0,
           monthly_rental_income: Number(row.monthly_rental_income) || 0, monthly_expenses: Number(row.monthly_expenses) || 0,
           registered_name: row.registered_name || '', city: row.city || '',
+          size_value: row.size_value != null ? Number(row.size_value) : null, size_unit: row.size_unit || null,
           purchase_month: row.purchase_month || '', purchase_price: Number(row.purchase_price) || 0
         };
       });
@@ -1111,7 +1112,8 @@
         name: name, property_type: selectedType, current_value: value, is_primary: isPrimary,
         has_mortgage: hasMortgage, mortgage_balance: hasMortgage ? mortgageBalance : 0,
         mortgage_emi: hasMortgage ? mortgageEmi : 0, monthly_rental_income: rentalIncome, monthly_expenses: expenses,
-        registered_name: registeredName, city: city, purchase_month: purchaseMonth, purchase_price: purchasePrice
+        registered_name: registeredName, city: city, size_value: sizeValue, size_unit: sizeUnit,
+        purchase_month: purchaseMonth, purchase_price: purchasePrice
       };
 
       if (editingId) {
