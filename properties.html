@@ -590,6 +590,7 @@
                 <th>Property</th>
                 <th>Type</th>
                 <th>City</th>
+                <th>Size</th>
                 <th>Purchase Date</th>
                 <th>Purchase Price</th>
                 <th>Current Value</th>
@@ -916,6 +917,13 @@
       return months[Number(parts[1]) - 1] + ' ' + parts[0];
     }
 
+    var SIZE_UNIT_LABELS = { sqft: 'Sqft', cent: 'Cent', acre: 'Acre' };
+    function fmtSize(p) {
+      if (!p.size_value) return '-';
+      var n = p.size_value % 1 === 0 ? p.size_value : p.size_value.toFixed(2);
+      return n + ' ' + (SIZE_UNIT_LABELS[p.size_unit] || p.size_unit || '');
+    }
+
     function buildProgressDonutSvg(pct, size, strokeW, color) {
       var r = (size - strokeW) / 2;
       var cx = size / 2, cy = size / 2;
@@ -959,13 +967,14 @@
             '</td>' +
             '<td class="type-col"><span class="type-pill">' + t.icon + ' ' + t.label + '</span></td>' +
             '<td class="type-col">' + (p.city ? escapeHtml(p.city) : '-') + '</td>' +
+            '<td>' + fmtSize(p) + '</td>' +
             '<td>' + fmtMonthYear(p.purchase_month) + '</td>' +
             '<td>' + (p.purchase_price ? fmtRupee(p.purchase_price) : '-') + '</td>' +
             '<td>' + fmtRupee(p.current_value) + '</td>' +
             '<td>' + (pct !== null ? '<span class="pct-pill ' + (pct >= 0 ? 'pos' : 'neg') + '">' + (pct > 0 ? '+' : '') + pct.toFixed(1) + '%</span>' : '-') + '</td>' +
             '<td>' + mortgageText + '</td>' +
             '<td>' + rentIncomeText + '</td>' +
-            '<td><b>' + sharePct + '%</b></td>' +
+            '<td><b>' + fmtRupee(equity) + '</b> (' + sharePct + '%)</td>' +
             '<td>' +
               '<button type="button" class="row-edit" data-id="' + p.id + '" onclick="openEditModal(this.dataset.id)" title="Edit">✎</button>' +
               '<button type="button" class="row-delete" data-id="' + p.id + '" data-name="' + escapeHtml(p.name) + '" onclick="deleteProperty(this.dataset.id, this.dataset.name)" title="Delete">✕</button>' +
