@@ -443,6 +443,15 @@ create policy "properties_delete_own" on properties for delete using (auth.uid()
 -- valuation log it powered is no longer needed.
 drop table if exists property_valuations;
 
+-- Land/built-up size, so a plot and an apartment aren't both just a rupee
+-- figure with no sense of scale. size_unit covers the units actually used
+-- for property in India (built-up area in sqft, land in cent or acre).
+alter table properties add column if not exists size_value numeric;
+alter table properties add column if not exists size_unit text;
+alter table properties drop constraint if exists properties_size_unit_check;
+alter table properties add constraint properties_size_unit_check
+  check (size_unit is null or size_unit in ('sqft', 'cent', 'acre'));
+
 -- ── Gold + Commodities: tracked by weight, not just rupees — grams ×      ──
 -- ── today's rate/gram gives the current value, compared against what was ──
 -- ── actually paid to show gain/loss. Absorbed the standalone Commodities ──
