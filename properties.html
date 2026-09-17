@@ -199,8 +199,10 @@
     .fm-checkbox-row input { width: 16px; height: 16px; accent-color: var(--accent); }
     .fm-modal-foot { padding: 0 1.3rem 1.3rem; display: flex; gap: 0.75rem; }
     .fm-modal-foot .pbtn { flex: 1; justify-content: center; }
-    .fm-continue-wrap { display: flex; flex-direction: column; flex: 1.2; gap: 0.15rem; }
-    .fm-continue-wrap .fm-continue-sub { font-size: 0.68rem; color: var(--ink-faint); font-weight: 500; text-align: center; }
+    .fm-section-divider {
+      font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em;
+      color: var(--ink-faint); padding-top: 1.1rem; margin-top: 0.2rem; border-top: 1px solid var(--border);
+    }
 
     .property-type-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.7rem; }
     .property-type-card {
@@ -213,8 +215,6 @@
     .property-type-card .pt-icon { font-size: 1.4rem; }
     .property-type-card .pt-label { font-size: 0.78rem; font-weight: 600; color: var(--ink-soft); }
 
-    .fm-step { display: none; flex-direction: column; gap: 1.1rem; }
-    .fm-step.active { display: flex; }
     /* Mobile sidebar (kept last so it wins the cascade over the base rules above) */
     @media (max-width: 860px) {
       .app-shell { grid-template-columns: 1fr; }
@@ -596,8 +596,10 @@
                   <th>Purchase Price</th>
                   <th>Current Value</th>
                   <th>% Change</th>
+                  <th>Property Tax</th>
                   <th>Mortgage</th>
                   <th>Rent Income</th>
+                  <th>Maintenance</th>
                   <th>Share</th>
                   <th></th>
                 </tr>
@@ -645,100 +647,109 @@
       <div class="fm-modal-head">
         <div class="fm-modal-head-text">
           <h3 id="fmModalTitle">Add Property</h3>
-          <span id="fmModalStepLabel">Basic Info</span>
         </div>
         <button type="button" class="fm-modal-close" onclick="closeModal()">✕</button>
       </div>
 
       <div class="fm-modal-body">
-        <div class="fm-step active" id="fmStep1">
-          <div class="fm-field">
-            <span>Property Type</span>
-            <div class="property-type-grid" id="propertyTypeGrid"></div>
-          </div>
+        <div class="fm-field">
+          <span>Property Type</span>
+          <div class="property-type-grid" id="propertyTypeGrid"></div>
+        </div>
+        <label class="fm-field">
+          <span>Property Name</span>
+          <input type="text" id="fmName" placeholder="e.g. Apartment Vinohrady">
+        </label>
+        <label class="fm-field">
+          <span>Name Registered (optional)</span>
+          <input type="text" id="fmRegisteredName" placeholder="e.g. name on the property deed">
+        </label>
+        <label class="fm-field">
+          <span>City</span>
+          <input type="text" id="fmCity" placeholder="e.g. Bangalore">
+        </label>
+        <div class="fm-field-row">
           <label class="fm-field">
-            <span>Property Name</span>
-            <input type="text" id="fmName" placeholder="e.g. Apartment Vinohrady">
+            <span>Size (optional)</span>
+            <input type="number" min="0" step="any" id="fmSizeValue" placeholder="e.g. 1200">
           </label>
           <label class="fm-field">
-            <span>Name Registered (optional)</span>
-            <input type="text" id="fmRegisteredName" placeholder="e.g. name on the property deed">
+            <span>Unit</span>
+            <select id="fmSizeUnit">
+              <option value="sqft">Sqft</option>
+              <option value="cent">Cent</option>
+              <option value="acre">Acre</option>
+            </select>
+          </label>
+        </div>
+        <div class="fm-field-row">
+          <label class="fm-field">
+            <span>Purchase Date (Month/Year)</span>
+            <input type="month" id="fmPurchaseMonth">
           </label>
           <label class="fm-field">
-            <span>City</span>
-            <input type="text" id="fmCity" placeholder="e.g. Bangalore">
+            <span>Price While Purchasing</span>
+            <input type="number" min="0" id="fmPurchasePrice" placeholder="e.g. 4000000">
           </label>
-          <div class="fm-field-row">
-            <label class="fm-field">
-              <span>Size (optional)</span>
-              <input type="number" min="0" step="any" id="fmSizeValue" placeholder="e.g. 1200">
-            </label>
-            <label class="fm-field">
-              <span>Unit</span>
-              <select id="fmSizeUnit">
-                <option value="sqft">Sqft</option>
-                <option value="cent">Cent</option>
-                <option value="acre">Acre</option>
-              </select>
-            </label>
-          </div>
-          <div class="fm-field-row">
-            <label class="fm-field">
-              <span>Purchase Date (Month/Year)</span>
-              <input type="month" id="fmPurchaseMonth">
-            </label>
-            <label class="fm-field">
-              <span>Price While Purchasing</span>
-              <input type="number" min="0" id="fmPurchasePrice" placeholder="e.g. 4000000">
-            </label>
-          </div>
+        </div>
+        <div class="fm-field-row">
           <label class="fm-field">
             <span>Current Estimated Value</span>
             <input type="number" min="0" id="fmValue" placeholder="e.g. 5000000">
           </label>
-          <label class="fm-checkbox-row">
-            <input type="checkbox" id="fmPrimary">
-            <span>Primary residence (exclude from FIRE calculations)</span>
+          <label class="fm-field">
+            <span>Property Tax (optional)</span>
+            <input type="number" min="0" id="fmYearlyTax" placeholder="e.g. 15000">
           </label>
         </div>
+        <label class="fm-checkbox-row">
+          <input type="checkbox" id="fmPrimary">
+          <span>Primary residence (exclude from FIRE calculations)</span>
+        </label>
 
-        <div class="fm-step" id="fmStep2">
-          <label class="fm-checkbox-row">
-            <input type="checkbox" id="fmHasMortgage" onchange="toggleMortgageFields()">
-            <span>This property has a mortgage</span>
+        <div class="fm-section-divider">Rental &amp; Maintenance (optional)</div>
+
+        <label class="fm-checkbox-row">
+          <input type="checkbox" id="fmHasRentalIncome" onchange="toggleRentalFields()">
+          <span>This property earns rental income</span>
+        </label>
+        <label class="fm-field" id="fmRentalFields" style="display:none;">
+          <span>Monthly Rental Income</span>
+          <input type="number" min="0" id="fmRentalIncome" placeholder="e.g. 20000">
+        </label>
+        <label class="fm-field">
+          <span>Monthly Expenses (optional)</span>
+          <input type="number" min="0" id="fmExpenses" placeholder="e.g. 3000">
+        </label>
+        <label class="fm-checkbox-row">
+          <input type="checkbox" id="fmHasMaintenance" onchange="toggleMaintenanceFields()">
+          <span>This property has maintenance charges</span>
+        </label>
+        <label class="fm-field" id="fmMaintenanceFields" style="display:none;">
+          <span>Monthly Maintenance</span>
+          <input type="number" min="0" id="fmMaintenanceAmount" placeholder="e.g. 2500">
+        </label>
+
+        <div class="fm-section-divider">Mortgage (optional)</div>
+
+        <label class="fm-checkbox-row">
+          <input type="checkbox" id="fmHasMortgage" onchange="toggleMortgageFields()">
+          <span>This property has a mortgage</span>
+        </label>
+        <div class="fm-field-row" id="fmMortgageFields" style="display:none;">
+          <label class="fm-field">
+            <span>Mortgage Balance</span>
+            <input type="number" min="0" id="fmMortgageBalance" placeholder="e.g. 2000000">
           </label>
-          <div class="fm-field-row" id="fmMortgageFields" style="display:none;">
-            <label class="fm-field">
-              <span>Mortgage Balance</span>
-              <input type="number" min="0" id="fmMortgageBalance" placeholder="e.g. 2000000">
-            </label>
-            <label class="fm-field">
-              <span>Monthly EMI</span>
-              <input type="number" min="0" id="fmMortgageEmi" placeholder="e.g. 25000">
-            </label>
-          </div>
-          <div class="fm-field-row">
-            <label class="fm-field">
-              <span>Monthly Rental Income</span>
-              <input type="number" min="0" id="fmRentalIncome" placeholder="e.g. 20000">
-            </label>
-            <label class="fm-field">
-              <span>Monthly Expenses</span>
-              <input type="number" min="0" id="fmExpenses" placeholder="e.g. 3000">
-            </label>
-          </div>
+          <label class="fm-field">
+            <span>Monthly EMI</span>
+            <input type="number" min="0" id="fmMortgageEmi" placeholder="e.g. 25000">
+          </label>
         </div>
       </div>
 
-      <div class="fm-modal-foot" id="fmStep1Foot">
-        <button type="button" class="pbtn outline" onclick="saveProperty()">Save & Done</button>
-        <div class="fm-continue-wrap">
-          <button type="button" class="pbtn" onclick="goToStep(2)">Continue →</button>
-          <span class="fm-continue-sub">add mortgage, rental, expenses…</span>
-        </div>
-      </div>
-      <div class="fm-modal-foot" id="fmStep2Foot" style="display:none;">
-        <button type="button" class="pbtn outline" onclick="goToStep(1)">← Back</button>
+      <div class="fm-modal-foot">
+        <button type="button" class="pbtn outline" onclick="closeModal()">Cancel</button>
         <button type="button" class="pbtn" id="fmSubmitBtn" onclick="saveProperty()">Save Property</button>
       </div>
     </div>
@@ -901,7 +912,10 @@
           id: row.id, name: row.name, property_type: row.property_type, current_value: Number(row.current_value),
           is_primary: !!row.is_primary, has_mortgage: !!row.has_mortgage,
           mortgage_balance: Number(row.mortgage_balance) || 0, mortgage_emi: Number(row.mortgage_emi) || 0,
-          monthly_rental_income: Number(row.monthly_rental_income) || 0, monthly_expenses: Number(row.monthly_expenses) || 0,
+          has_rental_income: !!row.has_rental_income, monthly_rental_income: Number(row.monthly_rental_income) || 0,
+          monthly_expenses: Number(row.monthly_expenses) || 0,
+          has_maintenance: !!row.has_maintenance, monthly_maintenance: Number(row.monthly_maintenance) || 0,
+          yearly_tax: Number(row.yearly_tax) || 0,
           registered_name: row.registered_name || '', city: row.city || '',
           size_value: row.size_value != null ? Number(row.size_value) : null, size_unit: row.size_unit || null,
           purchase_month: row.purchase_month || '', purchase_price: Number(row.purchase_price) || 0
@@ -957,8 +971,9 @@
           var sharePct = p.current_value ? Math.round(equity / p.current_value * 100) : 100;
           var pct = purchasePctOf(p);
           var mortgageText = p.has_mortgage ? (fmtRupee(p.mortgage_balance) + ' left') : '-';
-          var rentIncome = p.monthly_rental_income || 0;
-          var rentIncomeText = rentIncome ? fmtRupee(rentIncome) : '-';
+          var rentIncomeText = p.has_rental_income ? fmtRupee(p.monthly_rental_income) : '-';
+          var maintenanceText = p.has_maintenance ? fmtRupee(p.monthly_maintenance) : '-';
+          var yearlyTaxText = p.yearly_tax ? fmtRupee(p.yearly_tax) : '-';
 
           return '<tr>' +
             '<td class="name-col">' + escapeHtml(p.name) +
@@ -974,8 +989,10 @@
             '<td>' + (p.purchase_price ? fmtRupee(p.purchase_price) : '-') + '</td>' +
             '<td>' + fmtRupee(p.current_value) + '</td>' +
             '<td>' + (pct !== null ? '<span class="pct-pill ' + (pct >= 0 ? 'pos' : 'neg') + '">' + (pct > 0 ? '+' : '') + pct.toFixed(1) + '%</span>' : '-') + '</td>' +
+            '<td>' + yearlyTaxText + '</td>' +
             '<td>' + mortgageText + '</td>' +
             '<td>' + rentIncomeText + '</td>' +
+            '<td>' + maintenanceText + '</td>' +
             '<td><b>' + fmtRupee(equity) + '</b> (' + sharePct + '%)</td>' +
             '<td>' +
               '<button type="button" class="row-edit" data-id="' + p.id + '" onclick="openEditModal(this.dataset.id)" title="Edit">✎</button>' +
@@ -1036,12 +1053,14 @@
       document.getElementById('fmMortgageFields').style.display = checked ? 'grid' : 'none';
     }
 
-    function goToStep(step) {
-      document.getElementById('fmStep1').classList.toggle('active', step === 1);
-      document.getElementById('fmStep2').classList.toggle('active', step === 2);
-      document.getElementById('fmStep1Foot').style.display = step === 1 ? 'flex' : 'none';
-      document.getElementById('fmStep2Foot').style.display = step === 2 ? 'flex' : 'none';
-      document.getElementById('fmModalStepLabel').textContent = step === 1 ? 'Basic Info' : 'Mortgage & Cash Flow';
+    function toggleRentalFields() {
+      var checked = document.getElementById('fmHasRentalIncome').checked;
+      document.getElementById('fmRentalFields').style.display = checked ? 'flex' : 'none';
+    }
+
+    function toggleMaintenanceFields() {
+      var checked = document.getElementById('fmHasMaintenance').checked;
+      document.getElementById('fmMaintenanceFields').style.display = checked ? 'flex' : 'none';
     }
 
     function openAddModal() {
@@ -1056,15 +1075,20 @@
       document.getElementById('fmPurchaseMonth').value = '';
       document.getElementById('fmPurchasePrice').value = '';
       document.getElementById('fmValue').value = '';
+      document.getElementById('fmYearlyTax').value = '';
       document.getElementById('fmPrimary').checked = false;
       document.getElementById('fmHasMortgage').checked = false;
       document.getElementById('fmMortgageBalance').value = '';
       document.getElementById('fmMortgageEmi').value = '';
+      document.getElementById('fmHasRentalIncome').checked = false;
       document.getElementById('fmRentalIncome').value = '';
       document.getElementById('fmExpenses').value = '';
+      document.getElementById('fmHasMaintenance').checked = false;
+      document.getElementById('fmMaintenanceAmount').value = '';
       toggleMortgageFields();
+      toggleRentalFields();
+      toggleMaintenanceFields();
       renderTypeGrid();
-      goToStep(1);
       document.getElementById('fmModalOverlay').classList.add('show');
       document.getElementById('fmName').focus();
     }
@@ -1083,15 +1107,20 @@
       document.getElementById('fmPurchaseMonth').value = p.purchase_month || '';
       document.getElementById('fmPurchasePrice').value = p.purchase_price || '';
       document.getElementById('fmValue').value = p.current_value;
+      document.getElementById('fmYearlyTax').value = p.yearly_tax || '';
       document.getElementById('fmPrimary').checked = p.is_primary;
       document.getElementById('fmHasMortgage').checked = p.has_mortgage;
       document.getElementById('fmMortgageBalance').value = p.mortgage_balance || '';
       document.getElementById('fmMortgageEmi').value = p.mortgage_emi || '';
+      document.getElementById('fmHasRentalIncome').checked = p.has_rental_income;
       document.getElementById('fmRentalIncome').value = p.monthly_rental_income || '';
       document.getElementById('fmExpenses').value = p.monthly_expenses || '';
+      document.getElementById('fmHasMaintenance').checked = p.has_maintenance;
+      document.getElementById('fmMaintenanceAmount').value = p.monthly_maintenance || '';
       toggleMortgageFields();
+      toggleRentalFields();
+      toggleMaintenanceFields();
       renderTypeGrid();
-      goToStep(1);
       document.getElementById('fmModalOverlay').classList.add('show');
       document.getElementById('fmName').focus();
     }
@@ -1112,17 +1141,25 @@
       var purchaseMonth = document.getElementById('fmPurchaseMonth').value || null;
       var purchasePrice = Number(document.getElementById('fmPurchasePrice').value) || 0;
       var value = Number(document.getElementById('fmValue').value) || 0;
+      var yearlyTax = Number(document.getElementById('fmYearlyTax').value) || 0;
       var isPrimary = document.getElementById('fmPrimary').checked;
       var hasMortgage = document.getElementById('fmHasMortgage').checked;
       var mortgageBalance = Number(document.getElementById('fmMortgageBalance').value) || 0;
       var mortgageEmi = Number(document.getElementById('fmMortgageEmi').value) || 0;
+      var hasRentalIncome = document.getElementById('fmHasRentalIncome').checked;
       var rentalIncome = Number(document.getElementById('fmRentalIncome').value) || 0;
       var expenses = Number(document.getElementById('fmExpenses').value) || 0;
+      var hasMaintenance = document.getElementById('fmHasMaintenance').checked;
+      var maintenanceAmount = Number(document.getElementById('fmMaintenanceAmount').value) || 0;
 
       var payload = {
         name: name, property_type: selectedType, current_value: value, is_primary: isPrimary,
+        yearly_tax: yearlyTax,
         has_mortgage: hasMortgage, mortgage_balance: hasMortgage ? mortgageBalance : 0,
-        mortgage_emi: hasMortgage ? mortgageEmi : 0, monthly_rental_income: rentalIncome, monthly_expenses: expenses,
+        mortgage_emi: hasMortgage ? mortgageEmi : 0,
+        has_rental_income: hasRentalIncome, monthly_rental_income: hasRentalIncome ? rentalIncome : 0,
+        monthly_expenses: expenses,
+        has_maintenance: hasMaintenance, monthly_maintenance: hasMaintenance ? maintenanceAmount : 0,
         registered_name: registeredName, city: city, size_value: sizeValue, size_unit: sizeUnit,
         purchase_month: purchaseMonth, purchase_price: purchasePrice
       };

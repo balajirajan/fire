@@ -2375,3 +2375,17 @@ alter table family_members add constraint family_members_relation_check
     'brother','sister','grandfather','grandmother',
     'father_in_law','mother_in_law'
   ));
+
+-- properties.html: yearly property tax, plus rental income and maintenance
+-- each get their own has_* toggle (matching the existing has_mortgage
+-- pattern) so a property that used to earn rent but doesn't anymore keeps
+-- its historical monthly_rental_income value without still counting it.
+alter table properties add column if not exists yearly_tax numeric not null default 0;
+alter table properties add column if not exists has_rental_income boolean not null default false;
+alter table properties add column if not exists has_maintenance boolean not null default false;
+alter table properties add column if not exists monthly_maintenance numeric not null default 0;
+
+-- Backfill has_rental_income for existing rows that already had a rental
+-- figure, so nothing that was showing before this column existed goes
+-- silently blank.
+update properties set has_rental_income = true where monthly_rental_income > 0 and has_rental_income = false;
