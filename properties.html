@@ -78,7 +78,9 @@
     .page-head { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem; }
     .page-head h2 { font-size: 1.6rem; font-weight: 800; margin-bottom: 0.3rem; }
     .page-head p { color: #64748b; font-size: 0.9rem; }
-    .head-actions { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+
+    .section-head { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 0.85rem; }
+    .section-head h3 { font-size: 1.05rem; font-weight: 800; color: #0f172a; }
 
     .pbtn { display: inline-flex; align-items: center; gap: 0.45rem; padding: 0.65rem 1.1rem; border-radius: 0.6rem; font-size: 0.85rem; font-weight: 600; cursor: pointer; border: none; background: linear-gradient(to right, #0ea5e9, #10b981); color: #fff; white-space: nowrap; }
     .pbtn:hover { opacity: 0.92; }
@@ -117,43 +119,43 @@
     .empty-state { text-align: center; padding: 3rem 2rem; color: #64748b; font-size: 0.9rem; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 1.1rem; }
     .empty-state .pbtn { margin-top: 1rem; }
 
-    /* Properties table */
-    .grid-card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 1.1rem; box-shadow: 0 4px 16px rgba(15,23,42,0.03); overflow: hidden; }
-    .grid-scroll { overflow-x: auto; }
-    .grid-hint { padding: 0.85rem 1.3rem; font-size: 0.78rem; color: #64748b; border-bottom: 1px solid #f1f5f9; }
+    /* Properties list - one shared card holding every property as a row,
+       so every detail is visible without scrolling left/right the way a
+       single wide table row would force. Edit/Delete sit top-right of
+       each row; the name's type/primary/reminder tags sit on their own
+       line underneath it rather than crowding the name itself. */
+    .properties-list { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 1.1rem; box-shadow: 0 4px 16px rgba(15,23,42,0.03); overflow: hidden; }
+    .property-card { padding: 1.1rem 1.3rem; border-bottom: 1px solid #f1f5f9; }
+    .property-card:last-child { border-bottom: none; }
+    .property-card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid #f1f5f9; }
+    .property-card-actions { display: flex; gap: 0.4rem; flex-shrink: 0; }
+    .property-card-title { display: flex; flex-direction: column; align-items: flex-start; gap: 0.45rem; font-size: 1rem; font-weight: 700; color: #0f172a; }
+    .property-card-tags { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; }
 
-    table.properties-table { border-collapse: collapse; width: 100%; min-width: 1100px; }
-    table.properties-table th, table.properties-table td {
-      padding: 0.6rem 0.75rem; font-size: 0.82rem; border-bottom: 1px solid #f1f5f9; white-space: nowrap; text-align: right;
-    }
-    table.properties-table th {
-      font-size: 0.68rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.02em;
-      background: #f8fafc; border-bottom: 1px solid #e2e8f0;
-    }
-    table.properties-table th:first-child, table.properties-table td.name-col,
-    table.properties-table th:nth-child(2), table.properties-table th:nth-child(3),
-    table.properties-table td.type-col { text-align: left; }
-    table.properties-table td.name-col { font-weight: 600; color: #364752; }
-    table.properties-table tbody tr:hover td { background: #f8fafc; }
+    .property-detail-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 1rem 1.2rem; }
+    .property-detail-item { display: flex; flex-direction: column; gap: 0.25rem; min-width: 0; }
+    .property-detail-label { font-size: 0.66rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; color: #94a3b8; }
+    .property-detail-value { font-size: 0.88rem; font-weight: 600; color: #364752; }
+    .property-detail-value.emphasis { font-size: 0.98rem; font-weight: 800; color: #0f172a; }
 
     .type-pill, .primary-pill { display: inline-block; padding: 0.2rem 0.6rem; border-radius: 999px; font-size: 0.72rem; font-weight: 700; white-space: nowrap; }
     .type-pill { background: #f1f5f9; color: #364752; }
-    .primary-pill { background: rgba(139,92,246,0.12); color: #7c3aed; margin-left: 0.4rem; }
+    .primary-pill { background: rgba(139,92,246,0.12); color: #7c3aed; }
     .pct-pill { display: inline-block; padding: 0.1rem 0.5rem; border-radius: 999px; font-size: 0.74rem; font-weight: 700; }
     .pct-pill.pos { background: rgba(16,185,129,0.12); color: #059669; }
     .pct-pill.neg { background: rgba(220,38,38,0.12); color: #dc2626; }
-    .cash-flow-pos { color: #059669; font-weight: 700; }
-    .cash-flow-neg { color: #dc2626; font-weight: 700; }
 
     .row-edit, .row-delete {
       display: inline-flex; align-items: center; justify-content: center;
-      width: 24px; height: 24px; font-size: 0.72rem; cursor: pointer;
-      border-radius: 0.4rem; flex-shrink: 0; border: 1px solid;
+      width: 28px; height: 28px; font-size: 0.78rem; cursor: pointer;
+      border-radius: 0.5rem; flex-shrink: 0; border: 1px solid;
     }
-    .row-edit { background: #ecfdf5; border-color: #a7f3d0; color: #059669; margin-right: 0.3rem; }
+    .row-edit { background: #ecfdf5; border-color: #a7f3d0; color: #059669; }
     .row-edit:hover { background: #d1fae5; border-color: #10b981; color: #047857; }
     .row-delete { background: #fef2f2; border-color: #fecaca; color: #dc2626; }
     .row-delete:hover { background: #fee2e2; border-color: #dc2626; color: #b91c1c; }
+
+    .grid-hint { padding: 0 0.1rem 0.85rem; font-size: 0.78rem; color: #64748b; }
 
     .toast { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(20px); background: #0f172a; color: #fff; padding: 0.75rem 1.25rem; border-radius: 0.6rem; font-size: 0.85rem; opacity: 0; pointer-events: none; transition: opacity 0.2s, transform 0.2s; z-index: 200; }
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
@@ -525,9 +527,6 @@
           <h2>Properties</h2>
           <p>Track your real estate, mortgages, and rental income.</p>
         </div>
-        <div class="head-actions">
-          <button type="button" class="pbtn" onclick="openAddModal()">➕ Add Property</button>
-        </div>
       </div>
 
       <p class="load-error" id="loadError"></p>
@@ -563,28 +562,13 @@
         </div>
       </div>
 
-      <div class="grid-card" id="propertiesCard">
-        <p class="grid-hint">🏠 Use ✎ to edit a property's details, ✕ to remove it.</p>
-        <div class="grid-scroll">
-          <table class="properties-table">
-            <thead>
-              <tr>
-                <th>Property</th>
-                <th>Type</th>
-                <th>City</th>
-                <th>Purchase Date</th>
-                <th>Purchase Price</th>
-                <th>Current Value</th>
-                <th>% Change</th>
-                <th>Mortgage</th>
-                <th>Monthly Cash Flow</th>
-                <th>Equity</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody id="propertiesBody"></tbody>
-          </table>
+      <div id="propertiesCard">
+        <div class="section-head">
+          <h3>Your Properties</h3>
+          <button type="button" class="pbtn" onclick="openAddModal()">➕ Add Property</button>
         </div>
+        <p class="grid-hint">🏠 Use ✎ to edit a property's details, ✕ to remove it.</p>
+        <div class="properties-list" id="propertiesBody"></div>
       </div>
 
       <div class="empty-state" id="emptyState" style="display:none;">
@@ -874,7 +858,6 @@
     }
 
     function equityOf(p) { return p.current_value - (p.has_mortgage ? p.mortgage_balance : 0); }
-    function cashFlowOf(p) { return p.monthly_rental_income - p.monthly_expenses - (p.has_mortgage ? p.mortgage_emi : 0); }
     function purchasePctOf(p) { return p.purchase_price ? (p.current_value - p.purchase_price) / p.purchase_price * 100 : null; }
 
     function fmtMonthYear(m) {
@@ -912,27 +895,44 @@
         body.innerHTML = properties.map(function (p) {
           var t = typeInfo(p.property_type);
           var equity = equityOf(p);
-          var cashFlow = cashFlowOf(p);
           var pct = purchasePctOf(p);
           var mortgageText = p.has_mortgage ? (fmtRupee(p.mortgage_balance) + ' left') : '-';
-          var cashFlowText = (p.has_mortgage || p.monthly_rental_income || p.monthly_expenses) ? fmtRupee(cashFlow) : '-';
+          var rentIncome = p.monthly_rental_income || 0;
+          var rentIncomeText = rentIncome ? fmtRupee(rentIncome) : '-';
 
-          return '<tr>' +
-            '<td class="name-col">' + escapeHtml(p.name) + (p.is_primary ? '<span class="primary-pill">Primary</span>' : '') + '<span class="ob-widget-slot" id="obWidget-' + p.id + '"></span></td>' +
-            '<td class="type-col"><span class="type-pill">' + t.icon + ' ' + t.label + '</span></td>' +
-            '<td class="type-col">' + (p.city ? escapeHtml(p.city) : '-') + '</td>' +
-            '<td>' + fmtMonthYear(p.purchase_month) + '</td>' +
-            '<td>' + (p.purchase_price ? fmtRupee(p.purchase_price) : '-') + '</td>' +
-            '<td>' + fmtRupee(p.current_value) + '</td>' +
-            '<td>' + (pct !== null ? '<span class="pct-pill ' + (pct >= 0 ? 'pos' : 'neg') + '">' + (pct > 0 ? '+' : '') + pct.toFixed(1) + '%</span>' : '-') + '</td>' +
-            '<td>' + mortgageText + '</td>' +
-            '<td class="' + (cashFlow > 0 ? 'cash-flow-pos' : (cashFlow < 0 ? 'cash-flow-neg' : '')) + '">' + cashFlowText + '</td>' +
-            '<td><b>' + fmtRupee(equity) + '</b></td>' +
-            '<td>' +
-              '<button type="button" class="row-edit" data-id="' + p.id + '" onclick="openEditModal(this.dataset.id)" title="Edit">✎</button>' +
-              '<button type="button" class="row-delete" data-id="' + p.id + '" data-name="' + escapeHtml(p.name) + '" onclick="deleteProperty(this.dataset.id, this.dataset.name)" title="Delete">✕</button>' +
-            '</td>' +
-          '</tr>';
+          function item(label, valueHtml, extraClass) {
+            return '<div class="property-detail-item">' +
+              '<span class="property-detail-label">' + label + '</span>' +
+              '<span class="property-detail-value' + (extraClass ? ' ' + extraClass : '') + '">' + valueHtml + '</span>' +
+            '</div>';
+          }
+
+          return '<div class="property-card">' +
+            '<div class="property-card-head">' +
+              '<div class="property-card-title">' +
+                '<span>' + escapeHtml(p.name) + '</span>' +
+                '<div class="property-card-tags">' +
+                  '<span class="type-pill">' + t.icon + ' ' + t.label + '</span>' +
+                  (p.is_primary ? '<span class="primary-pill">Primary</span>' : '') +
+                  '<span class="ob-widget-slot" id="obWidget-' + p.id + '"></span>' +
+                '</div>' +
+              '</div>' +
+              '<div class="property-card-actions">' +
+                '<button type="button" class="row-edit" data-id="' + p.id + '" onclick="openEditModal(this.dataset.id)" title="Edit">✎</button>' +
+                '<button type="button" class="row-delete" data-id="' + p.id + '" data-name="' + escapeHtml(p.name) + '" onclick="deleteProperty(this.dataset.id, this.dataset.name)" title="Delete">✕</button>' +
+              '</div>' +
+            '</div>' +
+            '<div class="property-detail-grid">' +
+              item('City', p.city ? escapeHtml(p.city) : '-') +
+              item('Purchase Date', fmtMonthYear(p.purchase_month)) +
+              item('Purchase Price', p.purchase_price ? fmtRupee(p.purchase_price) : '-') +
+              item('Current Value', fmtRupee(p.current_value)) +
+              item('% Change', pct !== null ? '<span class="pct-pill ' + (pct >= 0 ? 'pos' : 'neg') + '">' + (pct > 0 ? '+' : '') + pct.toFixed(1) + '%</span>' : '-') +
+              item('Mortgage', mortgageText) +
+              item('Rent Income', rentIncomeText) +
+              item('Equity', fmtRupee(equity), 'emphasis') +
+            '</div>' +
+          '</div>';
         }).join('');
 
         if (typeof ObligationsWidget !== 'undefined') {
