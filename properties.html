@@ -119,23 +119,23 @@
     .empty-state { text-align: center; padding: 3rem 2rem; color: #64748b; font-size: 0.9rem; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 1.1rem; }
     .empty-state .pbtn { margin-top: 1rem; }
 
-    /* Properties list - one shared card holding every property as a row,
-       so every detail is visible without scrolling left/right the way a
-       single wide table row would force. Edit/Delete sit top-right of
-       each row; the name's type/primary/reminder tags sit on their own
-       line underneath it rather than crowding the name itself. */
+    /* Properties list - one shared card holding every property as a row.
+       Each row is a single flex-wrap line: name (with its type/primary/
+       reminder tags stacked underneath), then every detail, then Edit/
+       Delete - wrapping onto extra lines on narrow screens instead of
+       ever needing to scroll left/right. */
     .properties-list { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 1.1rem; box-shadow: 0 4px 16px rgba(15,23,42,0.03); overflow: hidden; }
-    .property-card { padding: 1.1rem 1.3rem; border-bottom: 1px solid #f1f5f9; }
-    .property-card:last-child { border-bottom: none; }
-    .property-card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid #f1f5f9; }
-    .property-card-actions { display: flex; gap: 0.4rem; flex-shrink: 0; }
-    .property-card-title { display: flex; flex-direction: column; align-items: flex-start; gap: 0.45rem; font-size: 1rem; font-weight: 700; color: #0f172a; }
-    .property-card-tags { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; }
+    .property-row { display: flex; align-items: center; flex-wrap: wrap; gap: 1rem 1.3rem; padding: 1.1rem 1.3rem; border-bottom: 1px solid #f1f5f9; }
+    .property-row:last-child { border-bottom: none; }
 
-    .property-detail-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 1rem 1.2rem; }
-    .property-detail-item { display: flex; flex-direction: column; gap: 0.25rem; min-width: 0; }
+    .property-name-block { display: flex; flex-direction: column; gap: 0.4rem; flex: 1 1 180px; min-width: 160px; }
+    .property-card-title { font-size: 0.95rem; font-weight: 700; color: #0f172a; }
+    .property-card-tags { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; }
+    .property-card-actions { display: flex; gap: 0.4rem; flex-shrink: 0; margin-left: auto; }
+
+    .property-detail-item { display: flex; flex-direction: column; gap: 0.25rem; min-width: 100px; }
     .property-detail-label { font-size: 0.66rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; color: #94a3b8; }
-    .property-detail-value { font-size: 0.88rem; font-weight: 600; color: #364752; }
+    .property-detail-value { font-size: 0.88rem; font-weight: 600; color: #364752; white-space: nowrap; }
     .property-detail-value.emphasis { font-size: 0.98rem; font-weight: 800; color: #0f172a; }
 
     .type-pill, .primary-pill { display: inline-block; padding: 0.2rem 0.6rem; border-radius: 999px; font-size: 0.72rem; font-weight: 700; white-space: nowrap; }
@@ -895,6 +895,7 @@
         body.innerHTML = properties.map(function (p) {
           var t = typeInfo(p.property_type);
           var equity = equityOf(p);
+          var sharePct = p.current_value ? Math.round(equity / p.current_value * 100) : 100;
           var pct = purchasePctOf(p);
           var mortgageText = p.has_mortgage ? (fmtRupee(p.mortgage_balance) + ' left') : '-';
           var rentIncome = p.monthly_rental_income || 0;
@@ -907,30 +908,26 @@
             '</div>';
           }
 
-          return '<div class="property-card">' +
-            '<div class="property-card-head">' +
-              '<div class="property-card-title">' +
-                '<span>' + escapeHtml(p.name) + '</span>' +
-                '<div class="property-card-tags">' +
-                  '<span class="type-pill">' + t.icon + ' ' + t.label + '</span>' +
-                  (p.is_primary ? '<span class="primary-pill">Primary</span>' : '') +
-                  '<span class="ob-widget-slot" id="obWidget-' + p.id + '"></span>' +
-                '</div>' +
-              '</div>' +
-              '<div class="property-card-actions">' +
-                '<button type="button" class="row-edit" data-id="' + p.id + '" onclick="openEditModal(this.dataset.id)" title="Edit">✎</button>' +
-                '<button type="button" class="row-delete" data-id="' + p.id + '" data-name="' + escapeHtml(p.name) + '" onclick="deleteProperty(this.dataset.id, this.dataset.name)" title="Delete">✕</button>' +
+          return '<div class="property-row">' +
+            '<div class="property-name-block">' +
+              '<span class="property-card-title">' + escapeHtml(p.name) + '</span>' +
+              '<div class="property-card-tags">' +
+                '<span class="type-pill">' + t.icon + ' ' + t.label + '</span>' +
+                (p.is_primary ? '<span class="primary-pill">Primary</span>' : '') +
+                '<span class="ob-widget-slot" id="obWidget-' + p.id + '"></span>' +
               '</div>' +
             '</div>' +
-            '<div class="property-detail-grid">' +
-              item('City', p.city ? escapeHtml(p.city) : '-') +
-              item('Purchase Date', fmtMonthYear(p.purchase_month)) +
-              item('Purchase Price', p.purchase_price ? fmtRupee(p.purchase_price) : '-') +
-              item('Current Value', fmtRupee(p.current_value)) +
-              item('% Change', pct !== null ? '<span class="pct-pill ' + (pct >= 0 ? 'pos' : 'neg') + '">' + (pct > 0 ? '+' : '') + pct.toFixed(1) + '%</span>' : '-') +
-              item('Mortgage', mortgageText) +
-              item('Rent Income', rentIncomeText) +
-              item('Equity', fmtRupee(equity), 'emphasis') +
+            item('City', p.city ? escapeHtml(p.city) : '-') +
+            item('Purchase Date', fmtMonthYear(p.purchase_month)) +
+            item('Purchase Price', p.purchase_price ? fmtRupee(p.purchase_price) : '-') +
+            item('Current Value', fmtRupee(p.current_value)) +
+            item('% Change', pct !== null ? '<span class="pct-pill ' + (pct >= 0 ? 'pos' : 'neg') + '">' + (pct > 0 ? '+' : '') + pct.toFixed(1) + '%</span>' : '-') +
+            item('Mortgage', mortgageText) +
+            item('Rent Income', rentIncomeText) +
+            item('Share', sharePct + '%', 'emphasis') +
+            '<div class="property-card-actions">' +
+              '<button type="button" class="row-edit" data-id="' + p.id + '" onclick="openEditModal(this.dataset.id)" title="Edit">✎</button>' +
+              '<button type="button" class="row-delete" data-id="' + p.id + '" data-name="' + escapeHtml(p.name) + '" onclick="deleteProperty(this.dataset.id, this.dataset.name)" title="Delete">✕</button>' +
             '</div>' +
           '</div>';
         }).join('');
