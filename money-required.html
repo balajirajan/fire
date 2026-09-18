@@ -487,7 +487,7 @@
       <div class="page-head">
         <div>
           <h2>Monthly Overview</h2>
-          <p>A live snapshot pulled from Expenses, Income, Loan/EMI, Cash + Bank Balances and Investments.</p>
+          <p>A live snapshot pulled from Expenses, Income, Loan/EMI, FD + Cash + Bank Balances and Investments.</p>
         </div>
         <div class="month-nav">
           <button type="button" onclick="shiftMonth(-1)" aria-label="Previous month">‹</button>
@@ -759,6 +759,20 @@
       if (oErr) { showLoadError('Could not load other investments', oErr); return null; }
       (otherInv || []).forEach(function (row) {
         totals.invested += Number(row.invested) || 0;
+        totals.current += Number(row.current_value) || 0;
+      });
+
+      var { data: stocksMf, error: smErr } = await supabaseClient.from('investment_entries').select('invested_amount, current_value');
+      if (smErr) { showLoadError('Could not load Stocks/MF', smErr); return null; }
+      (stocksMf || []).forEach(function (row) {
+        totals.invested += Number(row.invested_amount) || 0;
+        totals.current += Number(row.current_value) || 0;
+      });
+
+      var { data: govScheme, error: gsErr } = await supabaseClient.from('govt_scheme_entries').select('invested_amount, current_value');
+      if (gsErr) { showLoadError('Could not load NPS + EPF + VPF', gsErr); return null; }
+      (govScheme || []).forEach(function (row) {
+        totals.invested += Number(row.invested_amount) || 0;
         totals.current += Number(row.current_value) || 0;
       });
 

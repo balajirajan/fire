@@ -1382,13 +1382,16 @@
        position (receivables help, debts owed to others hurt).            ---- */
     async function loadFireCorpusBreakdown() {
       var results = await Promise.all([
-        loadCurrentMonthTotal('portfolio'),
+        (async function () {
+          var { data } = await supabaseClient.from('investment_entries').select('current_value');
+          return (data || []).reduce(function (s, r) { return s + (Number(r.current_value) || 0); }, 0);
+        })(),
         (async function () {
           var { data } = await supabaseClient.from('gold_holdings').select('grams, current_rate_per_gram');
           return (data || []).reduce(function (s, r) { return s + (r.current_rate_per_gram !== null ? Number(r.grams) * Number(r.current_rate_per_gram) : 0); }, 0);
         })(),
         (async function () {
-          var { data } = await supabaseClient.from('other_investments').select('current_value').eq('category', 'Government Scheme');
+          var { data } = await supabaseClient.from('govt_scheme_entries').select('current_value');
           return (data || []).reduce(function (s, r) { return s + Number(r.current_value || 0); }, 0);
         })(),
         (async function () {
@@ -1543,7 +1546,7 @@
       var segments = [
         { label: 'Stocks/MF', value: realCorpus.portfolio, color: '#0ea5e9' },
         { label: 'Gold', value: realCorpus.gold, color: '#f59e0b' },
-        { label: 'Government Scheme', value: realCorpus.gov, color: '#8b5cf6' },
+        { label: 'NPS + EPF + VPF', value: realCorpus.gov, color: '#8b5cf6' },
         { label: 'Properties (equity)', value: realCorpus.properties, color: '#10b981' },
         { label: 'Receivable, net of debt', value: realCorpus.iouNet, color: '#06b6d4' }
       ];

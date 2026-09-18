@@ -2456,3 +2456,81 @@ alter table investment_entries drop constraint if exists investment_entries_user
 alter table investment_entries drop constraint if exists investment_entries_user_id_account_name_asset_type_owner_key;
 alter table investment_entries add constraint investment_entries_user_id_account_name_asset_type_owner_key
   unique (user_id, account_name, asset_type, owner);
+
+-- ── Government Scheme rebuild (NPS/EPF/VPF), bonds.html: a dedicated       ──
+-- ── entity separate from Stocks/MF's investment_entries and Bank          ──
+-- ── Balances' data, not a shared "financial entry" table - kept apart     ──
+-- ── deliberately since scheme_name and retirement_or_maturity_note don't  ──
+-- ── apply to the other two. No per-scheme uniqueness: a person can have   ──
+-- ── more than one EPF entry (e.g. current employer + a past employer's    ──
+-- ── pending transfer) and both are valid, simultaneous rows. Replaces the ──
+-- ── flat other_investments (category='Government Scheme') rows bonds.html ──
+-- ── used before - those old rows are left in place, unused, not deleted.  ──
+create table if not exists govt_scheme_entries (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  scheme_name text not null check (scheme_name in ('NPS','EPF','VPF','other')),
+  custom_label text,
+  invested_amount numeric not null default 0,
+  current_value numeric not null default 0,
+  retirement_or_maturity_note text,
+  owner text not null default 'self' check (owner in ('self','spouse','joint','child','other')),
+  last_updated_date date not null default current_date,
+  created_at timestamptz not null default now(),
+  constraint govt_scheme_entries_custom_label_check check (
+    (scheme_name = 'other' and custom_label is not null and custom_label <> '') or
+    (scheme_name <> 'other')
+  )
+);
+
+alter table govt_scheme_entries enable row level security;
+
+drop policy if exists "govt_scheme_entries_select_own" on govt_scheme_entries;
+drop policy if exists "govt_scheme_entries_insert_own" on govt_scheme_entries;
+drop policy if exists "govt_scheme_entries_update_own" on govt_scheme_entries;
+drop policy if exists "govt_scheme_entries_delete_own" on govt_scheme_entries;
+
+create policy "govt_scheme_entries_select_own" on govt_scheme_entries for select using (auth.uid() = user_id);
+create policy "govt_scheme_entries_insert_own" on govt_scheme_entries for insert with check (auth.uid() = user_id);
+create policy "govt_scheme_entries_update_own" on govt_scheme_entries for update using (auth.uid() = user_id);
+create policy "govt_scheme_entries_delete_own" on govt_scheme_entries for delete using (auth.uid() = user_id);
+
+-- ── FD + Cash + Bank Balances (bank-balances.html): its own entity, not    ──
+-- ── shared with Stocks/MF's investment_entries or Government Scheme's     ──
+-- ── govt_scheme_entries. account_type is the primary organizing dimension ──
+-- ── on this page (entries are grouped by type, not by account_name like   ──
+-- ── Stocks/MF), so at most one row per account_name + account_type - a    ──
+-- ── bank holding both a savings balance and an FD gets two separate rows. ──
+-- ── interest_rate/maturity_date only ever apply to fixed_deposit; for     ──
+-- ── cash and bank_balance, invested_amount is set equal to current_value  ──
+-- ── since neither has a separate "invested" figure. member_id (nullable,  ──
+-- ── same pattern as goals.member_id/insurance_policies.member_id) lets an ──
+-- ── entry point at a real family member; owner is the enum fallback used  ──
+-- ── when it's Joint rather than one specific person.                      ──
+create table if not exists bank_entries (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  account_name text not null,
+  account_type text not null check (account_type in ('cash','bank_balance','fixed_deposit')),
+  invested_amount numeric not null default 0,
+  current_value numeric not null default 0,
+  interest_rate numeric,
+  maturity_date date,
+  owner text not null default 'self' check (owner in ('self','spouse','joint','child','other')),
+  member_id uuid references family_members (id) on delete set null,
+  last_updated_date date not null default current_date,
+  created_at timestamptz not null default now(),
+  unique (user_id, account_name, account_type)
+);
+
+alter table bank_entries enable row level security;
+
+drop policy if exists "bank_entries_select_own" on bank_entries;
+drop policy if exists "bank_entries_insert_own" on bank_entries;
+drop policy if exists "bank_entries_update_own" on bank_entries;
+drop policy if exists "bank_entries_delete_own" on bank_entries;
+
+create policy "bank_entries_select_own" on bank_entries for select using (auth.uid() = user_id);
+create policy "bank_entries_insert_own" on bank_entries for insert with check (auth.uid() = user_id);
+create policy "bank_entries_update_own" on bank_entries for update using (auth.uid() = user_id);
+create policy "bank_entries_delete_own" on bank_entries for delete using (auth.uid() = user_id);

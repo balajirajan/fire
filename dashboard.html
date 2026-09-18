@@ -737,13 +737,16 @@
 
     async function loadNetWorthBreakdown() {
       var results = await Promise.all([
-        loadCurrentMonthTotal('portfolio'),
+        (async function () {
+          var { data } = await supabaseClient.from('investment_entries').select('current_value');
+          return (data || []).reduce(function (s, r) { return s + (Number(r.current_value) || 0); }, 0);
+        })(),
         (async function () {
           var { data } = await supabaseClient.from('gold_holdings').select('grams, current_rate_per_gram');
           return (data || []).reduce(function (s, r) { return s + (r.current_rate_per_gram !== null ? Number(r.grams) * Number(r.current_rate_per_gram) : 0); }, 0);
         })(),
         (async function () {
-          var { data } = await supabaseClient.from('other_investments').select('current_value').eq('category', 'Government Scheme');
+          var { data } = await supabaseClient.from('govt_scheme_entries').select('current_value');
           return (data || []).reduce(function (s, r) { return s + Number(r.current_value || 0); }, 0);
         })(),
         (async function () {
@@ -857,7 +860,7 @@
       var segments = [
         { label: 'Stocks/MF', value: breakdown.portfolio, color: ALLOC_COLORS.portfolio },
         { label: 'Gold', value: breakdown.gold, color: ALLOC_COLORS.gold },
-        { label: 'Government Scheme', value: breakdown.gov, color: ALLOC_COLORS.gov },
+        { label: 'NPS + EPF + VPF', value: breakdown.gov, color: ALLOC_COLORS.gov },
         { label: 'Properties', value: breakdown.properties, color: ALLOC_COLORS.properties },
         { label: 'Receivable, net of debt', value: breakdown.iouNet, color: ALLOC_COLORS.receivable },
         { label: 'Other', value: breakdown.other, color: ALLOC_COLORS.other }
