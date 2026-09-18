@@ -162,6 +162,7 @@
     .pct-pill { display: inline-block; padding: 0.1rem 0.5rem; border-radius: 999px; font-size: 0.74rem; font-weight: 700; }
     .pct-pill.pos { background: rgba(16,185,129,0.12); color: #059669; }
     .pct-pill.neg { background: rgba(220,38,38,0.12); color: #dc2626; }
+    .amt-positive { color: #059669; font-weight: 700; }
 
     .row-edit, .row-delete {
       display: inline-flex; align-items: center; justify-content: center;
@@ -702,36 +703,34 @@
             <input type="number" min="0" id="fmValue" placeholder="e.g. 5000000">
           </label>
           <label class="fm-field">
-            <span>Property Tax (optional)</span>
+            <span>Property Tax (optional, per year)</span>
             <input type="number" min="0" id="fmYearlyTax" placeholder="e.g. 15000">
           </label>
         </div>
+        <label class="fm-field">
+          <span>Ownership Share % (optional, for jointly-owned property)</span>
+          <input type="number" min="0" max="100" id="fmOwnershipPct" placeholder="e.g. 50">
+        </label>
         <label class="fm-checkbox-row">
           <input type="checkbox" id="fmPrimary">
           <span>Primary residence (exclude from FIRE calculations)</span>
         </label>
-
-        <div class="fm-section-divider">Rental &amp; Maintenance (optional)</div>
 
         <label class="fm-checkbox-row">
           <input type="checkbox" id="fmHasRentalIncome" onchange="toggleRentalFields()">
           <span>This property earns rental income</span>
         </label>
         <label class="fm-field" id="fmRentalFields" style="display:none;">
-          <span>Monthly Rental Income</span>
+          <span>Monthly Rental Income (+)</span>
           <input type="number" min="0" id="fmRentalIncome" placeholder="e.g. 20000">
-        </label>
-        <label class="fm-field">
-          <span>Monthly Expenses (optional)</span>
-          <input type="number" min="0" id="fmExpenses" placeholder="e.g. 3000">
         </label>
         <label class="fm-checkbox-row">
           <input type="checkbox" id="fmHasMaintenance" onchange="toggleMaintenanceFields()">
           <span>This property has maintenance charges</span>
         </label>
         <label class="fm-field" id="fmMaintenanceFields" style="display:none;">
-          <span>Monthly Maintenance</span>
-          <input type="number" min="0" id="fmMaintenanceAmount" placeholder="e.g. 2500">
+          <span>Maintenance (per year)</span>
+          <input type="number" min="0" id="fmMaintenanceAmount" placeholder="e.g. 30000">
         </label>
 
         <div class="fm-section-divider">Mortgage (optional)</div>
@@ -836,7 +835,7 @@
       { key: 'other', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M4 4h6v6h-6l0 -6" /><path d="M14 4h6v6h-6l0 -6" /><path d="M4 14h6v6h-6l0 -6" /><path d="M14 17a3 3 0 1 0 6 0a3 3 0 1 0 -6 0" /></svg>', label: 'Other' }
     ];
 
-    var properties = []; // [{ id, name, property_type, current_value, is_primary, has_mortgage, mortgage_balance, mortgage_emi, monthly_rental_income, monthly_expenses }]
+    var properties = []; // [{ id, name, property_type, current_value, is_primary, has_mortgage, mortgage_balance, mortgage_emi, monthly_rental_income }]
     var editingId = null;
     var selectedType = 'apartment';
 
@@ -917,9 +916,9 @@
           is_primary: !!row.is_primary, has_mortgage: !!row.has_mortgage,
           mortgage_balance: Number(row.mortgage_balance) || 0, mortgage_emi: Number(row.mortgage_emi) || 0,
           has_rental_income: !!row.has_rental_income, monthly_rental_income: Number(row.monthly_rental_income) || 0,
-          monthly_expenses: Number(row.monthly_expenses) || 0,
-          has_maintenance: !!row.has_maintenance, monthly_maintenance: Number(row.monthly_maintenance) || 0,
+          has_maintenance: !!row.has_maintenance, yearly_maintenance: Number(row.yearly_maintenance) || 0,
           yearly_tax: Number(row.yearly_tax) || 0,
+          ownership_pct: row.ownership_pct != null ? Number(row.ownership_pct) : 100,
           registered_name: row.registered_name || '', city: row.city || '',
           size_value: row.size_value != null ? Number(row.size_value) : null, size_unit: row.size_unit || null,
           purchase_month: row.purchase_month || '', purchase_price: Number(row.purchase_price) || 0
@@ -972,11 +971,12 @@
         body.innerHTML = properties.map(function (p) {
           var t = typeInfo(p.property_type);
           var equity = equityOf(p);
-          var sharePct = p.current_value ? Math.round(equity / p.current_value * 100) : 100;
+          var ownershipPct = p.ownership_pct != null ? p.ownership_pct : 100;
+          var yourShare = equity * (ownershipPct / 100);
           var pct = purchasePctOf(p);
           var mortgageText = p.has_mortgage ? (fmtRupee(p.mortgage_balance) + ' left') : '-';
-          var rentIncomeText = p.has_rental_income ? fmtRupee(p.monthly_rental_income) : '-';
-          var maintenanceText = p.has_maintenance ? fmtRupee(p.monthly_maintenance) : '-';
+          var rentIncomeText = p.has_rental_income ? ('<span class="amt-positive">+' + fmtRupee(p.monthly_rental_income) + '</span>') : '-';
+          var maintenanceText = p.has_maintenance ? fmtRupee(p.yearly_maintenance) : '-';
           var yearlyTaxText = p.yearly_tax ? fmtRupee(p.yearly_tax) : '-';
 
           return '<tr>' +
@@ -997,7 +997,7 @@
             '<td>' + mortgageText + '</td>' +
             '<td>' + rentIncomeText + '</td>' +
             '<td>' + maintenanceText + '</td>' +
-            '<td><b>' + fmtRupee(equity) + '</b> (' + sharePct + '%)</td>' +
+            '<td><b>' + fmtRupee(yourShare) + '</b> (' + ownershipPct + '%)</td>' +
             '<td>' +
               '<button type="button" class="row-edit" data-id="' + p.id + '" onclick="openEditModal(this.dataset.id)" title="Edit">✎</button>' +
               '<button type="button" class="row-delete" data-id="' + p.id + '" data-name="' + escapeHtml(p.name) + '" onclick="deleteProperty(this.dataset.id, this.dataset.name)" title="Delete">✕</button>' +
@@ -1080,13 +1080,13 @@
       document.getElementById('fmPurchasePrice').value = '';
       document.getElementById('fmValue').value = '';
       document.getElementById('fmYearlyTax').value = '';
+      document.getElementById('fmOwnershipPct').value = '';
       document.getElementById('fmPrimary').checked = false;
       document.getElementById('fmHasMortgage').checked = false;
       document.getElementById('fmMortgageBalance').value = '';
       document.getElementById('fmMortgageEmi').value = '';
       document.getElementById('fmHasRentalIncome').checked = false;
       document.getElementById('fmRentalIncome').value = '';
-      document.getElementById('fmExpenses').value = '';
       document.getElementById('fmHasMaintenance').checked = false;
       document.getElementById('fmMaintenanceAmount').value = '';
       toggleMortgageFields();
@@ -1112,15 +1112,15 @@
       document.getElementById('fmPurchasePrice').value = p.purchase_price || '';
       document.getElementById('fmValue').value = p.current_value;
       document.getElementById('fmYearlyTax').value = p.yearly_tax || '';
+      document.getElementById('fmOwnershipPct').value = p.ownership_pct != null && p.ownership_pct !== 100 ? p.ownership_pct : '';
       document.getElementById('fmPrimary').checked = p.is_primary;
       document.getElementById('fmHasMortgage').checked = p.has_mortgage;
       document.getElementById('fmMortgageBalance').value = p.mortgage_balance || '';
       document.getElementById('fmMortgageEmi').value = p.mortgage_emi || '';
       document.getElementById('fmHasRentalIncome').checked = p.has_rental_income;
       document.getElementById('fmRentalIncome').value = p.monthly_rental_income || '';
-      document.getElementById('fmExpenses').value = p.monthly_expenses || '';
       document.getElementById('fmHasMaintenance').checked = p.has_maintenance;
-      document.getElementById('fmMaintenanceAmount').value = p.monthly_maintenance || '';
+      document.getElementById('fmMaintenanceAmount').value = p.yearly_maintenance || '';
       toggleMortgageFields();
       toggleRentalFields();
       toggleMaintenanceFields();
@@ -1146,24 +1146,24 @@
       var purchasePrice = Number(document.getElementById('fmPurchasePrice').value) || 0;
       var value = Number(document.getElementById('fmValue').value) || 0;
       var yearlyTax = Number(document.getElementById('fmYearlyTax').value) || 0;
+      var ownershipPctRaw = document.getElementById('fmOwnershipPct').value;
+      var ownershipPct = ownershipPctRaw ? Math.min(100, Math.max(0, Number(ownershipPctRaw))) : 100;
       var isPrimary = document.getElementById('fmPrimary').checked;
       var hasMortgage = document.getElementById('fmHasMortgage').checked;
       var mortgageBalance = Number(document.getElementById('fmMortgageBalance').value) || 0;
       var mortgageEmi = Number(document.getElementById('fmMortgageEmi').value) || 0;
       var hasRentalIncome = document.getElementById('fmHasRentalIncome').checked;
       var rentalIncome = Number(document.getElementById('fmRentalIncome').value) || 0;
-      var expenses = Number(document.getElementById('fmExpenses').value) || 0;
       var hasMaintenance = document.getElementById('fmHasMaintenance').checked;
       var maintenanceAmount = Number(document.getElementById('fmMaintenanceAmount').value) || 0;
 
       var payload = {
         name: name, property_type: selectedType, current_value: value, is_primary: isPrimary,
-        yearly_tax: yearlyTax,
+        yearly_tax: yearlyTax, ownership_pct: ownershipPct,
         has_mortgage: hasMortgage, mortgage_balance: hasMortgage ? mortgageBalance : 0,
         mortgage_emi: hasMortgage ? mortgageEmi : 0,
         has_rental_income: hasRentalIncome, monthly_rental_income: hasRentalIncome ? rentalIncome : 0,
-        monthly_expenses: expenses,
-        has_maintenance: hasMaintenance, monthly_maintenance: hasMaintenance ? maintenanceAmount : 0,
+        has_maintenance: hasMaintenance, yearly_maintenance: hasMaintenance ? maintenanceAmount : 0,
         registered_name: registeredName, city: city, size_value: sizeValue, size_unit: sizeUnit,
         purchase_month: purchaseMonth, purchase_price: purchasePrice
       };

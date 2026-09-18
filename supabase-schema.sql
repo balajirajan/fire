@@ -2383,9 +2383,65 @@ alter table family_members add constraint family_members_relation_check
 alter table properties add column if not exists yearly_tax numeric not null default 0;
 alter table properties add column if not exists has_rental_income boolean not null default false;
 alter table properties add column if not exists has_maintenance boolean not null default false;
-alter table properties add column if not exists monthly_maintenance numeric not null default 0;
 
 -- Backfill has_rental_income for existing rows that already had a rental
 -- figure, so nothing that was showing before this column existed goes
 -- silently blank.
 update properties set has_rental_income = true where monthly_rental_income > 0 and has_rental_income = false;
+
+-- Maintenance is tracked per year, not per month - switch monthly_maintenance
+-- (added above, unlikely to hold real data yet) to yearly_maintenance.
+alter table properties add column if not exists yearly_maintenance numeric not null default 0;
+alter table properties drop column if exists monthly_maintenance;
+
+-- Ownership share (%), for a property jointly owned with a spouse/sibling/etc.
+-- Defaults to 100 (fully owned) so nothing changes for existing single-owner
+-- rows. Display-only: it scales the "Share" column's rupee figure on
+-- properties.html, it does not change current_value used by net worth
+-- totals elsewhere.
+alter table properties add column if not exists ownership_pct numeric not null default 100;
+alter table properties drop constraint if exists properties_ownership_pct_check;
+alter table properties add constraint properties_ownership_pct_check
+  check (ownership_pct >= 0 and ownership_pct <= 100);
+
+-- ── Stocks/MF rebuild: account + asset-type level tracking, replacing the   ──
+-- ── old monthly Investment/Current Value grid (expense_grid, section=       ──
+-- ── 'portfolio'). One row per account_name + asset_type combination -       ──
+-- ── "how much I've invested and what it's worth today, in this account,    ──
+-- ── for this type" - updated whenever the user checks, not on a fixed      ──
+-- ── monthly schedule. No per-holding/per-ticker detail in this version.     ──
+-- ── asset_type 'unreviewed' is a migration-only placeholder: the one-time   ──
+-- ── migration from the old grid can't tell whether a legacy "MF" or        ──
+-- ── "Stocks/MF" category meant Stocks or Mutual Funds, so it lands here and ──
+-- ── portfolio.html prompts the user to reassign it - the add/edit form      ──
+-- ── never offers 'unreviewed' as a choice, so editing an entry forces it    ──
+-- ── onto a real type. "owner" reuses the same self/spouse/joint/child/other ──
+-- ── tag used on loan_accounts, goals, vehicles, etc. elsewhere in the app.   ──
+-- ── The old expense_groups/expense_items/expense_grid rows for               ──
+-- ── section='portfolio' are left in place after migration (unused, not      ──
+-- ── auto-deleted - the shared expense-grid pattern still powers other       ──
+-- ── pages, nothing about the pattern itself is being removed).              ──
+create table if not exists investment_entries (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  account_name text not null,
+  asset_type text not null check (asset_type in ('stocks','mutual_funds','crypto','unreviewed')),
+  invested_amount numeric not null default 0,
+  current_value numeric not null default 0,
+  owner text not null default 'self' check (owner in ('self','spouse','joint','child','other')),
+  last_updated_date date not null default current_date,
+  created_at timestamptz not null default now(),
+  unique (user_id, account_name, asset_type)
+);
+
+alter table investment_entries enable row level security;
+
+drop policy if exists "investment_entries_select_own" on investment_entries;
+drop policy if exists "investment_entries_insert_own" on investment_entries;
+drop policy if exists "investment_entries_update_own" on investment_entries;
+drop policy if exists "investment_entries_delete_own" on investment_entries;
+
+create policy "investment_entries_select_own" on investment_entries for select using (auth.uid() = user_id);
+create policy "investment_entries_insert_own" on investment_entries for insert with check (auth.uid() = user_id);
+create policy "investment_entries_update_own" on investment_entries for update using (auth.uid() = user_id);
+create policy "investment_entries_delete_own" on investment_entries for delete using (auth.uid() = user_id);
