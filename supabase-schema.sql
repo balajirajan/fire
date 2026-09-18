@@ -2445,3 +2445,14 @@ create policy "investment_entries_select_own" on investment_entries for select u
 create policy "investment_entries_insert_own" on investment_entries for insert with check (auth.uid() = user_id);
 create policy "investment_entries_update_own" on investment_entries for update using (auth.uid() = user_id);
 create policy "investment_entries_delete_own" on investment_entries for delete using (auth.uid() = user_id);
+
+-- One account name + asset type could only ever have a single row, so a
+-- second holding of the same type in the same account under a joint/spouse
+-- owner was rejected as a duplicate (e.g. a "Groww" Stocks row already
+-- owned by Self blocked adding a "Groww" Stocks row owned by Joint).
+-- Widening the uniqueness to also key off owner lets each owner have their
+-- own row per account + asset type.
+alter table investment_entries drop constraint if exists investment_entries_user_id_account_name_asset_type_key;
+alter table investment_entries drop constraint if exists investment_entries_user_id_account_name_asset_type_owner_key;
+alter table investment_entries add constraint investment_entries_user_id_account_name_asset_type_owner_key
+  unique (user_id, account_name, asset_type, owner);

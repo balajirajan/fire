@@ -902,9 +902,9 @@
       var owner = document.getElementById('iOwner').value;
 
       var dup = entries.find(function (e) {
-        return e.account_name === accountName && e.asset_type === assetType && e.id !== editingId;
+        return e.account_name === accountName && e.asset_type === assetType && e.owner === owner && e.id !== editingId;
       });
-      if (dup) { showToast('An entry for "' + accountName + '" + ' + TYPE_LABELS[assetType] + ' already exists - edit it instead.'); return; }
+      if (dup) { showToast('A ' + OWNER_LABELS[owner] + ' entry for "' + accountName + '" + ' + TYPE_LABELS[assetType] + ' already exists - edit it instead.'); return; }
 
       var todayStr = new Date().toISOString().slice(0, 10);
       var lastUpdated = todayStr;
@@ -923,11 +923,11 @@
 
       if (editingId) {
         var { error } = await supabaseClient.from('investment_entries').update(payload).eq('id', editingId);
-        if (error) { showToast(error.code === '23505' ? 'An entry for this account and asset type already exists.' : 'Could not save: ' + error.message); return; }
+        if (error) { showToast(error.code === '23505' ? 'An entry for this account, asset type and owner already exists.' : 'Could not save: ' + error.message); return; }
         showToast('Updated.');
       } else {
         var { error: insErr } = await supabaseClient.from('investment_entries').insert(payload);
-        if (insErr) { showToast(insErr.code === '23505' ? 'An entry for this account and asset type already exists.' : 'Could not add entry: ' + insErr.message); return; }
+        if (insErr) { showToast(insErr.code === '23505' ? 'An entry for this account, asset type and owner already exists.' : 'Could not add entry: ' + insErr.message); return; }
         showToast('Entry added.');
       }
 
