@@ -387,7 +387,7 @@
           </a>
           <a href="gold.html">
             <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /><path d="M14.8 9a2 2 0 0 0 -1.8 -1h-2a2 2 0 1 0 0 4h2a2 2 0 1 1 0 4h-2a2 2 0 0 1 -1.8 -1" /><path d="M12 7v10" /></svg></span>
-            <span class="nav-label">Gold + Commodities</span>
+            <span class="nav-label">Gold</span>
           </a>
           <a href="bonds.html">
             <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M8 18l2 -13l2 -2l2 2l2 13" /><path d="M5 21v-3h14v3" /><path d="M3 21l18 0" /></svg></span>
@@ -403,7 +403,7 @@
           </a>
           <a href="bank-balances.html">
             <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M3 21l18 0" /><path d="M3 10l18 0" /><path d="M5 6l7 -3l7 3" /><path d="M4 10l0 11" /><path d="M20 10l0 11" /><path d="M8 14l0 3" /><path d="M12 14l0 3" /><path d="M16 14l0 3" /></svg></span>
-            <span class="nav-label">Bank Balances</span>
+            <span class="nav-label">Cash + Bank Balances</span>
           </a>
         </div>
         <a href="money-required.html">
@@ -585,7 +585,7 @@
       <div class="page-head">
         <div>
           <h2>Net Worth</h2>
-          <p>Calculated automatically from Bank Balances, Stocks/MF, Gold + Commodities, Government Scheme, Properties, Loan/EMI, Personal Debt & Receivable - plus anything else you add below.</p>
+          <p>Calculated automatically from Cash + Bank Balances, Stocks/MF, Gold, Government Scheme, Properties, Loan/EMI, Personal Debt & Receivable - plus anything else you add below.</p>
         </div>
         <button type="button" class="pbtn" onclick="openAccountModal()">+ Add Other Account</button>
       </div>
@@ -671,7 +671,7 @@
         <p>Net worth here is calculated automatically from what you've added across the Networth sections. Add a holding in any of these to see it appear:</p>
         <div class="empty-links">
           <a href="portfolio.html">📊 Stocks/MF</a>
-          <a href="gold.html">🥇 Gold + Commodities</a>
+          <a href="gold.html">🥇 Gold</a>
           <a href="bonds.html">🏛️ Government Scheme</a>
           <a href="properties.html">🏠 Properties</a>
           <a href="personal-debt.html">🔄 Personal Debt & Receivable</a>
@@ -1297,7 +1297,7 @@
       renderCategoryDonut('allocChartWrap', [
         { label: 'Bank & Cash', value: liquidValue, color: ALLOC_COLORS.bank },
         { label: 'Stocks/MF', value: portfolioValue, color: ALLOC_COLORS.portfolio },
-        { label: 'Gold + Commodities', value: goldValue, color: ALLOC_COLORS.gold },
+        { label: 'Gold', value: goldValue, color: ALLOC_COLORS.gold },
         { label: 'Government Scheme', value: govValue, color: ALLOC_COLORS.gov },
         { label: 'Properties', value: propGross, color: ALLOC_COLORS.properties },
         { label: 'Receivable (Owed to Me)', value: owedToMeTotal, color: ALLOC_COLORS.receivable },
@@ -1310,7 +1310,7 @@
       var liabilitiesBreakdown = propertyMortgageBreakdown.concat(loanBreakdown, iOweBreakdown, otherLiabilitiesBreakdown);
       renderCategoryDonut('liabilitiesWrap', toCategorySegments(liabilitiesBreakdown), 'No liabilities - nothing dragging your net worth down. 🎉');
 
-      renderCategoryDonut('liquidChartWrap', toCategorySegments(liquidBreakdown), 'No bank or cash balances yet - add one on Bank Balances.');
+      renderCategoryDonut('liquidChartWrap', toCategorySegments(liquidBreakdown), 'No bank or cash balances yet - add one on Cash + Bank Balances.');
       renderCategoryDonut('investmentsChartWrap', toCategorySegments(portfolioBreakdown.concat(govBreakdown)), 'No investments yet - add a holding under Stocks/MF or Government Scheme.');
       renderCategoryDonut('realEstateChartWrap', toCategorySegments(propertiesBreakdown), 'No properties yet - add one on the Properties page.');
       renderCategoryDonut('physicalChartWrap', toCategorySegments(goldBreakdown.concat(otherAssetsBreakdown)), 'No physical assets yet - add gold or another manual asset.');
