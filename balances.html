@@ -128,7 +128,7 @@
     .grid-card { background: var(--bg); border: 1px solid var(--border); border-radius: 1.1rem; box-shadow: 0 4px 16px rgba(22,19,15,0.03); overflow: hidden; margin-bottom: 1.5rem; }
     .grid-scroll { overflow-x: auto; }
 
-    table.be-table { border-collapse: collapse; width: 100%; min-width: 640px; }
+    table.be-table { border-collapse: collapse; width: 100%; min-width: 800px; }
     table.be-table th, table.be-table td {
       padding: 0.6rem 0.9rem; font-size: 0.84rem; border-bottom: 1px solid var(--border); white-space: nowrap; text-align: right;
     }
@@ -1002,18 +1002,23 @@
     function renderRow(e) {
       var staleClass = isStale(e.last_updated_date) ? 'stale-date' : '';
       var isFd = e.account_type === 'fixed_deposit';
-      var amountHtml = isFd ? (fmtRupee(e.invested_amount) + ' → ' + fmtRupee(e.current_value)) : fmtRupee(e.current_value);
-      var rateMaturity = '-';
+      var isCash = e.account_type === 'cash';
+      // Cash has no separate "invested" figure - only Current Value applies.
+      var investedHtml = isCash ? 'N/A' : fmtRupee(e.invested_amount);
+      var currentHtml = fmtRupee(e.current_value);
+      // Rate/Maturity only ever applies to Fixed Deposit.
+      var rateMaturity = 'N/A';
       if (isFd) {
         var parts = [];
         if (e.interest_rate != null && e.interest_rate !== '') parts.push(Number(e.interest_rate) + '%');
         if (e.maturity_date) parts.push(fmtMonthShort(e.maturity_date));
-        rateMaturity = parts.length ? parts.join(' · ') : '-';
+        rateMaturity = parts.length ? parts.join(' · ') : 'N/A';
       }
       return '<tr>' +
         '<td>' + typeBadge(e.account_type) + '</td>' +
         '<td class="name-col">' + nameCellHtml(e) + '</td>' +
-        '<td>' + amountHtml + '</td>' +
+        '<td>' + investedHtml + '</td>' +
+        '<td>' + currentHtml + '</td>' +
         '<td>' + rateMaturity + '</td>' +
         '<td class="' + staleClass + '">' + fmtDate(e.last_updated_date) + '</td>' +
         '<td class="actions-col">' + actionsHtml(e.id, e.account_name) + '</td>' +
@@ -1037,7 +1042,7 @@
         '<div class="grid-card">' +
           '<div class="grid-scroll">' +
             '<table class="be-table">' +
-              '<thead><tr><th>Type</th><th>Account / Label</th><th>Amount</th><th>Rate / Maturity</th><th>Updated</th><th></th></tr></thead>' +
+              '<thead><tr><th>Type</th><th>Account / Label</th><th>Invested Amount</th><th>Current Value</th><th>Rate / Maturity</th><th>Last Updated</th><th></th></tr></thead>' +
               '<tbody>' + rows + '</tbody>' +
             '</table>' +
           '</div>' +
