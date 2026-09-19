@@ -115,28 +115,17 @@
     .empty-state { text-align: center; padding: 3rem 2rem; color: var(--ink-soft); font-size: 0.9rem; background: var(--bg); border: 1px solid var(--border); border-radius: 1.1rem; }
     .empty-state .pbtn { margin-top: 1rem; }
 
-    /* Group badge + stat chips above each type's table - each type gets its
-       own accent color (carried through to the table's top border) so the
-       three groups read as distinct at a glance, not just three identical
-       grey tables stacked on top of each other. */
-    .group-title { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+    /* Type badge shown per-row in the single shared table below - each
+       type keeps its own accent color so Fixed Deposit / Cash / Bank
+       Balance rows stay easy to tell apart at a glance even though
+       they now live in one table instead of three. */
     .group-badge { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.78rem; font-weight: 700; padding: 0.3rem 0.75rem; border-radius: 999px; white-space: nowrap; }
     .group-badge .tabler-icon { width: 15px; height: 15px; }
     .group-badge.type-fixed-deposit { background: #fef3c7; color: #b45309; }
     .group-badge.type-cash { background: #ecfdf5; color: #059669; }
     .group-badge.type-bank-balance { background: #eff6ff; color: #0ea5e9; }
-    .group-count { font-size: 0.78rem; font-weight: 600; color: var(--ink-faint); }
 
-    .group-stats { display: flex; align-items: center; gap: 1.4rem; }
-    .group-stat { display: flex; flex-direction: column; gap: 0.15rem; text-align: right; }
-    .group-stat label { font-size: 0.64rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; color: var(--ink-faint); }
-    .group-stat-value { font-size: 0.95rem; font-weight: 800; color: var(--ink); }
-
-    /* Grouped tables */
-    .grid-card { background: var(--bg); border: 1px solid var(--border); border-top: 3px solid var(--border); border-radius: 1.1rem; box-shadow: 0 4px 16px rgba(22,19,15,0.03); overflow: hidden; margin-bottom: 1.5rem; }
-    .grid-card.type-fixed-deposit { border-top-color: #b45309; }
-    .grid-card.type-cash { border-top-color: #059669; }
-    .grid-card.type-bank-balance { border-top-color: #0ea5e9; }
+    .grid-card { background: var(--bg); border: 1px solid var(--border); border-radius: 1.1rem; box-shadow: 0 4px 16px rgba(22,19,15,0.03); overflow: hidden; margin-bottom: 1.5rem; }
     .grid-scroll { overflow-x: auto; }
 
     table.be-table { border-collapse: collapse; width: 100%; min-width: 640px; }
@@ -545,7 +534,7 @@
       <div class="page-head">
         <div>
           <h2>FD + Cash + Bank Balances</h2>
-          <p>Grouped by Fixed Deposit, Cash, and Bank Balance.</p>
+          <p>One table, classified by Fixed Deposit, Cash, and Bank Balance.</p>
         </div>
         <button type="button" class="pbtn" onclick="openAddModal()">+ Add Entry</button>
       </div>
@@ -993,12 +982,8 @@
       return type.replace(/_/g, '-');
     }
 
-    function groupBadge(type) {
+    function typeBadge(type) {
       return '<span class="group-badge type-' + typeSlug(type) + '">' + TYPE_ICONS[type] + '<span>' + TYPE_LABELS[type] + '</span></span>';
-    }
-
-    function groupStat(label, value) {
-      return '<div class="group-stat"><label>' + label + '</label><span class="group-stat-value">' + value + '</span></div>';
     }
 
     function actionsHtml(id, label) {
@@ -1011,59 +996,28 @@
         '<div class="name-col-tags"><span class="owner-pill">' + escapeHtml(ownerLabelFor(e)) + '</span></div>';
     }
 
-    function tableHeaderCells(type) {
-      if (type === 'fixed_deposit') return '<th>Bank</th><th>Principal → Value</th><th>Rate / Maturity</th><th>Updated</th><th></th>';
-      if (type === 'cash') return '<th>Label</th><th>Amount</th><th>Updated</th><th></th>';
-      return '<th>Bank</th><th>Balance</th><th>Updated</th><th></th>';
-    }
-
-    function renderRow(type, e) {
+    // One shared table classifies every entry via its Type column instead of
+    // three separate per-type tables - sorted by type first (so the three
+    // kinds still read as grouped), then by name within each type.
+    function renderRow(e) {
       var staleClass = isStale(e.last_updated_date) ? 'stale-date' : '';
-      if (type === 'fixed_deposit') {
-        var rateMaturity = [];
-        if (e.interest_rate != null && e.interest_rate !== '') rateMaturity.push(Number(e.interest_rate) + '%');
-        if (e.maturity_date) rateMaturity.push(fmtMonthShort(e.maturity_date));
-        return '<tr>' +
-          '<td class="name-col">' + nameCellHtml(e) + '</td>' +
-          '<td>' + fmtRupee(e.invested_amount) + ' → ' + fmtRupee(e.current_value) + '</td>' +
-          '<td>' + (rateMaturity.length ? rateMaturity.join(' · ') : '-') + '</td>' +
-          '<td class="' + staleClass + '">' + fmtDate(e.last_updated_date) + '</td>' +
-          '<td class="actions-col">' + actionsHtml(e.id, e.account_name) + '</td>' +
-        '</tr>';
+      var isFd = e.account_type === 'fixed_deposit';
+      var amountHtml = isFd ? (fmtRupee(e.invested_amount) + ' → ' + fmtRupee(e.current_value)) : fmtRupee(e.current_value);
+      var rateMaturity = '-';
+      if (isFd) {
+        var parts = [];
+        if (e.interest_rate != null && e.interest_rate !== '') parts.push(Number(e.interest_rate) + '%');
+        if (e.maturity_date) parts.push(fmtMonthShort(e.maturity_date));
+        rateMaturity = parts.length ? parts.join(' · ') : '-';
       }
       return '<tr>' +
         '<td class="name-col">' + nameCellHtml(e) + '</td>' +
-        '<td>' + fmtRupee(e.current_value) + '</td>' +
+        '<td>' + typeBadge(e.account_type) + '</td>' +
+        '<td>' + amountHtml + '</td>' +
+        '<td>' + rateMaturity + '</td>' +
         '<td class="' + staleClass + '">' + fmtDate(e.last_updated_date) + '</td>' +
         '<td class="actions-col">' + actionsHtml(e.id, e.account_name) + '</td>' +
       '</tr>';
-    }
-
-    function renderGroupSection(type, list) {
-      if (!list.length) return '';
-      var totInv = 0, totCur = 0;
-      list.forEach(function (e) { totInv += Number(e.invested_amount) || 0; totCur += Number(e.current_value) || 0; });
-      var statsHtml = type === 'fixed_deposit'
-        ? groupStat('Invested', fmtRupee(totInv, true)) + groupStat('Current Value', fmtRupee(totCur, true))
-        : groupStat('Total', fmtRupee(totCur, true));
-
-      var sorted = list.slice().sort(function (a, b) { return a.account_name.localeCompare(b.account_name); });
-      var rows = sorted.map(function (e) { return renderRow(type, e); }).join('');
-
-      return '<div class="section-head">' +
-          '<div class="group-title">' + groupBadge(type) +
-            '<span class="group-count">' + list.length + ' ' + (list.length === 1 ? 'entry' : 'entries') + '</span>' +
-          '</div>' +
-          '<div class="group-stats">' + statsHtml + '</div>' +
-        '</div>' +
-        '<div class="grid-card type-' + typeSlug(type) + '">' +
-          '<div class="grid-scroll">' +
-            '<table class="be-table">' +
-              '<thead><tr>' + tableHeaderCells(type) + '</tr></thead>' +
-              '<tbody>' + rows + '</tbody>' +
-            '</table>' +
-          '</div>' +
-        '</div>';
     }
 
     function renderGroups() {
@@ -1072,10 +1026,22 @@
       if (!entries.length) { wrap.innerHTML = ''; emptyEl.style.display = 'block'; return; }
       emptyEl.style.display = 'none';
 
-      var byType = { fixed_deposit: [], cash: [], bank_balance: [] };
-      entries.forEach(function (e) { if (byType[e.account_type]) byType[e.account_type].push(e); });
+      var sorted = entries.slice().sort(function (a, b) {
+        var ta = TYPE_ORDER.indexOf(a.account_type), tb = TYPE_ORDER.indexOf(b.account_type);
+        if (ta !== tb) return ta - tb;
+        return a.account_name.localeCompare(b.account_name);
+      });
+      var rows = sorted.map(renderRow).join('');
 
-      wrap.innerHTML = TYPE_ORDER.map(function (t) { return renderGroupSection(t, byType[t]); }).join('');
+      wrap.innerHTML =
+        '<div class="grid-card">' +
+          '<div class="grid-scroll">' +
+            '<table class="be-table">' +
+              '<thead><tr><th>Account / Label</th><th>Type</th><th>Amount</th><th>Rate / Maturity</th><th>Updated</th><th></th></tr></thead>' +
+              '<tbody>' + rows + '</tbody>' +
+            '</table>' +
+          '</div>' +
+        '</div>';
     }
 
     function renderAll() {
