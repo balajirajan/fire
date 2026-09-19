@@ -136,7 +136,7 @@
       font-size: 0.68rem; font-weight: 700; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.02em;
       background: var(--bg-alt); border-bottom: 1px solid var(--border);
     }
-    table.be-table th:first-child, table.be-table td.name-col { text-align: left; }
+    table.be-table th:first-child, table.be-table td:first-child, table.be-table td.name-col { text-align: left; }
     table.be-table td.name-col { font-weight: 600; color: var(--ink); white-space: normal; }
     table.be-table tbody tr:last-child td { border-bottom: none; }
     table.be-table tbody tr:hover td { background: var(--bg-alt); }
@@ -1011,8 +1011,8 @@
         rateMaturity = parts.length ? parts.join(' · ') : '-';
       }
       return '<tr>' +
-        '<td class="name-col">' + nameCellHtml(e) + '</td>' +
         '<td>' + typeBadge(e.account_type) + '</td>' +
+        '<td class="name-col">' + nameCellHtml(e) + '</td>' +
         '<td>' + amountHtml + '</td>' +
         '<td>' + rateMaturity + '</td>' +
         '<td class="' + staleClass + '">' + fmtDate(e.last_updated_date) + '</td>' +
@@ -1037,7 +1037,7 @@
         '<div class="grid-card">' +
           '<div class="grid-scroll">' +
             '<table class="be-table">' +
-              '<thead><tr><th>Account / Label</th><th>Type</th><th>Amount</th><th>Rate / Maturity</th><th>Updated</th><th></th></tr></thead>' +
+              '<thead><tr><th>Type</th><th>Account / Label</th><th>Amount</th><th>Rate / Maturity</th><th>Updated</th><th></th></tr></thead>' +
               '<tbody>' + rows + '</tbody>' +
             '</table>' +
           '</div>' +
