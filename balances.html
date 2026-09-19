@@ -141,6 +141,7 @@
     table.be-table tbody tr:last-child td { border-bottom: none; }
     table.be-table tbody tr:hover td { background: var(--bg-alt); }
     table.be-table td.actions-col { white-space: nowrap; }
+    table.be-table td.type-cell { vertical-align: middle; border-right: 1px solid var(--border); background: var(--bg-alt); }
 
     .name-col-tags { display: flex; align-items: center; gap: 0.3rem; margin-top: 0.3rem; }
     .name-col-tags:empty { display: none; }
@@ -998,8 +999,10 @@
 
     // One shared table classifies every entry via its Type column instead of
     // three separate per-type tables - sorted by type first (so the three
-    // kinds still read as grouped), then by name within each type.
-    function renderRow(e) {
+    // kinds still read as grouped), then by name within each type. The Type
+    // badge is only drawn once per group (rowspan over every row of that
+    // type) instead of repeating on every row.
+    function renderRow(e, rowspanCount) {
       var staleClass = isStale(e.last_updated_date) ? 'stale-date' : '';
       var isFd = e.account_type === 'fixed_deposit';
       var isCash = e.account_type === 'cash';
@@ -1014,8 +1017,11 @@
         if (e.maturity_date) parts.push(fmtMonthShort(e.maturity_date));
         rateMaturity = parts.length ? parts.join(' · ') : 'N/A';
       }
+      var typeCellHtml = rowspanCount
+        ? '<td class="type-cell" rowspan="' + rowspanCount + '">' + typeBadge(e.account_type) + '</td>'
+        : '';
       return '<tr>' +
-        '<td>' + typeBadge(e.account_type) + '</td>' +
+        typeCellHtml +
         '<td class="name-col">' + nameCellHtml(e) + '</td>' +
         '<td>' + investedHtml + '</td>' +
         '<td>' + currentHtml + '</td>' +
@@ -1036,7 +1042,15 @@
         if (ta !== tb) return ta - tb;
         return a.account_name.localeCompare(b.account_name);
       });
-      var rows = sorted.map(renderRow).join('');
+
+      var typeCounts = {};
+      sorted.forEach(function (e) { typeCounts[e.account_type] = (typeCounts[e.account_type] || 0) + 1; });
+      var seenType = {};
+      var rows = sorted.map(function (e) {
+        var isFirstOfType = !seenType[e.account_type];
+        seenType[e.account_type] = true;
+        return renderRow(e, isFirstOfType ? typeCounts[e.account_type] : 0);
+      }).join('');
 
       wrap.innerHTML =
         '<div class="grid-card">' +
