@@ -138,39 +138,31 @@
     /* Migration review banner */
     .review-banner { display: flex; align-items: center; gap: 0.6rem; background: #fffbeb; border: 1px solid #fde68a; color: #92400e; padding: 0.75rem 1.1rem; border-radius: 0.75rem; font-size: 0.83rem; margin-bottom: 1.5rem; }
 
-    /* Account list, grouped by asset type - both the card header and each
-       account sub-row share the same grid template so every column (name,
-       invested, current, return, updated, actions) lines up vertically. */
-    .acct-list-body { padding: 0.7rem; display: flex; flex-direction: column; gap: 0.6rem; }
-    .acct-grid-row {
-      display: grid;
-      grid-template-columns: minmax(150px, 1.5fr) 108px 108px 84px 112px 64px;
-      align-items: center;
-      column-gap: 0.75rem;
-    }
-    @media (max-width: 900px) {
-      .acct-grid-row { grid-template-columns: minmax(130px, 1.2fr) 96px 96px 76px 100px 56px; column-gap: 0.5rem; }
-    }
-    .acct-name-cell { display: flex; flex-direction: column; gap: 0.15rem; min-width: 0; }
-    .acct-name { font-weight: 700; font-size: 0.88rem; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .acct-card-head .acct-name-cell { flex-direction: row; align-items: center; gap: 0.5rem; }
-    .type-group-count { font-size: 0.76rem; font-weight: 600; color: var(--ink-faint); }
-    .acct-owner { font-size: 0.72rem; color: var(--ink-faint); font-weight: 600; }
+    /* Account list - one shared table classifies every entry via its Asset
+       Type column instead of one card per type. The Type badge is only
+       drawn once per group (rowspan over every row of that type). */
     .type-badge { font-size: 0.7rem; font-weight: 700; padding: 0.2rem 0.55rem; border-radius: 999px; white-space: nowrap; }
+    .stale-date { color: #d97706; font-weight: 700; }
 
-    .acct-fig { display: flex; flex-direction: column; gap: 0.15rem; font-size: 0.83rem; font-weight: 700; text-align: right; color: var(--ink); }
-    .acct-fig label { font-size: 0.64rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; color: var(--ink-faint); }
-    .acct-fig.stale-date { color: #d97706; }
-    .acct-fig.stale-date label { color: #d97706; }
+    .name-col-tags { display: flex; align-items: center; gap: 0.3rem; margin-top: 0.3rem; }
+    .name-col-tags:empty { display: none; }
+    .owner-pill { display: inline-block; padding: 0.15rem 0.55rem; border-radius: 999px; font-size: 0.68rem; font-weight: 700; white-space: nowrap; background: var(--bg-alt); color: var(--ink-soft); }
 
-    .acct-row-actions { display: flex; align-items: center; justify-content: flex-end; gap: 0.35rem; }
-
-    .acct-card { border: 1px solid var(--border); border-radius: 0.85rem; overflow: hidden; }
-    .acct-card-head { padding: 0.9rem 1rem; background: var(--bg-alt); border-bottom: 1px solid var(--border); }
-    .acct-card-body { display: flex; flex-direction: column; }
-    .acct-subrow { padding: 0.75rem 1rem; border-top: 1px solid var(--border); }
-    .acct-subrow:first-child { border-top: none; }
-    .acct-subrow:hover { background: var(--bg-alt); }
+    .grid-scroll { overflow-x: auto; }
+    table.acct-table { border-collapse: collapse; width: 100%; min-width: 720px; }
+    table.acct-table th, table.acct-table td {
+      padding: 0.6rem 0.9rem; font-size: 0.84rem; border-bottom: 1px solid var(--border); white-space: nowrap; text-align: right;
+    }
+    table.acct-table th {
+      font-size: 0.68rem; font-weight: 700; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.02em;
+      background: var(--bg-alt); border-bottom: 1px solid var(--border);
+    }
+    table.acct-table th:first-child, table.acct-table td:first-child, table.acct-table td.name-col { text-align: left; }
+    table.acct-table td.name-col { font-weight: 600; color: var(--ink); white-space: normal; }
+    table.acct-table tbody tr:last-child td { border-bottom: none; }
+    table.acct-table tbody tr:hover td { background: var(--bg-alt); }
+    table.acct-table td.actions-col { white-space: nowrap; }
+    table.acct-table td.type-cell { vertical-align: middle; border-right: 1px solid var(--border); background: var(--bg-alt); }
 
     .row-edit, .row-delete {
       display: inline-flex; align-items: center; justify-content: center;
@@ -334,7 +326,6 @@
         <a href="fire-plan.html">
           <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M8 16l2 -6l6 -2l-2 6l-6 2" /><path d="M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /><path d="M12 3l0 2" /><path d="M12 19l0 2" /><path d="M3 12l2 0" /><path d="M19 12l2 0" /></svg></span>
           <span class="nav-label">1.1 FIRE Plan</span>
-          <span class="nav-chevron">›</span>
         </a>
         <a href="net-worth.html" class="nav-group-head open">
           <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M3 17l6 -6l4 4l8 -8" /><path d="M14 7l7 0l0 7" /></svg></span>
@@ -1037,75 +1028,70 @@
         ' review - edit to reassign to a real account and to Stocks or Mutual Funds.';
     }
 
-    function figHtml(label, value, extraClass) {
-      return '<span class="acct-fig' + (extraClass ? ' ' + extraClass : '') + '"><label>' + label + '</label>' + value + '</span>';
-    }
-
     function actionsHtml(id, label) {
-      return '<div class="acct-row-actions">' +
-        '<button type="button" class="row-edit" onclick="openEditModal(\'' + id + '\')" title="Edit">✎</button>' +
-        '<button type="button" class="row-delete" onclick="deleteEntry(\'' + id + '\', \'' + escapeHtml(label).replace(/'/g, "\\'") + '\')" title="Delete">✕</button>' +
-      '</div>';
+      return '<button type="button" class="row-edit" onclick="openEditModal(\'' + id + '\')" title="Edit">✎</button>' +
+        '<button type="button" class="row-delete" onclick="deleteEntry(\'' + id + '\', \'' + escapeHtml(label).replace(/'/g, "\\'") + '\')" title="Delete">✕</button>';
     }
 
-    function renderTypeGroup(type, list) {
-      var totInv = 0, totCur = 0, latestDate = null;
-      list.forEach(function (e) {
-        totInv += Number(e.invested_amount) || 0;
-        totCur += Number(e.current_value) || 0;
-        if (!latestDate || e.last_updated_date > latestDate) latestDate = e.last_updated_date;
-      });
-      var pct = returnPctOf(totInv, totCur);
-      var staleClass = isStale(latestDate) ? 'stale-date' : '';
+    function nameCellHtml(e) {
+      return escapeHtml(e.account_name) +
+        '<div class="name-col-tags"><span class="owner-pill">' + escapeHtml(OWNER_LABELS[e.owner]) + '</span></div>';
+    }
 
-      var sorted = list.slice().sort(function (a, b) { return a.account_name.localeCompare(b.account_name); });
-      var rows = sorted.map(function (e) {
-        var epct = returnPctOf(Number(e.invested_amount), Number(e.current_value));
-        var estale = isStale(e.last_updated_date) ? 'stale-date' : '';
-        return '<div class="acct-grid-row acct-subrow">' +
-          '<div class="acct-name-cell">' +
-            '<span class="acct-name">' + escapeHtml(e.account_name) + '</span>' +
-            '<span class="acct-owner">' + OWNER_LABELS[e.owner] + '</span>' +
-          '</div>' +
-          figHtml('Invested', fmtRupee(e.invested_amount)) +
-          figHtml('Current', fmtRupee(e.current_value)) +
-          figHtml('Return', fmtPct(epct), pctClass(epct)) +
-          figHtml('Updated', fmtDate(e.last_updated_date), estale) +
-          actionsHtml(e.id, e.account_name) +
-        '</div>';
-      }).join('');
-
-      return '<div class="acct-card">' +
-        '<div class="acct-grid-row acct-card-head">' +
-          '<div class="acct-name-cell">' + typeBadge(type) + '<span class="type-group-count">' + list.length + ' account' + (list.length === 1 ? '' : 's') + '</span></div>' +
-          figHtml('Total Invested', fmtRupee(totInv)) +
-          figHtml('Total Value', fmtRupee(totCur)) +
-          figHtml('Return', fmtPct(pct), pctClass(pct)) +
-          figHtml('Updated', fmtDate(latestDate), staleClass) +
-          '<span></span>' +
-        '</div>' +
-        '<div class="acct-card-body">' + rows + '</div>' +
-      '</div>';
+    // One shared table classifies every entry via its Asset Type column
+    // instead of one card per type - sorted by type first (so the types
+    // still read as grouped), then by account name within each type. The
+    // Type badge is only drawn once per group (rowspan over every row of
+    // that type) instead of repeating on every row.
+    function renderRow(e, rowspanCount) {
+      var epct = returnPctOf(Number(e.invested_amount), Number(e.current_value));
+      var estale = isStale(e.last_updated_date) ? 'stale-date' : '';
+      var typeCellHtml = rowspanCount
+        ? '<td class="type-cell" rowspan="' + rowspanCount + '">' + typeBadge(e.asset_type) + '</td>'
+        : '';
+      return '<tr>' +
+        typeCellHtml +
+        '<td class="name-col">' + nameCellHtml(e) + '</td>' +
+        '<td>' + fmtRupee(e.invested_amount) + '</td>' +
+        '<td>' + fmtRupee(e.current_value) + '</td>' +
+        '<td class="' + pctClass(epct) + '">' + fmtPct(epct) + '</td>' +
+        '<td class="' + estale + '">' + fmtDate(e.last_updated_date) + '</td>' +
+        '<td class="actions-col">' + actionsHtml(e.id, e.account_name) + '</td>' +
+      '</tr>';
     }
 
     function renderAccounts() {
-      var body = document.getElementById('acctListBody');
+      var wrap = document.getElementById('acctListBody');
       var emptyEl = document.getElementById('acctEmpty');
       if (!entries.length) {
-        body.innerHTML = '';
+        wrap.innerHTML = '';
         emptyEl.style.display = 'block';
         return;
       }
       emptyEl.style.display = 'none';
 
-      var byType = {};
-      entries.forEach(function (e) {
-        if (!byType[e.asset_type]) byType[e.asset_type] = [];
-        byType[e.asset_type].push(e);
+      var sorted = entries.slice().sort(function (a, b) {
+        var ta = TYPE_ORDER.indexOf(a.asset_type), tb = TYPE_ORDER.indexOf(b.asset_type);
+        if (ta !== tb) return ta - tb;
+        return a.account_name.localeCompare(b.account_name);
       });
 
-      var types = Object.keys(byType).sort(function (a, b) { return TYPE_ORDER.indexOf(a) - TYPE_ORDER.indexOf(b); });
-      body.innerHTML = types.map(function (t) { return renderTypeGroup(t, byType[t]); }).join('');
+      var typeCounts = {};
+      sorted.forEach(function (e) { typeCounts[e.asset_type] = (typeCounts[e.asset_type] || 0) + 1; });
+      var seenType = {};
+      var rows = sorted.map(function (e) {
+        var isFirstOfType = !seenType[e.asset_type];
+        seenType[e.asset_type] = true;
+        return renderRow(e, isFirstOfType ? typeCounts[e.asset_type] : 0);
+      }).join('');
+
+      wrap.innerHTML =
+        '<div class="grid-scroll">' +
+          '<table class="acct-table">' +
+            '<thead><tr><th>Asset Type</th><th>Account</th><th>Invested</th><th>Current Value</th><th>Return %</th><th>Last Updated</th><th></th></tr></thead>' +
+            '<tbody>' + rows + '</tbody>' +
+          '</table>' +
+        '</div>';
     }
 
     function renderAll() {
