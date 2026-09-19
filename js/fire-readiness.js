@@ -80,7 +80,7 @@
     { label: 'Properties', href: 'properties.html', check: function () { return hasAnyRow('properties'); } },
     { label: 'Personal Debt / Receivable', href: 'personal-debt.html', check: function () { return hasAnyRow('personal_ious'); } },
     { label: 'Stocks / Mutual Funds', href: 'portfolio.html', check: function () { return hasRealGridAmount('portfolio'); } },
-    { label: 'Bank Balances', href: 'bank-balances.html', check: function () { return hasRealGridAmount('bank'); } },
+    { label: 'Bank Balances', href: 'balances.html', check: function () { return hasRealGridAmount('bank'); } },
     { label: 'Loans', href: 'loans.html', check: function () { return hasRealGridAmount('loans'); } }
   ];
 

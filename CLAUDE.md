@@ -59,7 +59,7 @@ One large file, organized in commented sections (`-- ── Feature name ──`
 
 ### The expense-grid pattern: one shared table triple, many pages
 
-`expense_groups` → `expense_items` → `expense_grid` is a shared, spreadsheet-style (grouped categories × months) table set that powers **four different pages** — `expenses.html`, `income.html`, `loans.html`, `bank-balances.html` — distinguished only by an `expense_grid.section` column (`'expenses' | 'income' | 'loans' | 'bank'`). `expense_grid.is_seed` marks auto-generated sample rows so real user input can be told apart from placeholder data. If you touch this pattern, check all four pages, not just the one you're editing.
+`expense_groups` → `expense_items` → `expense_grid` is a shared, spreadsheet-style (grouped categories × months) table set that powers **four different pages** — `expenses.html`, `income.html`, `loans.html`, `balances.html` — distinguished only by an `expense_grid.section` column (`'expenses' | 'income' | 'loans' | 'bank'`). `expense_grid.is_seed` marks auto-generated sample rows so real user input can be told apart from placeholder data. If you touch this pattern, check all four pages, not just the one you're editing.
 
 ### SplitExpenses (`split/`) is the one genuinely multi-user feature
 

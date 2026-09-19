@@ -101,12 +101,13 @@
     .pbtn.outline { background: transparent; border: 1.5px solid var(--ink); color: var(--ink); }
     .pbtn.outline:hover { background: var(--black); border-color: var(--black); color: #fff; }
 
-    /* Hero stats */
-    .be-hero { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
-    @media (max-width: 700px) { .be-hero { grid-template-columns: 1fr; } }
-    .be-hero-card { background: var(--bg); border: 1px solid var(--border); border-radius: 1rem; padding: 1.1rem 1.3rem; box-shadow: 0 4px 16px rgba(22,19,15,0.03); }
-    .be-hero-label { font-size: 0.78rem; font-weight: 600; color: var(--ink-soft); margin-bottom: 0.35rem; }
-    .be-hero-value { font-size: 1.4rem; font-weight: 800; color: var(--ink); }
+    /* Hero: one dark bar with evenly-spaced stat columns (Total, then the
+       FD/Cash/Bank breakdown) - same pattern as the Stocks/MF and NPS/EPF/
+       VPF hero bars, for a consistent look across the Networth pages. */
+    .be-hero { background: var(--ink); border-radius: 1rem; padding: 1.4rem 1.6rem; margin-bottom: 1.5rem; display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+    @media (max-width: 700px) { .be-hero { grid-template-columns: repeat(2, 1fr); } }
+    .be-hero-label { font-size: 0.7rem; font-weight: 600; color: rgba(255,255,255,0.55); text-transform: uppercase; letter-spacing: 0.02em; margin-bottom: 0.3rem; }
+    .be-hero-value { font-size: 1.25rem; font-weight: 700; color: #fff; }
 
     .load-error { display: none; padding: 0.85rem 1.3rem; font-size: 0.8rem; color: #991b1b; background: #fef2f2; border: 1px solid #fecaca; border-radius: 0.75rem; margin-bottom: 1rem; }
     .load-error.show { display: block; }
@@ -114,14 +115,28 @@
     .empty-state { text-align: center; padding: 3rem 2rem; color: var(--ink-soft); font-size: 0.9rem; background: var(--bg); border: 1px solid var(--border); border-radius: 1.1rem; }
     .empty-state .pbtn { margin-top: 1rem; }
 
-    /* Group badge + meta line above each type's table */
+    /* Group badge + stat chips above each type's table - each type gets its
+       own accent color (carried through to the table's top border) so the
+       three groups read as distinct at a glance, not just three identical
+       grey tables stacked on top of each other. */
     .group-title { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
-    .group-badge { display: inline-flex; align-items: center; gap: 0.4rem; background: var(--bg-alt); color: var(--ink-soft); font-size: 0.78rem; font-weight: 700; padding: 0.3rem 0.75rem; border-radius: 999px; white-space: nowrap; }
+    .group-badge { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.78rem; font-weight: 700; padding: 0.3rem 0.75rem; border-radius: 999px; white-space: nowrap; }
     .group-badge .tabler-icon { width: 15px; height: 15px; }
-    .group-meta { font-size: 0.82rem; color: var(--ink-soft); }
+    .group-badge.type-fixed-deposit { background: #fef3c7; color: #b45309; }
+    .group-badge.type-cash { background: #ecfdf5; color: #059669; }
+    .group-badge.type-bank-balance { background: #eff6ff; color: #0ea5e9; }
+    .group-count { font-size: 0.78rem; font-weight: 600; color: var(--ink-faint); }
+
+    .group-stats { display: flex; align-items: center; gap: 1.4rem; }
+    .group-stat { display: flex; flex-direction: column; gap: 0.15rem; text-align: right; }
+    .group-stat label { font-size: 0.64rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; color: var(--ink-faint); }
+    .group-stat-value { font-size: 0.95rem; font-weight: 800; color: var(--ink); }
 
     /* Grouped tables */
-    .grid-card { background: var(--bg); border: 1px solid var(--border); border-radius: 1.1rem; box-shadow: 0 4px 16px rgba(22,19,15,0.03); overflow: hidden; margin-bottom: 1.5rem; }
+    .grid-card { background: var(--bg); border: 1px solid var(--border); border-top: 3px solid var(--border); border-radius: 1.1rem; box-shadow: 0 4px 16px rgba(22,19,15,0.03); overflow: hidden; margin-bottom: 1.5rem; }
+    .grid-card.type-fixed-deposit { border-top-color: #b45309; }
+    .grid-card.type-cash { border-top-color: #059669; }
+    .grid-card.type-bank-balance { border-top-color: #0ea5e9; }
     .grid-scroll { overflow-x: auto; }
 
     table.be-table { border-collapse: collapse; width: 100%; min-width: 640px; }
@@ -350,7 +365,7 @@
             <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M3 7l6 6l4 -4l8 8" /><path d="M21 10l0 7l-7 0" /></svg></span>
             <span class="nav-label">Loan / EMI</span>
           </a>
-          <a href="bank-balances.html" class="active">
+          <a href="balances.html" class="active">
             <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M3 21l18 0" /><path d="M3 10l18 0" /><path d="M5 6l7 -3l7 3" /><path d="M4 10l0 11" /><path d="M20 10l0 11" /><path d="M8 14l0 3" /><path d="M12 14l0 3" /><path d="M16 14l0 3" /></svg></span>
             <span class="nav-label">FD + Cash + Bank Balances</span>
           </a>
@@ -536,17 +551,21 @@
       </div>
 
       <div class="be-hero">
-        <div class="be-hero-card">
+        <div>
           <div class="be-hero-label">Total Balance</div>
           <div class="be-hero-value" id="heroTotalBalance">₹0</div>
         </div>
-        <div class="be-hero-card">
-          <div class="be-hero-label">FD Interest Earned</div>
-          <div class="be-hero-value" id="heroFdInterest">₹0</div>
+        <div>
+          <div class="be-hero-label">Fixed Deposit</div>
+          <div class="be-hero-value" id="heroFd">₹0</div>
         </div>
-        <div class="be-hero-card">
-          <div class="be-hero-label">Entries</div>
-          <div class="be-hero-value" id="heroEntries">0</div>
+        <div>
+          <div class="be-hero-label">Cash</div>
+          <div class="be-hero-value" id="heroCash">₹0</div>
+        </div>
+        <div>
+          <div class="be-hero-label">Bank Balance</div>
+          <div class="be-hero-value" id="heroBank">₹0</div>
         </div>
       </div>
 
@@ -958,20 +977,28 @@
     /* ---- Rendering ---- */
 
     function renderHero() {
-      var totalBalance = 0, fdInterestEarned = 0;
+      var totalsByType = { fixed_deposit: 0, cash: 0, bank_balance: 0 };
       entries.forEach(function (e) {
-        totalBalance += Number(e.current_value) || 0;
-        if (e.account_type === 'fixed_deposit') {
-          fdInterestEarned += (Number(e.current_value) || 0) - (Number(e.invested_amount) || 0);
-        }
+        if (totalsByType.hasOwnProperty(e.account_type)) totalsByType[e.account_type] += Number(e.current_value) || 0;
       });
+      var totalBalance = totalsByType.fixed_deposit + totalsByType.cash + totalsByType.bank_balance;
+
       document.getElementById('heroTotalBalance').textContent = fmtRupee(totalBalance, true);
-      document.getElementById('heroFdInterest').textContent = fmtRupee(fdInterestEarned, true);
-      document.getElementById('heroEntries').textContent = String(entries.length);
+      document.getElementById('heroFd').textContent = fmtRupee(totalsByType.fixed_deposit, true);
+      document.getElementById('heroCash').textContent = fmtRupee(totalsByType.cash, true);
+      document.getElementById('heroBank').textContent = fmtRupee(totalsByType.bank_balance, true);
+    }
+
+    function typeSlug(type) {
+      return type.replace(/_/g, '-');
     }
 
     function groupBadge(type) {
-      return '<span class="group-badge">' + TYPE_ICONS[type] + '<span>' + TYPE_LABELS[type] + '</span></span>';
+      return '<span class="group-badge type-' + typeSlug(type) + '">' + TYPE_ICONS[type] + '<span>' + TYPE_LABELS[type] + '</span></span>';
+    }
+
+    function groupStat(label, value) {
+      return '<div class="group-stat"><label>' + label + '</label><span class="group-stat-value">' + value + '</span></div>';
     }
 
     function actionsHtml(id, label) {
@@ -1016,19 +1043,20 @@
       if (!list.length) return '';
       var totInv = 0, totCur = 0;
       list.forEach(function (e) { totInv += Number(e.invested_amount) || 0; totCur += Number(e.current_value) || 0; });
-      var subtotalHtml = type === 'fixed_deposit'
-        ? fmtRupee(totInv, true) + ' → ' + fmtRupee(totCur, true)
-        : fmtRupee(totCur, true);
+      var statsHtml = type === 'fixed_deposit'
+        ? groupStat('Invested', fmtRupee(totInv, true)) + groupStat('Current Value', fmtRupee(totCur, true))
+        : groupStat('Total', fmtRupee(totCur, true));
 
       var sorted = list.slice().sort(function (a, b) { return a.account_name.localeCompare(b.account_name); });
       var rows = sorted.map(function (e) { return renderRow(type, e); }).join('');
 
       return '<div class="section-head">' +
           '<div class="group-title">' + groupBadge(type) +
-            '<span class="group-meta">' + list.length + ' ' + (list.length === 1 ? 'entry' : 'entries') + ' · ' + subtotalHtml + '</span>' +
+            '<span class="group-count">' + list.length + ' ' + (list.length === 1 ? 'entry' : 'entries') + '</span>' +
           '</div>' +
+          '<div class="group-stats">' + statsHtml + '</div>' +
         '</div>' +
-        '<div class="grid-card">' +
+        '<div class="grid-card type-' + typeSlug(type) + '">' +
           '<div class="grid-scroll">' +
             '<table class="be-table">' +
               '<thead><tr>' + tableHeaderCells(type) + '</tr></thead>' +

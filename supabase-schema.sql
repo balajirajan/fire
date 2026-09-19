@@ -127,7 +127,7 @@ create policy "budgets_delete_own" on budgets for delete using (auth.uid() = use
 -- ──   expenses.html → section 'expenses'                               ──
 -- ──   income.html   → section 'income'                                 ──
 -- ──   loans.html    → section 'loans'  (Loan / EMI)                    ──
--- ──   bank-balances.html → section 'bank'                              ──
+-- ──   balances.html → section 'bank'                                    ──
 -- ── Supersedes the earlier flat expense_grid(category, month) shape —  ──
 -- ── if you already ran that version, drop it first (next line) so the ──
 -- ── new item-based expense_grid can be created cleanly. This deletes  ──
@@ -2495,7 +2495,7 @@ create policy "govt_scheme_entries_insert_own" on govt_scheme_entries for insert
 create policy "govt_scheme_entries_update_own" on govt_scheme_entries for update using (auth.uid() = user_id);
 create policy "govt_scheme_entries_delete_own" on govt_scheme_entries for delete using (auth.uid() = user_id);
 
--- ── FD + Cash + Bank Balances (bank-balances.html): its own entity, not    ──
+-- ── FD + Cash + Bank Balances (balances.html): its own entity, not         ──
 -- ── shared with Stocks/MF's investment_entries or Government Scheme's     ──
 -- ── govt_scheme_entries. account_type is the primary organizing dimension ──
 -- ── on this page (entries are grouped by type, not by account_name like   ──
