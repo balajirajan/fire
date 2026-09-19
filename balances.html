@@ -1005,9 +1005,10 @@
     function renderRow(e, rowspanCount) {
       var staleClass = isStale(e.last_updated_date) ? 'stale-date' : '';
       var isFd = e.account_type === 'fixed_deposit';
-      var isCash = e.account_type === 'cash';
-      // Cash has no separate "invested" figure - only Current Value applies.
-      var investedHtml = isCash ? 'N/A' : fmtRupee(e.invested_amount);
+      // Only Fixed Deposit actually grows from what was put in - Cash and
+      // Bank Balance have no separate "invested" figure, just what's there
+      // now, so Invested Amount only ever applies to Fixed Deposit.
+      var investedHtml = isFd ? fmtRupee(e.invested_amount) : 'N/A';
       var currentHtml = fmtRupee(e.current_value);
       // Rate/Maturity only ever applies to Fixed Deposit.
       var rateMaturity = 'N/A';
