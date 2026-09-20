@@ -733,6 +733,9 @@
       return items;
     }
 
+    // No trailing arrow here - only a group header (pillarGroupHeadHtml)
+    // that actually has sub-items shows one, so the arrow means "this
+    // expands" and never appears on a plain link with nothing under it.
     function pillarLinkHtml(a, extraClass) {
       var iconEl = a.querySelector('.nav-icon');
       var labelEl = a.querySelector('.nav-label');
@@ -741,7 +744,6 @@
       return '<a class="pillar-list-item' + (extraClass ? ' ' + extraClass : '') + '" href="' + a.getAttribute('href') + '">' +
         '<span class="pillar-list-item-icon">' + icon + '</span>' +
         '<span class="pillar-list-item-label">' + text + '</span>' +
-        '<span class="pillar-list-item-chevron">›</span>' +
       '</a>';
     }
 
