@@ -303,13 +303,9 @@
           <span class="nav-label">1.6 Goal Based Savings</span>
           <span class="nav-chevron">›</span>
         </a>
-        <a href="subscriptions.html">
-          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M3 10h18" /><path d="M7 15h.01" /><path d="M11 15h2" /><path d="M5 6h14a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-8a2 2 0 0 1 2 -2z" /></svg></span>
-          <span class="nav-label">1.7 Subscriptions</span>
-        </a>
         <a href="credit-score.html">
           <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M3 17l6 -6l4 4l8 -8" /><path d="M14 7l7 0l0 7" /></svg></span>
-          <span class="nav-label">1.8 Credit Score</span>
+          <span class="nav-label">1.7 Credit Score</span>
         </a>
 
         <div class="nav-section-label">2. Protection</div>
@@ -446,6 +442,11 @@
         <a href="split/dashboard.html">
           <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M5 7a4 4 0 1 0 8 0a4 4 0 1 0 -8 0" /><path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /><path d="M21 21v-2a4 4 0 0 0 -3 -3.85" /></svg></span>
           <span class="nav-label">5.3 SplitExpenses(SplitWise)</span>
+        </a>
+
+        <a href="subscriptions.html">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M3 10h18" /><path d="M7 15h.01" /><path d="M11 15h2" /><path d="M5 6h14a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-8a2 2 0 0 1 2 -2z" /></svg></span>
+          <span class="nav-label">5.4 Subscriptions</span>
         </a>
 
         <a href="settings.html">
@@ -647,10 +648,9 @@
     var FINANCE_BUCKET = {
       'FIRE Plan': 'Planning', 'Goal Based Savings': 'Planning',
       'Monthly CashFlow': 'Cash Flow', 'Income': 'Cash Flow', 'Tax Planning': 'Cash Flow',
-      'Subscriptions': 'Obligations',
       'Credit Score': null
     };
-    var FINANCE_BUCKET_ORDER = ['Planning', 'Networth', 'Cash Flow', 'Obligations'];
+    var FINANCE_BUCKET_ORDER = ['Planning', 'Networth', 'Cash Flow'];
 
     // Accepts extra label arguments beyond the title (e.g. a page whose own
     // sidebar still splits "Wealth" and "Cash Flow" into two sections can
