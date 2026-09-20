@@ -182,12 +182,19 @@
       .pillar-sheet-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.85rem; }
       .pillar-sheet-header h3 { font-size: 1.05rem; font-weight: 800; }
       .pillar-sheet-close { width: 30px; height: 30px; border-radius: 50%; border: none; background: #f1f5f9; color: #364752; font-size: 0.9rem; cursor: pointer; flex-shrink: 0; }
-      .pillar-sheet-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.6rem; padding-bottom: 0.25rem; }
-      .pillar-sheet-item { display: flex; flex-direction: column; align-items: center; gap: 0.4rem; padding: 0.85rem 0.4rem; border-radius: 0.9rem; background: #f8fafc; text-align: center; text-decoration: none; color: inherit; }
-      .pillar-sheet-item:active { background: #f1f5f9; }
-      .pillar-sheet-item-icon { width: 40px; height: 40px; border-radius: 0.7rem; background: #fff; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; color: #364752; }
-      .pillar-sheet-item-icon .tabler-icon { width: 20px; height: 20px; }
-      .pillar-sheet-item-label { font-size: 0.72rem; font-weight: 600; color: #364752; line-height: 1.25; }
+      .pillar-sheet-list { display: flex; flex-direction: column; gap: 0.15rem; padding-bottom: 0.25rem; }
+      .pillar-list-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.7rem 0.6rem; border-radius: 0.7rem; text-decoration: none; color: #0f172a; font-size: 0.88rem; font-weight: 600; }
+      .pillar-list-item:active { background: #f8fafc; }
+      .pillar-list-item-icon { width: 34px; height: 34px; border-radius: 0.6rem; background: #f8fafc; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; color: #364752; flex-shrink: 0; }
+      .pillar-list-item-icon .tabler-icon { width: 18px; height: 18px; }
+      .pillar-list-item-label { flex: 1; }
+      .pillar-list-item-chevron { color: #94a3b8; font-size: 0.9rem; }
+      .pillar-list-group { border: 1px solid #e2e8f0; border-radius: 0.9rem; overflow: hidden; margin: 0.15rem 0; }
+      .pillar-list-group .pillar-list-item.group-head { background: #f8fafc; font-weight: 700; border-radius: 0; }
+      .pillar-list-subitems { display: flex; flex-direction: column; padding: 0.2rem 0.2rem 0.3rem 0; }
+      .pillar-list-subitems .pillar-list-item.subitem { padding-left: 3rem; font-weight: 500; font-size: 0.84rem; border-radius: 0.5rem; margin: 0 0.3rem; }
+      .pillar-list-subitems .pillar-list-item.subitem .pillar-list-item-icon { width: 28px; height: 28px; }
+      .pillar-list-subitems .pillar-list-item.subitem .pillar-list-item-icon .tabler-icon { width: 15px; height: 15px; }
     }
   </style>
 </head>
@@ -464,7 +471,7 @@
         <h3 id="pillarSheetTitle">Finance</h3>
         <button type="button" class="pillar-sheet-close" onclick="closePillarSheet()">✕</button>
       </div>
-      <div class="pillar-sheet-grid" id="pillarSheetGrid"></div>
+      <div class="pillar-sheet-list" id="pillarSheetGrid"></div>
     </div>
   </div>
 
@@ -488,35 +495,72 @@
     // the pillar behind the hamburger drawer. This reads that pillar's real
     // link list straight out of the (always-present, just hidden on mobile)
     // .sidebar-nav DOM and shows it as a bottom sheet instead, so the sheet
-    // can never drift out of sync with the sidebar.
+    // can never drift out of sync with the sidebar. Also walks each item's
+    // own nested .sidebar-subnav (e.g. Networth's Stocks/MF, Properties,
+    // Gold, ...) as children - the sheet used to only read direct <a>
+    // siblings, so anything nested one level deeper in the sidebar was
+    // silently unreachable from the mobile footer. Strips a leading "1. "
+    // number prefix off the section label before comparing, since the
+    // sidebar numbering added those prefixes but the footer tabs still
+    // pass the bare pillar name - without this the match always failed
+    // and every footer tab silently opened an empty sheet.
     function findPillarLinks(label) {
       var nav = document.querySelector('.sidebar-nav');
       if (!nav) return [];
       var labels = Array.prototype.slice.call(nav.querySelectorAll('.nav-section-label'));
-      var startEl = labels.filter(function (el) { return el.textContent.trim() === label; })[0];
+      var startEl = labels.filter(function (el) { return el.textContent.trim().replace(/^\d+\.\s*/, '') === label; })[0];
       if (!startEl) return [];
-      var links = [];
+      var items = [];
       var node = startEl.nextElementSibling;
       while (node && !node.classList.contains('nav-section-label')) {
-        if (node.tagName === 'A') links.push(node);
+        if (node.tagName === 'A') {
+          var entry = { link: node, children: [] };
+          var next = node.nextElementSibling;
+          if (next && next.classList.contains('sidebar-subnav')) {
+            entry.children = Array.prototype.slice.call(next.querySelectorAll('a'));
+            node = next;
+          }
+          items.push(entry);
+        }
         node = node.nextElementSibling;
       }
-      return links;
+      return items;
     }
 
-    function openPillarSheet(label) {
-      var links = findPillarLinks(label);
-      if (!links.length) return;
-      document.getElementById('pillarSheetTitle').textContent = label;
-      document.getElementById('pillarSheetGrid').innerHTML = links.map(function (a) {
-        var iconEl = a.querySelector('.nav-icon');
-        var labelEl = a.querySelector('.nav-label');
-        var icon = iconEl ? iconEl.innerHTML : '';
-        var text = labelEl ? labelEl.textContent : a.textContent.trim();
-        return '<a class="pillar-sheet-item" href="' + a.getAttribute('href') + '">' +
-          '<span class="pillar-sheet-item-icon">' + icon + '</span>' +
-          '<span class="pillar-sheet-item-label">' + text + '</span>' +
-        '</a>';
+    function pillarLinkHtml(a, extraClass) {
+      var iconEl = a.querySelector('.nav-icon');
+      var labelEl = a.querySelector('.nav-label');
+      var icon = iconEl ? iconEl.innerHTML : '';
+      var text = labelEl ? labelEl.textContent : a.textContent.trim();
+      return '<a class="pillar-list-item' + (extraClass ? ' ' + extraClass : '') + '" href="' + a.getAttribute('href') + '">' +
+        '<span class="pillar-list-item-icon">' + icon + '</span>' +
+        '<span class="pillar-list-item-label">' + text + '</span>' +
+        '<span class="pillar-list-item-chevron">›</span>' +
+      '</a>';
+    }
+
+    // Accepts extra label arguments beyond the title (e.g. a page whose own
+    // sidebar still splits "Wealth" and "Cash Flow" into two sections can
+    // call openPillarSheet('Finance', 'Wealth', 'Cash Flow') to merge both
+    // into one sheet titled "Finance") - every other caller just passes one
+    // label and behaves exactly as before.
+    function openPillarSheet(title) {
+      var labels = Array.prototype.slice.call(arguments, 1);
+      if (!labels.length) labels = [title];
+      var items = [];
+      labels.forEach(function (l) { items = items.concat(findPillarLinks(l)); });
+      if (!items.length) return;
+      document.getElementById('pillarSheetTitle').textContent = title;
+      document.getElementById('pillarSheetGrid').innerHTML = items.map(function (item) {
+        if (item.children.length) {
+          return '<div class="pillar-list-group">' +
+            pillarLinkHtml(item.link, 'group-head') +
+            '<div class="pillar-list-subitems">' +
+              item.children.map(function (c) { return pillarLinkHtml(c, 'subitem'); }).join('') +
+            '</div>' +
+          '</div>';
+        }
+        return pillarLinkHtml(item.link);
       }).join('');
       document.getElementById('pillarSheetOverlay').classList.add('show');
       document.body.style.overflow = 'hidden';
