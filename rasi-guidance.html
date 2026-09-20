@@ -214,8 +214,6 @@
       .pillar-sheet-header h3 { font-size: 1.05rem; font-weight: 800; }
       .pillar-sheet-close { width: 30px; height: 30px; border-radius: 50%; border: none; background: #f1f5f9; color: #364752; font-size: 0.9rem; cursor: pointer; flex-shrink: 0; }
       .pillar-sheet-groups { display: flex; flex-direction: column; padding-bottom: 0.25rem; }
-      .pillar-group-label { padding: 0.7rem 0.2rem 0.5rem; font-size: 0.68rem; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; }
-      .pillar-group-label:first-child { padding-top: 0.1rem; }
       .pillar-tile-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; margin-bottom: 0.3rem; }
       .pillar-tile { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 0.45rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 0.85rem; padding: 0.85rem 0.5rem; text-decoration: none; color: #0f172a; }
       .pillar-tile:active { background: #f1f5f9; }
@@ -534,14 +532,10 @@
       return items;
     }
 
-    // Two-column tile grid instead of a single-column list - "sections
-    // left and right in parallel" per request. A group with nested
-    // sub-items (e.g. Networth) becomes its own labeled section using its
-    // own name, with its children as tiles directly beneath it - no
-    // toggle, no tree-line, every tile always visible. Finance
-    // additionally splits its flat items into Planning / Cash Flow /
-    // Obligations per the approved design; every other pillar just shows
-    // one flat grid since none of them have that breakdown today.
+    // Two-column tile grid, one flat grid per pillar in the sidebar's own
+    // top-level order - no sub-section labels. A group like Networth is
+    // just one tile linking to its own page, not expanded into its
+    // sub-items, same as every other item.
     function pillarTileHtml(a) {
       var iconEl = a.querySelector('.nav-icon');
       var labelEl = a.querySelector('.nav-label');
@@ -553,23 +547,9 @@
       '</a>';
     }
 
-    function pillarGroupSectionHtml(label, links) {
-      if (!links.length) return '';
-      return '<div class="pillar-group-label">' + label + '</div>' +
-        '<div class="pillar-tile-grid">' + links.map(pillarTileHtml).join('') + '</div>';
-    }
-
-    // Finance-only bucketing into the approved sub-sections (Credit Score
-    // deliberately left off the grid for now, per request). Any Finance
-    // item not listed here falls back into Planning rather than silently
-    // disappearing.
-    var FINANCE_BUCKET = {
-      'FIRE Plan': 'Planning', 'Goal Based Savings': 'Planning',
-      'Monthly CashFlow': 'Cash Flow', 'Income': 'Cash Flow', 'Tax Planning': 'Cash Flow',
-      'Loans': 'Obligations', 'Subscriptions': 'Obligations',
-      'Credit Score': null
-    };
-    var FINANCE_BUCKET_ORDER = ['Planning', 'Networth', 'Cash Flow', 'Obligations'];
+    // Finance skips Credit Score for now, per request - a deliberate
+    // omission from an otherwise complete grid, not a silent gap.
+    var FINANCE_SKIP = { 'Credit Score': true };
 
     // Accepts extra label arguments beyond the title (e.g. a page whose own
     // sidebar still splits "Wealth" and "Cash Flow" into two sections can
@@ -584,32 +564,15 @@
       if (!items.length) return;
       document.getElementById('pillarSheetTitle').textContent = title;
 
-      var html;
-      if (title === 'Finance') {
-        var buckets = {};
-        FINANCE_BUCKET_ORDER.forEach(function (b) { buckets[b] = []; });
-        items.forEach(function (item) {
-          var labelEl = item.link.querySelector('.nav-label');
-          var text = labelEl ? labelEl.textContent.replace(/^\d+(\.\d+)*\s*/, '').trim() : '';
-          if (item.children.length) {
-            buckets[text] = item.children;
-            return;
-          }
-          var bucket = FINANCE_BUCKET.hasOwnProperty(text) ? FINANCE_BUCKET[text] : 'Planning';
-          if (bucket === null) return;
-          if (!buckets[bucket]) buckets[bucket] = [];
-          buckets[bucket].push(item.link);
-        });
-        html = FINANCE_BUCKET_ORDER.map(function (b) { return pillarGroupSectionHtml(b, buckets[b] || []); }).join('');
-      } else {
-        var flat = [];
-        items.forEach(function (item) {
-          if (item.children.length) { flat = flat.concat(item.children); }
-          else { flat.push(item.link); }
-        });
-        html = '<div class="pillar-tile-grid">' + flat.map(pillarTileHtml).join('') + '</div>';
-      }
-      document.getElementById('pillarSheetGrid').innerHTML = html;
+      var tiles = items.filter(function (item) {
+        if (title !== 'Finance') return true;
+        var labelEl = item.link.querySelector('.nav-label');
+        var text = labelEl ? labelEl.textContent.replace(/^\d+(\.\d+)*\s*/, '').trim() : '';
+        return !FINANCE_SKIP[text];
+      }).map(function (item) { return item.link; });
+
+      document.getElementById('pillarSheetGrid').innerHTML =
+        '<div class="pillar-tile-grid">' + tiles.map(pillarTileHtml).join('') + '</div>';
       document.getElementById('pillarSheetOverlay').classList.add('show');
       document.body.style.overflow = 'hidden';
     }
