@@ -331,17 +331,9 @@
         <a href="fire-plan.html">
           <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M8 16l2 -6l6 -2l-2 6l-6 2" /><path d="M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /><path d="M12 3l0 2" /><path d="M12 19l0 2" /><path d="M3 12l2 0" /><path d="M19 12l2 0" /></svg></span>
           <span class="nav-label">1.1 FIRE Plan</span>
-        </a>
-        <a href="tax-planning.html">
-          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M5 21v-16a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v16l-3 -2l-2 2l-2 -2l-2 2l-2 -2l-3 2" /><path d="M14 8h-2.5a1.5 1.5 0 0 0 0 3h1a1.5 1.5 0 0 1 0 3h-2.5m2 0v1.5m0 -9v1.5" /></svg></span>
-          <span class="nav-label">1.2 Tax Planning</span>
-        </a>
-        <a href="fire-goals.html">
-          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M11 12a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M7 12a5 5 0 1 0 10 0a5 5 0 1 0 -10 0" /><path d="M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /></svg></span>
-          <span class="nav-label">1.3 Goal Based Savings</span>
           <span class="nav-chevron">›</span>
         </a>
-        <a href="net-worth.html" class="nav-group-head open">
+<a href="net-worth.html" class="nav-group-head open">
           <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon"><path d="M3 17l6 -6l4 4l8 -8" /><path d="M14 7l7 0l0 7" /></svg></span>
           <span class="nav-label">1.4 Networth</span>
           <span class="nav-chevron">⌄</span>
@@ -771,13 +763,23 @@
       '</a>';
     }
 
+    // FIRE Plan's own children (Goal Based Savings, Tax Planning), hardcoded
+    // for the same reason as NETWORTH_TILES above: their .sidebar-subnav
+    // only renders on fire-plan.html, fire-goals.html and tax-planning.html,
+    // so reading the DOM on every other page found zero children and both
+    // items disappeared from the mobile Finance sheet entirely.
+    var FIRE_PLAN_CHILDREN = [
+      { href: 'fire-goals.html', label: 'Goal Based Savings', icon: '<path d="M11 12a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M7 12a5 5 0 1 0 10 0a5 5 0 1 0 -10 0" /><path d="M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />' },
+      { href: 'tax-planning.html', label: 'Tax Planning', icon: '<path d="M5 21v-16a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v16l-3 -2l-2 2l-2 -2l-2 2l-2 -2l-3 2" /><path d="M14 8h-2.5a1.5 1.5 0 0 0 0 3h1a1.5 1.5 0 0 1 0 3h-2.5m2 0v1.5m0 -9v1.5" />' }
+    ];
+
     // Finance-only bucketing into the approved sub-sections (Credit Score
     // deliberately left off the grid for now, per request). Networth is
     // always its own section via NETWORTH_TILES above, never read from this
     // page's own DOM. Any other Finance item not listed here falls back
     // into Planning rather than silently disappearing.
     var FINANCE_BUCKET = {
-      'FIRE Plan': 'Planning', 'Goal Based Savings': 'Planning', 'Tax Planning': 'Planning',
+      'FIRE Plan': 'Planning',
       'Monthly CashFlow': 'Cash Flow', 'Income': 'Cash Flow',
       'Credit Score': null
     };
@@ -804,6 +806,12 @@
           var labelEl = item.link.querySelector('.nav-label');
           var text = labelEl ? labelEl.textContent.replace(/^\d+(\.\d+)*\s*/, '').trim() : '';
           if (text === 'Networth') return;
+          if (text === 'FIRE Plan') {
+            buckets['Planning'] = buckets['Planning'].concat(
+              [pillarTileHtml(item.link)], FIRE_PLAN_CHILDREN.map(networthTileHtml)
+            );
+            return;
+          }
           if (item.children.length) {
             buckets[text] = item.children.map(pillarTileHtml);
             return;
