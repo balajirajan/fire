@@ -84,167 +84,51 @@
     .pbtn { display: inline-flex; align-items: center; gap: 0.45rem; padding: 0.65rem 1.1rem; border-radius: 0.6rem; font-size: 0.85rem; font-weight: 600; cursor: pointer; border: none; background: linear-gradient(to right, #0ea5e9, #10b981); color: #fff; white-space: nowrap; }
     .pbtn:hover { opacity: 0.92; }
 
-    .year-nav { display: flex; align-items: center; gap: 0.75rem; }
-    .year-nav button { width: 32px; height: 32px; border-radius: 0.5rem; border: 1px solid #cbd5e1; background: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; }
-    .year-nav button:hover { border-color: #10b981; color: #10b981; }
-    .year-nav .year-label { font-size: 1.05rem; font-weight: 700; min-width: 56px; text-align: center; }
-
-    /* Loan overview hero */
-    .loan-hero {
-      background: linear-gradient(135deg, #0f172a, #1e293b);
+    /* Loan / EMI hero - computed amortization model */
+    .loan-emi-hero {
+      background: #712B13;
       border-radius: 1.25rem;
-      padding: 1.75rem 2rem;
-      color: #fff;
+      padding: 1.4rem 1.6rem;
       margin-bottom: 1.5rem;
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1.75rem;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
     }
-    .loan-hero-stats { display: flex; flex-wrap: wrap; gap: 2.25rem; flex: 1; min-width: 280px; }
-    .loan-hero-stat { min-width: 140px; }
-    .loan-hero-icon { font-size: 1.1rem; margin-bottom: 0.4rem; opacity: 0.9; }
-    .loan-hero-label { font-size: 0.78rem; color: #94a3b8; font-weight: 600; margin-bottom: 0.3rem; }
-    .loan-hero-value { font-size: 1.75rem; font-weight: 800; }
-    .loan-hero-sub { font-size: 0.72rem; color: #94a3b8; margin-top: 0.3rem; }
-    .loan-hero-progress { display: flex; flex-direction: column; align-items: center; }
-    .loan-hero-donut-wrap { position: relative; width: 110px; height: 110px; flex-shrink: 0; }
-    .loan-hero-donut-wrap svg { width: 110px; height: 110px; display: block; }
-    .loan-hero-progress-label { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-    .loan-hero-progress-pct { font-size: 1.35rem; font-weight: 800; }
-    .loan-hero-progress-sub { font-size: 0.6rem; color: #94a3b8; text-align: center; line-height: 1.3; margin-top: 0.15rem; }
+    @media (max-width: 700px) { .loan-emi-hero { grid-template-columns: repeat(2, 1fr); } }
+    .loan-emi-stat-label { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: #F0C7B8; margin-bottom: 0.35rem; }
+    .loan-emi-stat-value { font-size: 1.3rem; font-weight: 800; color: #ffffff; }
 
-    /* Grid card */
+    /* Grid card (shared with the Personal Debt & Receivable section below) */
     .grid-card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 1.1rem; box-shadow: 0 4px 16px rgba(15,23,42,0.03); overflow: hidden; }
     .grid-scroll { overflow-x: auto; }
     .grid-hint { padding: 0.85rem 1.3rem; font-size: 0.78rem; color: #64748b; border-bottom: 1px solid #f1f5f9; }
     .load-error { display: none; padding: 0.85rem 1.3rem; font-size: 0.8rem; color: #991b1b; background: #fef2f2; border-bottom: 1px solid #fecaca; }
     .load-error.show { display: block; }
 
-    table.expense-grid { border-collapse: collapse; width: 100%; min-width: 920px; }
-    table.expense-grid th, table.expense-grid td {
-      padding: 0.55rem 0.52rem;
-      font-size: 0.83rem;
-      border: 1px solid #e2e8f0;
-      white-space: nowrap;
-      text-align: right;
+    /* Loan / EMI list table */
+    table.loan-emi-table { border-collapse: collapse; width: 100%; min-width: 900px; }
+    table.loan-emi-table th, table.loan-emi-table td {
+      padding: 0.65rem 0.85rem; font-size: 0.82rem; border-bottom: 1px solid #f1f5f9; white-space: nowrap; text-align: right;
     }
-    table.expense-grid thead th {
-      font-size: 0.7rem;
-      font-weight: 700;
-      color: #64748b;
-      text-transform: uppercase;
-      letter-spacing: 0.03em;
-      border-bottom: 1px solid #e2e8f0;
-      background: #f8fafc;
+    table.loan-emi-table th {
+      font-size: 0.66rem; font-weight: 700; color: #712B13; text-transform: uppercase; letter-spacing: 0.03em;
+      background: #FBF1EA; border-bottom: 1px solid #f3e2d6;
     }
-    table.expense-grid th:first-child, table.expense-grid td:first-child {
-      position: sticky;
-      left: 0;
-      z-index: 2;
-      text-align: left;
-      font-weight: 600;
-      border-right: 1px solid #e2e8f0;
-      min-width: 230px;
-    }
-    table.expense-grid thead th:first-child { background: #f8fafc; z-index: 3; }
-    .month-head { display: inline-flex; align-items: center; gap: 0.2rem; }
-    .month-menu { position: relative; list-style: none; }
-    .month-menu > summary { cursor: pointer; list-style: none; color: #94a3b8; font-size: 0.85rem; font-weight: 700; padding: 0 0.1rem; line-height: 1; }
-    .month-menu > summary::-webkit-details-marker { display: none; }
-    .month-menu > summary:hover { color: #364752; }
-    .month-menu-panel {
-      position: absolute; top: calc(100% + 0.3rem); right: 0;
-      background: #ffffff; border: 1px solid #e2e8f0; border-radius: 0.5rem;
-      box-shadow: 0 10px 30px rgba(15,23,42,0.15);
-      padding: 0.3rem; min-width: 170px; z-index: 50;
-      display: flex; flex-direction: column; gap: 0.15rem;
-    }
-    .month-menu-panel button {
-      text-align: left; padding: 0.45rem 0.6rem; border-radius: 0.4rem;
-      font-size: 0.78rem; font-weight: 600; color: #364752;
-      background: none; border: none; cursor: pointer;
-      text-transform: none; letter-spacing: normal; white-space: nowrap;
-    }
-    .month-menu-panel button:hover { background: #f1f5f9; }
-
-    /* Group header rows */
-    tr.group-row td { background: #ef4444; color: #ffffff; font-weight: 800; border-bottom: 1px solid #dc2626; }
-    tr.group-row td:first-child { background: #ef4444; }
-    tr.group-row:hover td { background: #e13939; }
-    tr.group-row:hover td:first-child { background: #e13939; }
-
-    /* Item rows */
-    tr.item-row td { background: #ffffff; }
-    tr.item-row td:first-child { background: #ffffff; padding-left: 1.6rem; color: #364752; font-weight: 500; }
-    tr.item-row:hover td:not(:first-child) { background: #f8fafc; }
-    tr.item-row:hover td:first-child { background: #f1f5f9; }
-
-    .row-name { display: inline-flex; align-items: center; gap: 0.35rem; }
-    .row-icon-btn {
+    table.loan-emi-table th.name-col, table.loan-emi-table td.name-col,
+    table.loan-emi-table th.progress-col, table.loan-emi-table td.progress-col { text-align: left; }
+    table.loan-emi-table td.name-col { font-weight: 600; color: #364752; }
+    table.loan-emi-table tbody tr:hover td { background: #f8fafc; }
+    .needs-details-pill { font-size: 0.6rem; font-weight: 700; color: #b45309; background: #fef3c7; padding: 0.1rem 0.45rem; border-radius: 999px; margin-left: 0.4rem; white-space: normal; }
+    .loan-progress-track { background: #F0E4DC; border-radius: 6px; height: 6px; overflow: hidden; min-width: 90px; }
+    .loan-progress-fill { height: 100%; background: #712B13; }
+    .loan-progress-placeholder { font-size: 0.76rem; color: #94a3b8; font-style: italic; }
+    .row-payment {
       display: inline-flex; align-items: center; justify-content: center;
-      width: 21px; height: 21px; font-size: 0.72rem; cursor: pointer;
-      border-radius: 0.4rem; flex-shrink: 0;
-      background: #eef2f7; border: 1px solid #dde3ea; color: #64748b;
+      width: 24px; height: 24px; font-size: 0.72rem; cursor: pointer;
+      border-radius: 0.4rem; flex-shrink: 0; border: 1px solid;
+      background: #eff6ff; border-color: #bfdbfe; color: #0369a1; margin-right: 0.3rem;
     }
-    .row-icon-btn:hover { border-color: #94a3b8; color: #364752; }
-    .group-row .row-icon-btn { background: rgba(255,255,255,0.3); border-color: rgba(255,255,255,0.55); color: #ffffff; }
-    .group-row .row-icon-btn:hover { background: rgba(255,255,255,0.5); border-color: #ffffff; }
-    .item-row .row-icon-btn.edit-btn { background: #ecfdf5; border-color: #a7f3d0; color: #059669; }
-    .item-row .row-icon-btn.edit-btn:hover { background: #d1fae5; border-color: #10b981; color: #047857; }
-    .item-row .row-icon-btn.delete-btn { background: #fef2f2; border-color: #fecaca; color: #dc2626; }
-    .item-row .row-icon-btn.delete-btn:hover { background: #fee2e2; border-color: #dc2626; color: #b91c1c; }
-    .add-item-btn { background: rgba(255,255,255,0.9) !important; border-color: #ffffff !important; color: #b91c1c !important; font-weight: 700; width: auto !important; padding: 0 0.4rem; }
-    .add-item-btn:hover { background: #ffffff !important; }
-
-    .grid-cell-input {
-      width: 100%;
-      box-sizing: border-box;
-      padding: 0.35rem 0.2rem;
-      border: none;
-      border-radius: 0;
-      background: #fbfcfd;
-      font-size: 0.8rem;
-      font-family: inherit;
-      text-align: right;
-      color: #0f172a;
-      display: block;
-    }
-    .grid-cell-input:hover { background: #f0fdf7; }
-    .grid-cell-input:focus { outline: 2px solid #10b981; outline-offset: -2px; background: #fff; }
-    .grid-cell-input::-webkit-outer-spin-button,
-    .grid-cell-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-    .grid-cell-input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
-
-    tr.add-group-row td { background: #f8fafc; border-bottom: none; padding-top: 0.4rem; padding-bottom: 0.4rem; }
-    .add-group-input {
-      width: 100%;
-      padding: 0.45rem 0.6rem;
-      border: 1px dashed #cbd5e1;
-      border-radius: 0.5rem;
-      background: #ffffff;
-      font-size: 0.83rem;
-      font-family: inherit;
-      color: #0f172a;
-    }
-    .add-group-input::placeholder { color: #10b981; font-weight: 600; }
-    .add-group-input:hover { border-color: #10b981; }
-    .add-group-input:focus { outline: none; border-style: solid; border-color: #10b981; box-shadow: 0 0 0 2px rgba(16,185,129,0.15); }
-
-    .row-total { font-weight: 700; }
-    tr.item-row .row-total { color: #0f172a; background: #f8fafc; }
-    tr.group-row .row-total { background: transparent; }
-
-    table.expense-grid tfoot td {
-      font-weight: 800;
-      background: #1f2937;
-      color: #fff;
-      border-top: 2px solid #0f172a;
-      border-bottom: none;
-    }
-    table.expense-grid tfoot td:first-child { background: #1f2937; }
-    .grand-total { color: #4ade80; }
+    .row-payment:hover { background: #dbeafe; border-color: #60a5fa; color: #0c4a6e; }
 
     .empty-groups { text-align: center; padding: 3rem 2rem; color: #64748b; font-size: 0.9rem; }
     .empty-groups .pbtn { margin-top: 1rem; }
@@ -252,65 +136,7 @@
     .toast { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(20px); background: #0f172a; color: #fff; padding: 0.75rem 1.25rem; border-radius: 0.6rem; font-size: 0.85rem; opacity: 0; pointer-events: none; transition: opacity 0.2s, transform 0.2s; z-index: 200; }
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-    /* EMI Calculator modal */
-    .emi-modal-overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.55); display: none; align-items: center; justify-content: center; z-index: 300; padding: 1rem; }
-    .emi-modal-overlay.show { display: flex; }
-    .emi-modal { background: #fff; border-radius: 1.1rem; max-width: 680px; width: 100%; max-height: 92vh; overflow-y: auto; box-shadow: 0 24px 70px rgba(15,23,42,0.35); }
-    .emi-modal-head { display: flex; align-items: center; justify-content: space-between; padding: 1.25rem 1.5rem; border-bottom: 1px solid #e2e8f0; }
-    .emi-modal-head h3 { font-size: 1.15rem; font-weight: 800; }
-    .emi-modal-close { background: none; border: none; cursor: pointer; font-size: 1rem; color: #64748b; width: 30px; height: 30px; border-radius: 50%; }
-    .emi-modal-close:hover { background: #f1f5f9; color: #0f172a; }
-    .emi-modal-body { padding: 1.5rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1.75rem; }
-    @media (max-width: 620px) { .emi-modal-body { grid-template-columns: 1fr; } }
-    .emi-field { display: flex; flex-direction: column; gap: 0.35rem; margin-bottom: 1rem; font-size: 0.83rem; color: #364752; font-weight: 600; }
-    .emi-field input[type="text"], .emi-field select {
-      padding: 0.55rem 0.7rem; border: 1px solid #e2e8f0; border-radius: 0.5rem;
-      font-family: inherit; font-size: 0.85rem; color: #0f172a;
-    }
-    .emi-slider-row { margin-bottom: 1.35rem; }
-    .emi-slider-label { display: flex; justify-content: space-between; align-items: center; font-size: 0.83rem; margin-bottom: 0.5rem; color: #364752; font-weight: 600; }
-    .emi-slider-val { font-weight: 700; color: #059669; background: #ecfdf5; padding: 0.2rem 0.6rem; border-radius: 0.4rem; }
-    .emi-slider-row input[type="range"] { width: 100%; accent-color: #10b981; }
-    .emi-results { display: flex; flex-direction: column; align-items: center; gap: 0.85rem; }
-    .emi-donut { width: 150px; height: 150px; }
-    .emi-legend { display: flex; gap: 1.25rem; font-size: 0.78rem; color: #364752; }
-    .emi-legend i { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 0.35rem; }
-    .emi-stats { width: 100%; display: flex; flex-direction: column; gap: 0.5rem; }
-    .emi-stats div { display: flex; justify-content: space-between; font-size: 0.83rem; padding: 0.55rem 0.75rem; background: #f8fafc; border-radius: 0.5rem; }
-    .emi-stats div span { color: #64748b; }
-    .emi-stats div b { color: #0f172a; }
-    .emi-modal-foot { padding: 1.1rem 1.5rem; border-top: 1px solid #e2e8f0; }
-    .emi-modal-foot .pbtn { width: 100%; justify-content: center; background: linear-gradient(to right, #6366f1, #4f46e5); }
-    .emi-modal-foot p { font-size: 0.75rem; color: #94a3b8; text-align: center; margin-top: 0.6rem; }
-
-    .emi-progress-box { margin: 0 1.5rem 1.25rem; padding: 1.1rem 1.25rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 0.9rem; }
-    .emi-progress-title { font-size: 0.85rem; font-weight: 700; margin-bottom: 0.85rem; }
-    .emi-progress-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; margin-bottom: 1rem; }
-    .emi-progress-stats div { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 0.6rem; padding: 0.6rem 0.7rem; }
-    .emi-progress-stats span { display: block; font-size: 0.68rem; font-weight: 600; color: #64748b; margin-bottom: 0.25rem; }
-    .emi-progress-stats b { font-size: 0.92rem; color: #0f172a; }
-    .emi-prepay-row { display: flex; gap: 0.5rem; }
-    .emi-prepay-row input { flex: 1; padding: 0.55rem 0.7rem; border: 1px solid #e2e8f0; border-radius: 0.5rem; font-family: inherit; font-size: 0.85rem; }
-    .emi-prepay-apply { background: #4f46e5; color: #fff; border: none; border-radius: 0.5rem; padding: 0.55rem 1rem; font-size: 0.82rem; font-weight: 700; cursor: pointer; white-space: nowrap; }
-    .emi-prepay-apply:hover { background: #4338ca; }
-
-    /* Loan Details summary table */
-    .loan-details-table th:first-child, .loan-details-table td:first-child,
-    .loan-details-table th:nth-child(2), .loan-details-table td:nth-child(2) {
-      position: static; min-width: 0; text-align: left;
-    }
-    .loan-details-table td:first-child { font-weight: 600; color: #364752; }
-    .loan-details-table .ld-delete {
-      background: #fef2f2; border: 1px solid #fecaca; color: #dc2626;
-      width: 24px; height: 24px; border-radius: 0.4rem; cursor: pointer; font-size: 0.72rem;
-    }
-    .loan-details-table .ld-delete:hover { background: #fee2e2; border-color: #dc2626; }
-    .loan-details-table .ld-edit {
-      background: #ecfdf5; border: 1px solid #a7f3d0; color: #059669;
-      width: 24px; height: 24px; border-radius: 0.4rem; cursor: pointer; font-size: 0.72rem;
-      margin-right: 0.3rem;
-    }
-    .loan-details-table .ld-edit:hover { background: #d1fae5; border-color: #10b981; }
+    .form-error { font-size: 0.8rem; color: #dc2626; font-weight: 600; padding: 0 1.3rem; }
 
     /* Personal Debt & Receivable section (merged into this page) */
     .section-divider { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 1rem; margin: 2.5rem 0 1.5rem; padding-top: 2rem; border-top: 1px solid #e2e8f0; }
@@ -743,98 +569,56 @@
       <div class="page-head">
         <div>
           <h2>Loan / EMI</h2>
-          <p>Every loan and its EMI, month by month - type straight into a cell, spreadsheet-style.</p>
+          <p>Enter each loan once - balance, payoff date, and progress update automatically.</p>
         </div>
         <div class="head-actions">
-          <div class="year-nav">
-            <button type="button" onclick="shiftYear(-1)" aria-label="Previous year">‹</button>
-            <span class="year-label" id="yearLabel">2026</span>
-            <button type="button" onclick="shiftYear(1)" aria-label="Next year">›</button>
-          </div>
+          <button type="button" class="pbtn dark" onclick="openLoanModal()">➕ Add Loan</button>
         </div>
       </div>
 
-      <div class="loan-hero" id="loanHero" style="display:none;">
-        <div class="loan-hero-stats">
-          <div class="loan-hero-stat">
-            <div class="loan-hero-icon">💳</div>
-            <div class="loan-hero-label">Total EMI This Month</div>
-            <div class="loan-hero-value" id="heroMonthlyEmi">₹0</div>
-            <div class="loan-hero-sub" id="heroActiveLoans">0 active loans</div>
-          </div>
-          <div class="loan-hero-stat">
-            <div class="loan-hero-icon">📅</div>
-            <div class="loan-hero-label">Months of EMI Left</div>
-            <div class="loan-hero-value" id="heroMonthsLeft">0</div>
-            <div class="loan-hero-sub" id="heroDebtFreeDate">-</div>
-          </div>
-          <div class="loan-hero-stat">
-            <div class="loan-hero-icon">🏦</div>
-            <div class="loan-hero-label">Total Outstanding</div>
-            <div class="loan-hero-value" id="heroOutstanding">₹0</div>
-            <div class="loan-hero-sub" id="heroOutstandingSub">of ₹0 borrowed</div>
-          </div>
+      <div class="loan-emi-hero" id="loanEmiHero" style="display:none;">
+        <div>
+          <div class="loan-emi-stat-label">Active Loans</div>
+          <div class="loan-emi-stat-value" id="lHeroCount">0</div>
         </div>
-        <div class="loan-hero-progress">
-          <div class="loan-hero-donut-wrap">
-            <div id="loanHeroDonutSvgHolder"></div>
-            <div class="loan-hero-progress-label">
-              <div class="loan-hero-progress-pct" id="heroPaidPct">0%</div>
-              <div class="loan-hero-progress-sub">Principal<br>Paid Off</div>
-            </div>
-          </div>
+        <div>
+          <div class="loan-emi-stat-label">Total EMI / Month</div>
+          <div class="loan-emi-stat-value" id="lHeroEmi">₹0</div>
         </div>
-      </div>
-
-      <div style="display:flex; justify-content:flex-end; margin-bottom:1rem;">
-        <button type="button" class="pbtn" style="background:linear-gradient(to right,#6366f1,#4f46e5);" onclick="openLoanDetailsModal()">➕ Add Loan Details</button>
-      </div>
-
-      <div class="grid-card loan-details-card" id="loanDetailsCard" style="display:none;">
-        <p class="grid-hint">📋 Loans added via "Add Loan Details" - principal, rate and tenure behind each computed EMI. Use ✎ to change the rate/tenure or record a partial payment, ✕ to delete. "Paid So Far" only counts months up to today; future months you've pre-filled aren't counted as paid yet.</p>
-        <div class="grid-scroll">
-          <table class="expense-grid loan-details-table">
-            <thead>
-              <tr>
-                <th style="text-align:left;">Loan Name</th>
-                <th style="text-align:left;">Master Category</th>
-                <th>Principal</th>
-                <th>Rate (p.a)</th>
-                <th>Tenure</th>
-                <th>Monthly EMI</th>
-                <th>Paid So Far</th>
-                <th>Prepaid</th>
-                <th>Outstanding</th>
-                <th>Months Left</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody id="loanDetailsBody"></tbody>
-          </table>
+        <div>
+          <div class="loan-emi-stat-label">Total Outstanding</div>
+          <div class="loan-emi-stat-value" id="lHeroOutstanding">₹0</div>
+        </div>
+        <div>
+          <div class="loan-emi-stat-label">Interest Remaining</div>
+          <div class="loan-emi-stat-value" id="lHeroInterest">₹0</div>
         </div>
       </div>
 
       <div class="grid-card">
         <p class="load-error" id="loadError"></p>
-        <p class="grid-hint">💡 Click a cell and type the EMI paid that month - it saves automatically. Use ✎ to rename a master category or loan, ✕ to remove one, and + on a master category row to add a new loan under it.</p>
-        <div class="grid-scroll" id="gridScrollWrap">
-          <table class="expense-grid" id="gridTable">
+        <p class="grid-hint">💡 Tap a loan for its full amortization schedule and payment history. Use the 💰 icon to log a real partial payment - the outstanding balance and payoff date update immediately. ✎ edits the loan, ✕ removes it.</p>
+        <div class="grid-scroll">
+          <table class="loan-emi-table" id="loanEmiTable">
             <thead>
-              <tr id="gridHeadRow">
-                <th>Master Category</th>
+              <tr>
+                <th class="name-col">Loan</th>
+                <th>Principal</th>
+                <th>Rate</th>
+                <th>Tenure</th>
+                <th>EMI</th>
+                <th>Outstanding</th>
+                <th class="progress-col">Progress</th>
+                <th>Payoff</th>
+                <th></th>
               </tr>
             </thead>
-            <tbody id="gridBody"></tbody>
-            <tfoot>
-              <tr id="gridFootRow">
-                <td>Total</td>
-              </tr>
-            </tfoot>
+            <tbody id="loanEmiBody"></tbody>
           </table>
         </div>
-        <div class="empty-groups" id="emptyGroups" style="display:none;">
-          <p>No loans yet - click "➕ Add Loan Details" above to add your first one.</p>
-          <button type="button" class="pbtn" style="background:linear-gradient(to right,#6366f1,#4f46e5);" onclick="openLoanDetailsModal()">➕ Add Loan Details</button>
+        <div class="empty-groups" id="loanEmiEmpty" style="display:none;">
+          <p>No loans yet - add one to see its full payoff schedule.</p>
+          <button type="button" class="pbtn dark" onclick="openLoanModal()">➕ Add Loan</button>
         </div>
       </div>
 
@@ -919,75 +703,105 @@
 
   <div class="toast" id="toast"></div>
 
-  <div class="emi-modal-overlay" id="emiModalOverlay" onclick="if (event.target === this) closeLoanDetailsModal();">
-    <div class="emi-modal">
-      <div class="emi-modal-head">
-        <h3 id="emiModalTitle">Add Loan Details</h3>
-        <button type="button" class="emi-modal-close" onclick="closeLoanDetailsModal()">✕</button>
-      </div>
-      <div class="emi-modal-body">
-        <div>
-          <label class="emi-field">
-            <span>Loan name</span>
-            <input type="text" id="emiLoanName" placeholder="e.g. Home Loan">
-          </label>
-          <label class="emi-field">
-            <span>Master category</span>
-            <select id="emiGroupSelect" onchange="handleEmiGroupChange()"></select>
-          </label>
-          <label class="emi-field" id="emiNewGroupField" style="display:none;">
-            <span>New category name</span>
-            <input type="text" id="emiNewGroupName" placeholder="e.g. Loans &amp; EMIs">
-          </label>
-
-          <div class="emi-slider-row">
-            <div class="emi-slider-label"><span>Loan amount</span><span class="emi-slider-val" id="emiPrincipalVal">₹10,00,000</span></div>
-            <input type="range" id="emiPrincipal" min="100000" max="20000000" step="50000" value="1000000" oninput="recalcEmi()">
-          </div>
-          <div class="emi-slider-row">
-            <div class="emi-slider-label"><span>Rate of interest (p.a)</span><span class="emi-slider-val" id="emiRateVal">6.5%</span></div>
-            <input type="range" id="emiRate" min="1" max="20" step="0.1" value="6.5" oninput="recalcEmi()">
-          </div>
-          <div class="emi-slider-row">
-            <div class="emi-slider-label"><span>Loan tenure</span><span class="emi-slider-val" id="emiTenureVal">5 Yr</span></div>
-            <input type="range" id="emiTenure" min="1" max="30" step="1" value="5" oninput="recalcEmi()">
-          </div>
+  <div class="fm-modal-overlay" id="loanModalOverlay" onclick="if (event.target === this) closeLoanModal();">
+    <div class="fm-modal">
+      <div class="fm-modal-head">
+        <div class="fm-modal-head-text">
+          <h3 id="loanModalTitle">Add Loan</h3>
+          <p>Principal, rate and tenure - everything else is computed.</p>
         </div>
-
-        <div class="emi-results">
-          <svg viewBox="0 0 120 120" class="emi-donut" id="emiDonutSvg"></svg>
-          <div class="emi-legend">
-            <span><i style="background:#c7d2fe"></i>Principal amount</span>
-            <span><i style="background:#4f46e5"></i>Interest amount</span>
-          </div>
-          <div class="emi-stats">
-            <div><span>Monthly EMI</span><b id="emiMonthlyVal">₹0</b></div>
-            <div><span>Principal amount</span><b id="emiPrincipalStat">₹0</b></div>
-            <div><span>Total interest</span><b id="emiInterestStat">₹0</b></div>
-            <div><span>Total amount</span><b id="emiTotalStat">₹0</b></div>
-          </div>
-        </div>
+        <button type="button" class="fm-modal-close" onclick="closeLoanModal()">✕</button>
       </div>
 
-      <div class="emi-progress-box" id="emiProgressBox" style="display:none;">
-        <div class="emi-progress-title">📊 Current Loan Progress</div>
-        <div class="emi-progress-stats">
-          <div><span>Paid So Far</span><b id="emiProgPaid">₹0</b></div>
-          <div><span>Outstanding Principal</span><b id="emiProgOutstanding">₹0</b></div>
-          <div><span>Months Left</span><b id="emiProgMonths">-</b></div>
+      <div class="fm-modal-body">
+        <label class="fm-field">
+          <span>Loan Name</span>
+          <input type="text" id="lName" placeholder="e.g. IDBI - Property Loan">
+        </label>
+
+        <div class="fm-field-row">
+          <label class="fm-field">
+            <span>Type</span>
+            <select id="lType">
+              <option value="home">Home</option>
+              <option value="car">Car</option>
+              <option value="personal">Personal</option>
+              <option value="mortgage">Mortgage</option>
+              <option value="other">Other</option>
+            </select>
+          </label>
+          <label class="fm-field">
+            <span>Owner</span>
+            <select id="lOwner">
+              <option value="self">Self</option>
+              <option value="spouse">Spouse</option>
+              <option value="joint">Joint</option>
+              <option value="child">Child</option>
+              <option value="other">Other</option>
+            </select>
+          </label>
         </div>
-        <label class="emi-field" style="margin-bottom:0;">
-          <span>Partial Payment / Closure Amount</span>
-          <div class="emi-prepay-row">
-            <input type="text" id="emiPrepayInput" placeholder="e.g. 100000">
-            <button type="button" class="emi-prepay-apply" onclick="applyPrepaymentFromModal()">💰 Apply</button>
-          </div>
+
+        <div class="fm-field-row">
+          <label class="fm-field">
+            <span>Principal Amount (₹)</span>
+            <input type="number" min="0" id="lPrincipal" placeholder="e.g. 4000000" oninput="updateEmiPreview()">
+          </label>
+          <label class="fm-field">
+            <span>Interest Rate (% p.a.)</span>
+            <input type="number" min="0" step="0.01" id="lRate" placeholder="e.g. 8.5" oninput="updateEmiPreview()">
+          </label>
+        </div>
+
+        <div class="fm-field-row">
+          <label class="fm-field">
+            <span>Tenure (months)</span>
+            <input type="number" min="1" id="lTenure" placeholder="e.g. 240" oninput="updateEmiPreview()">
+          </label>
+          <label class="fm-field">
+            <span>Start Date</span>
+            <input type="date" id="lStartDate">
+          </label>
+        </div>
+
+        <label class="fm-field">
+          <span>Monthly EMI (₹) <span id="lEmiHint" style="font-weight:400;color:#94a3b8;"></span></span>
+          <input type="number" min="0" id="lEmi" placeholder="Leave blank to auto-calculate">
         </label>
       </div>
 
-      <div class="emi-modal-foot">
-        <button type="button" class="pbtn" id="emiSubmitBtn" onclick="saveLoanDetails()">+ Add This Loan</button>
-        <p id="emiFootNote">Fills the computed monthly EMI into all 12 months for <span id="emiYearLabelInline">2026</span> - edit any month afterward if it changes.</p>
+      <p class="form-error" id="loanFormError"></p>
+
+      <div class="fm-modal-foot">
+        <button type="button" class="pbtn outline" onclick="closeLoanModal()">Cancel</button>
+        <button type="button" class="pbtn dark" id="loanSaveBtn" onclick="saveLoan()">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="fm-modal-overlay" id="paymentModalOverlay" onclick="if (event.target === this) closePaymentModal();">
+    <div class="fm-modal" style="max-width:400px;">
+      <div class="fm-modal-head">
+        <div class="fm-modal-head-text">
+          <h3>Log a Payment</h3>
+          <p>A real extra payment already made - not a projection.</p>
+        </div>
+        <button type="button" class="fm-modal-close" onclick="closePaymentModal()">✕</button>
+      </div>
+      <div class="fm-modal-body">
+        <label class="fm-field">
+          <span>Amount (₹)</span>
+          <input type="number" min="0" id="pAmount" placeholder="e.g. 50000">
+        </label>
+        <label class="fm-field">
+          <span>Payment Date</span>
+          <input type="date" id="pDate">
+        </label>
+      </div>
+      <p class="form-error" id="paymentFormError"></p>
+      <div class="fm-modal-foot">
+        <button type="button" class="pbtn outline" onclick="closePaymentModal()">Cancel</button>
+        <button type="button" class="pbtn dark" id="paymentSaveBtn" onclick="savePartialPayment()">Save</button>
       </div>
     </div>
   </div>
@@ -1053,6 +867,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-client.js"></script>
+  <script src="js/loans-calc.js"></script>
   <script>
     function toggleSidebar() {
       var sidebar = document.getElementById('sidebar');
@@ -1226,15 +1041,6 @@
       document.body.style.overflow = '';
     }
 
-    var SECTION = 'loans';
-    var monthLabels = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-    var currentYear = 2026;
-    var groups = []; // [{ id, name, items: [{ id, name, amounts: { 'YYYY-MM': n } }] }]
-
-    function monthKey(year, monthIdx) {
-      return year + '-' + String(monthIdx + 1).padStart(2, '0');
-    }
-
     function fmtRupee(n, compact) {
       var amount = Math.round(Number(n) || 0);
       var sign = amount < 0 ? '-' : '';
@@ -1251,7 +1057,27 @@
       return sign + '₹' + out;
     }
 
-    /* ---- Data loading ---- */
+    function escapeHtml(s) {
+      return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    var toastTimer = null;
+    function showToast(msg) {
+      var toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(function () { toast.classList.remove('show'); }, 2600);
+    }
+
+    /* ---- Loan / EMI: computed amortization model (loan_accounts / loan_account_payments) ---- */
+
+    var TYPE_LABEL = { home: 'Home Loan', car: 'Car Loan', personal: 'Personal Loan', mortgage: 'Mortgage Loan', other: 'Loan' };
+
+    var loans = [];
+    var paymentsByLoan = {};
+    var editingLoanId = null;
+    var paymentLoanId = null;
 
     function showLoadError(prefix, error) {
       console.error(prefix, error);
@@ -1267,804 +1093,309 @@
       if (el) { el.textContent = ''; el.classList.remove('show'); }
     }
 
-    async function loadAll() {
-      var { data: groupRows, error: gErr } = await supabaseClient.from('expense_groups').select('*').eq('section', SECTION).order('sort_order');
-      if (gErr) { showLoadError('Could not load categories', gErr); showToast('Could not load categories: ' + gErr.message); return; }
+    async function loadLoans() {
+      var loanRes = await supabaseClient.from('loan_accounts').select('*').order('created_at');
+      if (loanRes.error) { showLoadError('Could not load loans', loanRes.error); return; }
+      loans = loanRes.data || [];
 
-      var groupIds = (groupRows || []).map(function (g) { return g.id; });
-      var itemRows = [];
-      if (groupIds.length) {
-        var { data: iData, error: iErr } = await supabaseClient.from('expense_items').select('*').in('group_id', groupIds).order('sort_order');
-        if (iErr) { showLoadError('Could not load line items', iErr); showToast('Could not load line items: ' + iErr.message); return; }
-        itemRows = iData || [];
+      var loanIds = loans.map(function (l) { return l.id; });
+      paymentsByLoan = {};
+      if (loanIds.length) {
+        var payRes = await supabaseClient.from('loan_account_payments').select('*').in('loan_id', loanIds);
+        if (payRes.error) { showLoadError('Could not load payments', payRes.error); return; }
+        (payRes.data || []).forEach(function (p) {
+          if (!paymentsByLoan[p.loan_id]) paymentsByLoan[p.loan_id] = [];
+          paymentsByLoan[p.loan_id].push(p);
+        });
       }
-
-      var itemIds = itemRows.map(function (it) { return it.id; });
-      var gridRows = [];
-      if (itemIds.length) {
-        var { data: aData, error: amErr } = await supabaseClient.from('expense_grid').select('*').in('item_id', itemIds);
-        if (amErr) { showLoadError('Could not load amounts', amErr); showToast('Could not load amounts: ' + amErr.message); return; }
-        gridRows = aData || [];
-      }
-
       clearLoadError();
-      groups = (groupRows || []).map(function (g) {
-        var items = (itemRows || []).filter(function (it) { return it.group_id === g.id; }).map(function (it) {
-          var amounts = {};
-          (gridRows || []).filter(function (row) { return row.item_id === it.id; }).forEach(function (row) {
-            amounts[row.month] = Number(row.amount);
-          });
-          return { id: it.id, name: it.name, amounts: amounts };
-        });
-        return { id: g.id, name: g.name, items: items };
-      });
     }
 
-    /* ---- Remove duplicate categories/items (same name), keeping the first of each ---- */
+    // Everything computed here is derived live from principal/rate/tenure/
+    // start_date/emi and the recorded payments - never stored. A loan
+    // migrated from the old monthly grid with no principal/rate/tenure on
+    // record (needs_details) can't compute any of this, so callers must
+    // check that flag before using the return value.
+    function computeLoanView(loan) {
+      var payments = paymentsByLoan[loan.id] || [];
+      var outstanding = LoansCalc.computeOutstanding(loan, payments);
+      var progressPct = loan.principal_amount > 0
+        ? Math.max(0, Math.min(100, (loan.principal_amount - outstanding) / loan.principal_amount * 100))
+        : 0;
+      var remaining = LoansCalc.computeRemainingSchedule(loan, outstanding);
+      var payoffDate = remaining.length ? addMonthsFrom(new Date(), remaining.length) : new Date();
+      var interestRemaining = remaining.reduce(function (sum, r) { return sum + r.interest; }, 0);
+      return { outstanding: outstanding, progressPct: progressPct, payoffDate: payoffDate, interestRemaining: interestRemaining };
+    }
 
-    async function dedupeDefaults() {
-      var seenGroupNames = {};
-      var groupIdsToDelete = [];
-      groups.forEach(function (g) {
-        if (seenGroupNames[g.name]) {
-          groupIdsToDelete.push(g.id);
+    function addMonthsFrom(date, n) {
+      var d = new Date(date);
+      d.setMonth(d.getMonth() + n);
+      return d;
+    }
+
+    function fmtMonthYear(d) {
+      return d.toLocaleDateString('en-IN', { month: 'short', year: 'numeric' });
+    }
+
+    function render() {
+      var hero = document.getElementById('loanEmiHero');
+      var card = document.querySelector('#loanEmiTable').closest('.grid-card');
+      var body = document.getElementById('loanEmiBody');
+      var empty = document.getElementById('loanEmiEmpty');
+
+      if (!loans.length) {
+        hero.style.display = 'none';
+        card.style.display = 'none';
+        empty.style.display = 'block';
+        return;
+      }
+      hero.style.display = 'grid';
+      card.style.display = '';
+      empty.style.display = 'none';
+
+      var totalEmi = 0, totalOutstanding = 0, totalInterest = 0;
+
+      body.innerHTML = loans.map(function (loan) {
+        var needsDetails = !!loan.needs_details;
+        totalEmi += Number(loan.monthly_emi) || 0;
+
+        var principalCell = needsDetails ? '<span class="loan-progress-placeholder">-</span>' : fmtRupee(loan.principal_amount);
+        var rateCell = needsDetails ? '-' : loan.interest_rate + '%';
+        var tenureCell = needsDetails ? '-' : loan.tenure_months + ' mo';
+        var outstandingCell, progressCell, payoffCell;
+
+        if (needsDetails) {
+          outstandingCell = '<span class="loan-progress-placeholder">Add loan details to calculate</span>';
+          progressCell = '<span class="loan-progress-placeholder">-</span>';
+          payoffCell = '<span class="loan-progress-placeholder">-</span>';
         } else {
-          seenGroupNames[g.name] = true;
-        }
-      });
-
-      var itemIdsToDelete = [];
-      groups.forEach(function (g) {
-        if (groupIdsToDelete.indexOf(g.id) !== -1) return;
-        var seenItemNames = {};
-        g.items.forEach(function (it) {
-          if (seenItemNames[it.name]) {
-            itemIdsToDelete.push(it.id);
-          } else {
-            seenItemNames[it.name] = true;
-          }
-        });
-      });
-
-      var changed = false;
-
-      if (groupIdsToDelete.length) {
-        var { error: gErr } = await supabaseClient.from('expense_groups').delete().in('id', groupIdsToDelete);
-        if (gErr) { showLoadError('Could not remove duplicate categories', gErr); showToast('Could not remove duplicates: ' + gErr.message); return false; }
-        changed = true;
-      }
-
-      if (itemIdsToDelete.length) {
-        var { error: iErr } = await supabaseClient.from('expense_items').delete().in('id', itemIdsToDelete);
-        if (iErr) { showLoadError('Could not remove duplicate items', iErr); showToast('Could not remove duplicates: ' + iErr.message); return false; }
-        changed = true;
-      }
-
-      if (changed) showToast('Removed duplicate categories.');
-      return changed;
-    }
-
-    /* ---- Default starter data (self-healing: fills in whatever's missing) ---- */
-
-    async function ensureDefaults() {
-      var starter = [
-        { name: 'Loans & EMIs', items: [
-          { name: 'Home Loan EMI', amounts: [25000, 25000, 25000, 25000] },
-          { name: 'Property Loan A EMI', amounts: [12000, 12000, 12000, 12000] },
-          { name: 'Property Loan B EMI', amounts: [10000, 10000, 10000, 10000] },
-          { name: 'Mortgage Loan EMI', amounts: [18000, 18000, 18000, 18000] }
-        ]}
-      ];
-
-      var touched = false;
-
-      for (var gi = 0; gi < starter.length; gi++) {
-        var g = starter[gi];
-        var groupRow = groups.find(function (x) { return x.name === g.name; });
-
-        if (!groupRow) {
-          var { data: newGroup, error: gErr } = await supabaseClient.from('expense_groups').insert({ section: SECTION, name: g.name, sort_order: gi }).select().single();
-          if (gErr) { showLoadError('Could not create category "' + g.name + '"', gErr); showToast('Could not create starter data: ' + gErr.message); return; }
-          groupRow = { id: newGroup.id, name: g.name, items: [] };
-          groups.push(groupRow);
-          touched = true;
+          var view = computeLoanView(loan);
+          totalOutstanding += view.outstanding;
+          totalInterest += view.interestRemaining;
+          outstandingCell = fmtRupee(view.outstanding);
+          progressCell = '<div class="loan-progress-track"><div class="loan-progress-fill" style="width:' + view.progressPct.toFixed(0) + '%;"></div></div>';
+          payoffCell = fmtMonthYear(view.payoffDate);
         }
 
-        for (var ii = 0; ii < g.items.length; ii++) {
-          var it = g.items[ii];
-          var itemRow = groupRow.items.find(function (x) { return x.name === it.name; });
+        return '<tr>' +
+          '<td class="name-col"><a href="loan-detail.html?id=' + loan.id + '" style="color:inherit;font-weight:600;">' + escapeHtml(loan.name) + '</a>' +
+            (needsDetails ? '<span class="needs-details-pill">Needs details</span>' : '') +
+          '</td>' +
+          '<td>' + principalCell + '</td>' +
+          '<td>' + rateCell + '</td>' +
+          '<td>' + tenureCell + '</td>' +
+          '<td>' + fmtRupee(loan.monthly_emi) + '</td>' +
+          '<td>' + outstandingCell + '</td>' +
+          '<td class="progress-col">' + progressCell + '</td>' +
+          '<td>' + payoffCell + '</td>' +
+          '<td>' +
+            '<button type="button" class="row-payment" data-id="' + loan.id + '" onclick="openPaymentModal(this.dataset.id)" title="Log a partial payment">💰</button>' +
+            '<button type="button" class="row-edit" data-id="' + loan.id + '" onclick="openLoanModal(this.dataset.id)" title="Edit">✎</button>' +
+            '<button type="button" class="row-delete" data-id="' + loan.id + '" data-name="' + escapeHtml(loan.name) + '" onclick="deleteLoanRow(this.dataset.id, this.dataset.name)" title="Delete">✕</button>' +
+          '</td>' +
+        '</tr>';
+      }).join('');
 
-          if (!itemRow) {
-            var { data: newItem, error: iErr } = await supabaseClient.from('expense_items').insert({ group_id: groupRow.id, name: it.name, sort_order: ii }).select().single();
-            if (iErr) { showLoadError('Could not create item "' + it.name + '"', iErr); showToast('Could not create starter data: ' + iErr.message); return; }
-            itemRow = { id: newItem.id, name: it.name, amounts: {} };
-            groupRow.items.push(itemRow);
-            touched = true;
-          }
-
-          var missingCells = it.amounts
-            .map(function (amt, mi) { return { key: monthKey(currentYear, mi), amount: amt }; })
-            .filter(function (c) { return !itemRow.amounts[c.key]; });
-
-          if (missingCells.length) {
-            var cells = missingCells.map(function (c) { return { item_id: itemRow.id, month: c.key, amount: c.amount, is_seed: true }; });
-            var { error: cErr } = await supabaseClient.from('expense_grid').insert(cells);
-            if (cErr) { showLoadError('Could not save amounts for "' + it.name + '"', cErr); showToast('Could not create starter data: ' + cErr.message); return; }
-            missingCells.forEach(function (c) { itemRow.amounts[c.key] = c.amount; });
-            touched = true;
-          }
-        }
-      }
-
-      return touched;
+      document.getElementById('lHeroCount').textContent = loans.length;
+      document.getElementById('lHeroEmi').textContent = fmtRupee(totalEmi, true);
+      document.getElementById('lHeroOutstanding').textContent = fmtRupee(totalOutstanding, true);
+      document.getElementById('lHeroInterest').textContent = fmtRupee(totalInterest, true);
     }
 
-    /* ---- Category (group) CRUD ---- */
+    /* ---- Add / edit loan ---- */
 
-    async function addGroupWithName(name) {
-      if (!name || !name.trim()) return;
-      var { error } = await supabaseClient.from('expense_groups').insert({ section: SECTION, name: name.trim(), sort_order: groups.length });
-      if (error) { showToast('Could not add category: ' + error.message); return; }
-      await refresh();
-      showToast('Master category added.');
+    function updateEmiPreview() {
+      var principal = Number(document.getElementById('lPrincipal').value);
+      var rate = Number(document.getElementById('lRate').value);
+      var tenure = Number(document.getElementById('lTenure').value);
+      var hint = document.getElementById('lEmiHint');
+      if (!principal || !rate || !tenure) { hint.textContent = ''; return; }
+      var emi = LoansCalc.calculateEmi(principal, rate, tenure);
+      hint.textContent = '≈ ' + fmtRupee(emi) + ' if left blank';
     }
 
-    async function addGroup() {
-      var name = prompt('Name this master category (e.g. "Loans & EMIs"):');
-      await addGroupWithName(name);
+    function openLoanModal(id) {
+      editingLoanId = id || null;
+      var loan = id ? loans.find(function (l) { return l.id === id; }) : null;
+
+      document.getElementById('loanModalTitle').textContent = loan ? 'Edit Loan' : 'Add Loan';
+      document.getElementById('loanFormError').textContent = '';
+      document.getElementById('lName').value = loan ? loan.name : '';
+      document.getElementById('lType').value = loan ? loan.loan_type : 'home';
+      document.getElementById('lOwner').value = loan ? loan.owner : 'self';
+      document.getElementById('lPrincipal').value = loan && loan.principal_amount != null ? loan.principal_amount : '';
+      document.getElementById('lRate').value = loan && loan.interest_rate != null ? loan.interest_rate : '';
+      document.getElementById('lTenure').value = loan && loan.tenure_months != null ? loan.tenure_months : '';
+      document.getElementById('lStartDate').value = loan && loan.start_date ? loan.start_date : new Date().toISOString().slice(0, 10);
+      document.getElementById('lEmi').value = loan ? loan.monthly_emi : '';
+      document.getElementById('lEmiHint').textContent = '';
+      document.getElementById('loanModalOverlay').classList.add('show');
     }
 
-    function handleAddGroupKey(event, input) {
-      if (event.key !== 'Enter') return;
-      var name = input.value;
-      input.value = '';
-      addGroupWithName(name);
+    function closeLoanModal() {
+      document.getElementById('loanModalOverlay').classList.remove('show');
+      editingLoanId = null;
     }
 
-    async function renameGroup(groupId, currentName) {
-      var name = prompt('Rename master category:', currentName);
-      if (!name || !name.trim() || name.trim() === currentName) return;
-      var { error } = await supabaseClient.from('expense_groups').update({ name: name.trim() }).eq('id', groupId);
-      if (error) { showToast('Could not rename category: ' + error.message); return; }
-      await refresh();
+    async function saveLoan() {
+      var name = document.getElementById('lName').value.trim();
+      var principal = Number(document.getElementById('lPrincipal').value) || null;
+      var rate = Number(document.getElementById('lRate').value) || null;
+      var tenure = Number(document.getElementById('lTenure').value) || null;
+      var startDate = document.getElementById('lStartDate').value || null;
+      var emiInput = document.getElementById('lEmi').value;
+      var errEl = document.getElementById('loanFormError');
+
+      if (!name) { errEl.textContent = 'Loan name is required.'; return; }
+
+      var haveFullDetails = principal && rate && tenure && startDate;
+      var emi = emiInput ? Number(emiInput) : (haveFullDetails ? LoansCalc.calculateEmi(principal, rate, tenure) : 0);
+      if (!emi || emi <= 0) { errEl.textContent = 'Enter principal/rate/tenure so EMI can be calculated, or type an EMI yourself.'; return; }
+
+      var payload = {
+        name: name,
+        loan_type: document.getElementById('lType').value,
+        owner: document.getElementById('lOwner').value,
+        principal_amount: principal,
+        interest_rate: rate,
+        tenure_months: tenure,
+        start_date: startDate,
+        monthly_emi: emi,
+        needs_details: !haveFullDetails
+      };
+
+      var btn = document.getElementById('loanSaveBtn');
+      btn.disabled = true;
+      var res = editingLoanId
+        ? await supabaseClient.from('loan_accounts').update(payload).eq('id', editingLoanId)
+        : await supabaseClient.from('loan_accounts').insert(payload);
+      btn.disabled = false;
+      if (res.error) { errEl.textContent = res.error.message; return; }
+
+      closeLoanModal();
+      await loadLoans();
+      render();
+      showToast(editingLoanId ? 'Loan updated.' : 'Loan added.');
     }
 
-    async function deleteGroup(groupId, name) {
-      if (!confirm('Delete "' + name + '" and every loan inside it? This can\'t be undone.')) return;
-      var { error } = await supabaseClient.from('expense_groups').delete().eq('id', groupId);
-      if (error) { showToast('Could not delete category: ' + error.message); return; }
-      await refresh();
-      showToast('Category deleted.');
-    }
-
-    /* ---- Line item CRUD ---- */
-
-    async function addItem(groupId, sortOrder) {
-      var name = prompt('Name this loan (e.g. "Home Loan EMI"):');
-      if (!name || !name.trim()) return;
-      var { error } = await supabaseClient.from('expense_items').insert({ group_id: groupId, name: name.trim(), sort_order: sortOrder });
-      if (error) { showToast('Could not add loan: ' + error.message); return; }
-      await refresh();
-      showToast('Loan added.');
-    }
-
-    async function renameItem(itemId, currentName) {
-      var name = prompt('Rename loan:', currentName);
-      if (!name || !name.trim() || name.trim() === currentName) return;
-      var { error } = await supabaseClient.from('expense_items').update({ name: name.trim() }).eq('id', itemId);
-      if (error) { showToast('Could not rename loan: ' + error.message); return; }
-      await refresh();
-    }
-
-    async function deleteItem(itemId, name) {
-      if (!confirm('Delete "' + name + '"? This can\'t be undone.')) return;
-      var { error } = await supabaseClient.from('expense_items').delete().eq('id', itemId);
-      if (error) { showToast('Could not delete loan: ' + error.message); return; }
-      await refresh();
+    async function deleteLoanRow(id, name) {
+      if (!confirm('Delete "' + name + '" and all its recorded payments? This cannot be undone.')) return;
+      var { error } = await supabaseClient.from('loan_accounts').delete().eq('id', id);
+      if (error) { showToast('Could not delete: ' + error.message); return; }
+      await loadLoans();
+      render();
       showToast('Loan deleted.');
     }
 
-    /* ---- Amount cell editing ---- */
+    /* ---- Log a real partial payment ---- */
 
-    async function handleCellChange(input) {
-      var itemId = input.dataset.item;
-      var m = Number(input.dataset.month);
-      var key = monthKey(currentYear, m);
-      var amount = Number(input.value) || 0;
-
-      var item = null;
-      groups.forEach(function (g) { g.items.forEach(function (it) { if (it.id === itemId) item = it; }); });
-      if (item) item.amounts[key] = amount;
-      recomputeTotals();
-
-      var { error } = await supabaseClient
-        .from('expense_grid')
-        .upsert({ item_id: itemId, month: key, amount: amount, is_seed: false, updated_at: new Date().toISOString() }, { onConflict: 'user_id,item_id,month' });
-      if (error) showToast('Could not save: ' + error.message);
+    function openPaymentModal(id) {
+      paymentLoanId = id;
+      var loan = loans.find(function (l) { return l.id === id; });
+      document.getElementById('paymentFormError').textContent = '';
+      document.getElementById('pAmount').value = loan ? loan.monthly_emi : '';
+      document.getElementById('pDate').value = new Date().toISOString().slice(0, 10);
+      document.getElementById('paymentModalOverlay').classList.add('show');
     }
 
-    /* ---- Rendering ---- */
-
-    function buildHeader() {
-      var headHtml = '<th>Master Category</th>';
-      var footHtml = '<td>Total</td>';
-      for (var m = 0; m < 12; m++) {
-        var copyItem = m > 0
-          ? '<button type="button" onclick="copyMonthForward(' + (m - 1) + ')">📋 Copy from ' + monthLabels[m - 1] + '</button>'
-          : '';
-        headHtml += '<th><span class="month-head">' + monthLabels[m] +
-          '<details class="month-menu"><summary title="Month options">⋮</summary>' +
-          '<div class="month-menu-panel">' + copyItem +
-          '<button type="button" onclick="clearMonth(' + m + ')">🗑 Clear ' + monthLabels[m] + '</button>' +
-          '</div></details></span></th>';
-        footHtml += '<td id="footMonth' + m + '">₹0</td>';
-      }
-      headHtml += '<th>Total</th>';
-      footHtml += '<td class="grand-total" id="footGrandTotal">₹0</td>';
-      document.getElementById('gridHeadRow').innerHTML = headHtml;
-      document.getElementById('gridFootRow').innerHTML = footHtml;
+    function closePaymentModal() {
+      document.getElementById('paymentModalOverlay').classList.remove('show');
+      paymentLoanId = null;
     }
 
-    async function copyMonthForward(monthIdx) {
-      var fromKey = monthKey(currentYear, monthIdx);
-      var toKey = monthKey(currentYear, monthIdx + 1);
-      var fromLabel = monthLabels[monthIdx];
-      var toLabel = monthLabels[monthIdx + 1];
+    async function savePartialPayment() {
+      var amount = Number(document.getElementById('pAmount').value);
+      var payDate = document.getElementById('pDate').value;
+      var errEl = document.getElementById('paymentFormError');
+      if (!amount || amount <= 0) { errEl.textContent = 'Enter a valid amount.'; return; }
+      if (!payDate) { errEl.textContent = 'Pick a payment date.'; return; }
 
-      var sourceItems = [];
-      groups.forEach(function (g) {
-        g.items.forEach(function (it) {
-          if (it.amounts[fromKey]) sourceItems.push(it);
-        });
+      var btn = document.getElementById('paymentSaveBtn');
+      btn.disabled = true;
+      var { error } = await supabaseClient.from('loan_account_payments').insert({ loan_id: paymentLoanId, amount: amount, payment_date: payDate });
+      btn.disabled = false;
+      if (error) { errEl.textContent = error.message; return; }
+
+      closePaymentModal();
+      await loadLoans();
+      render();
+      showToast('Payment logged.');
+    }
+
+    /* ---- One-time migration off the old monthly EMI grid (expense_items/    ----
+       loan_details/loan_prepayments) into loan_accounts/loan_account_payments. ----
+       Loans that already had "Add Loan Details" filled in migrate with full    ----
+       principal/rate/tenure intact; loans that only ever had a typed-in        ----
+       monthly figure migrate as needs_details, EMI-only.                      ---- */
+    var LOAN_MIGRATE_KEY = 'enrichme_loan_accounts_v1_setup';
+
+    async function ensureLoanAccountsMigration() {
+      if (localStorage.getItem(LOAN_MIGRATE_KEY)) return;
+
+      var groupRes = await supabaseClient.from('expense_groups').select('id').eq('section', 'loans');
+      var groupIds = (groupRes.data || []).map(function (g) { return g.id; });
+      if (!groupIds.length) { localStorage.setItem(LOAN_MIGRATE_KEY, '1'); return; }
+
+      var itemRes = await supabaseClient.from('expense_items').select('*').in('group_id', groupIds);
+      var items = itemRes.data || [];
+      if (!items.length) { localStorage.setItem(LOAN_MIGRATE_KEY, '1'); return; }
+      var itemIds = items.map(function (it) { return it.id; });
+
+      var detailRes = await supabaseClient.from('loan_details').select('*').in('item_id', itemIds);
+      var detailsByItem = {};
+      (detailRes.data || []).forEach(function (d) { detailsByItem[d.item_id] = d; });
+
+      var prepayRes = await supabaseClient.from('loan_prepayments').select('*').in('item_id', itemIds);
+      var prepaysByItem = {};
+      (prepayRes.data || []).forEach(function (p) {
+        if (!prepaysByItem[p.item_id]) prepaysByItem[p.item_id] = [];
+        prepaysByItem[p.item_id].push(p);
       });
 
-      if (sourceItems.length === 0) {
-        showToast('No amounts in ' + fromLabel + ' to copy.');
-        return;
-      }
-      if (!confirm('Copy ' + fromLabel + '\'s amounts into ' + toLabel + '? This overwrites any existing ' + toLabel + ' values.')) return;
-
-      var cells = sourceItems.map(function (it) {
-        return { item_id: it.id, month: toKey, amount: it.amounts[fromKey], is_seed: false };
-      });
-      var { error } = await supabaseClient.from('expense_grid').upsert(cells, { onConflict: 'user_id,item_id,month' });
-      if (error) { showToast('Could not copy: ' + error.message); return; }
-
-      await refresh();
-      showToast('Copied ' + fromLabel + ' → ' + toLabel + '.');
-    }
-
-    async function clearMonth(monthIdx) {
-      var key = monthKey(currentYear, monthIdx);
-      var label = monthLabels[monthIdx];
-
-      var itemsWithValue = [];
-      groups.forEach(function (g) {
-        g.items.forEach(function (it) {
-          if (it.amounts[key]) itemsWithValue.push(it);
-        });
+      var gridRes = await supabaseClient.from('expense_grid').select('*').in('item_id', itemIds);
+      var gridByItem = {};
+      (gridRes.data || []).forEach(function (r) {
+        if (!gridByItem[r.item_id]) gridByItem[r.item_id] = [];
+        gridByItem[r.item_id].push(r);
       });
 
-      if (itemsWithValue.length === 0) {
-        showToast(label + ' is already empty.');
-        return;
-      }
-      if (!confirm('Clear all amounts entered for ' + label + '? This can\'t be undone.')) return;
+      for (var i = 0; i < items.length; i++) {
+        var it = items[i];
+        var detail = detailsByItem[it.id];
+        var nonZeroEntries = (gridByItem[it.id] || []).filter(function (r) { return Number(r.amount) > 0; })
+          .sort(function (a, b) { return a.month < b.month ? -1 : (a.month > b.month ? 1 : 0); });
 
-      var cells = itemsWithValue.map(function (it) {
-        return { item_id: it.id, month: key, amount: 0, is_seed: false };
-      });
-      var { error } = await supabaseClient.from('expense_grid').upsert(cells, { onConflict: 'user_id,item_id,month' });
-      if (error) { showToast('Could not clear: ' + error.message); return; }
-
-      await refresh();
-      showToast(label + ' cleared.');
-    }
-    function render() {
-      buildHeader();
-      var body = document.getElementById('gridBody');
-      var wrap = document.getElementById('gridScrollWrap');
-      var emptyEl = document.getElementById('emptyGroups');
-
-      if (groups.length === 0) {
-        body.innerHTML = '';
-        wrap.style.display = 'none';
-        emptyEl.style.display = 'block';
-        recomputeTotals();
-        return;
-      }
-      wrap.style.display = '';
-      emptyEl.style.display = 'none';
-
-      var html = '';
-      groups.forEach(function (g) {
-        html += '<tr class="group-row" data-group="' + g.id + '">' +
-          '<td><span class="row-name">' + escapeHtml(g.name) +
-            ' <button type="button" class="row-icon-btn edit-btn" data-id="' + g.id + '" data-name="' + escapeHtml(g.name) + '" onclick="renameGroup(this.dataset.id, this.dataset.name)" title="Rename master category">✎</button>' +
-            ' <button type="button" class="row-icon-btn delete-btn" data-id="' + g.id + '" data-name="' + escapeHtml(g.name) + '" onclick="deleteGroup(this.dataset.id, this.dataset.name)" title="Delete master category">✕</button>' +
-            ' <button type="button" class="row-icon-btn add-item-btn" data-id="' + g.id + '" data-order="' + g.items.length + '" onclick="addItem(this.dataset.id, Number(this.dataset.order))" title="Add loan">+ Add</button>' +
-          '</span></td>';
-        for (var m = 0; m < 12; m++) {
-          html += '<td id="groupCell-' + g.id + '-' + m + '">₹0</td>';
-        }
-        html += '<td class="row-total" id="groupTotal-' + g.id + '">₹0</td>';
-        html += '</tr>';
-
-        g.items.forEach(function (it) {
-          html += '<tr class="item-row" data-item="' + it.id + '">' +
-            '<td><span class="row-name">' + escapeHtml(it.name) +
-              ' <button type="button" class="row-icon-btn edit-btn" data-id="' + it.id + '" data-name="' + escapeHtml(it.name) + '" onclick="renameItem(this.dataset.id, this.dataset.name)" title="Rename">✎</button>' +
-              ' <button type="button" class="row-icon-btn delete-btn" data-id="' + it.id + '" data-name="' + escapeHtml(it.name) + '" onclick="deleteItem(this.dataset.id, this.dataset.name)" title="Delete">✕</button>' +
-            '</span></td>';
-          for (var mi = 0; mi < 12; mi++) {
-            var key = monthKey(currentYear, mi);
-            var val = it.amounts[key] || 0;
-            html += '<td><input type="number" min="0" step="1" class="grid-cell-input" value="' + val + '" ' +
-              'data-item="' + it.id + '" data-month="' + mi + '" onchange="handleCellChange(this)"></td>';
-          }
-          html += '<td class="row-total" id="itemTotal-' + it.id + '">₹0</td>';
-          html += '</tr>';
-        });
-      });
-
-      html += '<tr class="add-group-row">' +
-        '<td><input type="text" class="add-group-input" placeholder="+ Add master category…" onkeydown="handleAddGroupKey(event, this)"></td>' +
-        '<td colspan="13"></td>' +
-        '</tr>';
-
-      body.innerHTML = html;
-      recomputeTotals();
-    }
-
-    function escapeHtml(s) {
-      return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-    }
-
-    /* ---- Loan Details (calculator + summary table + amortization progress) ---- */
-
-    var loanDetails = []; // [{ id, item_id, item_name, group_name, principal, rate_pct, tenure_years, monthly_emi, paid_so_far, paid_months, prepaid_total, prepaid_count, outstanding, months_left }]
-    var loanPrepaidByItem = {}; // item_id -> { total, count }
-
-    function todayMonthKey() {
-      var d = new Date();
-      return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
-    }
-
-    /* Standard reducing-balance amortization: how much principal is left
-       after N months of a fixed EMI, and how many more months a given
-       balance takes to clear at that same EMI. */
-    function loanRemainingPrincipal(principal, monthlyRate, emi, months) {
-      var bal = principal;
-      for (var i = 0; i < months && bal > 0; i++) {
-        var interest = bal * monthlyRate;
-        bal -= (emi - interest);
-      }
-      return Math.max(0, bal);
-    }
-
-    function loanMonthsToPayOff(principal, monthlyRate, emi) {
-      var bal = principal;
-      var months = 0;
-      while (bal > 0.5 && months < 1200) {
-        var interest = bal * monthlyRate;
-        var principalPaid = emi - interest;
-        if (principalPaid <= 0) return null; // EMI doesn't even cover interest - never closes
-        bal -= principalPaid;
-        months++;
-      }
-      return months;
-    }
-
-    async function loadLoanPrepayments() {
-      var { data, error } = await supabaseClient.from('loan_prepayments').select('*');
-      if (error) { showLoadError('Could not load prepayments', error); return; }
-      loanPrepaidByItem = {};
-      (data || []).forEach(function (row) {
-        if (!loanPrepaidByItem[row.item_id]) loanPrepaidByItem[row.item_id] = { total: 0, count: 0 };
-        loanPrepaidByItem[row.item_id].total += Number(row.amount) || 0;
-        loanPrepaidByItem[row.item_id].count += 1;
-      });
-    }
-
-    async function loadLoanDetails() {
-      var { data, error } = await supabaseClient.from('loan_details').select('*');
-      if (error) { showLoadError('Could not load loan details', error); return; }
-
-      var itemMap = {};
-      groups.forEach(function (g) { g.items.forEach(function (it) { itemMap[it.id] = { name: it.name, groupId: g.id, groupName: g.name, amounts: it.amounts }; }); });
-
-      var cutoff = todayMonthKey();
-
-      loanDetails = (data || [])
-        .filter(function (row) { return itemMap[row.item_id]; })
-        .map(function (row) {
-          var item = itemMap[row.item_id];
-          var principal = Number(row.principal);
-          var ratePct = Number(row.rate_pct);
-          var tenureYears = Number(row.tenure_years);
-          var emi = Number(row.monthly_emi);
-          var monthlyRate = ratePct / 12 / 100;
-
-          var paidSoFar = 0, paidMonths = 0;
-          Object.keys(item.amounts || {}).forEach(function (key) {
-            if (key <= cutoff && item.amounts[key] > 0) {
-              paidSoFar += item.amounts[key];
-              paidMonths++;
-            }
-          });
-
-          var prepaidInfo = loanPrepaidByItem[row.item_id] || { total: 0, count: 0 };
-          var principalAfterEmis = loanRemainingPrincipal(principal, monthlyRate, emi, paidMonths);
-          var outstanding = Math.max(0, principalAfterEmis - prepaidInfo.total);
-          var monthsLeft = loanMonthsToPayOff(outstanding, monthlyRate, emi);
-
-          return {
-            id: row.id,
-            item_id: row.item_id,
-            item_name: item.name,
-            group_id: item.groupId,
-            group_name: item.groupName,
-            principal: principal,
-            rate_pct: ratePct,
-            tenure_years: tenureYears,
-            monthly_emi: emi,
-            paid_so_far: paidSoFar,
-            paid_months: paidMonths,
-            prepaid_total: prepaidInfo.total,
-            prepaid_count: prepaidInfo.count,
-            outstanding: outstanding,
-            months_left: monthsLeft
+        var payload;
+        if (detail) {
+          var startMonth = nonZeroEntries.length ? nonZeroEntries[0].month : null; // 'YYYY-MM'
+          payload = {
+            name: it.name,
+            loan_type: 'other',
+            principal_amount: detail.principal,
+            interest_rate: detail.rate_pct,
+            tenure_months: Math.round(Number(detail.tenure_years) * 12),
+            start_date: startMonth ? (startMonth + '-01') : new Date().toISOString().slice(0, 10),
+            monthly_emi: detail.monthly_emi,
+            needs_details: false
           };
-        });
-    }
-
-    function renderLoanDetailsTable() {
-      var card = document.getElementById('loanDetailsCard');
-      var body = document.getElementById('loanDetailsBody');
-      if (loanDetails.length === 0) { card.style.display = 'none'; return; }
-      card.style.display = 'block';
-
-      body.innerHTML = loanDetails.map(function (ld) {
-        var monthsLeftText = ld.outstanding <= 0
-          ? 'Paid off 🎉'
-          : (ld.months_left === null ? 'Never (EMI < interest)' : ld.months_left + ' mo');
-        var prepaidText = ld.prepaid_total > 0 ? fmtRupee(ld.prepaid_total) + ' (' + ld.prepaid_count + ')' : '-';
-
-        return '<tr>' +
-          '<td>' + escapeHtml(ld.item_name) + '</td>' +
-          '<td>' + escapeHtml(ld.group_name) + '</td>' +
-          '<td>' + fmtRupee(ld.principal) + '</td>' +
-          '<td>' + ld.rate_pct + '%</td>' +
-          '<td>' + ld.tenure_years + ' Yr</td>' +
-          '<td><b>' + fmtRupee(ld.monthly_emi) + '</b></td>' +
-          '<td>' + fmtRupee(ld.paid_so_far) + ' (' + ld.paid_months + ' mo)</td>' +
-          '<td>' + prepaidText + '</td>' +
-          '<td><b>' + fmtRupee(ld.outstanding) + '</b></td>' +
-          '<td>' + monthsLeftText + '</td>' +
-          '<td>' +
-            '<button type="button" class="ld-edit" data-id="' + ld.item_id + '" onclick="openEditLoanModal(this.dataset.id)" title="Edit loan - rate, tenure, prepayments">✎</button>' +
-            '<button type="button" class="ld-delete" data-id="' + ld.item_id + '" data-name="' + escapeHtml(ld.item_name) + '" onclick="deleteItem(this.dataset.id, this.dataset.name)" title="Delete loan">✕</button>' +
-          '</td>' +
-          '</tr>';
-      }).join('');
-    }
-
-    function buildProgressDonutSvg(pct, size, strokeW, color) {
-      var r = (size - strokeW) / 2;
-      var cx = size / 2, cy = size / 2;
-      var circumference = 2 * Math.PI * r;
-      var len = circumference * Math.max(0, Math.min(1, pct / 100));
-      return '<svg viewBox="0 0 ' + size + ' ' + size + '">' +
-        '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="' + strokeW + '"/>' +
-        '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="' + color + '" stroke-width="' + strokeW + '" ' +
-        'stroke-dasharray="' + len + ' ' + circumference + '" stroke-linecap="round" transform="rotate(-90 ' + cx + ' ' + cy + ')"/>' +
-        '</svg>';
-    }
-
-    /* Portfolio-level rollup across every loan added via the calculator -
-       total monthly outflow, how far out the longest-running loan stretches,
-       and how much of the original borrowed principal is gone. */
-    function renderLoanHero() {
-      var hero = document.getElementById('loanHero');
-      if (loanDetails.length === 0) { hero.style.display = 'none'; return; }
-      hero.style.display = 'flex';
-
-      var active = loanDetails.filter(function (ld) { return ld.outstanding > 0; });
-      var paidOffCount = loanDetails.length - active.length;
-
-      var totalMonthlyEmi = active.reduce(function (s, ld) { return s + ld.monthly_emi; }, 0);
-      var totalOutstanding = loanDetails.reduce(function (s, ld) { return s + ld.outstanding; }, 0);
-      var totalPrincipal = loanDetails.reduce(function (s, ld) { return s + ld.principal; }, 0);
-      var maxMonthsLeft = active.reduce(function (m, ld) { return ld.months_left !== null ? Math.max(m, ld.months_left) : m; }, 0);
-
-      document.getElementById('heroMonthlyEmi').textContent = fmtRupee(totalMonthlyEmi, true);
-      document.getElementById('heroActiveLoans').textContent = active.length + ' active loan' + (active.length === 1 ? '' : 's') +
-        (paidOffCount > 0 ? ' · ' + paidOffCount + ' paid off 🎉' : '');
-
-      document.getElementById('heroMonthsLeft').textContent = active.length === 0 ? '0' : maxMonthsLeft;
-      if (active.length === 0) {
-        document.getElementById('heroDebtFreeDate').textContent = 'All loans paid off 🎉';
-      } else {
-        var d = new Date();
-        d.setMonth(d.getMonth() + maxMonthsLeft);
-        document.getElementById('heroDebtFreeDate').textContent = 'Debt-free by ' + d.toLocaleString('en-IN', { month: 'short', year: 'numeric' });
-      }
-
-      document.getElementById('heroOutstanding').textContent = fmtRupee(totalOutstanding, true);
-      document.getElementById('heroOutstandingSub').textContent = 'of ' + fmtRupee(totalPrincipal, true) + ' borrowed';
-
-      var paidPct = totalPrincipal ? Math.round((totalPrincipal - totalOutstanding) / totalPrincipal * 100) : 0;
-      document.getElementById('heroPaidPct').textContent = paidPct + '%';
-      document.getElementById('loanHeroDonutSvgHolder').innerHTML = buildProgressDonutSvg(paidPct, 110, 14, '#10b981');
-    }
-
-    /* ---- EMI Calculator ---- */
-
-    function calcEmiAmount(principal, annualRatePct, tenureYears) {
-      var r = annualRatePct / 12 / 100;
-      var n = tenureYears * 12;
-      if (r === 0) return principal / n;
-      var pow = Math.pow(1 + r, n);
-      return principal * r * pow / (pow - 1);
-    }
-
-    var editingLoanItemId = null; // null = add mode; an item id = editing that loan
-
-    function openLoanDetailsModal() {
-      editingLoanItemId = null;
-      var sel = document.getElementById('emiGroupSelect');
-      var options = groups.map(function (g) { return '<option value="' + g.id + '">' + escapeHtml(g.name) + '</option>'; }).join('');
-      sel.innerHTML = options + '<option value="__new__">+ New category…</option>';
-      document.getElementById('emiNewGroupField').style.display = groups.length ? 'none' : 'block';
-      document.getElementById('emiLoanName').value = '';
-      document.getElementById('emiNewGroupName').value = '';
-      document.getElementById('emiPrincipal').value = 1000000;
-      document.getElementById('emiRate').value = 6.5;
-      document.getElementById('emiTenure').value = 5;
-      recalcEmi();
-
-      document.getElementById('emiModalTitle').textContent = 'Add Loan Details';
-      document.getElementById('emiSubmitBtn').textContent = '+ Add This Loan';
-      document.getElementById('emiFootNote').innerHTML = 'Fills the computed monthly EMI into all 12 months for <span id="emiYearLabelInline">' + currentYear + '</span> - edit any month afterward if it changes.';
-
-      updateEmiProgressBox();
-      document.getElementById('emiModalOverlay').classList.add('show');
-    }
-
-    function updateEmiProgressBox() {
-      var box = document.getElementById('emiProgressBox');
-      if (!editingLoanItemId) { box.style.display = 'none'; return; }
-      var ld = loanDetails.find(function (x) { return x.item_id === editingLoanItemId; });
-      if (!ld) { box.style.display = 'none'; return; }
-
-      box.style.display = 'block';
-      document.getElementById('emiProgPaid').textContent = fmtRupee(ld.paid_so_far) + ' (' + ld.paid_months + ' mo)';
-      document.getElementById('emiProgOutstanding').textContent = fmtRupee(ld.outstanding);
-      document.getElementById('emiProgMonths').textContent = ld.outstanding <= 0
-        ? 'Paid off 🎉'
-        : (ld.months_left === null ? 'Never (EMI < interest)' : ld.months_left + ' mo');
-    }
-
-    async function applyPrepaymentFromModal() {
-      if (!editingLoanItemId) return;
-      var input = document.getElementById('emiPrepayInput');
-      var amount = Number(input.value);
-      if (!amount || amount <= 0) { showToast('Enter a valid prepayment amount.'); return; }
-
-      var { error } = await supabaseClient.from('loan_prepayments').insert({ item_id: editingLoanItemId, amount: amount });
-      if (error) { showToast('Could not save prepayment: ' + error.message); return; }
-
-      input.value = '';
-      showToast('Prepayment of ' + fmtRupee(amount) + ' recorded.');
-
-      await loadLoanPrepayments();
-      await loadLoanDetails();
-      updateEmiProgressBox();
-      renderLoanDetailsTable();
-      renderLoanHero();
-    }
-
-    function openEditLoanModal(itemId) {
-      var ld = loanDetails.find(function (x) { return x.item_id === itemId; });
-      if (!ld) return;
-      editingLoanItemId = itemId;
-
-      var sel = document.getElementById('emiGroupSelect');
-      var options = groups.map(function (g) { return '<option value="' + g.id + '">' + escapeHtml(g.name) + '</option>'; }).join('');
-      sel.innerHTML = options + '<option value="__new__">+ New category…</option>';
-      sel.value = ld.group_id;
-      document.getElementById('emiNewGroupField').style.display = 'none';
-      document.getElementById('emiLoanName').value = ld.item_name;
-      document.getElementById('emiNewGroupName').value = '';
-      document.getElementById('emiPrincipal').value = ld.principal;
-      document.getElementById('emiRate').value = ld.rate_pct;
-      document.getElementById('emiTenure').value = ld.tenure_years;
-      recalcEmi();
-
-      document.getElementById('emiModalTitle').textContent = 'Edit Loan Details';
-      document.getElementById('emiSubmitBtn').textContent = '💾 Save Changes';
-      document.getElementById('emiFootNote').textContent = 'Changing the EMI updates any future months only - months already paid stay as recorded.';
-
-      updateEmiProgressBox();
-      document.getElementById('emiModalOverlay').classList.add('show');
-    }
-
-    function closeLoanDetailsModal() {
-      document.getElementById('emiModalOverlay').classList.remove('show');
-    }
-
-    function handleEmiGroupChange() {
-      var sel = document.getElementById('emiGroupSelect');
-      document.getElementById('emiNewGroupField').style.display = sel.value === '__new__' ? 'block' : 'none';
-    }
-
-    function drawEmiDonut(principal, interest) {
-      var svg = document.getElementById('emiDonutSvg');
-      var total = principal + interest;
-      var interestFrac = total ? interest / total : 0;
-      var r = 50, cx = 60, cy = 60, strokeW = 18;
-      var circumference = 2 * Math.PI * r;
-      var interestLen = circumference * interestFrac;
-
-      svg.innerHTML =
-        '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="#e0e7ff" stroke-width="' + strokeW + '"/>' +
-        '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="#4f46e5" stroke-width="' + strokeW + '" ' +
-        'stroke-dasharray="' + interestLen + ' ' + circumference + '" stroke-dashoffset="' + (circumference * 0.25) + '" ' +
-        'transform="rotate(-90 ' + cx + ' ' + cy + ')" stroke-linecap="round"/>';
-    }
-
-    function recalcEmi() {
-      var principal = Number(document.getElementById('emiPrincipal').value);
-      var rate = Number(document.getElementById('emiRate').value);
-      var tenure = Number(document.getElementById('emiTenure').value);
-
-      document.getElementById('emiPrincipalVal').textContent = fmtRupee(principal);
-      document.getElementById('emiRateVal').textContent = rate + '%';
-      document.getElementById('emiTenureVal').textContent = tenure + ' Yr';
-
-      var emi = calcEmiAmount(principal, rate, tenure);
-      var totalAmount = emi * tenure * 12;
-      var totalInterest = totalAmount - principal;
-
-      document.getElementById('emiMonthlyVal').textContent = fmtRupee(emi);
-      document.getElementById('emiPrincipalStat').textContent = fmtRupee(principal);
-      document.getElementById('emiInterestStat').textContent = fmtRupee(totalInterest);
-      document.getElementById('emiTotalStat').textContent = fmtRupee(totalAmount);
-
-      drawEmiDonut(principal, totalInterest);
-    }
-
-    async function saveLoanDetails() {
-      var name = document.getElementById('emiLoanName').value.trim();
-      if (!name) { showToast('Please name this loan.'); return; }
-
-      var principal = Number(document.getElementById('emiPrincipal').value);
-      var rate = Number(document.getElementById('emiRate').value);
-      var tenure = Number(document.getElementById('emiTenure').value);
-      var emi = Math.round(calcEmiAmount(principal, rate, tenure));
-
-      var sel = document.getElementById('emiGroupSelect');
-      var groupId = sel.value;
-
-      if (!groupId || groupId === '__new__') {
-        var newName = document.getElementById('emiNewGroupName').value.trim() || 'Loans & EMIs';
-        var { data: newGroup, error: gErr } = await supabaseClient.from('expense_groups').insert({ section: SECTION, name: newName, sort_order: groups.length }).select().single();
-        if (gErr) { showToast('Could not create category: ' + gErr.message); return; }
-        groupId = newGroup.id;
-      }
-
-      if (editingLoanItemId) {
-        var itemId = editingLoanItemId;
-
-        var { error: iErr } = await supabaseClient.from('expense_items').update({ name: name, group_id: groupId }).eq('id', itemId);
-        if (iErr) { showToast('Could not update loan: ' + iErr.message); return; }
-
-        var { error: lErr } = await supabaseClient.from('loan_details').update({
-          principal: principal, rate_pct: rate, tenure_years: tenure, monthly_emi: emi
-        }).eq('item_id', itemId);
-        if (lErr) { showToast('Could not update loan details: ' + lErr.message); return; }
-
-        // Update any future months' EMI to the new amount - months already
-        // paid (up to today) stay exactly as recorded, since a rate change
-        // doesn't retroactively change what you already paid.
-        var cutoff = todayMonthKey();
-        var futureCells = [];
-        for (var mf = 0; mf < 12; mf++) {
-          var futureKey = monthKey(currentYear, mf);
-          if (futureKey > cutoff) futureCells.push({ item_id: itemId, month: futureKey, amount: emi, is_seed: false });
-        }
-        if (futureCells.length) {
-          await supabaseClient.from('expense_grid').upsert(futureCells, { onConflict: 'user_id,item_id,month' });
+        } else {
+          var lastAmount = nonZeroEntries.length ? nonZeroEntries[nonZeroEntries.length - 1].amount : 0;
+          payload = { name: it.name, loan_type: 'other', monthly_emi: lastAmount, needs_details: true };
         }
 
-        closeLoanDetailsModal();
-        await refresh();
-        showToast(name + ' updated - new monthly EMI is ' + fmtRupee(emi) + '.');
-        return;
-      }
+        var insertRes = await supabaseClient.from('loan_accounts').insert(payload).select().single();
+        if (insertRes.error || !insertRes.data) continue;
 
-      var { data: newItem, error: iErr2 } = await supabaseClient.from('expense_items').insert({ group_id: groupId, name: name, sort_order: 999 }).select().single();
-      if (iErr2) { showToast('Could not add loan: ' + iErr2.message); return; }
-
-      var cells = [];
-      for (var m = 0; m < 12; m++) {
-        cells.push({ item_id: newItem.id, month: monthKey(currentYear, m), amount: emi, is_seed: false });
-      }
-      var { error: cErr } = await supabaseClient.from('expense_grid').insert(cells);
-      if (cErr) { showToast('Could not save EMI amounts: ' + cErr.message); return; }
-
-      var { error: lErr2 } = await supabaseClient.from('loan_details').insert({
-        item_id: newItem.id, principal: principal, rate_pct: rate, tenure_years: tenure, monthly_emi: emi
-      });
-      if (lErr2) { showLoadError('Could not save loan details', lErr2); }
-
-      closeLoanDetailsModal();
-      await refresh();
-      showToast(name + ' added - ' + fmtRupee(emi) + '/month filled across all 12 months.');
-    }
-
-    function recomputeTotals() {
-      var monthTotals = new Array(12).fill(0);
-      var yearTotal = 0;
-
-      groups.forEach(function (g) {
-        var groupMonthTotals = new Array(12).fill(0);
-        var groupTotal = 0;
-
-        g.items.forEach(function (it) {
-          var itemTotal = 0;
-          for (var m = 0; m < 12; m++) {
-            var key = monthKey(currentYear, m);
-            var val = it.amounts[key] || 0;
-            groupMonthTotals[m] += val;
-            itemTotal += val;
-          }
-          groupTotal += itemTotal;
-          var itemTotalEl = document.getElementById('itemTotal-' + it.id);
-          if (itemTotalEl) itemTotalEl.textContent = fmtRupee(itemTotal);
-        });
-
-        for (var m = 0; m < 12; m++) {
-          monthTotals[m] += groupMonthTotals[m];
-          var cellEl = document.getElementById('groupCell-' + g.id + '-' + m);
-          if (cellEl) cellEl.textContent = fmtRupee(groupMonthTotals[m]);
+        var preps = prepaysByItem[it.id] || [];
+        for (var j = 0; j < preps.length; j++) {
+          await supabaseClient.from('loan_account_payments').insert({
+            loan_id: insertRes.data.id, amount: preps[j].amount, payment_date: preps[j].paid_on
+          });
         }
-        var groupTotalEl = document.getElementById('groupTotal-' + g.id);
-        if (groupTotalEl) groupTotalEl.textContent = fmtRupee(groupTotal);
-
-        yearTotal += groupTotal;
-      });
-
-      for (var mm = 0; mm < 12; mm++) {
-        var footEl = document.getElementById('footMonth' + mm);
-        if (footEl) footEl.textContent = fmtRupee(monthTotals[mm]);
       }
-      var footGrand = document.getElementById('footGrandTotal');
-      if (footGrand) footGrand.textContent = fmtRupee(yearTotal);
-    }
 
-    async function refresh() {
-      await loadAll();
-      await loadLoanPrepayments();
-      await loadLoanDetails();
-      render();
-      renderLoanDetailsTable();
-      renderLoanHero();
-    }
-
-    function shiftYear(delta) {
-      currentYear += delta;
-      document.getElementById('yearLabel').textContent = currentYear;
-      render();
-    }
-
-    var toastTimer = null;
-    function showToast(msg) {
-      var toast = document.getElementById('toast');
-      toast.textContent = msg;
-      toast.classList.add('show');
-      if (toastTimer) clearTimeout(toastTimer);
-      toastTimer = setTimeout(function () { toast.classList.remove('show'); }, 2600);
+      localStorage.setItem(LOAN_MIGRATE_KEY, '1');
     }
 
     /* ---- Personal Debt & Receivable (merged into this page) ---- */
@@ -2293,18 +1624,9 @@
     (async function init() {
       var user = await requireAuth('login.html');
       if (!user) return;
-      await loadAll();
-      var deduped = await dedupeDefaults();
-      if (deduped) await loadAll();
-      if (groups.length === 0) {
-        var touched = await ensureDefaults();
-        if (touched) await loadAll();
-      }
-      await loadLoanPrepayments();
-      await loadLoanDetails();
+      await ensureLoanAccountsMigration();
+      await loadLoans();
       render();
-      renderLoanDetailsTable();
-      renderLoanHero();
       await ensureIouMigration();
       await loadEntries();
       renderIou();

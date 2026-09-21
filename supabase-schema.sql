@@ -2188,6 +2188,23 @@ create policy "loan_account_payments_select_own" on loan_account_payments for se
 create policy "loan_account_payments_insert_own" on loan_account_payments for insert with check (auth.uid() = user_id);
 create policy "loan_account_payments_delete_own" on loan_account_payments for delete using (auth.uid() = user_id);
 
+-- ── loans.html's "Loan / EMI" section now reads/writes loan_accounts        ──
+-- ── directly (the old expense_items/loan_details monthly-grid model is      ──
+-- ── retired in favor of one-time entry + computed amortization) - widen the ──
+-- ── type list to include mortgages, let the four amortization inputs be    ──
+-- ── unset for loans migrated from the old grid with no principal/rate/      ──
+-- ── tenure on record, and flag those with needs_details so the UI can show  ──
+-- ── "Add loan details to calculate" instead of computing from nulls.        ──
+alter table loan_accounts drop constraint if exists loan_accounts_loan_type_check;
+alter table loan_accounts add constraint loan_accounts_loan_type_check
+  check (loan_type in ('home','car','personal','mortgage','other'));
+
+alter table loan_accounts alter column principal_amount drop not null;
+alter table loan_accounts alter column interest_rate drop not null;
+alter table loan_accounts alter column tenure_months drop not null;
+alter table loan_accounts alter column start_date drop not null;
+alter table loan_accounts add column if not exists needs_details boolean not null default false;
+
 -- ── Emergency contact card: one row per member, aggregated at render time  ──
 -- ── with that member's linked Doctor(s) (doctor_member_links) and their    ──
 -- ── insurance_policies. Deliberately a single glanceable view, not a form- ──

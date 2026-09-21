@@ -394,7 +394,7 @@
       </div>
 
       <div class="page-head">
-        <a href="loans-tracker.html" class="back-link">← All Loans</a>
+        <a href="loans.html" class="back-link">← All Loans</a>
       </div>
 
       <p class="load-error" id="loadError" style="display:none;"></p>
@@ -441,6 +441,7 @@
             <div class="prepay-stat"><span class="prepay-stat-value" id="prepayMonthsSaved">0</span><span class="prepay-stat-label">months earlier payoff</span></div>
             <div class="prepay-stat"><span class="prepay-stat-value" id="prepayInterestSaved">₹0</span><span class="prepay-stat-label">interest saved</span></div>
           </div>
+          <button type="button" class="btn-secondary" id="prepayLogBtn" style="display:none;margin-top:1rem;" onclick="logPrepayAsRealPayment()">Log this as a real payment</button>
         </div>
 
         <div class="panel">
@@ -710,7 +711,7 @@
       return new Date(d + (d.length === 10 ? 'T00:00:00' : '')).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
     }
 
-    var TYPE_LABEL = { home: 'Home Loan', car: 'Car Loan', personal: 'Personal Loan', other: 'Loan' };
+    var TYPE_LABEL = { home: 'Home Loan', car: 'Car Loan', personal: 'Personal Loan', mortgage: 'Mortgage Loan', other: 'Loan' };
 
     function showLoadError(msg) {
       var el = document.getElementById('loadError');
@@ -764,12 +765,35 @@
     function updatePrepayPreview() {
       var extra = Number(document.getElementById('prepayAmount').value);
       var resultEl = document.getElementById('prepayResult');
-      if (!extra || extra <= 0) { resultEl.style.display = 'none'; return; }
+      var logBtn = document.getElementById('prepayLogBtn');
+      if (!extra || extra <= 0) { resultEl.style.display = 'none'; logBtn.style.display = 'none'; return; }
 
       var scenario = LoansCalc.computePrepaymentScenario(loan, currentOutstanding, extra);
       document.getElementById('prepayMonthsSaved').textContent = Math.max(0, scenario.monthsSaved);
       document.getElementById('prepayInterestSaved').textContent = fmtRupee(Math.max(0, scenario.interestSaved));
       resultEl.style.display = 'flex';
+      logBtn.style.display = 'inline-block';
+    }
+
+    // The calculator above is a pure simulation - it never writes anything.
+    // This is the one explicit, separate action that turns a hypothetical
+    // extra payment into a real LoanPayment record, using today's date.
+    async function logPrepayAsRealPayment() {
+      var extra = Number(document.getElementById('prepayAmount').value);
+      if (!extra || extra <= 0) return;
+      if (!confirm('Log a real payment of ' + fmtRupee(extra) + ' against this loan today?')) return;
+
+      var btn = document.getElementById('prepayLogBtn');
+      btn.disabled = true;
+      var { error } = await supabaseClient.from('loan_account_payments').insert({
+        loan_id: loanId, amount: extra, payment_date: new Date().toISOString().slice(0, 10)
+      });
+      btn.disabled = false;
+      if (error) { alert('Could not log payment: ' + error.message); return; }
+
+      document.getElementById('prepayAmount').value = '';
+      await loadLoan();
+      renderAll();
     }
 
     function openPaymentModal() {
@@ -804,7 +828,7 @@
     async function deleteLoan() {
       if (!confirm('Delete this loan and all its recorded payments? This cannot be undone.')) return;
       await supabaseClient.from('loan_accounts').delete().eq('id', loanId);
-      window.location.href = 'loans-tracker.html';
+      window.location.href = 'loans.html';
     }
 
     function renderAll() {

@@ -21,28 +21,41 @@
     return Math.max(0, months);
   }
 
-  // Walks the loan chronologically from start_date, accruing interest month
-  // by month and applying each recorded LoanPayment as a principal-reducing
-  // lump sum on its payment_date - "live" outstanding balance, never stored.
+  // Walks the loan chronologically from start_date, amortizing the regular
+  // monthly_emi (interest first, remainder off principal) every elapsed
+  // month and additionally applying each recorded LoanPayment as an extra
+  // principal-reducing lump sum on its payment_date - "live" outstanding
+  // balance, never stored.
   function computeOutstanding(loan, payments, asOfDate) {
     asOfDate = asOfDate || new Date();
-    var balance = Number(loan.principal_amount);
     var rate = monthlyRate(Number(loan.interest_rate));
+    var emi = Number(loan.monthly_emi);
     var sorted = (payments || []).slice().sort(function (a, b) {
       return a.payment_date < b.payment_date ? -1 : (a.payment_date > b.payment_date ? 1 : 0);
     });
 
+    function amortizeMonths(bal, months) {
+      for (var i = 0; i < months && bal > 0.5; i++) {
+        var interest = bal * rate;
+        var principal = Math.min(emi - interest, bal);
+        if (principal <= 0) return bal; // EMI too small to cover interest - stalls
+        bal -= principal;
+      }
+      return Math.max(0, bal);
+    }
+
+    var balance = Number(loan.principal_amount);
     var cursor = loan.start_date;
     sorted.forEach(function (p) {
       var elapsedMonths = monthsBetween(cursor, new Date(p.payment_date + 'T00:00:00'));
-      for (var i = 0; i < elapsedMonths; i++) balance += balance * rate;
+      balance = amortizeMonths(balance, elapsedMonths);
       balance -= Number(p.amount);
       if (balance < 0) balance = 0;
       cursor = p.payment_date;
     });
 
     var remainingMonths = monthsBetween(cursor, asOfDate);
-    for (var j = 0; j < remainingMonths; j++) balance += balance * rate;
+    balance = amortizeMonths(balance, remainingMonths);
 
     return Math.max(0, balance);
   }
@@ -80,6 +93,41 @@
     return schedule.reduce(function (sum, r) { return sum + r.interest; }, 0);
   }
 
+  // Standard EMI formula - EMI = P × r × (1+r)^n / ((1+r)^n − 1). Used for the
+  // live preview in the add/edit loan form; the caller decides whether to
+  // store this or a user-typed EMI, this function never gets to overwrite
+  // a stored value on its own.
+  function calculateEmi(principal, annualRatePct, tenureMonths) {
+    var p = Number(principal), n = Number(tenureMonths);
+    var r = monthlyRate(Number(annualRatePct));
+    if (!p || !n || p <= 0 || n <= 0) return 0;
+    if (!r) return p / n; // 0% loan - just split principal evenly
+    var factor = Math.pow(1 + r, n);
+    return (p * r * factor) / (factor - 1);
+  }
+
+  // Continues amortizing forward from today's real outstanding balance
+  // (already net of any recorded payments) at the loan's stored EMI, to find
+  // the payoff date and interest still to be paid - distinct from
+  // computeAmortizationSchedule above, which always starts from the original
+  // principal and ignores recorded payments entirely.
+  function computeRemainingSchedule(loan, outstandingBalance) {
+    var balance = Number(outstandingBalance);
+    var rate = monthlyRate(Number(loan.interest_rate));
+    var emi = Number(loan.monthly_emi);
+    var rows = [];
+    var maxMonths = 1200;
+
+    for (var i = 1; i <= maxMonths && balance > 0.5; i++) {
+      var interest = balance * rate;
+      var principal = Math.min(emi - interest, balance);
+      if (principal <= 0) break; // EMI too small to ever pay this off
+      balance -= principal;
+      rows.push({ month: i, interest: interest, principal: principal, balance: Math.max(0, balance) });
+    }
+    return rows;
+  }
+
   // "What if I paid `extraAmount` extra right now, on top of the current
   // outstanding balance, and kept paying the same EMI?" - a one-time
   // prepayment, the common Indian-loan meaning of the term, not a recurring
@@ -115,7 +163,9 @@
     monthlyRate: monthlyRate,
     computeOutstanding: computeOutstanding,
     computeAmortizationSchedule: computeAmortizationSchedule,
+    computeRemainingSchedule: computeRemainingSchedule,
     totalInterest: totalInterest,
-    computePrepaymentScenario: computePrepaymentScenario
+    computePrepaymentScenario: computePrepaymentScenario,
+    calculateEmi: calculateEmi
   };
 })(typeof window !== 'undefined' ? window : this);
