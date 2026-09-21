@@ -891,6 +891,12 @@
         totals.current += Number(row.current_value) || 0;
       });
 
+      var { data: loanAccounts, error: laErr } = await supabaseClient.from('loan_accounts').select('monthly_emi');
+      if (laErr) { showLoadError('Could not load Loan/EMI', laErr); return null; }
+      (loanAccounts || []).forEach(function (row) {
+        totals.loans += Number(row.monthly_emi) || 0;
+      });
+
       return { totals: totals, expenseByGroup: expenseByGroup };
     }
 
