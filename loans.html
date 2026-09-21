@@ -146,7 +146,7 @@
     .pbtn.outline:hover { opacity: 1; border-color: #94a3b8; }
     .pbtn.dark { background: #0f172a; }
     .iou-hero {
-      background: linear-gradient(135deg, #0f172a, #1e293b);
+      background: #712B13;
       border-radius: 1.25rem;
       padding: 1.75rem 2rem;
       color: #fff;
@@ -158,11 +158,12 @@
     }
     .iou-hero-stat { min-width: 160px; }
     .iou-hero-icon { font-size: 1.1rem; margin-bottom: 0.4rem; opacity: 0.9; }
-    .iou-hero-label { font-size: 0.78rem; color: #94a3b8; font-weight: 600; margin-bottom: 0.3rem; }
+    .iou-hero-label { font-size: 0.78rem; color: #F0C7B8; font-weight: 600; margin-bottom: 0.3rem; }
     .iou-hero-value { font-size: 1.75rem; font-weight: 800; }
+    /* Net Position keeps semantic green/red (owed to me vs owed by me) regardless of the brand accent */
     .iou-hero-value.pos { color: #4ade80; }
     .iou-hero-value.neg { color: #f87171; }
-    .iou-hero-sub { font-size: 0.72rem; color: #94a3b8; margin-top: 0.3rem; }
+    .iou-hero-sub { font-size: 0.72rem; color: #F0C7B8; margin-top: 0.3rem; }
     .load-error-standalone { display: none; padding: 0.85rem 1.3rem; font-size: 0.8rem; color: #991b1b; background: #fef2f2; border: 1px solid #fecaca; border-radius: 0.75rem; margin-bottom: 1rem; }
     .load-error-standalone.show { display: block; }
     .empty-state { text-align: center; padding: 3rem 2rem; color: #64748b; font-size: 0.9rem; background: #ffffff; border: 1px dashed #e2e8f0; border-radius: 1.1rem; }
@@ -1360,6 +1361,8 @@
         gridByItem[r.item_id].push(r);
       });
 
+      var anyFailed = false;
+
       for (var i = 0; i < items.length; i++) {
         var it = items[i];
         var detail = detailsByItem[it.id];
@@ -1385,7 +1388,11 @@
         }
 
         var insertRes = await supabaseClient.from('loan_accounts').insert(payload).select().single();
-        if (insertRes.error || !insertRes.data) continue;
+        if (insertRes.error || !insertRes.data) {
+          console.error('Loan migration: could not migrate "' + it.name + '"', insertRes.error);
+          anyFailed = true;
+          continue;
+        }
 
         var preps = prepaysByItem[it.id] || [];
         for (var j = 0; j < preps.length; j++) {
@@ -1395,7 +1402,11 @@
         }
       }
 
-      localStorage.setItem(LOAN_MIGRATE_KEY, '1');
+      // Only remember "migration done" if every item actually made it across -
+      // otherwise a transient failure (e.g. the schema not yet having a
+      // column this code expects) would permanently skip migrating the rest
+      // on every future visit, with no way to retry.
+      if (!anyFailed) localStorage.setItem(LOAN_MIGRATE_KEY, '1');
     }
 
     /* ---- Personal Debt & Receivable (merged into this page) ---- */
