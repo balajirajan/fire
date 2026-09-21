@@ -1158,15 +1158,23 @@
       var totalEmi = 0, totalOutstanding = 0, totalInterest = 0;
 
       body.innerHTML = loans.map(function (loan) {
-        var needsDetails = !!loan.needs_details;
+        // Each field shows its own stored value independently - a loan can
+        // have some but not all of principal/rate/tenure/start_date filled
+        // in (e.g. mid-way through completing a migrated loan), and
+        // whatever's already there should show up right away rather than
+        // waiting on every field to be present. Outstanding/Progress/Payoff
+        // are the exception: they're computed from all four together, so
+        // they fall back to a placeholder unless every one is present.
+        var canCompute = loan.principal_amount != null && loan.interest_rate != null &&
+          loan.tenure_months != null && !!loan.start_date;
         totalEmi += Number(loan.monthly_emi) || 0;
 
-        var principalCell = needsDetails ? '<span class="loan-progress-placeholder">-</span>' : fmtRupee(loan.principal_amount);
-        var rateCell = needsDetails ? '-' : loan.interest_rate + '%';
-        var tenureCell = needsDetails ? '-' : loan.tenure_months + ' mo';
+        var principalCell = loan.principal_amount != null ? fmtRupee(loan.principal_amount) : '<span class="loan-progress-placeholder">-</span>';
+        var rateCell = loan.interest_rate != null ? loan.interest_rate + '%' : '-';
+        var tenureCell = loan.tenure_months != null ? loan.tenure_months + ' mo' : '-';
         var outstandingCell, progressCell, payoffCell;
 
-        if (needsDetails) {
+        if (!canCompute) {
           outstandingCell = '<span class="loan-progress-placeholder">Add loan details to calculate</span>';
           progressCell = '<span class="loan-progress-placeholder">-</span>';
           payoffCell = '<span class="loan-progress-placeholder">-</span>';
@@ -1181,7 +1189,7 @@
 
         return '<tr>' +
           '<td class="name-col"><a href="loan-detail.html?id=' + loan.id + '" style="color:inherit;font-weight:600;">' + escapeHtml(loan.name) + '</a>' +
-            (needsDetails ? '<span class="needs-details-pill">Needs details</span>' : '') +
+            (!canCompute ? '<span class="needs-details-pill">Needs details</span>' : '') +
           '</td>' +
           '<td>' + principalCell + '</td>' +
           '<td>' + rateCell + '</td>' +
