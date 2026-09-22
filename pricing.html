@@ -130,6 +130,9 @@
     .club-price .period { color: var(--ink-faint); font-size: 0.82rem; }
     .club-price .who { display: block; font-size: 0.72rem; color: var(--ink-faint); margin-top: 0.15rem; }
     .plan-card.unavailable .plan-note { text-align: left; margin-top: 0; }
+    .plan-note-list { list-style: none; text-align: left; margin: 0 0 1rem; display: grid; gap: 0.4rem; }
+    .plan-note-list li { position: relative; padding-left: 1.1rem; font-size: 0.87rem; color: var(--ink-soft); line-height: 1.5; }
+    .plan-note-list li::before { content: '-'; position: absolute; left: 0; color: var(--ink-faint); }
     .plan-card.unavailable .plan-stance { text-align: left; font-size: 0.87rem; font-weight: 700; color: var(--ink); margin-bottom: 1.5rem; line-height: 1.5; }
 
     /* Why priced this way */
@@ -293,8 +296,12 @@
             <span class="period">/ month</span>
             <span class="who">what the 1.1% Club charges for this</span>
           </div>
-          <p class="plan-note">This would mean using your PAN to pull your bank balances through the RBI Account Aggregator (AA) framework, and your mutual funds and stocks through CAMS and KFintech - automatically, on your behalf.</p>
-          <p class="plan-note">We're not building it, at any price. Programmatic access to your financial accounts is exactly the kind of access that eventually gets sold, breached, or misused - even when the intentions going in are good. EnrichMe is built to talk to you, not to your bank, your broker, or your registrar.</p>
+          <p class="plan-note" style="margin-bottom:0.6rem;">What this would take:</p>
+          <ul class="plan-note-list">
+            <li>Your PAN, to pull bank balances via the RBI Account Aggregator (AA) framework</li>
+            <li>Your mutual funds and stocks, via CAMS and KFintech</li>
+          </ul>
+          <p class="plan-note">We won't build it, at any price. Programmatic account access gets sold, breached, or misused - even with good intentions. EnrichMe talks to you, not your bank, broker, or registrar.</p>
           <p class="plan-stance">If you can't set aside ten minutes once a month to enter your own numbers, this probably isn't the app for you - and that's genuinely fine.</p>
           <a href="#" class="btn-primary plan-cta" onclick="return false;">Not planned</a>
         </div>
@@ -307,23 +314,23 @@
     <div class="container">
       <span class="svc-tag">Why it's priced this way</span>
       <h2>Enriching yourself shouldn't require already being rich</h2>
-      <p class="pr-intro">A lot of wealth-management products are quietly built for people who already have money to manage - minimum balances, premium-only features, concierge tiers for the 1.1% Club. EnrichMe exists for the opposite reason.</p>
+      <p class="pr-intro">A lot of wealth apps are quietly built for people who already have money - minimum balances, premium tiers, concierge service for the 1.1% Club. EnrichMe exists for the opposite reason.</p>
 
       <div class="why-grid">
         <div class="why-card">
           <div class="why-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7a4 4 0 1 0 8 0a4 4 0 1 0 -8 0" /><path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /><path d="M21 21v-2a4 4 0 0 0 -3 -3.85" /></svg></div>
           <h3>Built for everyone, not the 1.1% Club</h3>
-          <p>You don't need seven figures to deserve a real financial picture. Every feature works the same whether you're tracking your first lakh or your fiftieth crore.</p>
+          <p>You don't need seven figures to deserve a real financial picture - every feature works the same, from your first lakh to your fiftieth crore.</p>
         </div>
         <div class="why-card">
           <div class="why-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21v-16a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v16l-3 -2l-2 2l-2 -2l-2 2l-2 -2l-3 2" /><path d="M14 8h-2.5a1.5 1.5 0 0 0 0 3h1a1.5 1.5 0 0 1 0 3h-2.5m2 0v1.5m0 -9v1.5" /></svg></div>
           <h3>A real cost, shown honestly</h3>
-          <p>₹20 and ₹50 a month are what it costs us, per user, to run the servers behind each plan - the AI tier costs more because AI inference genuinely costs more. We're not marking either up.</p>
+          <p>₹20 and ₹50 a month are our real per-user server costs - AI costs more because AI inference costs more. We don't mark up either.</p>
         </div>
         <div class="why-card">
           <div class="why-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19.5 12.572l-7.5 7.428l-7.5 -7.428a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572" /></svg></div>
           <h3>No investors to please</h3>
-          <p>EnrichMe isn't chasing growth targets or a funding round. Covering our own infrastructure bill is the entire business model - there's nothing else to optimize for, and no reason to build the Automatic tier just because the 1.1% Club sells one.</p>
+          <p>No growth targets, no funding round - covering our own infrastructure bill is the whole business model. That's also why we won't build Automatic just because the 1.1% Club sells it.</p>
         </div>
       </div>
     </div>
@@ -339,17 +346,17 @@
         <div class="why-card">
           <div class="why-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v6a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-6" /><path d="M11 16a1 1 0 1 0 2 0a1 1 0 0 0 -2 0" /><path d="M8 11v-4a4 4 0 1 1 8 0v4" /></svg></div>
           <h3>Not even we can see your data</h3>
-          <p>EnrichMe runs on a strict multi-tenant setup with per-user database isolation, built so that not even we can browse into your account and see your net worth, expenses, or health records.</p>
+          <p>Per-user database isolation means not even we can browse into your net worth, expenses, or health records.</p>
         </div>
         <div class="why-card">
           <div class="why-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11.46 20.846a12 12 0 0 1 -7.96 -14.846a12 12 0 0 0 8.5 -3a12 12 0 0 0 8.5 3a12 12 0 0 1 -.09 7.06" /><path d="M15 19l2 2l4 -4" /></svg></div>
           <h3>Never sold, never shared</h3>
-          <p>Your data is never sold, rented, or shared with advertisers, data brokers, or anyone else, for any reason. Full stop.</p>
+          <p>Your data is never sold, rented, or shared with advertisers, data brokers, or anyone else. Full stop.</p>
         </div>
         <div class="why-card">
           <div class="why-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 5a2 2 0 1 1 4 0a7 7 0 0 1 4 6v3a4 4 0 0 0 2 3h-16a4 4 0 0 0 2 -3v-3a7 7 0 0 1 1.02 -3.943" /><path d="M9 17v1a3 3 0 0 0 6 0v-1" /><path d="M3 3l18 18" /></svg></div>
           <h3>No marketing spam</h3>
-          <p>No promotional SMS, marketing emails, or push notifications trying to re-engage you. If we ever message you, it's because you asked us to or your account genuinely needs it.</p>
+          <p>No promotional SMS, emails, or push notifications. We only message you when your account genuinely needs it.</p>
         </div>
       </div>
     </div>
@@ -363,31 +370,31 @@
       <div class="faq-wrap">
         <details open>
           <summary>What's actually different between the plans?</summary>
-          <p>Manual and AI-Powered both give you every feature EnrichMe has - the only difference is the AI-Powered plan adds AI-read report summaries, a query assistant, and recommendations on top. Automatic isn't a tier you can buy - it describes a feature we've chosen not to build.</p>
+          <p>Manual and AI-Powered include every feature - AI-Powered just adds AI report summaries, a query assistant, and recommendations. Automatic isn't a tier you can buy; it's a feature we've chosen not to build.</p>
         </details>
         <details>
           <summary>Why isn't the Automatic plan available?</summary>
-          <p>Automatically pulling your bank, mutual fund, and stock data would mean EnrichMe talking directly to your financial institutions on your behalf, via the RBI Account Aggregator framework and registrars like CAMS and KFintech. We think that access is too risky to build responsibly, so we've chosen not to - by design, not because it's coming later.</p>
+          <p>That would mean EnrichMe talking to your bank, CAMS, and KFintech directly on your behalf, via the RBI Account Aggregator framework. We think that access is too risky to build responsibly - by design, not a delay.</p>
         </details>
         <details>
           <summary>How does the 25-per-day AI limit work?</summary>
-          <p>You get up to 25 AI queries every day on the AI-Powered plan - report summaries, questions you ask EnrichMe, and recommendations all count toward it. It resets fresh each day, no monthly cap to track.</p>
+          <p>Up to 25 AI queries a day - summaries, questions, and recommendations all count. Resets daily, no monthly cap.</p>
         </details>
         <details>
           <summary>Can I switch between Manual and AI-Powered anytime?</summary>
-          <p>Yes, from your account settings, anytime. No lock-in period, no retention calls.</p>
+          <p>Yes, from your account settings, anytime. No lock-in, no retention calls.</p>
         </details>
         <details>
           <summary>Will the price ever change?</summary>
-          <p>Only if our real infrastructure or AI costs change meaningfully. If they do, we'll tell you exactly why, not just raise the price quietly.</p>
+          <p>Only if our real infrastructure or AI costs change meaningfully - and we'll tell you exactly why, not raise it quietly.</p>
         </details>
         <details>
           <summary>Is my data secure?</summary>
-          <p>Your document vault uses AES-256 encryption locked with a passphrase only you know - not even we can read it. Account data is encrypted in transit and at rest.</p>
+          <p>Your document vault is AES-256 encrypted with a passphrase only you know. Account data is encrypted in transit and at rest.</p>
         </details>
         <details>
           <summary>Do you sell my data?</summary>
-          <p>No. Never sold, rented, or shared with advertisers, data brokers, or anyone else, for any reason. It stays yours.</p>
+          <p>No. Never sold, rented, or shared with advertisers, data brokers, or anyone else. It stays yours.</p>
         </details>
       </div>
     </div>
