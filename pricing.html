@@ -9,7 +9,7 @@
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#712B13">
   <title>Pricing - EnrichMe</title>
-  <meta name="description" content="EnrichMe is free to use. We charge ₹25/month only to cover the cloud hosting and AI costs it takes to run the app - no tiers, no profit margin.">
+  <meta name="description" content="EnrichMe has two plans priced at cost - Manual at ₹25/month, AI-Powered at ₹49/month - and one we deliberately don't offer: automatic bank and broker syncing.">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -25,6 +25,8 @@
       --accent-tint: #fdeceb;
       --black: #16130f;
       --black-hover: #322d26;
+      --amber: #b45309;
+      --amber-tint: #fef3c7;
     }
 
     body {
@@ -79,54 +81,56 @@
     /* Hero */
     .pr-hero { background: var(--bg-alt); padding: 4.5rem 0 3.5rem; text-align: center; }
     .pr-eyebrow { display: inline-flex; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 1rem; }
-    .pr-hero h1 { font-size: clamp(2rem, 4vw, 2.9rem); font-weight: 800; letter-spacing: -0.02em; margin-bottom: 1rem; }
-    .pr-hero p { color: var(--ink-soft); max-width: 620px; margin: 0 auto; font-size: 1.05rem; line-height: 1.65; }
+    .pr-hero h1 { font-size: clamp(2rem, 4vw, 2.9rem); font-weight: 800; letter-spacing: -0.02em; margin-bottom: 1rem; max-width: 780px; margin-left: auto; margin-right: auto; }
+    .pr-hero p { color: var(--ink-soft); max-width: 640px; margin: 0 auto; font-size: 1.05rem; line-height: 1.65; }
 
     /* Pricing */
     .pr-section { padding: 4.5rem 0; }
 
-    .price-card-wrap { display: flex; justify-content: center; }
-    .price-card {
+    .plans-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; align-items: stretch; }
+    @media (max-width: 980px) { .plans-grid { grid-template-columns: 1fr; max-width: 460px; margin: 0 auto; } }
+
+    .plan-card {
       background: #ffffff;
-      border: 1.5px solid var(--ink);
+      border: 1.5px solid var(--border);
       border-radius: 1.4rem;
-      padding: 2.5rem 2.5rem 2.25rem;
-      max-width: 460px;
-      width: 100%;
-      box-shadow: 0 20px 50px rgba(22, 19, 15, 0.08);
+      padding: 2.1rem 1.9rem;
+      display: flex;
+      flex-direction: column;
       text-align: center;
     }
+    .plan-card.featured { border: 1.5px solid var(--accent); box-shadow: 0 20px 50px rgba(222, 51, 65, 0.14); }
+    .plan-card.unavailable { background: var(--bg-alt); border: 1.5px dashed var(--border); }
 
-    .price-card-label { font-size: 0.78rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 1rem; }
+    .plan-tag { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 0.9rem; }
+    .plan-card.featured .plan-tag { color: var(--accent); }
 
-    .price-card-amount { display: flex; align-items: baseline; justify-content: center; gap: 0.4rem; }
-    .price-card-amount .amount { font-size: 3.4rem; font-weight: 800; letter-spacing: -0.02em; color: var(--ink); }
-    .price-card-amount .period { color: var(--ink-soft); font-size: 1rem; }
+    .plan-amount { display: flex; align-items: baseline; justify-content: center; gap: 0.35rem; }
+    .plan-amount .amount { font-size: 2.6rem; font-weight: 800; letter-spacing: -0.02em; color: var(--ink); }
+    .plan-amount .period { color: var(--ink-soft); font-size: 0.92rem; }
 
-    .price-card-note {
-      margin: 0.85rem 0 1.5rem;
-      color: var(--ink-soft);
-      font-size: 0.9rem;
-      line-height: 1.55;
-    }
+    .plan-note { margin: 0.75rem 0 1.25rem; color: var(--ink-soft); font-size: 0.87rem; line-height: 1.55; }
 
-    .price-card-cta { width: 100%; justify-content: center; margin-bottom: 0.7rem; }
-    .price-card-subcta { font-size: 0.8rem; color: var(--ink-faint); margin-bottom: 1.75rem; }
+    .ai-limit-pill { display: inline-block; background: var(--accent-tint); color: var(--accent-dark); font-size: 0.76rem; font-weight: 700; padding: 0.4rem 0.8rem; border-radius: 999px; margin-bottom: 1.1rem; }
 
-    .price-card-divider { border-top: 1px solid var(--border); margin: 0 0 1.5rem; }
+    .plan-cta { width: 100%; justify-content: center; margin-bottom: 1.5rem; }
+    .plan-card.unavailable .plan-cta { background: var(--border); color: var(--ink-faint); cursor: default; }
+    .plan-card.unavailable .plan-cta:hover { background: var(--border); transform: none; }
 
-    .price-card-features-label { font-size: 0.78rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink); margin-bottom: 1rem; text-align: left; }
+    .plan-divider { border-top: 1px solid var(--border); margin: 0 0 1.25rem; }
 
-    .price-card-features { list-style: none; display: grid; gap: 0.8rem; text-align: left; }
-    .price-card-features li { position: relative; padding-left: 1.6rem; font-size: 0.9rem; color: var(--ink-soft); line-height: 1.5; }
-    .price-card-features li::before {
-      content: '✓';
-      position: absolute;
-      left: 0;
-      top: 0;
-      color: var(--accent);
-      font-weight: 700;
-    }
+    .plan-features { list-style: none; display: grid; gap: 0.7rem; text-align: left; flex: 1; }
+    .plan-features li { position: relative; padding-left: 1.5rem; font-size: 0.87rem; color: var(--ink-soft); line-height: 1.5; }
+    .plan-features li::before { content: '✓'; position: absolute; left: 0; top: 0; color: var(--accent); font-weight: 700; }
+    .plan-card.featured .plan-features li::before { color: var(--accent); }
+
+    .unavailable-badge { display: inline-block; background: var(--amber-tint); color: var(--amber); font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; padding: 0.3rem 0.7rem; border-radius: 999px; margin-bottom: 1rem; }
+    .club-price { margin: 0.4rem 0 1.1rem; }
+    .club-price .amount { font-size: 1.5rem; font-weight: 800; color: var(--ink-faint); text-decoration: line-through; }
+    .club-price .period { color: var(--ink-faint); font-size: 0.82rem; }
+    .club-price .who { display: block; font-size: 0.72rem; color: var(--ink-faint); margin-top: 0.15rem; }
+    .plan-card.unavailable .plan-note { text-align: left; margin-top: 0; }
+    .plan-card.unavailable .plan-stance { text-align: left; font-size: 0.87rem; font-weight: 700; color: var(--ink); margin-bottom: 1.5rem; line-height: 1.5; }
 
     /* Why priced this way */
     .pr-section.alt { background: var(--bg-alt); }
@@ -232,26 +236,25 @@
   <section class="pr-hero">
     <div class="container">
       <p class="pr-eyebrow">Not built for the 1.1% Club</p>
-      <h1>EnrichMe is free. We just pass through what it costs to run.</h1>
-      <p>Most wealth apps build premium tiers for people who already have money to spare. We built EnrichMe so anyone can get their financial and family life organized - the product is free, and the only thing you ever pay is what the cloud servers and AI features actually cost us.</p>
+      <h1>Priced at cost. And one thing we refuse to sell you, at any price.</h1>
+      <p>Most wealth apps build premium tiers for people who already have money to spare, then sell "automatic" account syncing as the ultimate convenience. EnrichMe flips both: Manual and AI-Powered are priced at what they cost us to run, and automatic bank/broker access isn't a tier you can unlock here - it's the one thing we've chosen never to build.</p>
     </div>
   </section>
 
   <section class="pr-section">
     <div class="container">
-      <div class="price-card-wrap">
-        <div class="price-card">
-          <div class="price-card-label">The only plan there is</div>
-          <div class="price-card-amount">
+      <div class="plans-grid">
+
+        <div class="plan-card">
+          <div class="plan-tag">The foundation</div>
+          <div class="plan-amount">
             <span class="amount">₹25</span>
             <span class="period">/ month</span>
           </div>
-          <p class="price-card-note">Not a price for the app. It's what cloud hosting and AI cost us per user, at cost - nothing added on top.</p>
-          <a href="login.html?mode=signup" class="btn-primary price-card-cta">Start Free Today →</a>
-          <p class="price-card-subcta">No card required to sign up.</p>
-          <div class="price-card-divider"></div>
-          <p class="price-card-features-label">Everything, for everyone</p>
-          <ul class="price-card-features">
+          <p class="plan-note">What cloud hosting costs us per user, at cost - nothing added on top.</p>
+          <a href="login.html?mode=signup" class="btn-primary plan-cta">Start Free Today →</a>
+          <div class="plan-divider"></div>
+          <ul class="plan-features">
             <li>Net worth tracking across every account, investment, gold and property</li>
             <li>FIRE planning and goal-based savings</li>
             <li>Monthly budgeting and daily expense capture</li>
@@ -262,6 +265,40 @@
             <li>As many family members as you need, no extra cost</li>
           </ul>
         </div>
+
+        <div class="plan-card featured">
+          <div class="plan-tag">Manual + AI insight</div>
+          <div class="plan-amount">
+            <span class="amount">₹49</span>
+            <span class="period">/ month*</span>
+          </div>
+          <p class="plan-note">Everything in Manual, plus AI that reads your reports and answers your questions.</p>
+          <div class="ai-limit-pill">25 AI queries / day · 75 / month total</div>
+          <a href="login.html?mode=signup&amp;plan=ai" class="btn-primary plan-cta">Upgrade to AI →</a>
+          <div class="plan-divider"></div>
+          <ul class="plan-features">
+            <li>Everything in Manual</li>
+            <li>AI-generated financial report summaries</li>
+            <li>AI-generated health report summaries</li>
+            <li>Ask EnrichMe anything about your own data</li>
+            <li>AI recommendations - spending, health, coverage gaps</li>
+          </ul>
+        </div>
+
+        <div class="plan-card unavailable">
+          <div class="unavailable-badge">Not available - by design</div>
+          <div class="plan-tag">Automatic</div>
+          <div class="club-price">
+            <span class="amount">₹10,000</span>
+            <span class="period">/ month</span>
+            <span class="who">what the 1.1% Club charges for this</span>
+          </div>
+          <p class="plan-note">This would mean using your PAN to pull your bank balances through the RBI Account Aggregator (AA) framework, and your mutual funds and stocks through CAMS and KFintech - automatically, on your behalf.</p>
+          <p class="plan-note">We're not building it, at any price. Programmatic access to your financial accounts is exactly the kind of access that eventually gets sold, breached, or misused - even when the intentions going in are good. EnrichMe is built to talk to you, not to your bank, your broker, or your registrar.</p>
+          <p class="plan-stance">If you can't set aside ten minutes once a month to enter your own numbers, this probably isn't the app for you - and that's genuinely fine.</p>
+          <a href="#" class="btn-primary plan-cta" onclick="return false;">Not planned</a>
+        </div>
+
       </div>
     </div>
   </section>
@@ -281,12 +318,12 @@
         <div class="why-card">
           <div class="why-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21v-16a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v16l-3 -2l-2 2l-2 -2l-2 2l-2 -2l-3 2" /><path d="M14 8h-2.5a1.5 1.5 0 0 0 0 3h1a1.5 1.5 0 0 1 0 3h-2.5m2 0v1.5m0 -9v1.5" /></svg></div>
           <h3>A real cost, shown honestly</h3>
-          <p>₹25/month is what it costs us, per user, to run the servers and AI features behind EnrichMe. We're not marking it up - if our costs fall, so does the price.</p>
+          <p>₹25 and ₹49 a month are what it costs us, per user, to run the servers behind each plan - the AI tier costs more because AI inference genuinely costs more. We're not marking either up.</p>
         </div>
         <div class="why-card">
           <div class="why-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19.5 12.572l-7.5 7.428l-7.5 -7.428a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572" /></svg></div>
           <h3>No investors to please</h3>
-          <p>EnrichMe isn't chasing growth targets or a funding round. Covering our own infrastructure bill is the entire business model - there's nothing else to optimize for.</p>
+          <p>EnrichMe isn't chasing growth targets or a funding round. Covering our own infrastructure bill is the entire business model - there's nothing else to optimize for, and no reason to build the Automatic tier just because the 1.1% Club sells one.</p>
         </div>
       </div>
     </div>
@@ -325,20 +362,24 @@
       <p class="pr-intro">Everything you might want to know before you sign up.</p>
       <div class="faq-wrap">
         <details open>
-          <summary>Why isn't EnrichMe completely free?</summary>
-          <p>Running the app costs real money - a cloud database, encrypted storage, and the AI features that read your documents and answer your questions. ₹25/month is our actual per-user cost, split evenly, with nothing added on top for profit.</p>
+          <summary>What's actually different between the plans?</summary>
+          <p>Manual and AI-Powered both give you every feature EnrichMe has - the only difference is the AI-Powered plan adds AI-read report summaries, a query assistant, and recommendations on top. Automatic isn't a tier you can buy - it describes a feature we've chosen not to build.</p>
         </details>
         <details>
-          <summary>Are there paid tiers or upgrades?</summary>
-          <p>No. Every EnrichMe user gets every feature - net worth, FIRE planning, insurance, the document vault, will planner, health tracking, all of it. There's no premium tier to upsell you into.</p>
+          <summary>Why isn't the Automatic plan available?</summary>
+          <p>Automatically pulling your bank, mutual fund, and stock data would mean EnrichMe talking directly to your financial institutions on your behalf, via the RBI Account Aggregator framework and registrars like CAMS and KFintech. We think that access is too risky to build responsibly, so we've chosen not to - by design, not because it's coming later.</p>
+        </details>
+        <details>
+          <summary>How do the 25-per-day and 75-per-month AI limits work together?</summary>
+          <p>You can use up to 25 AI queries on any single day, but your total across a month is capped at 75 - so a heavy-use week still fits within your monthly allowance, it just can't all land on one day.</p>
+        </details>
+        <details>
+          <summary>Can I switch between Manual and AI-Powered anytime?</summary>
+          <p>Yes, from your account settings, anytime. No lock-in period, no retention calls.</p>
         </details>
         <details>
           <summary>Will the price ever change?</summary>
-          <p>Only if our real infrastructure costs change meaningfully. If it ever does, we'll tell you exactly why, not just raise it quietly.</p>
-        </details>
-        <details>
-          <summary>Can I cancel anytime?</summary>
-          <p>Yes, anytime from your account settings. No lock-in period, no retention calls.</p>
+          <p>Only if our real infrastructure or AI costs change meaningfully. If they do, we'll tell you exactly why, not just raise the price quietly.</p>
         </details>
         <details>
           <summary>Is my data secure?</summary>
@@ -348,20 +389,16 @@
           <summary>Do you sell my data?</summary>
           <p>No. Never sold, rented, or shared with advertisers, data brokers, or anyone else, for any reason. It stays yours.</p>
         </details>
-        <details>
-          <summary>Will I get marketing emails or texts?</summary>
-          <p>No. We don't send promotional SMS or marketing email campaigns. You'll only hear from us for essential account activity, and even that stays minimal.</p>
-        </details>
       </div>
     </div>
   </section>
 
   <section class="pr-cta-section">
     <h2>Enrich yourself. Not just the 1.1% Club.</h2>
-    <p>Every feature, from day one. ₹25/month covers our costs - nothing more.</p>
+    <p>Start with Manual for ₹25/month, add AI whenever you're ready.</p>
     <a href="login.html?mode=signup" class="btn-primary">Start Tracking My Money →</a>
     <p class="pr-disclaimer">
-      Prices shown are in INR and apply to individual and family use within India. EnrichMe is a personal finance and family tracking app, not a SEBI-registered investment adviser - nothing on this page is financial, tax, or legal advice.
+      *AI-Powered pricing shown is an initial estimate pending final AI infrastructure cost confirmation. Prices shown are in INR and apply to individual and family use within India. EnrichMe is a personal finance and family tracking app, not a SEBI-registered investment adviser - nothing on this page is financial, tax, or legal advice.
     </p>
   </section>
 
