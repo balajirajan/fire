@@ -1214,7 +1214,6 @@
       fill: #ffffff;
       text-anchor: middle;
     }
-    .pyramid-tip-ring { fill: none; stroke: var(--border); stroke-width: 2; }
 
     .pyramid-legend { list-style: none; display: flex; flex-direction: column; gap: 1.6rem; }
     .pyramid-legend-item { display: flex; align-items: flex-start; gap: 0.85rem; }
@@ -1714,7 +1713,14 @@
 
     <div class="pyramid-wrap">
       <svg class="pyramid-svg" viewBox="0 0 340 330" role="img" aria-label="A pyramid showing Health at the base, then Wealth, then Family and Kids, with Success at the top">
-        <circle class="pyramid-tip-ring" cx="170" cy="12" r="8" />
+        <svg x="156" y="-2" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#c2661f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="pyramid-tip-icon" aria-hidden="true">
+          <path d="M8 21l8 0" />
+          <path d="M12 17l0 4" />
+          <path d="M7 4l10 0" />
+          <path d="M17 4v8a5 5 0 0 1 -10 0v-8" />
+          <path d="M5 9a2 2 0 0 1 -2 -2v-1a2 2 0 0 1 2 -2h2" />
+          <path d="M19 9a2 2 0 0 0 2 -2v-1a2 2 0 0 0 -2 -2h-2" />
+        </svg>
         <polygon points="170,30 144.5,75 195.5,75" fill="#d97b3f" />
         <polygon points="144.5,75 195.5,75 229.5,135 110.5,135" fill="#a8471f" />
         <text x="170" y="126" font-size="11.5">FAMILY &amp; KIDS</text>
